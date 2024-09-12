@@ -1,5 +1,4 @@
 ﻿#include <SDL.h>
-#include <SDL_image.h>
 #include <SDL_audio.h> // Use SDL_mixer for audio handling
 
 #include <iostream>
@@ -40,10 +39,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     // extern void fill_audio(void *udata, Uint8 *stream, int len);
 
     /* Set the audio format */
-    wanted.freq = 22050;
-    wanted.format = AUDIO_S16SYS;
-    wanted.channels = 2;    /* 1 = mono, 2 = stereo */
-    wanted.samples = 1024;  /* Good low-latency value for callback */
+    wanted.freq = 11025;
+    wanted.format = AUDIO_U16SYS;
+    wanted.channels = 1;    /* 1 = mono, 2 = stereo */
+    wanted.samples = 10024;  /* Good low-latency value for callback */
     wanted.callback = fill_audio;
     wanted.userdata = NULL;
 
@@ -61,9 +60,17 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
     // Example loading audio data (replace with actual loading code)
     SDL_AudioSpec wav_spec;
-    printf ("D:/GitHub/BlockyEngine/applause_y.wav,  %d,  %d", *audio_chunk, audio_len);
     if (SDL_LoadWAV("D:/GitHub/BlockyEngine/applause_y.wav", &wav_spec, &audio_chunk, &audio_len) == NULL) {
         std::cerr << "Couldn't load audio file: " << SDL_GetError() << std::endl;
+        SDL_CloseAudio();
+        SDL_Quit();
+        return 1;
+    }
+
+    // Ensure the sample rate matches
+    if (wav_spec.freq != wanted.freq) {
+        std::cerr << "Sample rate mismatch: " << wav_spec.freq << " != " << wanted.freq << std::endl;
+        SDL_FreeWAV(audio_chunk);
         SDL_CloseAudio();
         SDL_Quit();
         return 1;
@@ -76,7 +83,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
     /* Wait for sound to complete */
     while (audio_len > 0) {
-        SDL_Delay(100);         /* Sleep 1/10 second */
+        SDL_Delay(10);         /* Sleep 1/10 second */
     }
 
     // Clean up

@@ -8,9 +8,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs)
 set(SDL2_PATH "${CMAKE_SOURCE_DIR}/libs/SDL2")
 include_directories("${SDL2_PATH}/include/SDL2")
 
-#SDL Image
-set(SDL_IMAGE_PATH "${CMAKE_SOURCE_DIR}/libs/SDL2_image")
-include_directories("${SDL_IMAGE_PATH}/include/SDL2")
+#STB_Image
+include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
 
 #Final
 add_executable(${PROJECT_NAME} main.cpp)
@@ -19,6 +18,4 @@ target_link_libraries(${PROJECT_NAME}
 
         "${SDL2_PATH}/lib/libSDL2main.a"
         "${SDL2_PATH}/lib/libSDL2.dll.a"
-
-        "${SDL_IMAGE_PATH}/lib/libSDL2_image.dll.a"
 )

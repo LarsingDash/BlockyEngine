@@ -1,5 +1,6 @@
-﻿#include <SDL.h>
-#include <SDL_image.h>
+﻿#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#include <SDL.h>
 
 #include <iostream>
 #include <cmath>
@@ -32,10 +33,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	//Initialize video from SDL
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 		std::cerr << "Couldn't init video: " << SDL_GetError() << std::endl;
-		return 1;
-	}
-	if (IMG_Init(IMG_INIT_PNG) < 0) {
-		std::cerr << "Couldn't init images: " << SDL_GetError() << std::endl;
 		return 1;
 	}
 
@@ -117,7 +114,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 void init() {
 	SDL_RenderSetVSync(renderer, 1);
 
-	SDL_Surface* surface = IMG_Load("../assets/triangle.png");
+	int width, height, channels;
+	unsigned char *image = stbi_load("../assets/triangle.png", &width, &height, &channels, STBI_rgb_alpha);
+
+	if (!image) {
+		std::cerr << "Couldn't load image" << std::endl;
+	}
+
+	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormatFrom(
+			image, width, height, 32, width * 4, SDL_PIXELFORMAT_RGBA32
+	);
 	boxImage = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
 
@@ -164,5 +170,4 @@ void destroy() {
 	SDL_DestroyWindow(window);
 
 	SDL_Quit();
-	IMG_Quit();
 }

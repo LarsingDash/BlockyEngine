@@ -40,9 +40,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
     /* Set the audio format */
     wanted.freq = 11025;
-    wanted.format = AUDIO_U16SYS;
+    wanted.format = 8;
     wanted.channels = 1;    /* 1 = mono, 2 = stereo */
-    wanted.samples = 10024;  /* Good low-latency value for callback */
+    wanted.samples = 4096;  /* Good low-latency value for callback */
     wanted.callback = fill_audio;
     wanted.userdata = NULL;
 
@@ -67,13 +67,18 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         return 1;
     }
 
+    std::cerr << "freq: " << wav_spec.freq << std::endl;
+    std::cerr << "channels: " << wav_spec.channels << std::endl;
+    std::cerr << "format: " << wav_spec.format << std::endl;
+    std::cerr << "samples: " << wav_spec.samples << std::endl;
+
     // Ensure the sample rate matches
     if (wav_spec.freq != wanted.freq) {
         std::cerr << "Sample rate mismatch: " << wav_spec.freq << " != " << wanted.freq << std::endl;
-        SDL_FreeWAV(audio_chunk);
-        SDL_CloseAudio();
-        SDL_Quit();
-        return 1;
+        // SDL_FreeWAV(audio_chunk);
+        // SDL_CloseAudio();
+        // SDL_Quit();
+        // return 1;
     }
 
     audio_pos = audio_chunk;

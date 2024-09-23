@@ -37,3 +37,5 @@
 
 !libs/**/*.a
 !libs/**/*.dll
+
+/libs/glm

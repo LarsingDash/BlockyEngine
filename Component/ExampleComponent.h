@@ -10,8 +10,11 @@
 
 class ExampleComponent : public Component {
 	public:
-		ExampleComponent(int x, int y, int greyScale);
-		ExampleComponent() : ExampleComponent(0,0, 0){};
+		ExampleComponent(GameObject* gameObject, Transform* transform, int x, int y, int greyScale);
+
+		ExampleComponent(GameObject* gameObject, Transform* transform)
+				: ExampleComponent(gameObject, transform, 0, 0, 0) {};
+
 		void OnUpdate(float delta) override;
 		~ExampleComponent() override;
 	private:

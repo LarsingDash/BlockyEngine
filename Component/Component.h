@@ -5,9 +5,17 @@
 #ifndef BLOCKYENGINE_COMPONENT_H
 #define BLOCKYENGINE_COMPONENT_H
 
+#include "Transform.h"
+#include "../GameObject/GameObject.h"
+
 class Component {
 	public:
-		Component() = default;
+		GameObject* gameObject;
+		Transform* transform;
+
+		Component(GameObject* gameObject, Transform* transform)
+				: gameObject(gameObject), transform(transform) {}
+
 		virtual void OnUpdate(float delta) = 0;
 		virtual ~Component() = default;
 };

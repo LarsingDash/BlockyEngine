@@ -5,12 +5,14 @@
 #ifndef BLOCKYENGINE_GAMEOBJECT_H
 #define BLOCKYENGINE_GAMEOBJECT_H
 
+//Forward declaration to resolve circular dependence
+class Component;
+
 #include <string>
 #include <utility>
 #include <iostream>
 #include <unordered_map>
 #include <typeindex>
-#include "../Component/Component.h"
 #include "../Component/Transform.h"
 
 class GameObject {
@@ -29,7 +31,7 @@ class GameObject {
 			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
 
 			//Initialise T, args will be matched with a constructor on compile time (and while CLion is indexing) 
-			T* component = new T(std::forward<Args>(args)...);
+			T* component = new T(this, transform, std::forward<Args>(args)...);
 
 			//Check if this GameObject already has a component of type T
 			if (components.find(typeid(T)) == components.end()) {   //First of T

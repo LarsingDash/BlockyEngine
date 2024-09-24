@@ -2,6 +2,7 @@
 // Created by larsv on 23/09/2024.
 //
 
+#include "../Component/Component.h"
 #include "GameObject.h"
 
 GameObject::GameObject(std::string t, Transform* parent)

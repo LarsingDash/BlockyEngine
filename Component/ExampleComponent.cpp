@@ -7,7 +7,8 @@
 #include "SDL_render.h"
 #include "../renderer.cpp"
 
-ExampleComponent::ExampleComponent(int x, int y, int greyScale) : rect(new SDL_Rect{x, y, 100, 100}) {
+ExampleComponent::ExampleComponent(GameObject* gameObject, Transform* transform, int x, int y, int greyScale)
+		: Component(gameObject, transform), rect(new SDL_Rect{x, y, 100, 100}) {
 	this->greyScale = greyScale;
 }
 

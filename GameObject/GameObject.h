@@ -10,7 +10,7 @@
 #include <vector>
 #include <iostream>
 #include "../Component/Component.h"
-#include "Transform.h"
+#include "../Component/Transform.h"
 
 class GameObject {
 	public:

@@ -3,7 +3,7 @@
 //
 
 #include "Transform.h"
-#include "GameObject.h"
+#include "../GameObject/GameObject.h"
 
 Transform::Transform(GameObject* gameObject, Transform* parent) : gameObject(gameObject), parent(parent),
 																  position(), rotation(), scale() {

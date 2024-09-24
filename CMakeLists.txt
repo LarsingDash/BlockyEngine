@@ -18,8 +18,8 @@ include_directories("${CMAKE_SOURCE_DIR}/libs/glm")
 add_executable(${PROJECT_NAME} main.cpp
         GameObject/GameObject.cpp
         GameObject/GameObject.h
-        GameObject/Transform.cpp
-        GameObject/Transform.h
+        Component/Transform.cpp
+        Component/Transform.h
         Component/Component.h
         GameObject/GameObjectManager.cpp
         GameObject/GameObjectManager.h

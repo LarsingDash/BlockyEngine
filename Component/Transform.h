@@ -23,6 +23,9 @@ class Transform {
 		[[nodiscard]] const std::vector<Transform*>& getChildren() const {
 			return children;
 		}
+		
+		void removeChild(Transform* transform);
+		void setParent(Transform* transform);
 
 	private:
 		std::vector<Transform*> children;

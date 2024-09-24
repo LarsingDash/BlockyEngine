@@ -24,7 +24,6 @@ class Transform {
 			return children;
 		}
 		
-		void removeChild(Transform* transform);
 		void setParent(Transform* transform);
 
 	private:
@@ -34,6 +33,8 @@ class Transform {
 		glm::vec2 position;
 		glm::vec2 rotation;
 		glm::vec2 scale;
+		
+		void removeThisFromTrans(Transform* trans);
 };
 
 

@@ -23,6 +23,9 @@ add_executable(${PROJECT_NAME} main.cpp
         Component/Component.h
         GameObject/GameObjectManager.cpp
         GameObject/GameObjectManager.h
+        Component/ExampleComponent.cpp
+        Component/ExampleComponent.h
+        renderer.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

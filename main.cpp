@@ -1,10 +1,15 @@
 ﻿#define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
+#include "renderer.cpp"
 #include "GameObject/GameObjectManager.h"
 #include <SDL.h>
 
 #include <iostream>
+
+namespace Example{
+	SDL_Renderer* renderer;
+}
 
 //Methods
 void Input(SDL_Scancode key);
@@ -14,7 +19,6 @@ void Destroy();
 
 //SDL
 SDL_Window* window;
-SDL_Renderer* renderer;
 bool shouldQuit = false;
 
 //Window
@@ -46,8 +50,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	}
 
 	//Renderer
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	if (renderer == nullptr) {
+	Example::renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	if (Example::renderer == nullptr) {
 		std::cerr << "Couldn't create renderer: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		SDL_DestroyWindow(window);
@@ -120,24 +124,24 @@ void Input(SDL_Scancode key) {
 }
 
 void Init() {
-	SDL_RenderSetVSync(renderer, true);
+	SDL_RenderSetVSync(Example::renderer, true);
 
 	gameObjectManager = new GameObjectManager();
 }
 
 void Cycle(float delta) {
-	SDL_SetRenderDrawColor(renderer, 25, 25, 25, SDL_ALPHA_OPAQUE);
-	SDL_RenderClear(renderer);
+	SDL_SetRenderDrawColor(Example::renderer, 125, 25, 25, SDL_ALPHA_OPAQUE);
+	SDL_RenderClear(Example::renderer);
 
 	gameObjectManager->OnUpdate(static_cast<float>(delta) / 1000.f);
 
-	SDL_RenderPresent(renderer);
+	SDL_RenderPresent(Example::renderer);
 }
 
 void Destroy() {
 	delete gameObjectManager;
 
-	SDL_DestroyRenderer(renderer);
+	SDL_DestroyRenderer(Example::renderer);
 	SDL_DestroyWindow(window);
 
 	SDL_Quit();

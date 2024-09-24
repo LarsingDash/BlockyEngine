@@ -5,12 +5,11 @@
 #ifndef BLOCKYENGINE_COMPONENT_H
 #define BLOCKYENGINE_COMPONENT_H
 
-
 class Component {
 	public:
-		Component() = delete;
-		virtual void OnUpdate() = 0;
-		virtual ~Component();
+		Component() = default;
+		virtual void OnUpdate(float delta) = 0;
+		virtual ~Component() = default;
 };
 
 

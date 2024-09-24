@@ -15,7 +15,16 @@ include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
 include_directories("${CMAKE_SOURCE_DIR}/libs/glm")
 
 #Final
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp
+        GameObject/GameObject.cpp
+        GameObject/GameObject.h
+        GameObject/Transform.cpp
+        GameObject/Transform.h
+        Component/Component.h
+        GameObject/GameObjectManager.cpp
+        GameObject/GameObjectManager.h
+)
+
 target_link_libraries(${PROJECT_NAME}
         mingw32
 

@@ -1,16 +1,16 @@
 ﻿#define STB_IMAGE_IMPLEMENTATION
+
 #include "stb_image.h"
+#include "GameObject/GameObjectManager.h"
 #include <SDL.h>
 
 #include <iostream>
-#include <cmath>
 
 //Methods
-void input(SDL_Scancode key);
-void init();
-void draw();
-void update(float delta);
-void destroy();
+void Input(SDL_Scancode key);
+void Init();
+void Cycle(float delta);
+void Destroy();
 
 //SDL
 SDL_Window* window;
@@ -23,16 +23,15 @@ int windowHeight = 800;
 float windowWidthF = (float) windowWidth;
 float windowHeightF = (float) windowHeight;
 
-//Box
-float x = 0, y = 0;
-SDL_Texture* boxImage;
+//Managers
+GameObjectManager* gameObjectManager;
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	std::cout << "Launching" << std::endl;
 
 	//Initialize video from SDL
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-		std::cerr << "Couldn't init video: " << SDL_GetError() << std::endl;
+		std::cerr << "Couldn't Init video: " << SDL_GetError() << std::endl;
 		return 1;
 	}
 
@@ -56,7 +55,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	}
 
 	//Init
-	init();
+	Init();
 
 	//Main loop vars
 	SDL_Event event;
@@ -72,7 +71,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 		Uint32 curTicks = SDL_GetTicks();
 		Uint32 delta = curTicks - prevTicks;
 		prevTicks = curTicks;
-		
+
 		//Go through the queue of events (0 if there are none)
 		while (SDL_PollEvent(&event) != 0) {
 			switch (event.type) {
@@ -82,7 +81,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 					break;
 
 				case SDL_KEYDOWN:
-					input(event.key.keysym.scancode);
+					Input(event.key.keysym.scancode);
 					break;
 
 				default:
@@ -91,8 +90,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 		}
 
 		//Cycle
-		update(static_cast<float>(delta) / 1000.f);
-		draw();
+		Cycle(static_cast<float>(delta) / 1000.f);
 
 		//Fps count
 		frameCount++;
@@ -105,31 +103,13 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	}
 
 	//Cleanup
-	destroy();
+	Destroy();
 	std::cout << "Quit" << std::endl;
 
 	return 0;
 }
 
-void init() {
-	SDL_RenderSetVSync(renderer, 1);
-
-	int width, height, channels;
-	unsigned char *image = stbi_load("../assets/triangle.png", &width, &height, &channels, STBI_rgb_alpha);
-
-	if (!image) {
-		std::cerr << "Couldn't load image" << std::endl;
-	}
-
-	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormatFrom(
-			image, width, height, 32, width * 4, SDL_PIXELFORMAT_RGBA32
-	);
-	boxImage = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface);
-
-}
-
-void input(SDL_Scancode key) {
+void Input(SDL_Scancode key) {
 	switch (key) {
 		default:
 			break;
@@ -139,32 +119,23 @@ void input(SDL_Scancode key) {
 	}
 }
 
-const float pi = 3.14159265f * 2.f;
+void Init() {
+	SDL_RenderSetVSync(renderer, true);
 
-void update(float delta) {
-	x += 1 * delta;
-	if (x >= pi) x -= pi;
-
-	y += 1 * delta;
-	if (y >= pi) y -= pi;
+	gameObjectManager = new GameObjectManager();
 }
 
-void draw() {
+void Cycle(float delta) {
 	SDL_SetRenderDrawColor(renderer, 25, 25, 25, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(renderer);
 
-	float size = 50;
-	SDL_FRect rect{(sinf(x) + 1.f) / 2.f * (windowWidthF - size),
-				   (cosf(y) * -1 + 1.f) / 2.f * (windowHeightF - size),
-				   size, size};
-
-	SDL_RenderCopyExF(renderer, boxImage, nullptr, &rect, (x / (pi) * 360) + 90, nullptr, SDL_RendererFlip::SDL_FLIP_NONE);
+	gameObjectManager->OnUpdate(static_cast<float>(delta) / 1000.f);
 
 	SDL_RenderPresent(renderer);
 }
 
-void destroy() {
-	SDL_DestroyTexture(boxImage);
+void Destroy() {
+	delete gameObjectManager;
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);

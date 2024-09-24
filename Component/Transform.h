@@ -27,6 +27,7 @@ class Transform {
 	private:
 		std::vector<Transform*> children;
 
+		//TODO Getter and Setter for Local and World
 		glm::vec2 position;
 		glm::vec2 rotation;
 		glm::vec2 scale;

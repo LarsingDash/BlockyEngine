@@ -15,11 +15,10 @@ GameObjectManager::GameObjectManager() {
 	auto* childA = new GameObject("ChildA", sceneRoot->transform);
 	auto* componentA = childA->AddComponent<ExampleComponent>(150, 150, 100);
 
-	auto* childB = new GameObject("ChildB", childA->transform);
-	auto* componentB = childB->AddComponent<ExampleComponent>(150, 300, 200);
+	auto* componentB = childA->AddComponent<ExampleComponent>(150, 300, 200);
 
-	auto* childC = new GameObject("ChildC", sceneRoot->transform);
-	auto* componentC = childC->AddComponent<ExampleComponent>(300, 150, 150);
+	auto* childB = new GameObject("ChildC", sceneRoot->transform);
+	auto* componentC = childB->AddComponent<ExampleComponent>(300, 150, 150);
 }
 
 void GameObjectManager::OnUpdate(float delta) {

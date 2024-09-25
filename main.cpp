@@ -17,12 +17,12 @@ static Uint8 *audio_pos;
 void fill_audio(void *udata, Uint8 *stream, int len)
 {
     /* Only play if we have data left */
-    if (audio_len == 0)
+    if ( audio_len == 0 )
         return;
 
     /* Mix as much data as possible */
-    len = (len > audio_len ? audio_len : len);
-    SDL_MixAudio(stream, audio_pos, len, SDL_MIX_MAXVOLUME);
+    len = ( len > audio_len ? audio_len : len );
+    SDL_MixAudio(stream, audio_pos, len, 4);
     audio_pos += len;
     audio_len -= len;
 }
@@ -39,10 +39,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     // extern void fill_audio(void *udata, Uint8 *stream, int len);
 
     /* Set the audio format */
-    wanted.freq = 11025;
-    wanted.format = 8;
-    wanted.channels = 1;    /* 1 = mono, 2 = stereo */
-    wanted.samples = 4096;  /* Good low-latency value for callback */
+    wanted.freq = 44100;
+    wanted.format = SDL_AUDIO_ISFLOAT(32);
+    wanted.channels = 2;    /* 1 = mono, 2 = stereo */
+    wanted.samples = 1;  /* Good low-latency value for callback */
     wanted.callback = fill_audio;
     wanted.userdata = NULL;
 
@@ -60,7 +60,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
     // Example loading audio data (replace with actual loading code)
     SDL_AudioSpec wav_spec;
-    if (SDL_LoadWAV("D:/GitHub/BlockyEngine/applause_y.wav", &wav_spec, &audio_chunk, &audio_len) == NULL) {
+    //if (SDL_LoadWAV("D:/GitHub/BlockyEngine/applause_y.wav", &wav_spec, &audio_chunk, &audio_len) == NULL) {
+    if (SDL_LoadWAV("D:/GitHub/BlockyEngine/countDown.wav", &wav_spec, &audio_chunk, &audio_len) == NULL) {
         std::cerr << "Couldn't load audio file: " << SDL_GetError() << std::endl;
         SDL_CloseAudio();
         SDL_Quit();

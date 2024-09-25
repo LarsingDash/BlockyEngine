@@ -16,6 +16,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     if (audioReturn != SUCCES){ return audioReturn;}
     audioReturn = wavFile.playAudio();
     if (audioReturn != SUCCES){ return audioReturn;}
+    audioReturn = wavFile.playAudio();
+    if (audioReturn != SUCCES){ return audioReturn;}
+    audioReturn = wavFile.playAudio();
+    if (audioReturn != SUCCES){ return audioReturn;}
 
     return 0;
 }

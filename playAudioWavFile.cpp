@@ -23,6 +23,7 @@
    len:     The length (in bytes) of the audio buffer
 */
 static uint32_t audio_len;
+static uint32_t audio_to_play;
 static uint8_t *audio_pos;
 static uint8_t *audio_chunk;
 
@@ -31,14 +32,14 @@ SDL_AudioSpec wav_spec;
 void fill_audio(void *udata, Uint8 *stream, int len)
 {
     /* Only play if we have data left */
-    if ( audio_len == 0 )
+    if ( audio_to_play == 0 )
         return;
 
     /* Mix as much data as possible */
-    len = ( len > audio_len ? audio_len : len );
+    len = ( len > audio_to_play ? audio_to_play : len );
     SDL_MixAudio(stream, audio_pos, len, 4);
     audio_pos += len;
-    audio_len -= len;
+    audio_to_play -= len;
 }
 
 playAudioWavFile::playAudioWavFile() {
@@ -90,12 +91,14 @@ AudioReturn playAudioWavFile::playAudio () {
 
     audio_pos = audio_chunk;
 
+    audio_to_play = audio_len;
+
     /* Let the callback function play the audio chunk */
     SDL_PauseAudio(0);
 
     /* Wait for sound to complete */
-    while (audio_len > 0) {
-        SDL_Delay(10);         /* Sleep 1/10 second */
+    while (audio_to_play > 0) {
+        SDL_Delay(10 + audio_to_play * 0.004);         /* Sleep 1/100 second + about 95% of total play time left*/
     }
 
     return SUCCES;

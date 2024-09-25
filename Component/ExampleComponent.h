@@ -20,7 +20,7 @@ class ExampleComponent : public Component {
 	private:
 		SDL_Rect* rect;
 		int greyScale;
+		float counter{};
 };
-
 
 #endif //BLOCKYENGINE_EXAMPLECOMPONENT_H

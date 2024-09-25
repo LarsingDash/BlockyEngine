@@ -17,7 +17,7 @@ class Component {
 				: gameObject(gameObject), transform(transform) {}
 
 		virtual void OnUpdate(float delta) = 0;
-		virtual ~Component() = default;
+		virtual ~Component() = default; //"gameObject->RemoveComponent<DerivedComponent>()" MUST BE CALLED
 };
 
 

@@ -133,7 +133,7 @@ void Cycle(float delta) {
 	SDL_SetRenderDrawColor(Example::renderer, 125, 25, 25, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(Example::renderer);
 
-	gameObjectManager->OnUpdate(static_cast<float>(delta) / 1000.f);
+	gameObjectManager->OnUpdate(static_cast<float>(delta));
 
 	SDL_RenderPresent(Example::renderer);
 }

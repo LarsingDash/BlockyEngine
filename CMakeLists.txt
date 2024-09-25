@@ -26,6 +26,8 @@ add_executable(${PROJECT_NAME} main.cpp
         Component/ExampleComponent.cpp
         Component/ExampleComponent.h
         renderer.cpp
+        Component/OtherComponent.cpp
+        Component/OtherComponent.h
 )
 
 target_link_libraries(${PROJECT_NAME}

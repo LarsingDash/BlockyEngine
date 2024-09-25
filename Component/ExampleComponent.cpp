@@ -15,9 +15,12 @@ ExampleComponent::ExampleComponent(GameObject* gameObject, Transform* transform,
 void ExampleComponent::OnUpdate(float delta) {
 	SDL_SetRenderDrawColor(Example::renderer, greyScale, greyScale, greyScale, SDL_ALPHA_OPAQUE);
 	SDL_RenderFillRect(Example::renderer, rect);
+	
+	counter += delta;
+	if (counter >= 1) delete this;
 }
 
 ExampleComponent::~ExampleComponent() {
 	delete rect;
+	gameObject->RemoveComponent<ExampleComponent>();
 }
-

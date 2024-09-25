@@ -13,7 +13,9 @@ set(SDL_IMAGE_PATH "${CMAKE_SOURCE_DIR}/libs/SDL2_image")
 include_directories("${SDL_IMAGE_PATH}/include/SDL2")
 
 #Final
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp
+        playAudioWavFile.cpp
+        playAudioWavFile.hpp)
 target_link_libraries(${PROJECT_NAME}
         mingw32
 

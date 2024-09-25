@@ -102,7 +102,7 @@ extern DECLSPEC char *SDLCALL SDL_GetBasePath(void);
  *
  * On Mac OS X, the string might look like:
  *
- * `/Users/bob/Library/Application Support/My Program Name/`
+ * `/Users/bob/Library/BlockyEngine Support/My Program Name/`
  *
  * You should assume the path returned by this function is the only safe place
  * to write files (and that SDL_GetBasePath(), while it might be writable, or

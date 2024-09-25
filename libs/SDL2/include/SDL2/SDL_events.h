@@ -56,7 +56,7 @@ typedef enum
 {
     SDL_FIRSTEVENT     = 0,     /**< Unused (do not remove) */
 
-    /* Application events */
+    /* BlockyEngine events */
     SDL_QUIT           = 0x100, /**< User-requested quit */
 
     /* These application events have special meaning on iOS, see README-ios.md for details */

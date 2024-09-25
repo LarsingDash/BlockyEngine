@@ -155,7 +155,7 @@ extern "C" {
  * 2: The Revenge")
  *
  * Setting this to "" or leaving it unset will have SDL use a reasonable
- * default: probably the application's name or "SDL Application" if SDL
+ * default: probably the application's name or "SDL BlockyEngine" if SDL
  * doesn't have any better information.
  *
  * Note that, for audio streams, this can be overridden with
@@ -220,7 +220,7 @@ extern "C" {
  *
  * Setting this to "" or leaving it unset will have SDL use a reasonable
  * default: this will be the name set with SDL_HINT_APP_NAME, if that hint is
- * set. Otherwise, it'll probably the application's name or "SDL Application"
+ * set. Otherwise, it'll probably the application's name or "SDL BlockyEngine"
  * if SDL doesn't have any better information.
  *
  * On targets where this is not supported, this hint does nothing.

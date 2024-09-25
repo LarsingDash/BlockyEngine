@@ -77,7 +77,7 @@ typedef struct SDL_Surface
     int pitch;                  /**< Read-only */
     void *pixels;               /**< Read-write */
 
-    /** Application data associated with the surface */
+    /** BlockyEngine data associated with the surface */
     void *userdata;             /**< Read-write */
 
     /** information needed for surfaces requiring locks */

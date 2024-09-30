@@ -5,14 +5,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/libs)
 
 #SDL
-set(SDL2_PATH "${CMAKE_SOURCE_DIR}/libs/SDL2")
+set(SDL2_PATH "${CMAKE_MODULE_PATH}/SDL2")
 include_directories("${SDL2_PATH}/include/SDL2")
 
 #STB_Image
-include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
+include_directories("${CMAKE_MODULE_PATH}/stb_image")
 
 #GLM
-include_directories("${CMAKE_SOURCE_DIR}/libs/glm")
+include_directories("${CMAKE_MODULE_PATH}/glm")
 
 #Final
 add_executable(${PROJECT_NAME} main.cpp

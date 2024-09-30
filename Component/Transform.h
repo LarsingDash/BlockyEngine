@@ -10,31 +10,27 @@ class GameObject;
 
 #include <vector>
 #include <algorithm>
+#include <memory>
 #include "vec2.hpp"
 
 class Transform {
 	public:
-		GameObject* gameObject;
-		Transform* parent;
+		GameObject& gameObject;
 
-		Transform(GameObject* gameObject, Transform* parent);
-		~Transform();
+		explicit Transform(GameObject& gameObject);
+		~Transform() = default;
 
-		[[nodiscard]] const std::vector<Transform*>& getChildren() const {
-			return children;
-		}
+		Transform(const Transform& other) = delete;
+		Transform& operator=(const Transform& other) = delete;
 		
-		void setParent(Transform* transform);
+		Transform(Transform&& other) = delete;
+		Transform& operator=(Transform&& other) = delete;		
 
 	private:
-		std::vector<Transform*> children;
-
 		//TODO Getter and Setter for Local and World
 		glm::vec2 position;
 		glm::vec2 rotation;
 		glm::vec2 scale;
-		
-		void removeThisFromTrans(Transform* trans);
 };
 
 

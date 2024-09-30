@@ -6,15 +6,16 @@
 #define BLOCKYENGINE_GAMEOBJECTMANAGER_H
 
 #include <vector>
+#include <memory>
 #include "GameObject.h"
 
 class GameObjectManager {
 	public:
 		GameObjectManager();
 		void OnUpdate(float delta);
-		~GameObjectManager();
+		~GameObjectManager() = default;
 	private:
-		GameObject* sceneRoot;		
+		std::unique_ptr<GameObject> sceneRoot;
 };
 
 

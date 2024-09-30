@@ -6,6 +6,7 @@
 #include <SDL.h>
 
 #include <iostream>
+#include <memory>
 
 namespace Example{
 	SDL_Renderer* renderer;
@@ -22,13 +23,13 @@ SDL_Window* window;
 bool shouldQuit = false;
 
 //Window
-int windowWidth = 600;
-int windowHeight = 800;
+int windowWidth = 800;
+int windowHeight = 600;
 float windowWidthF = (float) windowWidth;
 float windowHeightF = (float) windowHeight;
 
 //Managers
-GameObjectManager* gameObjectManager;
+std::unique_ptr<GameObjectManager> gameObjectManager;
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	std::cout << "Launching" << std::endl;
@@ -126,7 +127,7 @@ void Input(SDL_Scancode key) {
 void Init() {
 	SDL_RenderSetVSync(Example::renderer, true);
 
-	gameObjectManager = new GameObjectManager();
+	gameObjectManager = std::make_unique<GameObjectManager>();
 }
 
 void Cycle(float delta) {
@@ -139,8 +140,6 @@ void Cycle(float delta) {
 }
 
 void Destroy() {
-	delete gameObjectManager;
-
 	SDL_DestroyRenderer(Example::renderer);
 	SDL_DestroyWindow(window);
 

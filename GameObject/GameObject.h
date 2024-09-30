@@ -15,24 +15,40 @@ class ExampleComponent;
 #include <iostream>
 #include <unordered_map>
 #include <typeindex>
+#include <memory>
 #include "../Component/Transform.h"
 
 class GameObject {
 	public:
 		const std::string tag;
-		Transform* transform;
+		GameObject* parent;
+		
+		std::unique_ptr<Transform> transform;
 
-		GameObject(std::string t, Transform* parent);
+		//----- RULE OF FIVE
+		GameObject(std::string  t, GameObject* parent);
+		explicit GameObject(const std::string& t) : GameObject(t, nullptr) {};
 		~GameObject();
+		
+		GameObject(const GameObject& other) = delete;
+		GameObject& operator=(const GameObject& other) = delete;
+		GameObject(const GameObject&& other) = delete;
+		GameObject& operator=(const GameObject&& other) = delete;
 
+		//----- CYCLE
 		void OnUpdate(float delta);
 
+		//----- CHILD / PARENT
+		GameObject& AddChild(const std::string& t);
+		void SetParent(GameObject& trans);
+
+		//----- COMPONENTS
 		template<typename T, typename... Args>
 		T* AddComponent(Args&& ... args) {
 			//Perform validity checks
 			if (GetComponent<T>() == nullptr) {
 				//Initialise T, args will be matched with a constructor on compile time (and while CLion is indexing) 
-				T* component = new T(this, transform, std::forward<Args>(args)...);
+				T* component = new T(this, transform.get(), std::forward<Args>(args)...);
 
 				//Push new component on the list of components
 				components.push_back(component);
@@ -72,13 +88,20 @@ class GameObject {
 		}
 
 	private:
+		std::vector<std::unique_ptr<GameObject>> children;
 		std::vector<Component*> components;
+		
+		bool markedForDeletion = false;
 
+		//----- COMPONENTS
 		template<typename T>
 		void ComponentValidityCheck(){
 			//Assert that T inherits Component
 			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
 		}
+
+		//----- CHILD / PARENT
+		void Reparent(GameObject* other);
 };
 
 #endif //BLOCKYENGINE_GAMEOBJECT_H

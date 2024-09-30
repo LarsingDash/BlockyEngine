@@ -18,14 +18,12 @@ GameObject::~GameObject() {
 
 	//Reparent this to null, removing it from its parents children list
 	Reparent(nullptr);
-
+	
+	//Delete all components
+	components.clear();
+	
 	//Delete all child gameObjects
 	children.clear();
-
-	//Delete all components
-	for (auto& component: components) {
-		delete component;
-	}
 }
 
 void GameObject::OnUpdate(float delta) {  // NOLINT(*-no-recursion)

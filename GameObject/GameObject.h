@@ -22,14 +22,15 @@ class GameObject {
 	public:
 		const std::string tag;
 		GameObject* parent;
-		
+
 		std::unique_ptr<Transform> transform;
 
 		//----- RULE OF FIVE
-		GameObject(std::string  t, GameObject* parent);
+		GameObject(std::string t, GameObject* parent);
+
 		explicit GameObject(const std::string& t) : GameObject(t, nullptr) {};
 		~GameObject();
-		
+
 		GameObject(const GameObject& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject(const GameObject&& other) = delete;
@@ -47,14 +48,11 @@ class GameObject {
 		T* AddComponent(Args&& ... args) {
 			//Perform validity checks
 			if (GetComponent<T>() == nullptr) {
-				//Initialise T, args will be matched with a constructor on compile time (and while CLion is indexing) 
-				T* component = new T(this, transform.get(), std::forward<Args>(args)...);
-
-				//Push new component on the list of components
-				components.push_back(component);
-
-				//Return newly created component
-				return component;
+				//Instantiate new component by forwarding the arguments
+				components.push_back(std::make_unique<T>(*this, *transform, std::forward<Args>(args)...));
+				
+				//Return newly added component
+				return static_cast<T*>(components.back().get());
 			} else return nullptr;
 		}
 
@@ -64,9 +62,11 @@ class GameObject {
 			ComponentValidityCheck<T>();
 
 			//Find component to remove
-			auto found = std::remove_if(components.begin(), components.end(), [&](const auto& component) {
-				return dynamic_cast<T*>(component) != nullptr;
-			});
+			auto found = std::remove_if(components.begin(), components.end(),
+										[&](const std::unique_ptr<Component>& component) {
+											//Test if casting to the given type returns null, null meaning it isn't T
+											return dynamic_cast<T*>(component.get()) != nullptr;
+										});
 
 			//Erase component if found was found
 			if (found != components.end()) {
@@ -78,24 +78,26 @@ class GameObject {
 		T* GetComponent() {
 			ComponentValidityCheck<T>();
 
-			//Test for duplicates, only one component of each type may be present
-			auto result = std::find_if(components.begin(), components.end(), [&](const auto& component) {
-				return dynamic_cast<T*>(component) != nullptr;
-			});
-			
+			//Get component matching the given type T. A GameObject may only contain one of each component  
+			auto result = std::find_if(components.begin(), components.end(),
+									   [&](const std::unique_ptr<Component>& component) {
+										   //Test if casting to the given type returns null, null meaning it isn't T
+										   return dynamic_cast<T*>(component.get()) != nullptr;
+									   });
+
 			//Return component if it was found
-			return (result != components.end()) ? dynamic_cast<T*>(*result) : nullptr;
+			return (result != components.end()) ? static_cast<T*>(result->get()) : nullptr;
 		}
 
 	private:
 		std::vector<std::unique_ptr<GameObject>> children;
-		std::vector<Component*> components;
-		
+		std::vector<std::unique_ptr<Component>> components;
+
 		bool markedForDeletion = false;
 
 		//----- COMPONENTS
 		template<typename T>
-		void ComponentValidityCheck(){
+		void ComponentValidityCheck() {
 			//Assert that T inherits Component
 			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
 		}

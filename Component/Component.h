@@ -10,14 +10,14 @@
 
 class Component {
 	public:
-		GameObject* gameObject;
-		Transform* transform;
+		GameObject& gameObject;
+		Transform& transform;
 
-		Component(GameObject* gameObject, Transform* transform)
+		Component(GameObject& gameObject, Transform& transform)
 				: gameObject(gameObject), transform(transform) {}
 
 		virtual void OnUpdate(float delta) = 0;
-		virtual ~Component() = default; //"gameObject->RemoveComponent<DerivedComponent>()" MUST BE CALLED
+		virtual ~Component() = default;
 };
 
 

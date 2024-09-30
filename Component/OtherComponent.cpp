@@ -7,7 +7,7 @@
 #include "SDL_render.h"
 #include "../renderer.cpp"
 
-OtherComponent::OtherComponent(GameObject* gameObject, Transform* transform, int x, int y, int greyScale)
+OtherComponent::OtherComponent(GameObject& gameObject, Transform& transform, int x, int y, int greyScale)
 		: Component(gameObject, transform), rect(new SDL_Rect{x, y, 50, 50}) {
 	this->greyScale = greyScale;
 }
@@ -17,10 +17,10 @@ void OtherComponent::OnUpdate(float delta) {
 	SDL_RenderFillRect(Example::renderer, rect);
 
 	counter += delta;
-	if (counter >= 2) delete this;
+	if (counter >= 2) gameObject.RemoveComponent<OtherComponent>();
 }
 
 OtherComponent::~OtherComponent() {
+	std::cout << "Deleting Other from: " << gameObject.tag << std::endl;
 	delete rect;
-	gameObject->RemoveComponent<OtherComponent>();
 }

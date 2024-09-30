@@ -10,9 +10,9 @@
 
 class OtherComponent : public Component {
 	public:
-		OtherComponent(GameObject* gameObject, Transform* transform, int x, int y, int greyScale);
+		OtherComponent(GameObject& gameObject, Transform& transform, int x, int y, int greyScale);
 
-		OtherComponent(GameObject* gameObject, Transform* transform)
+		OtherComponent(GameObject& gameObject, Transform& transform)
 				: OtherComponent(gameObject, transform, 0, 0, 0) {};
 
 		void OnUpdate(float delta) override;

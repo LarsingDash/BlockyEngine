@@ -5,7 +5,6 @@
 #ifndef BLOCKYENGINE_TRANSFORM_H
 #define BLOCKYENGINE_TRANSFORM_H
 
-//Forward declaration to resolve circular dependence
 class GameObject;
 
 #include <vector>

@@ -6,6 +6,8 @@
 #define BLOCKYENGINE_OTHERCOMPONENT_H
 
 #include "Component.h"
+#include "Transform.h"
+#include "../GameObject/GameObject.h."
 #include "SDL_rect.h"
 
 class OtherComponent : public Component {

@@ -5,8 +5,8 @@
 #ifndef BLOCKYENGINE_COMPONENT_H
 #define BLOCKYENGINE_COMPONENT_H
 
-#include "Transform.h"
-#include "../GameObject/GameObject.h"
+class GameObject;
+class Transform;
 
 class Component {
 	public:

@@ -5,18 +5,15 @@
 #ifndef BLOCKYENGINE_GAMEOBJECT_H
 #define BLOCKYENGINE_GAMEOBJECT_H
 
-//Forward declaration to resolve circular dependence
-class Component;
-
-class ExampleComponent;
-
 #include <string>
 #include <utility>
 #include <iostream>
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
+
 #include "../Component/Transform.h"
+#include "../Component/Component.h"
 
 class GameObject {
 	public:

@@ -6,6 +6,8 @@
 #define BLOCKYENGINE_EXAMPLECOMPONENT_H
 
 #include "Component.h"
+#include "Transform.h"
+#include "../GameObject/GameObject.h."
 #include "SDL_rect.h"
 
 class ExampleComponent : public Component {

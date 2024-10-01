@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "OtherComponent.h"
+#include "OtherComponent.hpp"
 #include "SDL_render.h"
 #include "../renderer.cpp"
 

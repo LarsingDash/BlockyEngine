@@ -2,8 +2,8 @@
 // Created by larsv on 23/09/2024.
 //
 
-#ifndef BLOCKYENGINE_TRANSFORM_H
-#define BLOCKYENGINE_TRANSFORM_H
+#ifndef BLOCKYENGINE_TRANSFORM_HPP
+#define BLOCKYENGINE_TRANSFORM_HPP
 
 class GameObject;
 
@@ -32,4 +32,4 @@ class Transform {
 };
 
 
-#endif //BLOCKYENGINE_TRANSFORM_H
+#endif //BLOCKYENGINE_TRANSFORM_HPP

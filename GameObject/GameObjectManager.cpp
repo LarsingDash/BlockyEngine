@@ -2,9 +2,9 @@
 // Created by larsv on 24/09/2024.
 //
 
-#include "GameObjectManager.h"
-#include "../Component/ExampleComponent.h"
-#include "../Component/OtherComponent.h"
+#include "GameObjectManager.hpp"
+#include "../Component/ExampleComponent.hpp"
+#include "../Component/OtherComponent.hpp"
 #include <iostream>
 
 GameObjectManager::GameObjectManager() : sceneRoot(std::make_unique<GameObject>("root")) {	

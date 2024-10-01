@@ -15,19 +15,14 @@ include_directories("${CMAKE_MODULE_PATH}/stb_image")
 include_directories("${CMAKE_MODULE_PATH}/glm")
 
 #Final
-add_executable(${PROJECT_NAME} main.cpp
-        GameObject/GameObject.cpp
-        GameObject/GameObject.h
-        Component/Transform.cpp
-        Component/Transform.h
-        Component/Component.h
-        GameObject/GameObjectManager.cpp
-        GameObject/GameObjectManager.h
-        Component/ExampleComponent.cpp
-        Component/ExampleComponent.h
+add_executable(${PROJECT_NAME}
+        main.cpp
         renderer.cpp
+        GameObject/GameObjectManager.cpp
+        GameObject/GameObject.cpp
+        Component/Transform.cpp
+        Component/ExampleComponent.cpp
         Component/OtherComponent.cpp
-        Component/OtherComponent.h
 )
 
 target_link_libraries(${PROJECT_NAME}

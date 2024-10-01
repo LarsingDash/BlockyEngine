@@ -2,8 +2,8 @@
 // Created by larsv on 23/09/2024.
 //
 
-#ifndef BLOCKYENGINE_GAMEOBJECT_H
-#define BLOCKYENGINE_GAMEOBJECT_H
+#ifndef BLOCKYENGINE_GAMEOBJECT_HPP
+#define BLOCKYENGINE_GAMEOBJECT_HPP
 
 #include <string>
 #include <utility>
@@ -12,8 +12,8 @@
 #include <typeindex>
 #include <memory>
 
-#include "../Component/Transform.h"
-#include "../Component/Component.h"
+#include "../Component/Transform.hpp"
+#include "../Component/Component.hpp"
 
 class GameObject {
 	public:
@@ -100,4 +100,4 @@ class GameObject {
 		void Reparent(GameObject* other);
 };
 
-#endif //BLOCKYENGINE_GAMEOBJECT_H
+#endif //BLOCKYENGINE_GAMEOBJECT_HPP

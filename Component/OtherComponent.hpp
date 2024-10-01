@@ -2,12 +2,12 @@
 // Created by larsv on 25/09/2024.
 //
 
-#ifndef BLOCKYENGINE_OTHERCOMPONENT_H
-#define BLOCKYENGINE_OTHERCOMPONENT_H
+#ifndef BLOCKYENGINE_OTHERCOMPONENT_HPP
+#define BLOCKYENGINE_OTHERCOMPONENT_HPP
 
-#include "Component.h"
-#include "Transform.h"
-#include "../GameObject/GameObject.h."
+#include "Component.hpp"
+#include "Transform.hpp"
+#include "../GameObject/GameObject.hpp"
 #include "SDL_rect.h"
 
 class OtherComponent : public Component {
@@ -26,4 +26,4 @@ class OtherComponent : public Component {
 };
 
 
-#endif //BLOCKYENGINE_OTHERCOMPONENT_H
+#endif //BLOCKYENGINE_OTHERCOMPONENT_HPP

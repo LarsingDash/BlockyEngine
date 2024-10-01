@@ -2,7 +2,7 @@
 
 #include "stb_image.h"
 #include "renderer.cpp"
-#include "GameObject/GameObjectManager.h"
+#include "GameObject/GameObjectManager.hpp"
 #include <SDL.h>
 
 #include <iostream>

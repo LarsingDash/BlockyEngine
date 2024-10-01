@@ -47,13 +47,18 @@ class GameObject {
 		template<typename T, typename... Args>
 		T* AddComponent(Args&& ... args) {
 			//Perform validity checks
-			if (GetComponent<T>() == nullptr) {
-				//Instantiate new component by forwarding the arguments
-				components.push_back(std::make_unique<T>(*this, *transform, std::forward<Args>(args)...));
-				
-				//Return newly added component
-				return static_cast<T*>(components.back().get());
-			} else return nullptr;
+			ComponentValidityCheck<T>();
+
+			//Find position of T
+			const auto type = std::type_index(typeid(T));
+			const auto it = components.find(type);
+			
+			//A GameObject may only have one of each type of Component, return if already exists 
+			if (it != components.end()) return nullptr;
+
+			//Instantiate new Component of T by perfect forwarding the given arguments, return newly created Component
+			components[type] = std::make_unique<T>(*this, *transform, std::forward<Args>(args)...);
+			return static_cast<T*>(components[type].get());
 		}
 
 		template<typename T>
@@ -61,43 +66,34 @@ class GameObject {
 			//Perform validity checks
 			ComponentValidityCheck<T>();
 
-			//Find component to remove
-			auto found = std::remove_if(components.begin(), components.end(),
-										[&](const std::unique_ptr<Component>& component) {
-											//Test if casting to the given type returns null, null meaning it isn't T
-											return dynamic_cast<T*>(component.get()) != nullptr;
-										});
-
-			//Erase component if found was found
-			if (found != components.end()) {
-				components.erase(found, components.end());
-			}
+			//Find position of T
+			const auto it = components.find(std::type_index(typeid(T)));
+			
+			//Remove component if found
+			if (it != components.end()) components.erase(it);
 		}
 
 		template<typename T>
 		T* GetComponent() {
-			ComponentValidityCheck<T>();
+			//Perform Validity Checks
+			ComponentValidityCheck<T>(components.begin());
 
-			//Get component matching the given type T. A GameObject may only contain one of each component  
-			auto result = std::find_if(components.begin(), components.end(),
-									   [&](const std::unique_ptr<Component>& component) {
-										   //Test if casting to the given type returns null, null meaning it isn't T
-										   return dynamic_cast<T*>(component.get()) != nullptr;
-									   });
-
-			//Return component if it was found
-			return (result != components.end()) ? static_cast<T*>(result->get()) : nullptr;
+			//Find position of T
+			const auto it = components.find(std::type_index(typeid(T)));
+			
+			//Return component cast to T if found
+			return (it != components.end()) ? static_cast<T*>(it->second.get()) : nullptr;
 		}
 
 	private:
 		std::vector<std::unique_ptr<GameObject>> children;
-		std::vector<std::unique_ptr<Component>> components;
+		std::unordered_map<std::type_index, std::unique_ptr<Component>> components;
 
 		bool markedForDeletion = false;
 
 		//----- COMPONENTS
 		template<typename T>
-		void ComponentValidityCheck() {
+		inline void ComponentValidityCheck() {
 			//Assert that T inherits Component
 			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
 		}

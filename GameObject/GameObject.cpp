@@ -29,7 +29,7 @@ GameObject::~GameObject() {
 void GameObject::OnUpdate(float delta) {  // NOLINT(*-no-recursion)
 	//Cascade update to components
 	for (auto& component: components) {
-		component->OnUpdate(delta);
+		component.second->OnUpdate(delta);
 	}
 
 	//Cascade update to child objects

@@ -5,16 +5,18 @@
 #include "GameObjectManager.hpp"
 #include "../Component/ExampleComponent.hpp"
 #include "../Component/OtherComponent.hpp"
+#include "../Component/TransExampleComponent.hpp"
+#include "../Component/TransOtherComponent.hpp"
 #include <iostream>
 
 GameObjectManager::GameObjectManager() : sceneRoot(std::make_unique<GameObject>("root")) {	
 	//HIERARCHY TEST
-	GameObject& child1 = sceneRoot->AddChild("Child1");
-	GameObject& child2 = sceneRoot->AddChild("Child2");
-	GameObject& child3 = child2.AddChild("Child3");
-	child2.SetParent(child1);
-	child3.SetParent(child1);
-	sceneRoot->RemoveChild(child1);
+//	GameObject& child1 = sceneRoot->AddChild("Child1");
+//	GameObject& child2 = sceneRoot->AddChild("Child2");
+//	GameObject& child3 = child2.AddChild("Child3");
+//	child2.SetParent(child1);
+//	child3.SetParent(child1);
+//	sceneRoot->RemoveChild(child1);
 	
 	//COMPONENT TEST
 //	GameObject& child1 = sceneRoot->AddChild("Child1");
@@ -24,6 +26,17 @@ GameObjectManager::GameObjectManager() : sceneRoot(std::make_unique<GameObject>(
 //	std::cout << "Remove example" << std::endl;
 //	child1.RemoveComponent<ExampleComponent>();
 //	std::cout << "Add second of Example, 0: "<< (child1.AddComponent<ExampleComponent>(10, 160, 155) == nullptr) << std::endl;
+
+	//TRANSFORM TEST
+	GameObject& child1 = sceneRoot->AddChild("Child1");
+	child1.AddComponent<TransExampleComponent>();
+	child1.AddComponent<TransOtherComponent>();
+	child1.transform->SetLocalScale(50, 50);
+
+	GameObject& child2 = child1.AddChild("Child2");
+	child2.AddComponent<TransExampleComponent>();
+	child2.transform->SetLocalPosition(0, 1.5f);
+	child2.transform->SetLocalScale(1, 1);
 }
 
 void GameObjectManager::OnUpdate(float delta) {

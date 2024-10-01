@@ -23,6 +23,8 @@ add_executable(${PROJECT_NAME}
         Component/Transform.cpp
         Component/ExampleComponent.cpp
         Component/OtherComponent.cpp
+        Component/TransExampleComponent.cpp
+        Component/TransOtherComponent.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

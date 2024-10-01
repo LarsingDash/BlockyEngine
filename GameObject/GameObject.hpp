@@ -38,8 +38,10 @@ class GameObject {
 
 		//----- CHILD / PARENT
 		GameObject& AddChild(const std::string& t);
-		bool RemoveChild( GameObject& child);
+		bool RemoveChild(GameObject& child);
 		void SetParent(GameObject& trans);
+
+		inline std::vector<std::unique_ptr<GameObject>>& GetChildren() { return children; };
 
 		//----- COMPONENTS
 		template<typename T, typename... Args>
@@ -50,7 +52,7 @@ class GameObject {
 			//Find position of T
 			const auto type = std::type_index(typeid(T));
 			const auto it = components.find(type);
-			
+
 			//A GameObject may only have one of each type of Component, return if already exists 
 			if (it != components.end()) return nullptr;
 
@@ -66,7 +68,7 @@ class GameObject {
 
 			//Find position of T
 			const auto it = components.find(std::type_index(typeid(T)));
-			
+
 			//Remove component if found
 			if (it != components.end()) components.erase(it);
 		}
@@ -78,7 +80,7 @@ class GameObject {
 
 			//Find position of T
 			const auto it = components.find(std::type_index(typeid(T)));
-			
+
 			//Return component cast to T if found
 			return (it != components.end()) ? static_cast<T*>(it->second.get()) : nullptr;
 		}

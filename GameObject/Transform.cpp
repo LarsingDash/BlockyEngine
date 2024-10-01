@@ -3,7 +3,7 @@
 //
 
 #include "Transform.hpp"
-#include "../GameObject/GameObject.hpp"
+#include "GameObject.hpp"
 #include "gtc/matrix_transform.hpp"
 
 Transform::Transform(GameObject& gameObject) :

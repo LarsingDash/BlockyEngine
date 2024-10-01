@@ -12,7 +12,7 @@
 #include <typeindex>
 #include <memory>
 
-#include "../Component/Transform.hpp"
+#include "Transform.hpp"
 #include "../Component/Component.hpp"
 
 class GameObject {

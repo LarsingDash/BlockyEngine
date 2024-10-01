@@ -6,7 +6,7 @@
 #define BLOCKYENGINE_OTHERCOMPONENT_HPP
 
 #include "Component.hpp"
-#include "Transform.hpp"
+#include "../GameObject/Transform.hpp"
 #include "../GameObject/GameObject.hpp"
 #include "SDL_rect.h"
 

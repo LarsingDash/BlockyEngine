@@ -20,7 +20,7 @@ add_executable(${PROJECT_NAME}
         renderer.cpp
         GameObject/GameObjectManager.cpp
         GameObject/GameObject.cpp
-        Component/Transform.cpp
+        GameObject/Transform.cpp
         Component/ExampleComponent.cpp
         Component/OtherComponent.cpp
         Component/TransExampleComponent.cpp

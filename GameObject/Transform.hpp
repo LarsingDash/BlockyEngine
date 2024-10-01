@@ -39,12 +39,14 @@ class Transform {
 		void SetLocalScale(const glm::vec2&& scale);
 
 		//WORLD
-		const glm::vec2 GetWorldPosition();
-		const float GetWorldRotation();
-		const glm::vec2 GetWorldScale();
+		glm::vec2 GetWorldPosition();
+		float GetWorldRotation();
+		glm::vec2 GetWorldScale();
 
 	private:
-		//TODO this position and scale is dependent on the resolution of the window, convert to consistent units
+		//TODO position and scale is dependent on the resolution of the window, convert to consistent units
+		//TODO position is from topLeft to bottomRight, this isn't intuitive for scripting
+		//TODO increasing rotation goes counterclockwise this also isn't intuitive for scripting
 		glm::vec2 position;
 		float rotation;
 		glm::vec2 scale;

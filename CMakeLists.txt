@@ -19,7 +19,9 @@ include_directories("${SDL_MIXER_PATH}/include/SDL2")
 #Final
 add_executable(${PROJECT_NAME} main.cpp
         playAudioWavFile.cpp
-        playAudioWavFile.hpp)
+        playAudioWavFile.hpp
+        playAudioFile.cpp
+        playAudioFile.hpp)
 target_link_libraries(${PROJECT_NAME}
         mingw32
 

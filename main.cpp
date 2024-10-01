@@ -1,52 +1,40 @@
-﻿#include <iostream>
-#include <cmath>
-#include<windows.h>
+﻿#include <cstdio>
 
-#include "playAudioWavFile.hpp"
+#include "SDL.h"
+#include "SDL_image.h"
+#include "SDL_mixer.h"
 
-/*
- * requirments
- * async non blocking audio playback
- *   send and forget
- * multiple audio sorces simultanias play back
- * ( same instance audio, so no replay, but new instance every time audio chould be played, so no playback is stoped and restarted)
- *
- *
-*/
+static const char *MY_COOL_MP3 = "D:/GitHub/BlockyEngine/countDown.mp3";
 
-int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
-{
-    playAudioWavFile countDown;
-    playAudioWavFile countDown2;
-    //playAudioWavFile applause;
+int main(int argc, char **argv) {
+    int result = 0;
+    int flags = MIX_INIT_MP3;
 
-    AudioReturn audioReturn;
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        printf("Failed to init SDL\n");
+        exit(1);
+    }
 
-    audioReturn = countDown.loadAudioWavFile("D:/GitHub/BlockyEngine/countDown.wav");
-    if (audioReturn != SUCCES){ return audioReturn;}
-    //audioReturn = countDown2.loadAudioWavFile("D:/GitHub/BlockyEngine/countDown.wav");
-    //if (audioReturn != SUCCES){ return audioReturn;}
-    //audioReturn = applause.loadAudioWavFile("D:/GitHub/BlockyEngine/applause_y.wav");
-    //if (audioReturn != SUCCES){ return audioReturn;}
+    if (flags != (result = Mix_Init(flags))) {
+        printf("Could not initialize mixer (result: %d).\n", result);
+        printf("Mix_Init: %s\n", Mix_GetError());
+        exit(1);
+    }
 
-    countDown.playAudio();
-    //applause.playAudio();
+    Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
+    Mix_Music *music = Mix_LoadMUS(MY_COOL_MP3);
+    Mix_Music *music2 = Mix_LoadMUS(MY_COOL_MP3);
+    Mix_PlayMusic(music, 1);
 
-    printf("playing audio 2x\n");
+    SDL_Delay(2500);
 
-    int milliseconds = 3000;
-    Sleep(milliseconds);
+    Mix_PlayMusic(music2, 1);
 
-    countDown.rewindAudio();
-    //countDown2.rewindAudio();
-    //applause.rewindAudio();
+    while (!SDL_QuitRequested()) {
+        SDL_Delay(250);
+    }
 
-    countDown.playAudio();
-    //countDown2.playAudio();
-    //applause.playAudio();
-
-    milliseconds = 2000;
-    Sleep(milliseconds);
-
+    Mix_FreeMusic(music);
+    SDL_Quit();
     return 0;
 }

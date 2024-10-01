@@ -22,19 +22,26 @@ int main(int argc, char **argv) {
     }
 
     Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
-    Mix_Music *music = Mix_LoadMUS(MY_COOL_MP3);
-    Mix_Music *music2 = Mix_LoadMUS(MY_COOL_MP3);
-    Mix_PlayMusic(music, 1);
 
-    SDL_Delay(2500);
+    Mix_Chunk *musicChunk = Mix_LoadWAV(MY_COOL_MP3);
 
-    Mix_PlayMusic(music2, 1);
+    Mix_PlayChannel(-1, musicChunk, 0);
+    SDL_Delay(1200);
+    Mix_PlayChannel(-1, musicChunk, 0);
+    SDL_Delay(1200);
+    Mix_PlayChannel(-1, musicChunk, 0);
+    SDL_Delay(1200);
+    Mix_PlayChannel(-1, musicChunk, 0);
+    SDL_Delay(1200);
+    Mix_PlayChannel(-1, musicChunk, 0);
+    SDL_Delay(1200);
+    Mix_PlayChannel(-1, musicChunk, 0);
+    SDL_Delay(1200);
+    Mix_PlayChannel(-1, musicChunk, 0);
 
-    while (!SDL_QuitRequested()) {
-        SDL_Delay(250);
-    }
+    SDL_Delay(5000);
 
-    Mix_FreeMusic(music);
+    Mix_FreeChunk(musicChunk);
     SDL_Quit();
     return 0;
 }

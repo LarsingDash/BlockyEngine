@@ -17,12 +17,15 @@
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
     playAudioWavFile countDown;
+    playAudioWavFile countDown2;
     //playAudioWavFile applause;
 
     AudioReturn audioReturn;
 
     audioReturn = countDown.loadAudioWavFile("D:/GitHub/BlockyEngine/countDown.wav");
     if (audioReturn != SUCCES){ return audioReturn;}
+    //audioReturn = countDown2.loadAudioWavFile("D:/GitHub/BlockyEngine/countDown.wav");
+    //if (audioReturn != SUCCES){ return audioReturn;}
     //audioReturn = applause.loadAudioWavFile("D:/GitHub/BlockyEngine/applause_y.wav");
     //if (audioReturn != SUCCES){ return audioReturn;}
 
@@ -35,9 +38,11 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     Sleep(milliseconds);
 
     countDown.rewindAudio();
+    //countDown2.rewindAudio();
     //applause.rewindAudio();
 
     countDown.playAudio();
+    //countDown2.playAudio();
     //applause.playAudio();
 
     milliseconds = 2000;

@@ -55,7 +55,7 @@ playAudioWavFile::~playAudioWavFile() {
 AudioReturn playAudioWavFile::loadAudioWavFile(const char * fileType) {
     // Initialize SDL
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
-        //std::cerr << "Couldn't initialize SDL: " << SDL_GetError() << std::endl;
+        std::cerr << "Couldn't initialize SDL: " << SDL_GetError() << std::endl;
         return NOT_INITALIZED;
     }
 
@@ -66,7 +66,7 @@ AudioReturn playAudioWavFile::loadAudioWavFile(const char * fileType) {
 
     // Example loading audio data (replace with actual loading code)
     if (SDL_LoadWAV(fileType, &wav_spec, &audio_chunk, &audio_len) == nullptr) {
-        //std::cerr << "Couldn't load audio file: " << SDL_GetError() << std::endl;
+        std::cerr << "Couldn't load audio file: " << SDL_GetError() << std::endl;
         SDL_CloseAudio();
         SDL_Quit();
         return NO_FILE_LOADED;
@@ -79,7 +79,7 @@ AudioReturn playAudioWavFile::loadAudioWavFile(const char * fileType) {
 
     /* Open the audio device, forcing the desired format */
     if (SDL_OpenAudio(&wav_spec, nullptr) < 0) {
-        //std::cerr << "Couldn't open audio: " << SDL_GetError() << std::endl;
+        std::cerr << "Couldn't open audio: " << SDL_GetError() << std::endl;
         SDL_Quit();
         return NO_AUDIO_DEVIC;
     }

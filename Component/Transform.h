@@ -24,12 +24,11 @@ class Transform {
 		Transform& operator=(const Transform& other) = delete;
 		
 		Transform(Transform&& other) = delete;
-		Transform& operator=(Transform&& other) = delete;		
-
+		Transform& operator=(Transform&& other) = delete;
 	private:
 		//TODO Getter and Setter for Local and World
 		glm::vec2 position;
-		glm::vec2 rotation;
+		float rotation;
 		glm::vec2 scale;
 };
 

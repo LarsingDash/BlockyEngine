@@ -18,10 +18,10 @@ GameObject::~GameObject() {
 
 	//Reparent this to null, removing it from its parents children list
 	Reparent(nullptr);
-	
+
 	//Delete all components
 	components.clear();
-	
+
 	//Delete all child gameObjects
 	children.clear();
 }
@@ -44,6 +44,18 @@ GameObject& GameObject::AddChild(const std::string& t) {
 
 	//Return newly created child
 	return *children.back();
+}
+
+bool GameObject::RemoveChild(GameObject& child) {
+	auto it = std::find_if(children.begin(), children.end(),
+						   [&](std::unique_ptr<GameObject>& cur) {
+							   return (&child == cur.get());
+						   });
+
+	if (it == children.end()) return false;
+
+	children.erase(it);
+	return true;
 }
 
 void GameObject::SetParent(GameObject& target) {
@@ -79,8 +91,13 @@ void GameObject::Reparent(GameObject* other) {
 
 	//If this exists in parent children list:
 	if (selfPosition != end) {
-		parent = other;	//Reparent
-		if (other) other->children.push_back(std::move(*selfPosition));	//Move itself to new parents children list (unless reparenting to null)
-		parentChildren.erase(selfPosition);	//Erase from previous parents children list
+		//Reparent
+		parent = other;
+		
+		//Move itself to new parents children list (unless reparenting to null)
+		if (other) other->children.push_back(std::move(*selfPosition));
+
+		//Erase from previous parents children list
+		parentChildren.erase(selfPosition);
 	}
 }

@@ -41,6 +41,7 @@ class GameObject {
 
 		//----- CHILD / PARENT
 		GameObject& AddChild(const std::string& t);
+		bool RemoveChild( GameObject& child);
 		void SetParent(GameObject& trans);
 
 		//----- COMPONENTS

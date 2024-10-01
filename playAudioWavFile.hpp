@@ -20,7 +20,8 @@ public:
     virtual ~playAudioWavFile();
 
     AudioReturn loadAudioWavFile(const char * fileName);
-    AudioReturn playAudio();
+    bool playAudio();
+    void rewindAudio ();
 
 
 private:

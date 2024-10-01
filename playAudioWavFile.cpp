@@ -84,22 +84,32 @@ AudioReturn playAudioWavFile::loadAudioWavFile(const char * fileType) {
         return NO_AUDIO_DEVIC;
     }
 
-    return SUCCES;
-}
-
-AudioReturn playAudioWavFile::playAudio () {
-
     audio_pos = audio_chunk;
 
     audio_to_play = audio_len;
 
-    /* Let the callback function play the audio chunk */
-    SDL_PauseAudio(0);
+    return SUCCES;
+}
+
+bool playAudioWavFile::playAudio () {
+
+    bool stilPlayingAudio = true;
 
     /* Wait for sound to complete */
-    while (audio_to_play > 0) {
-        SDL_Delay(10 + audio_to_play * 0.004);         /* Sleep 1/100 second + about 95% of total play time left*/
+    if (audio_to_play > 0) {
+
+        /* Let the callback function play the audio chunk */
+        SDL_PauseAudio(0);
+
+        return stilPlayingAudio;
     }
 
-    return SUCCES;
+    return false;
+}
+
+void playAudioWavFile::rewindAudio () {
+
+    audio_pos = audio_chunk;
+
+    audio_to_play = audio_len;
 }

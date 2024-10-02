@@ -19,4 +19,8 @@ public:
         SDL_SetRenderDrawColor(renderer, clearColor.r, clearColor.g, clearColor.b, clearColor.a);
         SDL_RenderClear(renderer);
     }
+
+    SDL_Renderer* getSDLRenderer() override {
+        return renderer;
+    }
 };

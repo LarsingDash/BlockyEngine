@@ -1,5 +1,6 @@
 #include "BlockyEngine.h"
 #include "Renderer/RendererFactory.h"
+#include "Renderable/Texture.h"
 
 #include <iostream>
 
@@ -17,6 +18,10 @@ BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
 
     renderManager.addRenderable(new Rectangle(100, 100, 200, 150, redColor));
     renderManager.addRenderable(new Circle(150, 150, 100, greenColor));
+
+    SDL_Rect textureRect = {250, 250, 80, 80};
+    Texture* textureRenderable = new Texture("E:\\C++\\Blocky Engine Minor\\BlockyEngine\\assets\\ghost.png", renderer, textureRect);
+    renderManager.addRenderable(textureRenderable);
 }
 
 BlockyEngine::~BlockyEngine() {
@@ -57,7 +62,9 @@ void BlockyEngine::run() {
         frameCount++;
         fps += delta;
         if (fps >= fpsInterval) {
-            std::cout << "FPS: " << frameCount << std::endl;
+            std::cout << "FPS: " << frameCount
+                      << " Renderable count: " << renderManager.getRenderableCount()
+                      << std::endl;
             fps = 0;
             frameCount = 0;
         }

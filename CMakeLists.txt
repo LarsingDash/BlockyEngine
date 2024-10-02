@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.27)
 project(BlockyEngine)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -21,6 +21,7 @@ add_executable(${PROJECT_NAME} main.cpp
         Engine/InputModule.h
         Engine/BlockyEngine.cpp
         Engine/BlockyEngine.h
+        Engine/Renderer.h
 
 )
 target_link_libraries(${PROJECT_NAME}

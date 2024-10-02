@@ -8,6 +8,8 @@ BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
     renderer = RendererFactory::createRenderer(windowModule->getWindow(), useHardware);
     inputModule = new InputModule();
 
+//    SDL_Color clearColor = {0, 0, 255, 255};
+//    renderer->setClearColor(clearColor);
     SDL_Color redColor = {255, 0, 0, 255};
     SDL_Color greenColor = {0, 255, 0, 255};
 

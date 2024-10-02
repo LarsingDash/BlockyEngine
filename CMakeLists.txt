@@ -22,6 +22,7 @@ add_executable(${PROJECT_NAME}
         Engine/Renderable/Rectangle.cpp
         Engine/Renderable/Circle.cpp
         Engine/Renderable/RenderManager.cpp
+        Engine/Renderer/BaseRenderer.h
 )
 
 target_link_libraries(${PROJECT_NAME}

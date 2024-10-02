@@ -12,21 +12,18 @@ include_directories("${SDL2_PATH}/include/SDL2")
 include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
 
 #Final
-add_executable(${PROJECT_NAME} main.cpp
+add_executable(${PROJECT_NAME}
+        main.cpp
         Engine/WindowModule.cpp
-        Engine/WindowModule.h
         Engine/InputModule.cpp
-        Engine/InputModule.h
         Engine/BlockyEngine.cpp
-        Engine/BlockyEngine.h
-        Engine/Rendering/IRenderer.h
-        Engine/Rendering/SoftwareRenderer.cpp
-        Engine/Rendering/SoftwareRenderer.h
-        Engine/Rendering/HardwareRenderer.cpp
-        Engine/Rendering/HardwareRenderer.h
-        Engine/Rendering/RendererFactory.h
-
+        Engine/Renderer/SoftwareRenderer.cpp
+        Engine/Renderer/HardwareRenderer.cpp
+        Engine/Renderable/Rectangle.cpp
+        Engine/Renderable/Circle.cpp
+        Engine/Renderable/RenderManager.cpp
 )
+
 target_link_libraries(${PROJECT_NAME}
         mingw32
 

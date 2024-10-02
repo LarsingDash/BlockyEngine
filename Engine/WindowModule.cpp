@@ -15,7 +15,7 @@ void WindowModule::init() {
         return;
     }
 
-    window = SDL_CreateWindow("SDLTest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("SDLTest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1800, 900, SDL_WINDOW_SHOWN);
     if (!window) {
         std::cerr << "Couldn't create window: " << SDL_GetError() << std::endl;
         SDL_Quit();

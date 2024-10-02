@@ -1,11 +1,20 @@
 #include "BlockyEngine.h"
-#include "Rendering/RendererFactory.h"
+#include "Renderer/RendererFactory.h"
+
 #include <iostream>
 
 BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
     windowModule = new WindowModule();
     renderer = RendererFactory::createRenderer(windowModule->getWindow(), useHardware);
     inputModule = new InputModule();
+
+    SDL_Color redColor = {255, 0, 0, 255};
+    SDL_Color greenColor = {0, 255, 0, 255};
+
+
+
+    renderManager.addRenderable(new Rectangle(100, 100, 200, 150, redColor));
+    renderManager.addRenderable(new Circle(150, 150, 100, greenColor));
 }
 
 BlockyEngine::~BlockyEngine() {
@@ -38,6 +47,8 @@ void BlockyEngine::run() {
         processEvents();
 
         renderer->clear();
+
+        renderManager.renderAll(renderer);
 
         renderer->present();
 

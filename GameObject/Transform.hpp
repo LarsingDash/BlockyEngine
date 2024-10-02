@@ -53,6 +53,7 @@ class Transform {
 
 		glm::mat3 worldMatrix;
 
+		//TODO use flagging to refresh WorldMatrix once per frame (at the end), instead of after every Setter
 		void RefreshWorldMatrix();
 		glm::mat3 RecalculateWoldMatrix();
 };

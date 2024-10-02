@@ -2,7 +2,7 @@
 
 #include "WindowModule.h"
 #include "InputModule.h"
-#include "IRenderer.h"
+#include "Rendering/IRenderer.h"
 
 class BlockyEngine {
 public:

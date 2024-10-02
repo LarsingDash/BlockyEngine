@@ -1,5 +1,5 @@
 #include "BlockyEngine.h"
-#include "RendererFactory.h"
+#include "Rendering/RendererFactory.h"
 #include <iostream>
 
 BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
@@ -9,7 +9,7 @@ BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
 }
 
 BlockyEngine::~BlockyEngine() {
-    delete renderer;  // Clean up the renderer
+    delete renderer;
     delete windowModule;
     delete inputModule;
 }

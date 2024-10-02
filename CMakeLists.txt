@@ -19,12 +19,12 @@ add_executable(${PROJECT_NAME} main.cpp
         Engine/InputModule.h
         Engine/BlockyEngine.cpp
         Engine/BlockyEngine.h
-        Engine/IRenderer.h
-        Engine/SoftwareRenderer.cpp
-        Engine/SoftwareRenderer.h
-        Engine/HardwareRenderer.cpp
-        Engine/HardwareRenderer.h
-        Engine/RendererFactory.h
+        Engine/Rendering/IRenderer.h
+        Engine/Rendering/SoftwareRenderer.cpp
+        Engine/Rendering/SoftwareRenderer.h
+        Engine/Rendering/HardwareRenderer.cpp
+        Engine/Rendering/HardwareRenderer.h
+        Engine/Rendering/RendererFactory.h
 
 )
 target_link_libraries(${PROJECT_NAME}

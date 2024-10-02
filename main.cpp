@@ -2,8 +2,8 @@
 #include "PlayAudioFile.hpp"
 #include "windows.h"
 
-static const char *COUNT_DOWN = "D:/GitHub/BlockyEngine/countDown.mp3";
-static const char *APPLAUSE = "D:/GitHub/BlockyEngine/applause_y.wav";
+static const char *COUNT_DOWN = "../AudioFiles/countDown.mp3";
+static const char *APPLAUSE = "../AudioFiles/applause_y.wav";
 
 int main(int argc, char **argv) {
     PlayAudioFile audio1;

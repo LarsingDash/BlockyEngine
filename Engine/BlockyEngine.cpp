@@ -1,15 +1,16 @@
 #include "BlockyEngine.h"
+#include "RendererFactory.h"
 #include <iostream>
 
-BlockyEngine::BlockyEngine() : shouldQuit(false) {
+BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
     windowModule = new WindowModule();
-    renderingModule = new RenderingModule(windowModule->getWindow());
+    renderer = RendererFactory::createRenderer(windowModule->getWindow(), useHardware);
     inputModule = new InputModule();
 }
 
 BlockyEngine::~BlockyEngine() {
+    delete renderer;  // Clean up the renderer
     delete windowModule;
-    delete renderingModule;
     delete inputModule;
 }
 
@@ -35,8 +36,10 @@ void BlockyEngine::run() {
         prevTicks = curTicks;
 
         processEvents();
-        renderingModule->update(static_cast<float>(delta) / 1000.f);
-        renderingModule->draw();
+
+        renderer->clear();
+
+        renderer->present();
 
         frameCount++;
         fps += delta;

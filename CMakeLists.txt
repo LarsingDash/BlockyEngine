@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+﻿cmake_minimum_required(VERSION 3.27)
 project(BlockyEngine)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -15,13 +15,16 @@ include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
 add_executable(${PROJECT_NAME} main.cpp
         Engine/WindowModule.cpp
         Engine/WindowModule.h
-        Engine/RenderingModule.cpp
-        Engine/RenderingModule.h
         Engine/InputModule.cpp
         Engine/InputModule.h
         Engine/BlockyEngine.cpp
         Engine/BlockyEngine.h
-        Engine/Renderer.h
+        Engine/IRenderer.h
+        Engine/SoftwareRenderer.cpp
+        Engine/SoftwareRenderer.h
+        Engine/HardwareRenderer.cpp
+        Engine/HardwareRenderer.h
+        Engine/RendererFactory.h
 
 )
 target_link_libraries(${PROJECT_NAME}

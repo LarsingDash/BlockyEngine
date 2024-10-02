@@ -1,12 +1,12 @@
 #pragma once
 
 #include "WindowModule.h"
-#include "RenderingModule.h"
 #include "InputModule.h"
+#include "IRenderer.h"
 
 class BlockyEngine {
 public:
-    BlockyEngine();
+    BlockyEngine(bool useHardware);
     ~BlockyEngine();
     void run();
 
@@ -15,6 +15,6 @@ private:
 
     bool shouldQuit;
     WindowModule* windowModule;
-    RenderingModule* renderingModule;
+    IRenderer* renderer;
     InputModule* inputModule;
 };

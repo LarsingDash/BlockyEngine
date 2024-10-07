@@ -48,13 +48,11 @@ class GameObject {
 		T* AddComponent(Args&& ... args) {
 			//Perform validity checks
 			ComponentValidityCheck<T>();
-
-			//Find position of T
+			
 			const auto type = std::type_index(typeid(T));
-			const auto it = components.find(type);
 
 			//A GameObject may only have one of each type of Component, return if already exists 
-			if (it != components.end()) return nullptr;
+			if (components[type] != nullptr) return nullptr;
 
 			//Instantiate new Component of T by perfect forwarding the given arguments, return newly created Component
 			components[type] = std::make_unique<T>(*this, *transform, std::forward<Args>(args)...);

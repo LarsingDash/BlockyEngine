@@ -45,8 +45,7 @@ class Transform {
 
 	private:
 		//TODO position and scale is dependent on the resolution of the window, convert to consistent units
-		//TODO position is from topLeft to bottomRight, this isn't intuitive for scripting
-		//TODO increasing rotation goes counterclockwise this also isn't intuitive for scripting
+		//TODO position is from topLeft to bottomRight, this isn't intuitive for scripting. (0, 0) should be the center
 		glm::vec2 position;
 		float rotation;
 		glm::vec2 scale;
@@ -54,6 +53,8 @@ class Transform {
 		glm::mat3 worldMatrix;
 
 		//TODO use flagging to refresh WorldMatrix once per frame (at the end), instead of after every Setter
+		//	> Go from root downwards to find first transform that has this flag, then cascade downwards
+		//		> Don't refresh parents, use their matrix. Since it's going downwards it's ensured that this parent is up-to-date
 		void RefreshWorldMatrix();
 		glm::mat3 RecalculateWoldMatrix();
 };

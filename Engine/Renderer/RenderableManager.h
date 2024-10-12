@@ -11,6 +11,6 @@ public:
     void addRenderable(Renderable* renderable);
     int getRenderableCount() const;
     void renderAll(IRenderer* renderer);
-
+    void updateAll(float deltaTime);
     ~RenderableManager();
 };

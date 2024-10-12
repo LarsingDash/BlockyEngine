@@ -9,6 +9,6 @@ public:
     SDL_Color color;
 
     Rectangle(int x, int y, int w, int h, SDL_Color col);
-
+    void update(float deltaTime) override {}
     void render(IRenderer* renderer) override;
 };

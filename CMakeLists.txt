@@ -27,8 +27,8 @@ add_executable(${PROJECT_NAME}
         Engine/Renderable/Texture.h
         Engine/Renderable/Animation/Animation.cpp
         Engine/Renderable/Animation/Animation.hpp
-        Engine/Renderable/Animation/Animator.cpp
-        Engine/Renderable/Animation/Animator.hpp
+        Engine/Renderable/Animation/AnimatedSprite.cpp
+        Engine/Renderable/Animation/AnimatedSprite.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}

@@ -6,9 +6,29 @@
 #define BLOCKYENGINE_ANIMATION_HPP
 
 
-class Animation {
+#include <vector>
+#include <string>
+#include "SDL_rect.h"
 
+class Animation {
+public:
+    Animation(const std::string& name, int startFrame, int endFrame, float frameTime, bool looping = true);
+
+    const std::string& getName() const { return name; }
+    int getStartFrame() const { return startFrame; }
+    int getEndFrame() const { return endFrame; }
+    float getFrameTime() const { return frameTime; }
+    bool isLooping() const { return looping; }
+
+private:
+    std::string name;
+    int startFrame;
+    int endFrame;
+    float frameTime;
+    bool looping;
 };
+
+
 
 
 #endif //BLOCKYENGINE_ANIMATION_HPP

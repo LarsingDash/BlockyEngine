@@ -3,9 +3,10 @@
 
 #include "../Renderer/IRenderer.h"
 
-class Renderable{
+class Renderable {
 public:
-    virtual ~Renderable(){};
+    virtual ~Renderable() {}
+    virtual void update(float deltaTime) = 0;
     virtual void render(IRenderer* renderer) = 0;
 };
 

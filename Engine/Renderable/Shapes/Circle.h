@@ -9,6 +9,6 @@ public:
     int radius;
     SDL_Color color;
     Circle(int centerX, int centerY, int r, SDL_Color col);
-
+    void update(float deltaTime) override {}
     void render(IRenderer* renderer) override;
 };

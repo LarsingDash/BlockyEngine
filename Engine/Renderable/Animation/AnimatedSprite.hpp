@@ -15,7 +15,7 @@
 
 class AnimatedSprite : public Renderable {
 public:
-    AnimatedSprite(const char* filePath, IRenderer* renderer, int frameWidth, int frameHeight, int rows, int columns);
+    AnimatedSprite(const char* filePath, IRenderer* renderer, int frameWidth, int frameHeight, int desiredWidth, int desiredHeight);
     ~AnimatedSprite();
 
     void update(float deltaTime) override;
@@ -38,6 +38,7 @@ private:
 
     void updateAnimationFrame();
 };
+
 
 
 #endif //BLOCKYENGINE_ANIMATEDSPRITE_HPP

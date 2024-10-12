@@ -21,10 +21,12 @@ BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
     renderManager.addRenderable(textureRenderable);
 
     AnimatedSprite* animatedSprite = new AnimatedSprite("../assets/spritesheet.png",
-                                                        renderer, 32, 32, 4, 4);
-    Animation walkAnimation("walk", 0, 3, 0.1f, true);
+                                                        renderer, 32, 32, 180, 180);
+    Animation walkAnimation("idle", 0, 12, 0.1f, true);
+    Animation attackAnimation("attack", 52, 60, 0.1f, true);
     animatedSprite->addAnimation(walkAnimation);
-    animatedSprite->playAnimation("walk");
+    animatedSprite->addAnimation(attackAnimation);
+    animatedSprite->playAnimation("attack");
 
     renderManager.addRenderable(animatedSprite);
 }

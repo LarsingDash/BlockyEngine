@@ -6,11 +6,18 @@
 #include "AnimatedSprite.hpp"
 #include "../Texture.h"
 
-AnimatedSprite::AnimatedSprite(const char* filePath, IRenderer* renderer, int frameWidth, int frameHeight, int rows, int columns)
-        : currentFrame(0), elapsedTime(0.0f), isPlaying(false) {
+AnimatedSprite::AnimatedSprite(const char* filePath, IRenderer* renderer, int frameWidth, int frameHeight, int width, int height)
+        : spritesheet(nullptr), currentFrame(0), elapsedTime(0), isPlaying(false) {
+
     spritesheet = Texture::loadTextureFromFile(filePath, renderer->getSDLRenderer());
 
     if (spritesheet) {
+        int textureWidth, textureHeight;
+        SDL_QueryTexture(spritesheet, nullptr, nullptr, &textureWidth, &textureHeight);
+
+        int rows = textureHeight / frameHeight;
+        int columns = textureWidth / frameWidth;
+
         for (int row = 0; row < rows; ++row) {
             for (int col = 0; col < columns; ++col) {
                 frames.push_back({col * frameWidth, row * frameHeight, frameWidth, frameHeight});
@@ -21,7 +28,7 @@ AnimatedSprite::AnimatedSprite(const char* filePath, IRenderer* renderer, int fr
         std::cerr << "Failed to load spritesheet: " << filePath << std::endl;
     }
 
-    dstRect = {0, 0, frameWidth, frameHeight};
+    dstRect = { 0, 0, width, height };
 }
 
 AnimatedSprite::~AnimatedSprite() {

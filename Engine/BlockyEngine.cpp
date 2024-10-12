@@ -6,29 +6,34 @@
 
 #include <iostream>
 AnimationController* animationController;
+AnimatedSprite* animatedSprite;
+
+int positionX = 100;
 BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
     windowModule = new WindowModule();
     renderer = RendererFactory::createRenderer(windowModule->getWindow(), useHardware);
     inputModule = new InputModule();
-
-    SDL_Color redColor = {255, 0, 0, 255};
-    SDL_Color greenColor = {0, 255, 0, 255};
-    renderManager.addRenderable(new Rectangle(100, 100, 200, 150, redColor));
-    renderManager.addRenderable(new Circle(150, 150, 100, greenColor));
-
-    SDL_Rect textureRect = {250, 250, 80, 80};
-    Texture* textureRenderable = new Texture("../assets/ghost.png", renderer, textureRect);
-    renderManager.addRenderable(textureRenderable);
+//
+//    SDL_Color redColor = {255, 0, 0, 255};
+//    SDL_Color greenColor = {0, 255, 0, 255};
+//    renderManager.addRenderable(new Rectangle(100, 100, 200, 150, redColor));
+//    renderManager.addRenderable(new Circle(150, 150, 100, greenColor));
+//
+//    SDL_Rect textureRect = {250, 250, 80, 80};
+//    Texture* textureRenderable = new Texture("../assets/ghost.png", renderer, textureRect);
+//    renderManager.addRenderable(textureRenderable);
 
 
 
     animationController = new AnimationController();
+    animatedSprite = new AnimatedSprite("../assets/spritesheet.png", renderer, animationController, 32, 32, 250, 250);
     animationController->addAnimation(Animation("idle", 0, 12, 0.1f, true));
     animationController->addAnimation(Animation("run", 13, 20, 0.1f, true));
     animationController->addAnimation(Animation("jump", 26, 35, 0.1f, false));
     animationController->addAnimation(Animation("attack", 39, 47, 0.1f, true));
-    AnimatedSprite* animatedSprite = new AnimatedSprite("../assets/spritesheet.png", renderer, animationController, 32, 32, 180, 180);
+    animationController->addAnimation(Animation("die", 91, 97, 0.1f, false));
     renderManager.addRenderable(animatedSprite);
+    animatedSprite->setPosition(positionX, 100);
 }
 
 BlockyEngine::~BlockyEngine() {
@@ -55,6 +60,9 @@ void BlockyEngine::processEvents() {
                     break;
                 case SDL_SCANCODE_R:
                     animationController->playAnimation("attack");
+                    break;
+                case SDL_SCANCODE_T:
+                    animationController->playAnimation("die");
                     break;
                 default:
                     break;

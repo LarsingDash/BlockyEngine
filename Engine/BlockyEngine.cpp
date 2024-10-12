@@ -5,7 +5,7 @@
 #include "Renderable/Animation/AnimatedSprite.hpp"
 
 #include <iostream>
-
+AnimationController* animationController;
 BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
     windowModule = new WindowModule();
     renderer = RendererFactory::createRenderer(windowModule->getWindow(), useHardware);
@@ -20,14 +20,14 @@ BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
     Texture* textureRenderable = new Texture("../assets/ghost.png", renderer, textureRect);
     renderManager.addRenderable(textureRenderable);
 
-    AnimatedSprite* animatedSprite = new AnimatedSprite("../assets/spritesheet.png",
-                                                        renderer, 32, 32, 180, 180);
-    Animation walkAnimation("idle", 0, 12, 0.1f, true);
-    Animation attackAnimation("attack", 52, 60, 0.1f, true);
-    animatedSprite->addAnimation(walkAnimation);
-    animatedSprite->addAnimation(attackAnimation);
-    animatedSprite->playAnimation("attack");
 
+
+    animationController = new AnimationController();
+    animationController->addAnimation(Animation("idle", 0, 12, 0.1f, true));
+    animationController->addAnimation(Animation("run", 13, 20, 0.1f, true));
+    animationController->addAnimation(Animation("jump", 26, 35, 0.1f, false));
+    animationController->addAnimation(Animation("attack", 39, 47, 0.1f, true));
+    AnimatedSprite* animatedSprite = new AnimatedSprite("../assets/spritesheet.png", renderer, animationController, 32, 32, 180, 180);
     renderManager.addRenderable(animatedSprite);
 }
 
@@ -43,10 +43,26 @@ void BlockyEngine::processEvents() {
         if (event.type == SDL_QUIT) {
             shouldQuit = true;
         } else if (event.type == SDL_KEYDOWN) {
-            inputModule->handleExit(event.key.keysym.scancode, shouldQuit);
+            switch (event.key.keysym.scancode) {
+                case SDL_SCANCODE_Q:
+                    animationController->playAnimation("idle");
+                    break;
+                case SDL_SCANCODE_W:
+                    animationController->playAnimation("run");
+                    break;
+                case SDL_SCANCODE_E:
+                    animationController->playAnimation("jump");
+                    break;
+                case SDL_SCANCODE_R:
+                    animationController->playAnimation("attack");
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
+
 
 void BlockyEngine::run() {
     Uint32 prevTicks = SDL_GetTicks();

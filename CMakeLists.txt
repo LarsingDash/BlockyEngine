@@ -29,6 +29,8 @@ add_executable(${PROJECT_NAME}
         Engine/Renderable/Animation/Animation.hpp
         Engine/Renderable/Animation/AnimatedSprite.cpp
         Engine/Renderable/Animation/AnimatedSprite.hpp
+        Engine/Renderable/Animation/AnimationController.cpp
+        Engine/Renderable/Animation/AnimationController.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}

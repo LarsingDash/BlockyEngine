@@ -1,7 +1,7 @@
 #pragma once
 
-#include <SDL.h>
-#include "Renderable.h"
+#include "SDL.h"
+#include "../Renderable.h"
 
 class Rectangle : public Renderable {
 public:

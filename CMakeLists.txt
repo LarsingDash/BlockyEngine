@@ -19,12 +19,16 @@ add_executable(${PROJECT_NAME}
         Engine/BlockyEngine.cpp
         Engine/Renderer/SoftwareRenderer.cpp
         Engine/Renderer/HardwareRenderer.cpp
-        Engine/Renderable/Rectangle.cpp
-        Engine/Renderable/Circle.cpp
+        Engine/Renderable/Shapes/Rectangle.cpp
+        Engine/Renderable/Shapes/Circle.cpp
         Engine/Renderer/RenderableManager.cpp
         Engine/Renderer/BaseRenderer.h
         Engine/Renderable/Texture.cpp
         Engine/Renderable/Texture.h
+        Engine/Renderable/Animation/Animation.cpp
+        Engine/Renderable/Animation/Animation.hpp
+        Engine/Renderable/Animation/Animator.cpp
+        Engine/Renderable/Animation/Animator.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}

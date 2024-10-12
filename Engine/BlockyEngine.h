@@ -4,8 +4,8 @@
 #include "InputModule.h"
 #include "Renderer/IRenderer.h"
 #include "Renderer/RenderableManager.h"
-#include "Renderable/Circle.h"
-#include "Renderable/Rectangle.h"
+#include "Renderable/Shapes/Circle.h"
+#include "Renderable/Shapes/Rectangle.h"
 class BlockyEngine {
 public:
     BlockyEngine(bool useHardware);

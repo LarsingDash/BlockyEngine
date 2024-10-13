@@ -7,6 +7,7 @@
 #include <iostream>
 AnimationController* animationController;
 AnimatedSprite* animatedSprite;
+Texture* backgroundTexture;
 
 int positionX = 100;
 BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
@@ -18,10 +19,12 @@ BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
 //    SDL_Color greenColor = {0, 255, 0, 255};
 //    renderManager.addRenderable(new Rectangle(100, 100, 200, 150, redColor));
 //    renderManager.addRenderable(new Circle(150, 150, 100, greenColor));
-//
-//    SDL_Rect textureRect = {250, 250, 80, 80};
-//    Texture* textureRenderable = new Texture("../assets/ghost.png", renderer, textureRect);
-//    renderManager.addRenderable(textureRenderable);
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(windowModule->getWindow(), &windowWidth, &windowHeight);
+
+    SDL_Rect backgroundRect = {0, 0, windowWidth, windowHeight};
+    backgroundTexture = new Texture("../assets/Background.jpg", renderer, backgroundRect);
+    renderManager.addRenderable(backgroundTexture);
 
 
 
@@ -33,7 +36,7 @@ BlockyEngine::BlockyEngine(bool useHardware) : shouldQuit(false) {
     animationController->addAnimation(Animation("attack", 39, 47, 0.1f, true));
     animationController->addAnimation(Animation("die", 91, 97, 0.1f, false));
     renderManager.addRenderable(animatedSprite);
-    animatedSprite->setPosition(positionX, 100);
+    animatedSprite->setPosition(positionX, 158);
 }
 
 BlockyEngine::~BlockyEngine() {

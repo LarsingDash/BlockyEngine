@@ -12,13 +12,14 @@
 
 class TransExampleComponent : public Component {
 	public:
-		TransExampleComponent(GameObject& gameObject, Transform& transform);
+		TransExampleComponent(GameObject& gameObject, Transform& transform, SDL_Color color);
 		void OnUpdate(float delta) override;
 		~TransExampleComponent() override;
 		
 	private:
 		SDL_Texture* texture;
 		SDL_FRect* rect;
+		SDL_Color color;
 };
 
 

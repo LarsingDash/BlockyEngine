@@ -6,10 +6,10 @@
 #include "../renderer.cpp"
 #include "trigonometric.hpp"
 
-TransExampleComponent::TransExampleComponent(GameObject& gameObject, Transform& transform)
-		: Component(gameObject, transform) {
+TransExampleComponent::TransExampleComponent(GameObject& gameObject, Transform& transform, SDL_Color color)
+		: Component(gameObject, transform), color(color) {
 	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, 1, 1, 32, SDL_PIXELFORMAT_RGBA32);
-	SDL_FillRect(surface, nullptr, SDL_MapRGB(surface->format, 0, 150, 0));
+	SDL_FillRect(surface, nullptr, SDL_MapRGB(surface->format, color.r, color.g, color.b));
 
 	texture = SDL_CreateTextureFromSurface(Example::renderer, surface);
 	SDL_FreeSurface(surface);

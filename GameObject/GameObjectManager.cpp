@@ -28,15 +28,23 @@ GameObjectManager::GameObjectManager() : sceneRoot(std::make_unique<GameObject>(
 //	std::cout << "Add second of Example, 0: "<< (child1.AddComponent<ExampleComponent>(10, 160, 155) == nullptr) << std::endl;
 
 	//TRANSFORM TEST
-	GameObject& child1 = sceneRoot->AddChild("Child1");
-	child1.AddComponent<TransExampleComponent>();
+	GameObject& container = sceneRoot->AddChild("Container");
+	container.transform->SetLocalScale(50, 50);
+
+	GameObject& child1 = container.AddChild("Child1");
+	child1.AddComponent<TransExampleComponent>(SDL_Color{0, 150, 0});
 	child1.AddComponent<TransOtherComponent>();
-	child1.transform->SetLocalScale(50, 50);
+	child1.transform->SetLocalPosition(1, 1);
 
 	GameObject& child2 = child1.AddChild("Child2");
-	child2.AddComponent<TransExampleComponent>();
+	child2.AddComponent<TransExampleComponent>(SDL_Color{0, 0,150});
+	child2.AddComponent<TransOtherComponent>();
 	child2.transform->SetLocalPosition(0, 1.5f);
-	child2.transform->SetLocalScale(1, 1);
+
+	GameObject& child3 = child2.AddChild("Child3");
+	child3.AddComponent<TransExampleComponent>(SDL_Color{150, 150,150});
+	child3.AddComponent<TransOtherComponent>();
+	child3.transform->SetLocalPosition(0, 1.5f);
 }
 
 void GameObjectManager::OnUpdate(float delta) {

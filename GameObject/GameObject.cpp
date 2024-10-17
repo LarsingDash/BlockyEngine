@@ -89,13 +89,17 @@ void GameObject::Reparent(GameObject* other) {
 
 	//If this exists in parent children list:
 	if (selfPosition != end) {
-		//Reparent
-		parent = other;
-		
-		//Move itself to new parents children list (unless reparenting to null)
-		if (other) other->children.push_back(std::move(*selfPosition));
+		try {
+			//Move itself to new parents children list (unless reparenting to null)
+			if (other) other->children.push_back(std::move(*selfPosition));
 
-		//Erase from previous parents children list
-		parentChildren.erase(selfPosition);
+			//Erase from previous parents children list
+			parentChildren.erase(selfPosition);
+
+			//Reparent
+			parent = other;
+		} catch (const std::exception& e) {
+			std::cerr << "Exception occurred while reparenting: " << e.what() << std::endl;
+		}
 	}
 }

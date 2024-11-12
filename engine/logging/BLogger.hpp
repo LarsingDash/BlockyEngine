@@ -9,18 +9,23 @@
 
 #define LOG_TO_CONSOLE 1
 
+#define BLOCKY_ENGINE_INFO(msg) bLogger.Log(LogLevel::INFO, msg);
+#define BLOCKY_ENGINE_DEBUG(msg) bLogger.Log(LogLevel::DEBUG, msg);
+#define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, msg);
+#define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERR, msg);
+
 enum LogLevel {
-    DEBUG,
     INFO,
+    DEBUG,
     WARN,
     ERR
 };
 
-class Logging {
+class BLogger {
     public:
-        explicit Logging(const std::string &filename);
+        explicit BLogger(const std::string &filename);
 
-        ~Logging();
+        ~BLogger();
 
         void Log(LogLevel level, const std::string &message);
 
@@ -33,5 +38,7 @@ class Logging {
 
         void writeLog(const std::stringstream &logMessage);
 };
+
+inline BLogger bLogger("logfile.txt");
 
 #endif //LOG_HPP

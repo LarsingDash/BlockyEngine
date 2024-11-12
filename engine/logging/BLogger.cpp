@@ -2,7 +2,7 @@
 // Created by hmkam on 12/11/2024.
 //
 
-#include "Logging.hpp"
+#include "BLogger.hpp"
 
 #include <chrono>
 #include <iomanip>
@@ -10,7 +10,7 @@
 
 using namespace std::chrono;
 
-Logging::Logging(const std::string &filename) {
+BLogger::BLogger(const std::string &filename) {
 	logFile.open(filename, std::ios::app); // Opens file in append mode
 	if (!logFile.is_open()) {
 		std::cerr << "Error opening log file." << std::endl;
@@ -19,9 +19,9 @@ Logging::Logging(const std::string &filename) {
 	}
 }
 
-Logging::~Logging() { logFile.close(); }
+BLogger::~BLogger() { logFile.close(); }
 
-void Logging::Log(const LogLevel level, const std::string &message) {
+void BLogger::Log(const LogLevel level, const std::string &message) {
 	auto logMessage = MakeTimeStamp();
 
 	logMessage << "\t"
@@ -31,23 +31,23 @@ void Logging::Log(const LogLevel level, const std::string &message) {
 	writeLog(logMessage);
 }
 
-std::string Logging::levelToString(LogLevel level) {
+std::string BLogger::levelToString(LogLevel level) {
 	switch (level) {
 		case DEBUG:
 			return "DEBUG";
 		case INFO:
 			return "INFO";
 		case WARN:
-			return "WARNING";
+			return "WARN";
 		case ERR:
-			return "ERROR";
+			return "ERR";
 		default:
 			return "UNKNOWN";
 	}
 }
 
 // Format the time string, including milliseconds
-std::stringstream Logging::MakeTimeStamp() {
+std::stringstream BLogger::MakeTimeStamp() {
 	auto now = system_clock::now();
 	auto ms = duration_cast<milliseconds>(now.time_since_epoch());
 
@@ -66,7 +66,7 @@ std::stringstream Logging::MakeTimeStamp() {
 	return ss;
 }
 
-void Logging::writeLog(const std::stringstream &logMessage) {
+void BLogger::writeLog(const std::stringstream &logMessage) {
 	if (LOG_TO_CONSOLE) {
 		std::cout << logMessage.str();
 	}

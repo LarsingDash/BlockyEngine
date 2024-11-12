@@ -1,20 +1,19 @@
-﻿#include "./engine/logging/Logging.hpp"
+﻿#include "engine/TestClass.hpp"
+#include "./engine/logging/BLogger.hpp"
 
 
 int main() {
-	Logging logger("logfile.txt"); // Create logger instance
-
-	logger.Log(DEBUG, "Debugging information.");
-
+	BLOCKY_ENGINE_DEBUG("Debugging information.");
 	// Example usage of the logger
 	for (int i = 0; i < 5; i++) {
-		logger.Log(INFO, "Program update: " + std::to_string(i));
+		BLOCKY_ENGINE_INFO("Program update: " + std::to_string(i));
 
 		//delay
 		for (int j = 0; j < 1000000; j++) { if (i == j) { j = i; } }
 	}
 
-	logger.Log(ERR, "An error occurred.");
+	BLOCKY_ENGINE_ERROR("An error occurred.");
+	BLOCKY_ENGINE_WARNING("An warning occurred.");
 
-	return 0;
+	TestClass::DoTestAndLog();
 }

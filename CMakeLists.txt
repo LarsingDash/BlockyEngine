@@ -13,8 +13,8 @@ include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
 
 #Final
 add_executable(${PROJECT_NAME} main.cpp
-        engine/Logging.cpp
-        engine/Logging.hpp)
+        engine/logging/Logging.cpp
+        engine/logging/Logging.hpp)
 
 target_link_libraries(${PROJECT_NAME}
         mingw32

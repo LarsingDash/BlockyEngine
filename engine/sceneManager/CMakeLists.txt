@@ -2,4 +2,5 @@
         SceneManager.cpp
 )
 
+add_subdirectory(components)
 add_subdirectory(gameObject)

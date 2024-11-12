@@ -21,7 +21,7 @@ class SceneManager {
 		SceneManager& operator=(SceneManager&& other) noexcept = delete;
 
 		void Update(float delta);
-		
+
 	private:
 		std::vector<std::unique_ptr<GameObject>> testScene;
 };

@@ -5,10 +5,15 @@
 #include "GameObject.hpp"
 #include <iostream>
 
-GameObject::GameObject(std::string tag) :
-		tag{std::move(tag)}, transform{std::make_unique<Transform>()} {
+GameObject::GameObject(const char* tag) :
+		tag{tag}, transform{std::make_unique<Transform>()} {
 }
 
 void GameObject::Update(float delta) {
-	std::cout << "test" << std::endl;
+	//Cascade update to components
+	for (auto& type: components) {
+		for (auto& component: type.second) {
+			component->Update(delta);
+		}
+	}
 }

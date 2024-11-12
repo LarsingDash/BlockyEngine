@@ -23,7 +23,7 @@ void BlockyEngine::Run() {
 	while (BlockyEngine::isRunning) {
 		//Calculate delta
 		auto currentTime = std::chrono::high_resolution_clock::now();
-		float delta = static_cast<float>((currentTime - lastTime).count()) / 1000000.f;
+		float delta = static_cast<float>((currentTime - lastTime).count()) / 1000000000.f;
 		lastTime = currentTime;
 
 		//Update cycle
@@ -33,7 +33,7 @@ void BlockyEngine::Run() {
 		//Increase fps counter and check if a second has passed
 		++frames;
 		accumulatedDelta += delta;
-		if (accumulatedDelta >= 1000.0f) {
+		if (accumulatedDelta >= 1.0f) {
 			//Reset fps
 			std::cout << "FPS: " << frames << std::endl;
 			frames = 0;

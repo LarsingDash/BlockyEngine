@@ -9,6 +9,7 @@
 
 #define LOG_TO_CONSOLE 1
 #define MAX_FUNCTION_NAME_LENGHT 15
+#define LOG_FILE "logfile.txt"
 
 // for function signature: __PRETTY_FUNCTION__
 #define BLOCKY_ENGINE_INFO(msg) bLogger.Log(LogLevel::INFO, __func__, msg);
@@ -43,6 +44,6 @@ class BLogger {
         void writeLog(const std::stringstream &logMessage);
 };
 
-inline BLogger bLogger("logfile.txt");
+inline BLogger bLogger(LOG_FILE);
 
 #endif //LOG_HPP

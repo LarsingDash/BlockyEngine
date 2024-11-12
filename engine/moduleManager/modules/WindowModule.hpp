@@ -7,7 +7,7 @@
 
 #include <SDL_render.h>
 
-#include "modules/core/ModuleWrapper.hpp"
+#include "moduleManager/ModuleWrapper.hpp"
 
 class WindowModule : public ModuleWrapper {
 	public:

@@ -2,3 +2,5 @@
         ModuleManager.cpp
         ModuleWrapper.cpp
 )
+
+add_subdirectory(modules)

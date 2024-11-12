@@ -6,7 +6,7 @@
 #define BLOCKYENGINE_BLOCKYENGINE_HPP
 
 #include <memory>
-#include "modules/core/ModuleManager.hpp"
+#include "moduleManager/ModuleManager.hpp"
 
 class BlockyEngine {
 	public:

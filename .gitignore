@@ -34,6 +34,4 @@
 .idea
 /cmake-build-debug
 /cmake-build-release
-
-!libs/**/*.a
-!libs/**/*.dll
+/libs

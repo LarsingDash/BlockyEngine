@@ -11,11 +11,11 @@
 #define MAX_FUNCTION_NAME_LENGHT 15
 #define LOG_FILE "logfile.txt"
 
-// for function signature: __PRETTY_FUNCTION__
-#define BLOCKY_ENGINE_INFO(msg) bLogger.Log(LogLevel::INFO, __func__, msg);
-#define BLOCKY_ENGINE_DEBUG(msg) bLogger.Log(LogLevel::DEBUG, __func__, msg);
-#define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, __func__, msg);
-#define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __func__, msg);
+// for function name only: __func__
+#define BLOCKY_ENGINE_INFO(msg) bLogger.Log(LogLevel::INFO, __PRETTY_FUNCTION__, msg);
+#define BLOCKY_ENGINE_DEBUG(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, msg);
+#define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, msg);
+#define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, msg);
 
 enum LogLevel {
     INFO,

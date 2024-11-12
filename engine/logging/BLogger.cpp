@@ -49,25 +49,21 @@ std::string BLogger::levelToString(LogLevel level) {
 }
 
 std::string BLogger::funcSignToString(std::string funcName) {
-	// //todo: uncomment when calling Log(...) with function signature: __PRETTY_FUNCTION__
-	//
-	// // remove args
-	// size_t pos = funcName.rfind('(');
-	// if (pos != std::string::npos) {
-	// 	funcName = funcName.substr(0, pos);
-	// }
-	//
-	// // remove function name if class
-	// pos = funcName.rfind("::");
-	// if (pos != std::string::npos) {
-	// 	funcName = funcName.substr(0, pos);
-	// }
-	//
-	// // remove return type
-	// pos = funcName.rfind(' ');
-	// if (pos != std::string::npos) {
-	// 	funcName = funcName.substr(pos + 1);
-	// }
+	// remove args
+	size_t pos = funcName.rfind('(');
+	if (pos != std::string::npos) {
+		funcName = funcName.substr(0, pos);
+	}
+	// remove function name if class
+	pos = funcName.rfind("::");
+	if (pos != std::string::npos) {
+		funcName = funcName.substr(0, pos);
+	}
+	// remove return type
+	pos = funcName.rfind(' ');
+	if (pos != std::string::npos) {
+		funcName = funcName.substr(pos + 1);
+	}
 
 	if (funcName.size() < MAX_FUNCTION_NAME_LENGHT) {
 		funcName.resize(MAX_FUNCTION_NAME_LENGHT, ' ');

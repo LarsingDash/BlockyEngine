@@ -13,6 +13,7 @@ class WindowModule : public ModuleWrapper {
 	public:
 		WindowModule();
 		~WindowModule() override;
+		
 		void Update(float delta) override;
 
 	private:

@@ -6,10 +6,15 @@
 
 #include "modules/WindowModule.hpp"
 
+ModuleManager& ModuleManager::getInstance() {
+	static ModuleManager instance;
+	return instance;
+}
+
 ModuleManager::ModuleManager() : modules{} {
-	modules[0] = (std::make_unique<WindowModule>());
+	modules[typeid(WindowModule)] = (std::make_unique<WindowModule>());
 }
 
 void ModuleManager::Update(float delta) {
-	for (auto& module: modules) module->Update(delta);
+	for (auto& module: modules) module.second->Update(delta);
 }

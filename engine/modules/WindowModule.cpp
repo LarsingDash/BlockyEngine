@@ -44,10 +44,24 @@ WindowModule::~WindowModule() {
 }
 
 void WindowModule::Update(float delta) {
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
+
 	SDL_Event event;
 	while (SDL_PollEvent(&event) != 0) {
 		switch (event.type) {
 			default:
+				break;
+			case SDL_KEYDOWN: {
+				SDL_Scancode key = event.key.keysym.scancode;
+				switch (key) {
+					default:
+						break;
+					case SDL_SCANCODE_ESCAPE:
+						BlockyEngine::isRunning = false;
+						break;
+				}
+			}
 				break;
 			case SDL_QUIT:
 				BlockyEngine::isRunning = false;
@@ -55,9 +69,5 @@ void WindowModule::Update(float delta) {
 		}
 	}
 
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	SDL_RenderClear(renderer);
-	SDL_Rect temp{0,0, WINDOW_WIDTH, WINDOW_HEIGHT};
-	SDL_RenderFillRect(renderer, &temp);
 	SDL_RenderPresent(renderer);
 }

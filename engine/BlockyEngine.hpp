@@ -22,10 +22,10 @@ class BlockyEngine {
 		
 		//Game
 		static bool isRunning;
-	private:
 		
+	private:
 		//SceneManager
-		std::unique_ptr<ModuleManager> moduleManager;
+		ModuleManager& moduleManager;
 };
 
 #endif //BLOCKYENGINE_BLOCKYENGINE_HPP

@@ -9,7 +9,7 @@
 bool BlockyEngine::isRunning{false};
 
 BlockyEngine::BlockyEngine() :
-		moduleManager{std::make_unique<ModuleManager>()} {}
+		moduleManager{ModuleManager::getInstance()} {}
 
 void BlockyEngine::Run() {
 	//Prepare variables for tracking FPS
@@ -18,6 +18,8 @@ void BlockyEngine::Run() {
 	auto lastTime = std::chrono::high_resolution_clock::now();
 
 	BlockyEngine::isRunning = true;
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
 	while (BlockyEngine::isRunning) {
 		//Calculate delta
 		auto currentTime = std::chrono::high_resolution_clock::now();
@@ -25,7 +27,7 @@ void BlockyEngine::Run() {
 		lastTime = currentTime;
 
 		//Update cycle
-		moduleManager->Update(delta);
+		moduleManager.Update(delta);
 
 		//Increase fps counter and check if a second has passed
 		++frames;
@@ -37,4 +39,5 @@ void BlockyEngine::Run() {
 			accumulatedDelta = 0;
 		}
 	}
+#pragma clang diagnostic pop
 }

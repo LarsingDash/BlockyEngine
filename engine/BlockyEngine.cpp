@@ -8,8 +8,8 @@
 
 bool BlockyEngine::isRunning{false};
 
-BlockyEngine::BlockyEngine() :
-		moduleManager{ModuleManager::getInstance()} {}
+BlockyEngine::BlockyEngine() : moduleManager{ModuleManager::getInstance()},
+							   sceneManager{std::make_unique<SceneManager>()} {}
 
 void BlockyEngine::Run() {
 	//Prepare variables for tracking FPS
@@ -27,6 +27,7 @@ void BlockyEngine::Run() {
 		lastTime = currentTime;
 
 		//Update cycle
+		sceneManager->Update(delta);
 		moduleManager.Update(delta);
 
 		//Increase fps counter and check if a second has passed

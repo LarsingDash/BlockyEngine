@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "moduleManager/ModuleManager.hpp"
+#include "sceneManager/SceneManager.hpp"
 
 class BlockyEngine {
 	public:
@@ -24,7 +25,7 @@ class BlockyEngine {
 		static bool isRunning;
 		
 	private:
-		//SceneManager
+		std::unique_ptr<SceneManager> sceneManager;
 		ModuleManager& moduleManager;
 };
 

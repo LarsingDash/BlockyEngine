@@ -12,7 +12,10 @@ include_directories("${SDL2_PATH}/include/SDL2")
 include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
 
 #Final
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp
+        engine/Logging.cpp
+        engine/Logging.hpp)
+
 target_link_libraries(${PROJECT_NAME}
         mingw32
 

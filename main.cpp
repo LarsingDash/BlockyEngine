@@ -1,6 +1,9 @@
 ﻿#include "engine/TestClass.hpp"
 #include "./engine/logging/BLogger.hpp"
 
+void testFuncInMain(std::string str) {
+	BLOCKY_ENGINE_DEBUG(str)
+}
 
 int main() {
 	BLOCKY_ENGINE_DEBUG("Debugging information.");
@@ -14,6 +17,8 @@ int main() {
 
 	BLOCKY_ENGINE_ERROR("An error occurred.");
 	BLOCKY_ENGINE_WARNING("An warning occurred.");
+
+	testFuncInMain("test main func");
 
 	TestClass::DoTestAndLog();
 }

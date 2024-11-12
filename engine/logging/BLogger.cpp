@@ -21,11 +21,13 @@ BLogger::BLogger(const std::string &filename) {
 
 BLogger::~BLogger() { logFile.close(); }
 
-void BLogger::Log(const LogLevel level, const std::string &message) {
+
+void BLogger::Log(const LogLevel level, const std::string &funcName, const std::string &message) {
 	auto logMessage = MakeTimeStamp();
 
-	logMessage << "\t"
-			<< levelToString(level) << "\t"
+	logMessage << "   "
+			<< levelToString(level) << "   "
+			<< funcSignToString(funcName) << "   "
 			<< message << std::endl;
 
 	writeLog(logMessage);
@@ -36,14 +38,41 @@ std::string BLogger::levelToString(LogLevel level) {
 		case DEBUG:
 			return "DEBUG";
 		case INFO:
-			return "INFO";
+			return "INFO ";
 		case WARN:
-			return "WARN";
+			return "WARN ";
 		case ERR:
-			return "ERR";
+			return "ERR  ";
 		default:
 			return "UNKNOWN";
 	}
+}
+
+std::string BLogger::funcSignToString(std::string funcName) {
+	// //todo: uncomment when calling Log(...) with function signature: __PRETTY_FUNCTION__
+	//
+	// // remove args
+	// size_t pos = funcName.rfind('(');
+	// if (pos != std::string::npos) {
+	// 	funcName = funcName.substr(0, pos);
+	// }
+	//
+	// // remove function name if class
+	// pos = funcName.rfind("::");
+	// if (pos != std::string::npos) {
+	// 	funcName = funcName.substr(0, pos);
+	// }
+	//
+	// // remove return type
+	// pos = funcName.rfind(' ');
+	// if (pos != std::string::npos) {
+	// 	funcName = funcName.substr(pos + 1);
+	// }
+
+	if (funcName.size() < MAX_FUNCTION_NAME_LENGHT) {
+		funcName.resize(MAX_FUNCTION_NAME_LENGHT, ' ');
+	}
+	return funcName;
 }
 
 // Format the time string, including milliseconds

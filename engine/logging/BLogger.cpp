@@ -41,8 +41,8 @@ std::string BLogger::levelToString(LogLevel level) {
 			return "INFO ";
 		case WARN:
 			return "WARN ";
-		case ERR:
-			return "ERR  ";
+		case ERROR:
+			return "ERROR";
 		default:
 			return "UNKNOWN";
 	}

@@ -1,4 +1,4 @@
-﻿#include "engine/Testing/BLoggerTest.hpp"
+﻿#include "engine/testing/BLoggerTest.hpp"
 
 int main() {
 	BLoggerTest::Test();

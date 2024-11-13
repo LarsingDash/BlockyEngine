@@ -20,7 +20,7 @@ class GameObject {
 	public:
 		//----- RULE OF FIVE
 		explicit GameObject(const char* tag);
-		~GameObject() = default;
+		~GameObject();
 
 		GameObject(const GameObject& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
@@ -37,24 +37,30 @@ class GameObject {
 			ComponentValidityCheck<T>();
 			const auto type = std::type_index(typeid(T));
 
-			//Find component list, create it if there was none
+			//Create component and call Start() on it
 			auto typeIt = components.find(type);
 			std::unique_ptr<T> component = std::make_unique<T>(*this, componentTag, std::forward<Args>(args)...);
+			component->Start();
+			
+			//Find component list, create it if there was none
 			if (typeIt == components.end()) {
 				//Create new list with the 
 				auto& typeList = components[type];
-				return *typeList.emplace_back(std::move(component));
+				return static_cast<T&>(*typeList.emplace_back(std::move(component)));
 			} else {
 				//Add new component to existing list
-				return *typeIt->second.emplace_back(std::move(component));
+				return static_cast<T&>(*typeIt->second.emplace_back(std::move(component)));
 			}
 		}
 
 		template<typename T>
 		void RemoveComponent(const std::string& componentTag = "") {
-			auto componentIt = findComponentByTag<T>(componentTag);
+			std::optional<ComponentsList::iterator> componentIt = findComponentByTag<T>(componentTag);
 
 			if (componentIt) {
+				//Call End()
+				(*componentIt.value())->End();
+				
 				//Erase
 				auto& typeList = components[typeid(T)];
 				typeList.erase(*componentIt);

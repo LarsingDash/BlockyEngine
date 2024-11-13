@@ -7,7 +7,10 @@
 
 #include <SDL_render.h>
 
+#include <vector>
+
 #include "moduleManager/ModuleWrapper.hpp"
+#include "sceneManager/components/Renderable.hpp"
 
 class WindowModule : public ModuleWrapper {
 	public:
@@ -15,13 +18,21 @@ class WindowModule : public ModuleWrapper {
 		~WindowModule() override;
 		
 		void Update(float delta) override;
+		
+		void AddRenderable(Renderable& renderable);
+		void RemoveRenderable(Renderable& renderable);
 
 	private:
+		static void ProcessEvents();
+		void Render();
+		
 		constexpr static int WINDOW_WIDTH = 800;
 		constexpr static int WINDOW_HEIGHT = 600;
 
 		SDL_Window* window;
 		SDL_Renderer* renderer;
+		
+		std::vector<std::reference_wrapper<Renderable>> renderables;
 };
 
 

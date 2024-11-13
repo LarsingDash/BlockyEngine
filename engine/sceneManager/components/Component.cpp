@@ -8,10 +8,7 @@
 #include <iostream>
 
 Component::Component(GameObject& gameObject, const char* tag) :
-		gameObject{gameObject}, tag{tag} {}
+		gameObject{gameObject}, tag{tag}, componentTransform{
+		std::make_unique<ComponentTransform>()} {}
 
 Component::~Component() = default;
-
-void Component::Update(float delta) {
-	std::cout << tag << "\tfrom " << gameObject.tag << '\t' << delta << std::endl;
-}

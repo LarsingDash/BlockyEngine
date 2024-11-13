@@ -9,6 +9,14 @@ GameObject::GameObject(const char* tag) :
 		tag{tag}, transform{std::make_unique<Transform>()} {
 }
 
+GameObject::~GameObject() {
+	for (auto& type: components) {
+		for (auto& component: type.second) {
+			component->End();
+		}
+	}
+}
+
 void GameObject::Update(float delta) {
 	//Cascade update to components
 	for (auto& type: components) {

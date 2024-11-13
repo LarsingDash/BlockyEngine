@@ -34,7 +34,7 @@ class ModuleManager {
 			
 			//Return the requested module, if none was found: throw an error indicating so
 			if (it == modules.end()) throw std::runtime_error("Requested module not found in the modules map");
-			return modules[type];
+			return dynamic_cast<T&>(*modules[type]);
 		}
 		
 	private:

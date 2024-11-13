@@ -11,29 +11,29 @@
 using namespace std::chrono;
 
 BLogger::BLogger(const std::string &filename) {
-	logFile.open(filename, std::ios::app); // Opens file in append mode
-	if (!logFile.is_open()) {
+	_logFile.open(filename, std::ios::app); // Opens file in append mode
+	if (!_logFile.is_open()) {
 		std::cerr << "Error opening log file." << std::endl;
 	} else {
 		Log(INFO, "Logging started.");
 	}
 }
 
-BLogger::~BLogger() { logFile.close(); }
+BLogger::~BLogger() { _logFile.close(); }
 
 
 void BLogger::Log(const LogLevel level, const std::string &funcName, const std::string &message) {
-	auto logMessage = MakeTimeStamp();
+	auto logMessage = _MakeTimeStamp();
 
 	logMessage << "   "
-			<< levelToString(level) << "   "
-			<< funcSignToString(funcName) << "   "
+			<< _LevelToString(level) << "   "
+			<< _FuncSignToString(funcName) << "   "
 			<< message << std::endl;
 
-	writeLog(logMessage);
+	_WriteLog(logMessage);
 }
 
-std::string BLogger::levelToString(LogLevel level) {
+std::string BLogger::_LevelToString(LogLevel level) {
 	switch (level) {
 		case DEBUG:
 			return "DEBUG";
@@ -48,7 +48,7 @@ std::string BLogger::levelToString(LogLevel level) {
 	}
 }
 
-std::string BLogger::funcSignToString(std::string funcName) {
+std::string BLogger::_FuncSignToString(std::string funcName) {
 	// remove args
 	size_t pos = funcName.rfind('(');
 	if (pos != std::string::npos) {
@@ -72,7 +72,7 @@ std::string BLogger::funcSignToString(std::string funcName) {
 }
 
 // Format the time string, including milliseconds
-std::stringstream BLogger::MakeTimeStamp() {
+std::stringstream BLogger::_MakeTimeStamp() {
 	auto now = system_clock::now();
 	auto ms = duration_cast<milliseconds>(now.time_since_epoch());
 
@@ -91,14 +91,14 @@ std::stringstream BLogger::MakeTimeStamp() {
 	return ss;
 }
 
-void BLogger::writeLog(const std::stringstream &logMessage) {
+void BLogger::_WriteLog(const std::stringstream &logMessage) {
 	if (LOG_TO_CONSOLE) {
 		std::cout << logMessage.str();
 	}
 
 	// Output to log file
-	if (logFile.is_open()) {
-		logFile << logMessage.str();
-		logFile.flush(); // Ensure immediate write to file
+	if (_logFile.is_open()) {
+		_logFile << logMessage.str();
+		_logFile.flush(); // Ensure immediate write to file
 	}
 }

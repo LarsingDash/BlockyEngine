@@ -33,15 +33,15 @@ class BLogger {
         void Log(LogLevel level, const std::string &funcName = "", const std::string &message = "");
 
     private:
-        std::ofstream logFile; // File stream for the log file
+        std::ofstream _logFile; // File stream for the log file
 
-        static std::string levelToString(LogLevel level);
+        static std::string _LevelToString(LogLevel level);
 
-        static std::string funcSignToString(std::string funcName);
+        static std::string _FuncSignToString(std::string funcName);
 
-        std::stringstream MakeTimeStamp();
+        static std::stringstream _MakeTimeStamp();
 
-        void writeLog(const std::stringstream &logMessage);
+        void _WriteLog(const std::stringstream &logMessage);
 };
 
 inline BLogger bLogger(LOG_FILE);

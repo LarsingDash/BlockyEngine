@@ -7,14 +7,20 @@
 #include "../../engine/logging/BLogger.hpp"
 #include <string>
 
-void _TestBLoggerFunc(const std::string &str) {
-	BLOCKY_ENGINE_DEBUG(str)
+void _TestBLoggerFunc() {
+	BLOCKY_ENGINE_DEBUG("Debugging information, in _TestBLoggerFunc()")
 }
 
 class BloggerClass {
 	public:
-		static void FuncBloggerClass(const std::string &str) {
-			BLOCKY_ENGINE_DEBUG(str)
+		static void FuncBloggerClass() {
+			BLOCKY_ENGINE_DEBUG("Debugging information, in BloggerClass::FuncBloggerClass()")
+			_FuncBloggerClass();
+		}
+
+	private:
+		static void _FuncBloggerClass() {
+			BLOCKY_ENGINE_DEBUG("Debugging information, in BloggerClass::_FuncBloggerClass()")
 		}
 };
 
@@ -31,7 +37,6 @@ void BLoggerTest::Test() {
 	BLOCKY_ENGINE_ERROR("An error occurred.");
 	BLOCKY_ENGINE_WARNING("An warning occurred.");
 
-	_TestBLoggerFunc("Debugging information, in TestBLoggerFunc()");
-
-	BloggerClass::FuncBloggerClass("Debugging information, in BloggerClass::FuncBloggerClass()");
+	_TestBLoggerFunc();
+	BloggerClass::FuncBloggerClass();
 }

@@ -11,8 +11,14 @@ include_directories("${SDL2_PATH}/include/SDL2")
 #STB_Image
 include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
 
+#GLM
+include_directories("${CMAKE_MODULE_PATH}")
+
 #Final
 add_executable(${PROJECT_NAME} main.cpp)
+
+add_subdirectory(engine)
+
 target_link_libraries(${PROJECT_NAME}
         mingw32
 

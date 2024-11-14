@@ -8,8 +8,6 @@
 #include <iomanip>
 #include <iostream>
 
-using namespace std::chrono;
-
 BLogger::BLogger(const std::string &filename) {
 	_logFile.open(filename, std::ios::app); // Opens file in append mode
 	if (!_logFile.is_open()) {
@@ -23,17 +21,17 @@ BLogger::~BLogger() { _logFile.close(); }
 
 
 void BLogger::Log(const LogLevel level, const std::string &funcName, const std::string &message) {
-	auto logMessage = _MakeTimeStamp();
+	auto logMessage = _makeTimeStamp();
 
 	logMessage << "   "
-			<< _LevelToString(level) << "   "
-			<< _FuncSignToString(funcName) << "   "
+			<< _levelToString(level) << "   "
+			<< _funcSignToString(funcName) << "   "
 			<< message << std::endl;
 
-	_WriteLog(logMessage);
+	_writeLog(logMessage);
 }
 
-std::string BLogger::_LevelToString(LogLevel level) {
+std::string BLogger::_levelToString(LogLevel level) {
 	switch (level) {
 		case DEBUG:
 			return "DEBUG";
@@ -48,38 +46,60 @@ std::string BLogger::_LevelToString(LogLevel level) {
 	}
 }
 
-std::string BLogger::_FuncSignToString(std::string funcName) {
-	// remove args
-	size_t pos = funcName.rfind('(');
-	if (pos != std::string::npos) {
-		funcName = funcName.substr(0, pos);
-	}
-	// remove function name if class
-	pos = funcName.rfind("::");
-	if (pos != std::string::npos) {
-		funcName = funcName.substr(0, pos);
-	}
-	// remove return type
-	pos = funcName.rfind(' ');
-	if (pos != std::string::npos) {
-		funcName = funcName.substr(pos + 1);
+std::string BLogger::_funcSignToString(std::string funcName) {
+	if constexpr (REMOVE_ARGS || REMOVE_FUNCTION_NAME_FROM_CLASSES || REMOVE_RETURN_TYPE) {
+		size_t pos;
+
+		if constexpr (REMOVE_ARGS) {
+			pos = funcName.rfind('(');
+			if (pos != std::string::npos) {
+				funcName = funcName.substr(0, pos);
+			}
+		}
+
+		if constexpr (REMOVE_FUNCTION_NAME_FROM_CLASSES) {
+			if constexpr (!(REMOVE_ARGS)) {
+				// temp remove args
+				std::string tempFuncName;
+				pos = funcName.rfind('(');
+				if (pos != std::string::npos) {
+					tempFuncName = funcName.substr(0, pos);
+				}
+
+				// after temp remove args remove class from funcName
+				pos = tempFuncName.rfind("::");
+			} else {
+				pos = funcName.rfind("::");
+			}
+			if (pos != std::string::npos) {
+				funcName = funcName.substr(0, pos);
+			}
+		}
+
+		if constexpr (REMOVE_RETURN_TYPE) {
+			pos = funcName.rfind(' ');
+			if (pos != std::string::npos) {
+				funcName = funcName.substr(pos + 1);
+			}
+		}
 	}
 
-	if (funcName.size() < MAX_FUNCTION_NAME_LENGHT) {
-		funcName.resize(MAX_FUNCTION_NAME_LENGHT, ' ');
+	// try to align all function names, without shorting function name
+	if (funcName.size() < MAX_FUNCTION_NAME_LENGTH) {
+		funcName.resize(MAX_FUNCTION_NAME_LENGTH, ' ');
 	}
 	return funcName;
 }
 
 // Format the time string, including milliseconds
-std::stringstream BLogger::_MakeTimeStamp() {
-	auto now = system_clock::now();
-	auto ms = duration_cast<milliseconds>(now.time_since_epoch());
+std::stringstream BLogger::_makeTimeStamp() {
+	auto now = std::chrono::system_clock::now();
+	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
 
 	uint16_t milliseconds = ms.count() % 1000;
 
 	// Convert to time_t
-	time_t tt = system_clock::to_time_t(now);
+	time_t tt = std::chrono::system_clock::to_time_t(now);
 	// Get local time
 	std::tm *tm = std::localtime(&tt);
 
@@ -91,14 +111,16 @@ std::stringstream BLogger::_MakeTimeStamp() {
 	return ss;
 }
 
-void BLogger::_WriteLog(const std::stringstream &logMessage) {
+void BLogger::_writeLog(const std::stringstream &logMessage) {
 	if (LOG_TO_CONSOLE) {
 		std::cout << logMessage.str();
 	}
 
-	// Output to log file
-	if (_logFile.is_open()) {
-		_logFile << logMessage.str();
-		_logFile.flush(); // Ensure immediate write to file
+	if (LOG_TO_FILE) {
+		// Output to log file
+		if (_logFile.is_open()) {
+			_logFile << logMessage.str();
+			_logFile.flush(); // Ensure immediate write to file
+		}
 	}
 }

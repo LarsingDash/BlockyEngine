@@ -8,8 +8,15 @@
 #include <fstream>
 
 #define LOG_TO_CONSOLE 1
-#define MAX_FUNCTION_NAME_LENGHT 15
-#define LOG_FILE "logfile.txt"
+#define LOG_TO_FILE 1
+
+// length for function/class name that is reserved
+// if length function/class name is > value, alignment
+// of msg is offset by length function/class - value.
+constexpr int MAX_FUNCTION_NAME_LENGTH = 15;
+constexpr bool REMOVE_ARGS = true;
+constexpr bool REMOVE_FUNCTION_NAME_FROM_CLASSES = true;
+constexpr bool REMOVE_RETURN_TYPE = true;
 
 // for function name only: __func__
 #define BLOCKY_ENGINE_INFO(msg) bLogger.Log(LogLevel::INFO, __PRETTY_FUNCTION__, msg);
@@ -35,15 +42,21 @@ class BLogger {
     private:
         std::ofstream _logFile; // File stream for the log file
 
-        static std::string _LevelToString(LogLevel level);
+        static std::string _levelToString(LogLevel level);
 
-        static std::string _FuncSignToString(std::string funcName);
+        static std::string _funcSignToString(std::string funcName);
 
-        static std::stringstream _MakeTimeStamp();
+        static std::stringstream _makeTimeStamp();
 
-        void _WriteLog(const std::stringstream &logMessage);
+        void _writeLog(const std::stringstream &logMessage);
 };
 
-inline BLogger bLogger(LOG_FILE);
+// Definition of global variable 'BLogger bLogger' in a header file should have an 'inline' specifier.
+// Inline essentially tells the compiler that there MIGHT be multiple definitions,
+//  but they all DO refer to the same instance.
+// https://www.reddit.com/r/cpp_questions/comments/1ewgc22/how_do_inline_static_variables_work/
+// This bLogger object is created so that the BLOCKY_ENGINE_ macros can be called without first
+//  calling the constructor or having multiple BLogger objects.
+inline BLogger bLogger("logfile.txt");
 
 #endif //LOG_HPP

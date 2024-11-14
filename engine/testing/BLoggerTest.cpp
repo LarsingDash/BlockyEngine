@@ -4,23 +4,26 @@
 
 #include "BLoggerTest.hpp"
 
+#include <chrono>
+
 #include "../../engine/logging/BLogger.hpp"
 #include <string>
+#include <thread>
 
-void _TestBLoggerFunc() {
-	BLOCKY_ENGINE_DEBUG("Debugging information, in _TestBLoggerFunc()")
+void TestBLoggerFunc() {
+	BLOCKY_ENGINE_DEBUG("Debugging information, in TestBLoggerFunc()")
 }
 
 class BloggerClass {
 	public:
 		static void FuncBloggerClass() {
 			BLOCKY_ENGINE_DEBUG("Debugging information, in BloggerClass::FuncBloggerClass()")
-			_FuncBloggerClass();
+			_funcBloggerClass();
 		}
 
 	private:
-		static void _FuncBloggerClass() {
-			BLOCKY_ENGINE_DEBUG("Debugging information, in BloggerClass::_FuncBloggerClass()")
+		static void _funcBloggerClass() {
+			BLOCKY_ENGINE_DEBUG("Debugging information, in BloggerClass::_funcBloggerClass()")
 		}
 };
 
@@ -30,13 +33,14 @@ void BLoggerTest::Test() {
 	for (int i = 0; i < 5; i++) {
 		BLOCKY_ENGINE_INFO("Program update: " + std::to_string(i));
 
-		//delay
+		std::this_thread::sleep_for(std::chrono::microseconds(300));
+
 		for (int j = 0; j < 100000000; j++) { if (i == j) { j = i; } }
 	}
 
 	BLOCKY_ENGINE_ERROR("An error occurred.");
 	BLOCKY_ENGINE_WARNING("An warning occurred.");
 
-	_TestBLoggerFunc();
+	TestBLoggerFunc();
 	BloggerClass::FuncBloggerClass();
 }

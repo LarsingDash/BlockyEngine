@@ -10,8 +10,8 @@
 #include <string>
 #include <thread>
 
-void TestBLoggerFunc() {
-	BLOCKY_ENGINE_DEBUG("Debugging information, in TestBLoggerFunc()")
+void TestBLoggerFunc(const std::string &testStr = "") {
+	BLOCKY_ENGINE_DEBUG("Debugging information, in TestBLoggerFunc(const std::string& testStr = "")" + testStr)
 }
 
 class BloggerClass {
@@ -22,8 +22,9 @@ class BloggerClass {
 		}
 
 	private:
-		static void _funcBloggerClass() {
-			BLOCKY_ENGINE_DEBUG("Debugging information, in BloggerClass::_funcBloggerClass()")
+		static void _funcBloggerClass(const std::string &testStr = "") {
+			BLOCKY_ENGINE_DEBUG(
+				"Debugging information, in BloggerClass::_funcBloggerClass(const std::string& testStr = "")"+ testStr)
 		}
 };
 

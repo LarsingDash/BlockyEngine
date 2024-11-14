@@ -48,38 +48,56 @@ std::string BLogger::_levelToString(LogLevel level) {
 
 std::string BLogger::_funcSignToString(std::string funcName) {
 	if constexpr (REMOVE_ARGS || REMOVE_FUNCTION_NAME_FROM_CLASSES || REMOVE_RETURN_TYPE) {
-		size_t pos;
+		size_t pos1, pos2;
 
 		if constexpr (REMOVE_ARGS) {
-			pos = funcName.rfind('(');
-			if (pos != std::string::npos) {
-				funcName = funcName.substr(0, pos);
+			pos1 = funcName.rfind('(');
+			if (pos1 != std::string::npos) {
+				funcName = funcName.substr(0, pos1);
 			}
 		}
 
 		if constexpr (REMOVE_FUNCTION_NAME_FROM_CLASSES) {
-			if constexpr (!(REMOVE_ARGS)) {
+			if constexpr ((REMOVE_ARGS)) {
+				pos1 = funcName.rfind("::");
+
+				if (pos1 != std::string::npos) {
+					funcName = funcName.substr(0, pos1);
+				}
+			} else {
 				// temp remove args
 				std::string tempFuncName;
-				pos = funcName.rfind('(');
-				if (pos != std::string::npos) {
-					tempFuncName = funcName.substr(0, pos);
+				pos2 = funcName.rfind('(');
+				if (pos2 != std::string::npos) {
+					tempFuncName = funcName.substr(0, pos2);
 				}
 
 				// after temp remove args remove class from funcName
-				pos = tempFuncName.rfind("::");
-			} else {
-				pos = funcName.rfind("::");
-			}
-			if (pos != std::string::npos) {
-				funcName = funcName.substr(0, pos);
+				pos1 = tempFuncName.rfind("::");
+
+				// remove funtion beteween class and args
+				if (pos1 != std::string::npos && pos2 != std::string::npos) {
+					funcName = funcName.substr(0, pos1) + funcName.substr(pos2, funcName.length());
+				}
 			}
 		}
 
 		if constexpr (REMOVE_RETURN_TYPE) {
-			pos = funcName.rfind(' ');
-			if (pos != std::string::npos) {
-				funcName = funcName.substr(pos + 1);
+			if constexpr (!(REMOVE_ARGS)) {
+				// temp remove args
+				std::string tempFuncName;
+				pos1 = funcName.rfind('(');
+				if (pos1 != std::string::npos) {
+					tempFuncName = funcName.substr(0, pos1);
+				}
+
+				// after temp remove args remove class from funcName
+				pos1 = tempFuncName.rfind(' ');
+			} else {
+				pos1 = funcName.rfind(' ');
+			}
+			if (pos1 != std::string::npos) {
+				funcName = funcName.substr(pos1 + 1);
 			}
 		}
 	}

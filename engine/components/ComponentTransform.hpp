@@ -5,7 +5,7 @@
 #ifndef BLOCKYENGINE_COMPONENTTRANSFORM_HPP
 #define BLOCKYENGINE_COMPONENTTRANSFORM_HPP
 
-#include <glm/vec2.hpp>
+#include "glm/vec2.hpp"
 
 class ComponentTransform {
 	public:

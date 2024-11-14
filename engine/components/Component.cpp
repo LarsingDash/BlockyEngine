@@ -2,7 +2,7 @@
 // Created by larsv on 12/11/2024.
 //
 
-#include "sceneManager/gameObject/GameObject.hpp"
+#include "gameObject/GameObject.hpp"
 #include "Component.hpp"
 
 Component::Component(GameObject& gameObject, const char* tag) :

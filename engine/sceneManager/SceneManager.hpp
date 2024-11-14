@@ -8,7 +8,7 @@
 #include <vector>
 #include <memory>
 
-#include "sceneManager/gameObject/GameObject.hpp"
+#include "gameObject/GameObject.hpp"
 
 class SceneManager {
 	public:

@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "sceneManager/components/Renderable.hpp"
+#include "components/Renderable.hpp"
 
 SceneManager::SceneManager() : testScene{} {
 	testScene.reserve(2);

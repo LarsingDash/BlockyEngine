@@ -13,8 +13,8 @@
 #include <typeindex>
 #include <optional>
 
-#include "sceneManager/gameObject/Transform.hpp"
-#include "sceneManager/components/Component.hpp"
+#include "Transform.hpp"
+#include "components/Component.hpp"
 
 class GameObject {
 	public:

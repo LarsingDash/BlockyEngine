@@ -5,7 +5,7 @@
 #ifndef BLOCKYENGINE_RENDERABLE_HPP
 #define BLOCKYENGINE_RENDERABLE_HPP
 
-#include "sceneManager/components/Component.hpp"
+#include "Component.hpp"
 
 class Renderable : public Component {
 	public:

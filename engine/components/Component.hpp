@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "sceneManager/components/ComponentTransform.hpp"
+#include "ComponentTransform.hpp"
 
 class GameObject;
 

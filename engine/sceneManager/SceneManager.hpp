@@ -17,8 +17,8 @@ class SceneManager {
 
 		SceneManager(const SceneManager& other) = delete;
 		SceneManager& operator=(const SceneManager& other) = delete;
-		SceneManager(SceneManager&& other) noexcept = delete;
-		SceneManager& operator=(SceneManager&& other) noexcept = delete;
+		SceneManager(SceneManager&& other) noexcept = default;
+		SceneManager& operator=(SceneManager&& other) noexcept = default;
 
 		void Update(float delta);
 

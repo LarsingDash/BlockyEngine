@@ -3,5 +3,4 @@
         EllipseRenderable.cpp
         RectangleRenderable.cpp
         SpriteRenderable.cpp
-        RenderableType.hpp
 )

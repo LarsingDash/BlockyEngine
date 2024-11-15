@@ -8,12 +8,14 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+
 #include "components/renderables/Renderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 #include "SDL_render.h"
+#include "SDL.h"
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "SDL2_gfx/SDL2_rotozoom.h"
 
@@ -26,7 +28,16 @@ public:
 
 private:
     SDL_Renderer *renderer;
-    std::unordered_map<std::string, SDL_Texture *> textureCache;
+    struct SDLDeleter {
+        void operator()(SDL_Texture* texture) const {
+            if (texture) {
+                SDL_DestroyTexture(texture);
+            }
+        }
+    };
+//    std::unordered_map<std::string, std::unique_ptr<SDL_Texture, SDLDeleter>> textureCache;
+    std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> textureCache;
+
     void RenderRectangle(Renderable &renderable);
     void RenderEllipse(Renderable &renderable);
     void RenderSprite(Renderable &renderable);

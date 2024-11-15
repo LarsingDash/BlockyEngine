@@ -12,8 +12,8 @@ class SpriteRenderable : public Renderable {
 public:
     SpriteRenderable(GameObject &gameObject, const char *tag, const std::string &filePath, const std::string &spriteTag);
     ~SpriteRenderable() override = default;
-    std::string GetFilePath() const;
-    std::string GetSpriteTag() const;
+    [[nodiscard]] std::string GetFilePath() const;
+    [[nodiscard]] std::string GetSpriteTag() const;
 
 private:
     std::string _spriteTag;

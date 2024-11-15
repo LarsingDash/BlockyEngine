@@ -3,17 +3,15 @@
 //
 
 #include "RenderingModule.hpp"
+
 #define STB_IMAGE_IMPLEMENTATION
+
 #include "stb_image.h"
 
 
 RenderingModule::RenderingModule(SDL_Renderer *renderer) : renderer(renderer) {}
 
-RenderingModule::~RenderingModule() {
-    for (auto &it: textureCache) {
-        SDL_DestroyTexture(it.second);
-    }
-}
+RenderingModule::~RenderingModule() = default;
 
 void RenderingModule::Render(const std::vector<std::reference_wrapper<Renderable>> &renderables) {
     for (Renderable &renderable: renderables) {
@@ -37,7 +35,8 @@ void RenderingModule::RenderRectangle(Renderable &renderable) {
     glm::ivec4 color = rect.GetColor();
     ComponentTransform &transform = *rect.componentTransform;
 
-    SDL_Surface *rectSurface = SDL_CreateRGBSurfaceWithFormat(0, transform.scale.x, transform.scale.y, 32,
+    SDL_Surface *rectSurface = SDL_CreateRGBSurfaceWithFormat(0, static_cast<int>(transform.scale.x),
+                                                              static_cast<int>(transform.scale.y), 32,
                                                               SDL_PIXELFORMAT_RGBA32);
     if (!rectSurface) {
         std::cerr << "Failed to create rectangle surface: " << SDL_GetError() << std::endl;
@@ -63,8 +62,8 @@ void RenderingModule::RenderRectangle(Renderable &renderable) {
     }
 
     SDL_Rect destRect = {
-            static_cast<int>(transform.position.x - rotatedSurface->w / 2),
-            static_cast<int>(transform.position.y - rotatedSurface->h / 2),
+            static_cast<int>(transform.position.x - (float) rotatedSurface->w / 2),
+            static_cast<int>(transform.position.y - (float) rotatedSurface->h / 2),
             rotatedSurface->w,
             rotatedSurface->h
     };
@@ -80,10 +79,10 @@ void RenderingModule::RenderEllipse(Renderable &renderable) {
 
     ComponentTransform &transform = *ellipse.componentTransform;
 
-    int centerX = static_cast<int>(transform.position.x);
-    int centerY = static_cast<int>(transform.position.y);
-    int radiusX = static_cast<int>(transform.scale.x / 2.0f);
-    int radiusY = static_cast<int>(transform.scale.y / 2.0f);
+    auto centerX = static_cast<Sint16>(transform.position.x);
+    auto centerY = static_cast<Sint16>(transform.position.y);
+    auto radiusX = static_cast<Sint16>(transform.scale.x / 2.0f);
+    auto radiusY = static_cast<Sint16>(transform.scale.y / 2.0f);
 
     filledEllipseRGBA(renderer, centerX, centerY, radiusX, radiusY, color.r, color.g, color.b, color.a);
 }
@@ -100,17 +99,17 @@ void RenderingModule::RenderSprite(Renderable &renderable) {
     RenderTexture(texture, *sprite.componentTransform);
 }
 
-SDL_Texture *RenderingModule::LoadTexture(const SpriteRenderable &sprite, int &width, int &height) {
+SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable &sprite, int &width, int &height) {
     const std::string &spriteTag = sprite.GetSpriteTag();
 
-
-    //texture caching
+    // Check if the texture is already cached
     auto it = textureCache.find(spriteTag);
     if (it != textureCache.end()) {
-        SDL_QueryTexture(it->second, nullptr, nullptr, &width, &height);
-        return it->second;
+        SDL_QueryTexture(it->second.get(), nullptr, nullptr, &width, &height);
+        return it->second.get();
     }
 
+    // Load image using stb_image
     const std::string &filePath = sprite.GetFilePath();
     int channels;
     unsigned char *imageData = stbi_load(filePath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
@@ -119,6 +118,7 @@ SDL_Texture *RenderingModule::LoadTexture(const SpriteRenderable &sprite, int &w
         return nullptr;
     }
 
+    // Create an SDL surface
     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormatFrom(imageData, width, height, 32, width * 4,
                                                               SDL_PIXELFORMAT_RGBA32);
     if (!surface) {
@@ -127,7 +127,8 @@ SDL_Texture *RenderingModule::LoadTexture(const SpriteRenderable &sprite, int &w
         return nullptr;
     }
 
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    std::shared_ptr<SDL_Texture> texture(SDL_CreateTextureFromSurface(renderer, surface),
+                                         [](SDL_Texture *t) { SDL_DestroyTexture(t); });
     SDL_FreeSurface(surface);
     stbi_image_free(imageData);
 
@@ -136,10 +137,12 @@ SDL_Texture *RenderingModule::LoadTexture(const SpriteRenderable &sprite, int &w
         return nullptr;
     }
 
-    textureCache[spriteTag] = texture;
+    textureCache.emplace(spriteTag, std::move(texture));
 
-    return texture;
+    return texture.get();
 }
+
+
 
 
 void RenderingModule::RenderTexture(SDL_Texture *texture, const ComponentTransform &transform) {

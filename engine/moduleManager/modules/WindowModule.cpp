@@ -35,9 +35,7 @@ WindowModule::WindowModule() : renderingModule(nullptr) {
         SDL_DestroyWindow(window);
         return;
     }
-
-    renderingModule = RenderingModule(renderer);
-
+    renderingModule = std::make_unique<RenderingModule>(renderer);
 }
 
 WindowModule::~WindowModule() {
@@ -97,7 +95,7 @@ void WindowModule::ProcessEvents() {
 }
 
 void WindowModule::Render() {
-    renderingModule.Render(renderables);
+    renderingModule->Render(renderables);
 }
 
 

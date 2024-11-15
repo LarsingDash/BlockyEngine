@@ -21,7 +21,6 @@ class WindowModule : public ModuleWrapper {
 		~WindowModule() override;
 
 		void Update(float delta) override;
-
 		void AddRenderable(Renderable& renderable);
 		void RemoveRenderable(Renderable& renderable);
 
@@ -34,8 +33,8 @@ class WindowModule : public ModuleWrapper {
 
 		SDL_Window* window;
 		SDL_Renderer* renderer;
-        RenderingModule renderingModule;
-    std::vector<std::reference_wrapper<Renderable>> renderables;
+        std::unique_ptr<RenderingModule> renderingModule;
+        std::vector<std::reference_wrapper<Renderable>> renderables;
 };
 
 

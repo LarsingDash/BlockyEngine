@@ -6,7 +6,12 @@
 #define BLOCKYENGINE_RENDERABLE_HPP
 
 #include "components/Component.hpp"
-#include "RenderableType.hpp"
+
+enum RenderableType{
+    RECTANGLE,
+    ELLIPSE,
+    SPRITE
+};
 
 class Renderable : public Component {
 

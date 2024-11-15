@@ -28,7 +28,7 @@ SceneManager::SceneManager() : testScene{} {
     ellipseB.componentTransform->position = glm::vec2{200.f, 150.f};
     ellipseB.componentTransform->scale = glm::vec2{150.f, 100.f};
 
-    auto& spriteA = objectB->AddComponent<SpriteRenderable>("spriteA", R"(E:\C++\Blocky Engine Minor\BlockyEngine\assets\kaboom.png)", "triangleSprite");
+    auto& spriteA = objectB->AddComponent<SpriteRenderable>("spriteA", "../assets/kaboom.png", "triangleSprite");
     spriteA.componentTransform->position = glm::vec2{350.f, 150.f};
 
 

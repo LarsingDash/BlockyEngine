@@ -11,6 +11,8 @@
 
 #include "BlockyEngine.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
+#include "components/renderables/EllipseRenderable.hpp"
+#include "components/renderables/SpriteRenderable.hpp"
 
 WindowModule::WindowModule() {
     if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
@@ -100,25 +102,60 @@ void WindowModule::Render() {
     for (Renderable &renderable: renderables) {
         switch (renderable.GetRenderableType()) {
             case RECTANGLE: {
-                auto& rect = dynamic_cast<RectangleRenderable&>(renderable);
-                glm::ivec4 color = rect.GetColor();
-                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
-                ComponentTransform& transform = *rect.componentTransform;
-                SDL_FRect rectShape{
-                        transform.position.x - transform.scale.x / 2.f,
-                        transform.position.y - transform.scale.y / 2.f,
-                        transform.scale.x,
-                        transform.scale.y
-                };
-                SDL_RenderFillRectF(renderer, &rectShape);
-                break;
+                RenderRectangle(renderable);
+               break;
             }
             case ELLIPSE:
+                RenderEllipse(renderable);
                 break;
             case SPRITE:
+                RenderSprite(renderable);
                 break;
         }
     }
 
 }
+
+void WindowModule::RenderRectangle(Renderable &renderable) {
+    auto& rect = dynamic_cast<RectangleRenderable&>(renderable);
+    glm::ivec4 color = rect.GetColor();
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    ComponentTransform& transform = *rect.componentTransform;
+    SDL_FRect rectShape{
+            transform.position.x - transform.scale.x / 2.f,
+            transform.position.y - transform.scale.y / 2.f,
+            transform.scale.x,
+            transform.scale.y
+    };
+    SDL_RenderFillRectF(renderer, &rectShape);
+
+}
+
+void WindowModule::RenderEllipse(Renderable &renderable) {
+    auto &ellipse = dynamic_cast<EllipseRenderable &>(renderable);
+    glm::ivec4 color = ellipse.GetColor();
+
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    ComponentTransform &transform = *ellipse.componentTransform;
+
+    float centerX = transform.position.x;
+    float centerY = transform.position.y;
+    float radiusX = transform.scale.x / 2.0f;
+    float radiusY = transform.scale.y / 2.0f;
+
+    for (float angle = 0; angle < 360.0f; angle += 1.0f) {
+        float rad = angle * M_PI / 180.0f;
+        float x = centerX + radiusX * cos(rad);
+        float y = centerY + radiusY * sin(rad);
+        SDL_RenderDrawPointF(renderer, x, y);
+    }
+}
+
+void WindowModule::RenderSprite(Renderable &renderable) {
+
+}
+
+
+

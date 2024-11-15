@@ -12,7 +12,7 @@ class Renderable : public Component {
 
     public:
 		Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType);
-        virtual ~Renderable() override;
+        ~Renderable() override;
 		
 		void Start() override;
 		void Update(float delta) override;

@@ -7,7 +7,7 @@
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
 
-Renderable::Renderable(GameObject& gameObject, const char* tag) : Component(gameObject, tag) {}
+Renderable::Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType) : Component(gameObject, tag), _renderableType(renderableType) {}
 
 Renderable::~Renderable() = default;
 
@@ -16,10 +16,15 @@ void Renderable::Start() {
 }
 
 void Renderable::Update(float delta) {
-	componentTransform->rotation = componentTransform->rotation + 90.f * delta;
-	if (componentTransform->rotation >= 360.f) componentTransform->rotation -= 360;
+
 }
 
 void Renderable::End() {
 	ModuleManager::getInstance().getModule<WindowModule>().RemoveRenderable(*this);
 }
+
+RenderableType Renderable::GetRenderableType() {
+    return _renderableType;
+}
+
+

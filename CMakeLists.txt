@@ -18,10 +18,12 @@ include_directories("${CMAKE_MODULE_PATH}")
 add_executable(${PROJECT_NAME} main.cpp)
 
 add_subdirectory(engine)
+add_subdirectory(libs/SDL2_gfx)
+
+
 
 target_link_libraries(${PROJECT_NAME}
         mingw32
+        sdl_gfx
 
-        "${SDL2_PATH}/lib/libSDL2main.a"
-        "${SDL2_PATH}/lib/libSDL2.dll.a"
 )

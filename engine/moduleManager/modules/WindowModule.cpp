@@ -8,7 +8,7 @@
 #include <SDL.h>
 
 #include <iostream>
-
+#include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "BlockyEngine.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
@@ -117,40 +117,30 @@ void WindowModule::Render() {
 }
 
 void WindowModule::RenderRectangle(Renderable &renderable) {
-    auto& rect = dynamic_cast<RectangleRenderable&>(renderable);
+    auto& rect = reinterpret_cast<RectangleRenderable&>(renderable);
     glm::ivec4 color = rect.GetColor();
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-
     ComponentTransform& transform = *rect.componentTransform;
-    SDL_FRect rectShape{
-            transform.position.x - transform.scale.x / 2.f,
-            transform.position.y - transform.scale.y / 2.f,
-            transform.scale.x,
-            transform.scale.y
-    };
-    SDL_RenderFillRectF(renderer, &rectShape);
 
+    int x1 = static_cast<int>(transform.position.x - transform.scale.x / 2.f);
+    int y1 = static_cast<int>(transform.position.y - transform.scale.y / 2.f);
+    int x2 = static_cast<int>(transform.position.x + transform.scale.x / 2.f);
+    int y2 = static_cast<int>(transform.position.y + transform.scale.y / 2.f);
+    boxRGBA(renderer, x1, y1, x2, y2, color.r, color.g, color.b, color.a);
 }
 
 void WindowModule::RenderEllipse(Renderable &renderable) {
-    auto &ellipse = dynamic_cast<EllipseRenderable &>(renderable);
+    auto &ellipse = reinterpret_cast<EllipseRenderable &>(renderable);
     glm::ivec4 color = ellipse.GetColor();
-
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
     ComponentTransform &transform = *ellipse.componentTransform;
 
-    float centerX = transform.position.x;
-    float centerY = transform.position.y;
-    float radiusX = transform.scale.x / 2.0f;
-    float radiusY = transform.scale.y / 2.0f;
+    int centerX = static_cast<int>(transform.position.x);
+    int centerY = static_cast<int>(transform.position.y);
+    int radiusX = static_cast<int>(transform.scale.x / 2.0f);
+    int radiusY = static_cast<int>(transform.scale.y / 2.0f);
 
-    for (float angle = 0; angle < 360.0f; angle += 1.0f) {
-        float rad = angle * M_PI / 180.0f;
-        float x = centerX + radiusX * cos(rad);
-        float y = centerY + radiusY * sin(rad);
-        SDL_RenderDrawPointF(renderer, x, y);
-    }
+    filledEllipseRGBA(renderer, centerX, centerY, radiusX, radiusY, color.r, color.g, color.b, color.a);
+
 }
 
 void WindowModule::RenderSprite(Renderable &renderable) {

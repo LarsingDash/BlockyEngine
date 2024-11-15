@@ -109,7 +109,7 @@ SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable &sprite, int &w
         return it->second.get();
     }
 
-    // Load image using stb_image
+    //Load image using stb_image
     const std::string &filePath = sprite.GetFilePath();
     int channels;
     unsigned char *imageData = stbi_load(filePath.c_str(), &width, &height, &channels, STBI_rgb_alpha);

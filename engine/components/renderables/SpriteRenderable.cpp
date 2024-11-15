@@ -4,10 +4,12 @@
 
 #include "SpriteRenderable.hpp"
 
-SpriteRenderable::SpriteRenderable(GameObject &gameObject, const char *tag, const std::string &filePath,
-                                   const std::string &spriteTag) : Renderable(gameObject, tag, RenderableType::SPRITE),
-                                                                   _filePath(filePath),
-                                                                   _spriteTag(spriteTag) {}
+#include <utility>
+
+SpriteRenderable::SpriteRenderable(GameObject &gameObject, const char *tag, std::string filePath,
+                                   std::string spriteTag) : Renderable(gameObject, tag, RenderableType::SPRITE),
+                                                                   _filePath(std::move(filePath)),
+                                                                   _spriteTag(std::move(spriteTag)) {}
 
 std::string SpriteRenderable::GetFilePath() const {
     return _filePath;

@@ -16,8 +16,7 @@ void Renderable::Start() {
 }
 
 void Renderable::Update(float delta) {
-	componentTransform->rotation = componentTransform->rotation + 90.f * delta;
-	if (componentTransform->rotation >= 360.f) componentTransform->rotation -= 360;
+
 }
 
 void Renderable::End() {

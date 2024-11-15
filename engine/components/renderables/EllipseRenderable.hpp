@@ -11,7 +11,7 @@ class EllipseRenderable : public Renderable {
 public:
     EllipseRenderable(GameObject& gameObject, const char* tag, const glm::ivec4& color);
     ~EllipseRenderable() override = default;
-    glm::ivec4 GetColor() const;
+    [[nodiscard]] glm::ivec4 GetColor() const;
 
 private:
     glm::ivec4 _color;

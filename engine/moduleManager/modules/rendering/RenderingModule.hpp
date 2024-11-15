@@ -28,14 +28,6 @@ public:
 
 private:
     SDL_Renderer *renderer;
-    struct SDLDeleter {
-        void operator()(SDL_Texture* texture) const {
-            if (texture) {
-                SDL_DestroyTexture(texture);
-            }
-        }
-    };
-//    std::unordered_map<std::string, std::unique_ptr<SDL_Texture, SDLDeleter>> textureCache;
     std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> textureCache;
 
     void RenderRectangle(Renderable &renderable);

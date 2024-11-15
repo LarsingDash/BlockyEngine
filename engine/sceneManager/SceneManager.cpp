@@ -25,12 +25,11 @@ SceneManager::SceneManager() : testScene{} {
     ellipseA.componentTransform->position = glm::vec2{150.f, 50.f};
 
     auto& ellipseB = objectB->AddComponent<EllipseRenderable>("ellipseB", glm::ivec4(0, 0, 255, 255));
-    ellipseB.componentTransform->position = glm::vec2{170.f, 170.f};
+    ellipseB.componentTransform->position = glm::vec2{200.f, 150.f};
     ellipseB.componentTransform->scale = glm::vec2{150.f, 100.f};
 
-    auto& spriteA = objectB->AddComponent<SpriteRenderable>("spriteA", R"(E:\C++\Blocky Engine Minor\BlockyEngine\assets\triangle.png)", "triangleSprite");
-    spriteA.componentTransform->position = glm::vec2{200.f, 200.f};
-    spriteA.componentTransform->rotation = 45.f;
+    auto& spriteA = objectB->AddComponent<SpriteRenderable>("spriteA", R"(E:\C++\Blocky Engine Minor\BlockyEngine\assets\kaboom.png)", "triangleSprite");
+    spriteA.componentTransform->position = glm::vec2{350.f, 150.f};
 
 
 }

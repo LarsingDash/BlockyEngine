@@ -13,7 +13,7 @@ class RectangleRenderable : public Renderable {
 public:
     RectangleRenderable(GameObject& gameObject, const char* tag, const glm::ivec4& color);
     ~RectangleRenderable() override = default;
-    glm::ivec4 GetColor() const;
+    [[nodiscard]] glm::ivec4 GetColor() const;
 
 private:
     glm::ivec4 _color;

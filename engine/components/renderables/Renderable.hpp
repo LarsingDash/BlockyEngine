@@ -5,9 +5,15 @@
 #ifndef BLOCKYENGINE_RENDERABLE_HPP
 #define BLOCKYENGINE_RENDERABLE_HPP
 
-#include "Component.hpp"
+#include "components/Component.hpp"
 
 class Renderable : public Component {
+    enum RenderableType{
+        RECTANGLE,
+        ELLIPSE,
+        SPRITE
+    };
+
 	public:
 		Renderable(GameObject& gameObject, const char* tag);
 		~Renderable() override;

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "moduleManager/ModuleWrapper.hpp"
-#include "components/Renderable.hpp"
+#include "components/renderables/Renderable.hpp"
 
 class WindowModule : public ModuleWrapper {
 	public:

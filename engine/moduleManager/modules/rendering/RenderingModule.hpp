@@ -22,6 +22,9 @@ private:
     void RenderRectangle(Renderable &renderable);
     void RenderEllipse(Renderable &renderable);
     void RenderSprite(Renderable &renderable);
+
+    SDL_Texture *LoadTexture(const std::string &filePath, int &width, int &height);
+    void RenderTexture(SDL_Texture *texture, const ComponentTransform &transform, int width, int height);
 };
 
 

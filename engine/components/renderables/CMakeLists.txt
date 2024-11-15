@@ -1,3 +1,7 @@
 ﻿target_sources(${PROJECT_NAME} PRIVATE
-    Renderable.cpp
+        Renderable.cpp
+        EllipseRenderable.cpp
+        RectangleRenderable.cpp
+        SpriteRenderable.cpp
+        RenderableType.hpp
 )

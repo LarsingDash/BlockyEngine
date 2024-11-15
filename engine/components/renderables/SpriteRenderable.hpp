@@ -1,0 +1,14 @@
+//
+// Created by 11896 on 15/11/2024.
+//
+
+#ifndef BLOCKYENGINE_SPRITERENDERABLE_HPP
+#define BLOCKYENGINE_SPRITERENDERABLE_HPP
+
+
+class SpriteRenderable {
+
+};
+
+
+#endif //BLOCKYENGINE_SPRITERENDERABLE_HPP

@@ -7,7 +7,7 @@
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
 
-Renderable::Renderable(GameObject& gameObject, const char* tag) : Component(gameObject, tag) {}
+Renderable::Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType) : Component(gameObject, tag), _renderableType(renderableType) {}
 
 Renderable::~Renderable() = default;
 
@@ -23,3 +23,9 @@ void Renderable::Update(float delta) {
 void Renderable::End() {
 	ModuleManager::getInstance().getModule<WindowModule>().RemoveRenderable(*this);
 }
+
+RenderableType Renderable::GetRenderableType() {
+    return _renderableType;
+}
+
+

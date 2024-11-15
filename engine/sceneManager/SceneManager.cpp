@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "components/renderables/Renderable.hpp"
+#include "components/renderables/RectangleRenderable.hpp"
 
 SceneManager::SceneManager() : testScene{} {
 	testScene.reserve(2);
@@ -15,16 +16,11 @@ SceneManager::SceneManager() : testScene{} {
 	auto& objectB = testScene.emplace_back(std::make_unique<GameObject>("objectB"));
 
 	//aA with default pos (50, 50)
-	objectA->AddComponent<Renderable>("aA");
+    objectA->AddComponent<RectangleRenderable>("aA", glm::ivec4(255, 0, 0, 255));
 	
 	//bA with (50, 150)
-	auto& bA = objectB->AddComponent<Renderable>("bA");
-	bA.componentTransform->position = glm::vec2{50.f, 150.f};
-	
-	//bB with (100, 150) pos and double width
-	auto& bB = objectB->AddComponent<Renderable>("bB");
-	bB.componentTransform->position = glm::vec2{100.f, 150.f};
-	bB.componentTransform->scale *= glm::vec2{2.f, 1.f};
+    auto& bA = objectB->AddComponent<RectangleRenderable>("bA", glm::ivec4(0, 255, 0, 255));
+    bA.componentTransform->position = glm::vec2{50.f, 200.f};
 }
 
 void SceneManager::Update(float delta) {

@@ -6,21 +6,22 @@
 #define BLOCKYENGINE_RENDERABLE_HPP
 
 #include "components/Component.hpp"
+#include "RenderableType.hpp"
 
 class Renderable : public Component {
-    enum RenderableType{
-        RECTANGLE,
-        ELLIPSE,
-        SPRITE
-    };
 
-	public:
-		Renderable(GameObject& gameObject, const char* tag);
-		~Renderable() override;
+    public:
+		Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType);
+        virtual ~Renderable() override;
 		
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
+        RenderableType GetRenderableType();
+
+    protected:
+        RenderableType _renderableType;
+
 };
 
 

@@ -5,26 +5,33 @@
 #ifndef BLOCKYENGINE_RENDERINGMODULE_HPP
 #define BLOCKYENGINE_RENDERINGMODULE_HPP
 
-
+#include <iostream>
 #include <vector>
-#include "SDL_render.h"
+#include <unordered_map>
 #include "components/renderables/Renderable.hpp"
+#include "components/renderables/SpriteRenderable.hpp"
+#include "components/renderables/RectangleRenderable.hpp"
+#include "components/renderables/EllipseRenderable.hpp"
+#include "components/renderables/SpriteRenderable.hpp"
+#include "SDL_render.h"
+#include "SDL2_gfx/SDL2_gfxPrimitives.h"
+#include "SDL2_gfx/SDL2_rotozoom.h"
+
 
 class RenderingModule {
 public:
     explicit RenderingModule(SDL_Renderer *renderer);
-    ~RenderingModule() = default;
-    void Render(const std::vector<std::reference_wrapper<Renderable>>& renderables);
+    ~RenderingModule();
+    void Render(const std::vector<std::reference_wrapper<Renderable>> &renderables);
 
 private:
     SDL_Renderer *renderer;
-
+    std::unordered_map<std::string, SDL_Texture *> textureCache;
     void RenderRectangle(Renderable &renderable);
     void RenderEllipse(Renderable &renderable);
     void RenderSprite(Renderable &renderable);
-
-    SDL_Texture *LoadTexture(const std::string &filePath, int &width, int &height);
-    void RenderTexture(SDL_Texture *texture, const ComponentTransform &transform, int width, int height);
+    void RenderTexture(SDL_Texture *texture, const ComponentTransform &transform);
+    SDL_Texture *LoadTexture(const SpriteRenderable &sprite, int &width, int &height);
 };
 
 

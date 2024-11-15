@@ -8,10 +8,7 @@
 #include <SDL.h>
 
 #include <iostream>
-#include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "BlockyEngine.hpp"
-#include "components/renderables/RectangleRenderable.hpp"
-#include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 
 WindowModule::WindowModule() : renderingModule(nullptr) {

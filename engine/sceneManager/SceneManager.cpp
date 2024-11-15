@@ -3,9 +3,6 @@
 //
 
 #include "SceneManager.hpp"
-
-#include <iostream>
-
 #include "components/renderables/Renderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
@@ -31,7 +28,7 @@ SceneManager::SceneManager() : testScene{} {
     ellipseB.componentTransform->position = glm::vec2{170.f, 170.f};
     ellipseB.componentTransform->scale = glm::vec2{150.f, 100.f};
 
-    auto& spriteA = objectB->AddComponent<SpriteRenderable>("spriteA", "E:\\C++\\Blocky Engine Minor\\BlockyEngine\\assets\\triangle.png", "triangleSprite");
+    auto& spriteA = objectB->AddComponent<SpriteRenderable>("spriteA", R"(E:\C++\Blocky Engine Minor\BlockyEngine\assets\triangle.png)", "triangleSprite");
     spriteA.componentTransform->position = glm::vec2{200.f, 200.f};
     spriteA.componentTransform->rotation = 45.f;
 

@@ -33,9 +33,8 @@ class WindowModule : public ModuleWrapper {
 
 		SDL_Window* window;
 		SDL_Renderer* renderer;
-        std::unique_ptr<RenderingModule> renderingModule;
-        std::vector<std::reference_wrapper<Renderable>> renderables;
+		std::unique_ptr<RenderingModule> renderingModule;
+		std::vector<std::reference_wrapper<Renderable>> renderables;
 };
-
 
 #endif //BLOCKYENGINE_WINDOWMODULE_HPP

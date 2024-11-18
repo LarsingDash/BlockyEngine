@@ -6,15 +6,15 @@
 
 #include <utility>
 
-SpriteRenderable::SpriteRenderable(GameObject &gameObject, const char *tag, std::string filePath,
-                                   std::string spriteTag) : Renderable(gameObject, tag, RenderableType::SPRITE),
-                                                                   _filePath(std::move(filePath)),
-                                                                   _spriteTag(std::move(spriteTag)) {}
+SpriteRenderable::SpriteRenderable(GameObject& gameObject, const char* tag,
+								   std::string filePath, std::string spriteTag) :
+		Renderable(gameObject, tag, RenderableType::SPRITE),
+		_filePath(std::move(filePath)), _spriteTag(std::move(spriteTag)) {}
 
 std::string SpriteRenderable::GetFilePath() const {
-    return _filePath;
+	return _filePath;
 }
 
 std::string SpriteRenderable::GetSpriteTag() const {
-    return _spriteTag;
+	return _spriteTag;
 }

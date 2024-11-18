@@ -41,7 +41,7 @@ class GameObject {
 			auto typeIt = components.find(type);
 			std::unique_ptr<T> component = std::make_unique<T>(*this, componentTag, std::forward<Args>(args)...);
 			component->Start();
-			
+
 			//Find component list, create it if there was none
 			if (typeIt == components.end()) {
 				//Create new list with the 
@@ -60,7 +60,7 @@ class GameObject {
 			if (componentIt) {
 				//Call End()
 				(*componentIt.value())->End();
-				
+
 				//Erase
 				auto& typeList = components[typeid(T)];
 				typeList.erase(*componentIt);

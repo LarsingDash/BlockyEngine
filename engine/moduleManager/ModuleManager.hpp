@@ -13,7 +13,7 @@
 #include "moduleManager/ModuleWrapper.hpp"
 
 class ModuleManager {
-	public:		
+	public:
 		static ModuleManager& getInstance();
 		~ModuleManager() = default;
 
@@ -27,16 +27,16 @@ class ModuleManager {
 		template<typename T>
 		T& getModule() {
 			static_assert(std::is_base_of<ModuleWrapper, T>::value, "T must inherit from ModuleWrapper");
-			
+
 			//Try to find the module based on the given type
 			auto& type = typeid(T);
 			auto it = modules.find(type);
-			
+
 			//Return the requested module, if none was found: throw an error indicating so
 			if (it == modules.end()) throw std::runtime_error("Requested module not found in the modules map");
 			return dynamic_cast<T&>(*modules[type]);
 		}
-		
+
 	private:
 		ModuleManager();
 		std::unordered_map<std::type_index, std::unique_ptr<ModuleWrapper>> modules;

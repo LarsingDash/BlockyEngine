@@ -7,27 +7,24 @@
 
 #include "components/Component.hpp"
 
-enum RenderableType{
-    RECTANGLE,
-    ELLIPSE,
-    SPRITE
+enum RenderableType {
+	RECTANGLE,
+	ELLIPSE,
+	SPRITE
 };
 
 class Renderable : public Component {
-
-    public:
+	public:
 		Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType);
-        ~Renderable() override;
-		
+		~Renderable() override;
+
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-        RenderableType GetRenderableType();
+		RenderableType GetRenderableType();
 
-    protected:
-        RenderableType _renderableType;
-
+	protected:
+		RenderableType _renderableType;
 };
-
 
 #endif //BLOCKYENGINE_RENDERABLE_HPP

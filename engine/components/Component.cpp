@@ -6,7 +6,6 @@
 #include "Component.hpp"
 
 Component::Component(GameObject& gameObject, const char* tag) :
-		gameObject{gameObject}, tag{tag}, componentTransform{
-		std::make_unique<ComponentTransform>()} {}
+		gameObject{gameObject}, tag{tag}, componentTransform{std::make_unique<ComponentTransform>()} {}
 
 Component::~Component() = default;

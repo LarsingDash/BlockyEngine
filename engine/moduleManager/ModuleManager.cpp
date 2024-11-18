@@ -16,5 +16,5 @@ ModuleManager::ModuleManager() : modules{} {
 }
 
 void ModuleManager::Update(float delta) {
-	for (auto& module: modules) module.second->Update(delta);
+	for (auto& module : modules) module.second->Update(delta);
 }

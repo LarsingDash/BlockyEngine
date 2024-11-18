@@ -10,8 +10,8 @@ GameObject::GameObject(const char* tag) :
 }
 
 GameObject::~GameObject() {
-	for (auto& type: components) {
-		for (auto& component: type.second) {
+	for (auto& type : components) {
+		for (auto& component : type.second) {
 			component->End();
 		}
 	}
@@ -19,8 +19,8 @@ GameObject::~GameObject() {
 
 void GameObject::Update(float delta) {
 	//Cascade update to components
-	for (auto& type: components) {
-		for (auto& component: type.second) {
+	for (auto& type : components) {
+		for (auto& component : type.second) {
 			component->Update(delta);
 		}
 	}

@@ -20,10 +20,10 @@ class BlockyEngine {
 		BlockyEngine& operator=(BlockyEngine&& other) noexcept = delete;
 
 		void Run();
-		
+
 		//Game
 		static bool isRunning;
-		
+
 	private:
 		std::unique_ptr<SceneManager> sceneManager;
 		ModuleManager& moduleManager;

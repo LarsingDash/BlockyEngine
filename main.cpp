@@ -3,6 +3,6 @@
 #include "BlockyEngine.hpp"
 
 int main() {
-	BlockyEngine blockyEngine{};
-	blockyEngine.Run();
+	std::unique_ptr<BlockyEngine> blockyEngine = std::make_unique<BlockyEngine>();
+	blockyEngine->Run();
 }

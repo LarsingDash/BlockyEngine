@@ -9,7 +9,7 @@ class ModuleWrapper {
 	public:
 		ModuleWrapper() = default;
 		virtual ~ModuleWrapper() = default;
-		
+
 		virtual void Update(float delta) = 0;
 };
 

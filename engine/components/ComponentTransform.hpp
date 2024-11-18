@@ -10,7 +10,7 @@
 class ComponentTransform {
 	public:
 		ComponentTransform();
-		
+
 		glm::vec2 position;
 		float rotation;
 		glm::vec2 scale;

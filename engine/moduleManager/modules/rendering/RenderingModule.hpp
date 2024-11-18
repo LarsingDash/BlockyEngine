@@ -19,23 +19,21 @@
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "SDL2_gfx/SDL2_rotozoom.h"
 
-
 class RenderingModule {
-public:
-    explicit RenderingModule(SDL_Renderer *renderer);
-    ~RenderingModule();
-    void Render(const std::vector<std::reference_wrapper<Renderable>> &renderables);
+	public:
+		explicit RenderingModule(SDL_Renderer* renderer);
+		~RenderingModule();
+		void Render(const std::vector<std::reference_wrapper<Renderable>>& renderables);
 
-private:
-    SDL_Renderer *renderer;
-    std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> textureCache;
+	private:
+		SDL_Renderer* renderer;
+		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> textureCache;
 
-    void RenderRectangle(Renderable &renderable);
-    void RenderEllipse(Renderable &renderable);
-    void RenderSprite(Renderable &renderable);
-    void RenderTexture(SDL_Texture *texture, const ComponentTransform &transform);
-    SDL_Texture *LoadTexture(const SpriteRenderable &sprite, int &width, int &height);
+		void RenderRectangle(Renderable& renderable);
+		void RenderEllipse(Renderable& renderable);
+		void RenderSprite(Renderable& renderable);
+		void RenderTexture(SDL_Texture* texture, const ComponentTransform& transform);
+		SDL_Texture* LoadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
-
 
 #endif //BLOCKYENGINE_RENDERINGMODULE_HPP

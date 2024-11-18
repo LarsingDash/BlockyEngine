@@ -15,82 +15,67 @@ RenderingModule::~RenderingModule() = default;
 void RenderingModule::Render(const std::vector<std::reference_wrapper<Renderable>>& renderables) {
 	for (Renderable& renderable : renderables) {
 		switch (renderable.GetRenderableType()) {
-			case RECTANGLE:RenderRectangle(renderable);
+			case RECTANGLE:RenderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
 				break;
-			case ELLIPSE:RenderEllipse(renderable);
+			case ELLIPSE:RenderEllipse(reinterpret_cast<EllipseRenderable&>(renderable));
 				break;
-			case SPRITE:RenderSprite(renderable);
+			case SPRITE:RenderSprite(reinterpret_cast<SpriteRenderable&>(renderable));
 				break;
 		}
 	}
 }
 
-void RenderingModule::RenderRectangle(Renderable& renderable) {
-	auto& rect = reinterpret_cast<RectangleRenderable&>(renderable);
-	glm::ivec4 color = rect.GetColor();
-	ComponentTransform& transform = *rect.componentTransform;
+void RenderingModule::RenderRectangle(RectangleRenderable& renderable) {
+	glm::ivec4 color = renderable.GetColor();
+	ComponentTransform& transform = *renderable.componentTransform;
 
-	SDL_Surface* rectSurface = SDL_CreateRGBSurfaceWithFormat(0, static_cast<int>(transform.scale.x),
-															  static_cast<int>(transform.scale.y), 32,
-															  SDL_PIXELFORMAT_RGBA32);
-	if (!rectSurface) {
-		std::cerr << "Failed to create rectangle surface: " << SDL_GetError() << std::endl;
-		return;
+	float rad = transform.rotation * static_cast<float>(M_PI) / 180.f;
+	float cosTheta = cos(rad);
+	float sinTheta = sin(rad);
+
+	int x = static_cast<int>(std::round(transform.position.x));
+	int y = static_cast<int>(std::round(transform.position.y));
+	int w = static_cast<int>(std::round(transform.scale.x));
+	int h = static_cast<int>(std::round(transform.scale.y));
+
+	SDL_Point points[4];
+	points[0] = {x + static_cast<int>(-w / 2 * cosTheta - -h / 2 * sinTheta), y + static_cast<int>(-w / 2 * sinTheta + -h / 2 * cosTheta)};
+	points[1] = {x + static_cast<int>(w / 2 * cosTheta - -h / 2 * sinTheta), y + static_cast<int>(w / 2 * sinTheta + -h / 2 * cosTheta)};
+	points[2] = {x + static_cast<int>(w / 2 * cosTheta - h / 2 * sinTheta), y + static_cast<int>(w / 2 * sinTheta + h / 2 * cosTheta)};
+	points[3] = {x + static_cast<int>(-w / 2 * cosTheta - h / 2 * sinTheta), y + static_cast<int>(-w / 2 * sinTheta + h / 2 * cosTheta)};
+
+	Sint16 xPoints[4], yPoints[4];
+	for (int i = 0; i < 4; ++i) {
+		xPoints[i] = static_cast<Sint16>(points[i].x);
+		yPoints[i] = static_cast<Sint16>(points[i].y);
 	}
 
-	SDL_FillRect(rectSurface, nullptr, SDL_MapRGBA(rectSurface->format, color.r, color.g, color.b, color.a));
-
-	SDL_Surface* rotatedSurface = rotozoomSurface(rectSurface, transform.rotation, 1.0, SMOOTHING_ON);
-	SDL_FreeSurface(rectSurface);
-
-	if (!rotatedSurface) {
-		std::cerr << "Failed to rotate rectangle surface: " << SDL_GetError() << std::endl;
-		return;
-	}
-
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, rotatedSurface);
-	SDL_FreeSurface(rotatedSurface);
-
-	if (!texture) {
-		std::cerr << "Failed to create texture from rotated surface: " << SDL_GetError() << std::endl;
-		return;
-	}
-
-	SDL_Rect destRect = {
-			static_cast<int>(transform.position.x - (float) rotatedSurface->w / 2),
-			static_cast<int>(transform.position.y - (float) rotatedSurface->h / 2),
-			rotatedSurface->w,
-			rotatedSurface->h
-	};
-
-	SDL_RenderCopy(renderer, texture, nullptr, &destRect);
-	SDL_DestroyTexture(texture);
+	if (renderable.IsFilled()) filledPolygonRGBA(renderer, xPoints, yPoints, 4, color.r, color.g, color.b, color.a);
+	else polygonRGBA(renderer, xPoints, yPoints, 4, color.r, color.g, color.b, color.a);
 }
 
-void RenderingModule::RenderEllipse(Renderable& renderable) {
-	auto& ellipse = reinterpret_cast<EllipseRenderable&>(renderable);
-	glm::ivec4 color = ellipse.GetColor();
+void RenderingModule::RenderEllipse(EllipseRenderable& renderable) {
+	glm::ivec4 color = renderable.GetColor();
 
-	ComponentTransform& transform = *ellipse.componentTransform;
+	ComponentTransform& transform = *renderable.componentTransform;
 
 	auto centerX = static_cast<Sint16>(transform.position.x);
 	auto centerY = static_cast<Sint16>(transform.position.y);
 	auto radiusX = static_cast<Sint16>(transform.scale.x / 2.0f);
 	auto radiusY = static_cast<Sint16>(transform.scale.y / 2.0f);
 
-	filledEllipseRGBA(renderer, centerX, centerY, radiusX, radiusY, color.r, color.g, color.b, color.a);
+	if (renderable.IsFilled()) filledEllipseRGBA(renderer, centerX, centerY, radiusX, radiusY, color.r, color.g, color.b, color.a);
+	else ellipseRGBA(renderer, centerX, centerY, radiusX, radiusY, color.r, color.g, color.b, color.a);
 }
 
-void RenderingModule::RenderSprite(Renderable& renderable) {
-	auto& sprite = reinterpret_cast<SpriteRenderable&>(renderable);
-
+void RenderingModule::RenderSprite(SpriteRenderable& renderable) {
 	int width, height;
-	SDL_Texture* texture = LoadTexture(sprite, width, height);
+	SDL_Texture* texture = LoadTexture(renderable, width, height);
 	if (!texture) {
 		return;
 	}
 
-	RenderTexture(texture, *sprite.componentTransform);
+	RenderTexture(texture, *renderable.componentTransform);
 }
 
 SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable& sprite, int& width, int& height) {

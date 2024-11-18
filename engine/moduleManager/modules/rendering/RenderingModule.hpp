@@ -29,9 +29,9 @@ class RenderingModule {
 		SDL_Renderer* renderer;
 		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> textureCache;
 
-		void RenderRectangle(Renderable& renderable);
-		void RenderEllipse(Renderable& renderable);
-		void RenderSprite(Renderable& renderable);
+		void RenderRectangle(RectangleRenderable& renderable);
+		void RenderEllipse(EllipseRenderable& renderable);
+		void RenderSprite(SpriteRenderable& renderable);
 		void RenderTexture(SDL_Texture* texture, const ComponentTransform& transform);
 		SDL_Texture* LoadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };

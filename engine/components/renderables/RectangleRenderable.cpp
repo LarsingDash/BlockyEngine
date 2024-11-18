@@ -4,10 +4,13 @@
 
 #include "RectangleRenderable.hpp"
 
-
-RectangleRenderable::RectangleRenderable(GameObject &gameObject, const char* tag, const glm::ivec4 &color)
-        : Renderable(gameObject, tag, RenderableType::RECTANGLE), _color(color) {}
+RectangleRenderable::RectangleRenderable(GameObject &gameObject, const char* tag, const glm::ivec4 &color, bool isFilled)
+        : Renderable(gameObject, tag, RenderableType::RECTANGLE), _color(color), _isFilled(isFilled) {}
 
 glm::ivec4 RectangleRenderable::GetColor() const {
     return _color;
+}
+
+bool RectangleRenderable::IsFilled() const {
+	return _isFilled;
 }

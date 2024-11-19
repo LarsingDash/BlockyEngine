@@ -23,7 +23,7 @@ class SceneManager {
 		void Update(float delta);
 
 	private:
-		std::vector<std::unique_ptr<GameObject>> testScene;
+		std::unique_ptr<GameObject> testScene;
 };
 
 #endif //BLOCKYENGINE_SCENEMANAGER_HPP

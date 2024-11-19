@@ -19,7 +19,7 @@
 class GameObject {
 	public:
 		//----- RULE OF FIVE
-		explicit GameObject(const char* tag);
+		explicit GameObject(const char* tag, GameObject* parent = nullptr);
 		~GameObject();
 
 		GameObject(const GameObject& other) = delete;
@@ -34,18 +34,18 @@ class GameObject {
 		template<typename T, typename... Args>
 		T& AddComponent(const char* componentTag = "Untagged", Args&& ... args) {
 			//Perform validity checks
-			ComponentValidityCheck<T>();
+			_componentValidityCheck<T>();
 			const auto type = std::type_index(typeid(T));
 
 			//Create component and call Start() on it
-			auto typeIt = components.find(type);
+			auto typeIt = _components.find(type);
 			std::unique_ptr<T> component = std::make_unique<T>(*this, componentTag, std::forward<Args>(args)...);
 			component->Start();
 
 			//Find component list, create it if there was none
-			if (typeIt == components.end()) {
+			if (typeIt == _components.end()) {
 				//Create new list with the 
-				auto& typeList = components[type];
+				auto& typeList = _components[type];
 				return static_cast<T&>(*typeList.emplace_back(std::move(component)));
 			} else {
 				//Add new component to existing list
@@ -55,39 +55,41 @@ class GameObject {
 
 		template<typename T>
 		void RemoveComponent(const std::string& componentTag = "") {
-			std::optional<ComponentsList::iterator> componentIt = findComponentByTag<T>(componentTag);
+			std::optional<ComponentsList::iterator> componentIt = _findComponentByTag<T>(componentTag);
 
 			if (componentIt) {
 				//Call End()
 				(*componentIt.value())->End();
 
 				//Erase
-				auto& typeList = components[typeid(T)];
+				auto& typeList = _components[typeid(T)];
 				typeList.erase(*componentIt);
 
 				//Remove list if it's empty
 				if (typeList.empty()) {
-					components.erase(typeid(T));
+					_components.erase(typeid(T));
 				}
 			}
 		}
 
 		template<typename T>
 		T* GetComponent(const std::string& componentTag = "") {
-			auto componentIt = findComponentByTag<T>(componentTag);
+			auto componentIt = _findComponentByTag<T>(componentTag);
 
 			//Return tagged component cast to T* if found
 			return componentIt ? (**componentIt).get() : nullptr;
 		}
 
 		const std::string tag;
-
+		GameObject* parent;
 		std::unique_ptr<Transform> transform;
+		
+		std::vector<std::unique_ptr<GameObject>> children;
 
 	private:
 		//----- COMPONENTS
 		template<typename T>
-		inline void ComponentValidityCheck() {
+		inline void _componentValidityCheck() {
 			//Assert that T inherits Component
 			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
 		}
@@ -96,13 +98,13 @@ class GameObject {
 		//Finds an iterator to the component with the templated tag and given tag
 		//If the component was found, the given pointer will be set to it
 		template<typename T>
-		std::optional<ComponentsList::iterator> findComponentByTag(const std::string& componentTag) {
+		std::optional<ComponentsList::iterator> _findComponentByTag(const std::string& componentTag) {
 			//Perform Validity Checks
-			ComponentValidityCheck<T>();
+			_componentValidityCheck<T>();
 
 			//Find position of T and return nullptr if it wasn't found or the list was empty
-			const auto typeIt = components.find(std::type_index(typeid(T)));
-			if (typeIt == components.end() || typeIt->second.empty()) return std::nullopt;
+			const auto typeIt = _components.find(std::type_index(typeid(T)));
+			if (typeIt == _components.end() || typeIt->second.empty()) return std::nullopt;
 
 			//If no tag was given: return first component cast to T*
 			if (componentTag.empty()) {
@@ -119,7 +121,7 @@ class GameObject {
 			return (componentIt != typeList.end()) ? std::optional{componentIt} : std::nullopt;
 		}
 
-		std::unordered_map<std::type_index, ComponentsList> components;
+		std::unordered_map<std::type_index, ComponentsList> _components;
 };
 
 #endif //BLOCKYENGINE_GAMEOBJECT_HPP

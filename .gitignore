@@ -31,9 +31,8 @@
 *.out
 *.app
 
-.idea
-/cmake-build-debug
-/cmake-build-release
+.gdbinit
 
-!libs/**/*.a
-!libs/**/*.dll
+.idea
+/cmake-build-*
+/libs

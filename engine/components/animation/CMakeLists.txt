@@ -1,4 +1,4 @@
 ﻿target_sources(${PROJECT_NAME} PRIVATE
-        Animation.cpp
+        Animation.hpp
         Animator.cpp
 )

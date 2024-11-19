@@ -1,5 +1,8 @@
-﻿#include "engine/testing/BLoggerTest.hpp"
+#include <memory>
+
+#include "BlockyEngine.hpp"
 
 int main() {
-	BLoggerTest::Test();
+	std::unique_ptr<BlockyEngine> blockyEngine = std::make_unique<BlockyEngine>();
+	blockyEngine->Run();
 }

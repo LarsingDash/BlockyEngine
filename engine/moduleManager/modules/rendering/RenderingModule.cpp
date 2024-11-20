@@ -104,7 +104,7 @@ void RenderingModule::RenderSprite(SpriteRenderable& renderable) {
 		return;
 	}
 
-	const SDL_Rect* sourceRect = renderable.GetSourceRect();
+	const glm::vec4* sourceRect = renderable.GetSourceRect();
 
 	RenderTexture(texture, *renderable.componentTransform, sourceRect);
 }
@@ -159,23 +159,34 @@ SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable& sprite, int& w
 	return result.second ? result.first->second.get() : nullptr;
 }
 
-void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransform& transform, const SDL_Rect* sourceRect) {
+void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::vec4* sourceRect) {
 	if (!texture) {
 		std::cerr << "Cannot render null texture." << std::endl;
 		return;
 	}
 
 	SDL_FRect destRect = {
-			(transform.position.x - transform.scale.x / 2.0f),
-			(transform.position.y - transform.scale.y / 2.0f),
+			transform.position.x - transform.scale.x / 2.0f,
+			transform.position.y - transform.scale.y / 2.0f,
 			transform.scale.x,
 			transform.scale.y
 	};
 
+	SDL_Rect sdlSourceRect;
+	if (sourceRect) {
+		sdlSourceRect = {
+				static_cast<int>(sourceRect->x),
+				static_cast<int>(sourceRect->y),
+				static_cast<int>(sourceRect->z),
+				static_cast<int>(sourceRect->w)
+		};
+	}
+
 	SDL_RenderCopyExF(
-			renderer, texture, sourceRect, &destRect,
+			renderer, texture, sourceRect ? &sdlSourceRect : nullptr, &destRect,
 			transform.rotation, nullptr, SDL_RendererFlip::SDL_FLIP_NONE
 	);
 }
+
 
 

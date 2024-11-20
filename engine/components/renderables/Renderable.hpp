@@ -6,7 +6,7 @@
 #define BLOCKYENGINE_RENDERABLE_HPP
 
 #include "components/Component.hpp"
-#include "SDL_rect.h"
+#include "glm/vec4.hpp"
 
 enum RenderableType {
 	RECTANGLE,
@@ -20,7 +20,7 @@ class Renderable : public Component {
 		Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType);
 		~Renderable() override;
 
-		[[nodiscard]] virtual const SDL_Rect* GetSourceRect() const {
+		[[nodiscard]] virtual const glm::vec4* GetSourceRect() const {
 			return nullptr;
 		}
 

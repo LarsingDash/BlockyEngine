@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include "SpriteRenderable.hpp"
-#include "SDL_rect.h"
+#include <glm/vec4.hpp>
 
 class AnimationRenderable : public SpriteRenderable {
 	public:
@@ -17,16 +17,16 @@ class AnimationRenderable : public SpriteRenderable {
 
 		void LoadFrames(int sheetWidth, int sheetHeight);
 
-		[[nodiscard]] const SDL_Rect* GetSourceRect() const override;
+		[[nodiscard]] const glm::vec4* GetSourceRect() const override;
 
-		const SDL_Rect& GetFrame(int index) const;
+		[[nodiscard]] const glm::vec4& GetFrame(int index) const;
 
-		SDL_Rect sourceRect{};
+		glm::vec4 sourceRect{};
 	private:
 		int frameWidth, frameHeight;
 		int sheetWidth{}, sheetHeight{};
 
-		std::vector<SDL_Rect> frames;
+		std::vector<glm::vec4> frames;
 };
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_RENDERABLES_ANIMATIONRENDERABLE_HPP_

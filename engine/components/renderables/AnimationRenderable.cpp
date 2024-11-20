@@ -20,7 +20,7 @@ void AnimationRenderable::LoadFrames(int width, int height) {
 	// Split sprite into frames
 	for (int row = 0; row < rows; ++row) {
 		for (int col = 0; col < columns; ++col) {
-			SDL_Rect frame = {
+			glm::vec4 frame = {
 					col * frameWidth,
 					row * frameHeight,
 					frameWidth,
@@ -33,11 +33,11 @@ void AnimationRenderable::LoadFrames(int width, int height) {
 	std::cout << "Loaded " << frames.size() << " frames from texture sheet." << std::endl;
 }
 
-const SDL_Rect* AnimationRenderable::GetSourceRect() const {
+const glm::vec4* AnimationRenderable::GetSourceRect() const {
 	return &sourceRect;
 }
 
-const SDL_Rect& AnimationRenderable::GetFrame(int index) const {
+const glm::vec4& AnimationRenderable::GetFrame(int index) const {
 	if (index >= 0 && index < frames.size()) {
 		return frames[index];
 	} else {

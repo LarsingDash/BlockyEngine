@@ -9,6 +9,7 @@ AnimationRenderable::AnimationRenderable(GameObject& gameObject, const char* tag
 	if (GetFilePath().empty()) {
 		throw std::invalid_argument("File path for animation cannot be empty.");
 	}
+	LoadFrames();
 }
 
 void AnimationRenderable::LoadFrames() {
@@ -53,4 +54,7 @@ const glm::vec4& AnimationRenderable::GetFrame(int index) const {
 	} else {
 		throw std::out_of_range("Frame index out of range");
 	}
+}
+void AnimationRenderable::SetCurrentFrame(int frameIndex) {
+	sourceRect = GetFrame(frameIndex);
 }

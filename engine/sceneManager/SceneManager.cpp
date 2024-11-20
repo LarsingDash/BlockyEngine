@@ -38,7 +38,7 @@ SceneManager::SceneManager() : testScene{} {
 
 	auto& animatedObject = objectC->AddComponent<AnimationRenderable>("animTag", "../assets/character_spritesheet.png",
 																	  "spriteTag", 32, 32);
-	animatedObject.LoadFrames();
+
 	animatedObject.componentTransform->scale = glm::vec2{200.f, 200.f};
 	animatedObject.componentTransform->position = glm::vec2{100.f, 100.f};
 

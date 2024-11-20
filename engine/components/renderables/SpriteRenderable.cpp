@@ -6,8 +6,8 @@
 
 #include <utility>
 
-SpriteRenderable::SpriteRenderable(GameObject& gameObject, const char* tag,
-								   std::string filePath, std::string spriteTag) :
+SpriteRenderable::SpriteRenderable(GameObject& gameObject, const char* tag, std::string filePath,
+								   std::string spriteTag) :
 		Renderable(gameObject, tag, RenderableType::SPRITE),
 		_filePath(std::move(filePath)), _spriteTag(std::move(spriteTag)) {}
 

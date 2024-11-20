@@ -7,6 +7,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
+#include "components/renderables/AnimationRenderable.hpp"
 
 RenderingModule::RenderingModule(SDL_Renderer* renderer) : renderer(renderer) {}
 
@@ -23,6 +24,9 @@ void RenderingModule::Render(const std::vector<std::reference_wrapper<Renderable
 				break;
 			case SPRITE:
 				RenderSprite(reinterpret_cast<SpriteRenderable&>(renderable));
+				break;
+			case ANIMATED:
+				RenderSprite(reinterpret_cast<AnimationRenderable&>(renderable));
 				break;
 		}
 	}
@@ -100,8 +104,11 @@ void RenderingModule::RenderSprite(SpriteRenderable& renderable) {
 		return;
 	}
 
-	RenderTexture(texture, *renderable.componentTransform);
+	const glm::vec4* sourceRect = renderable.GetSourceRect();
+
+	RenderTexture(texture, *renderable.componentTransform, sourceRect);
 }
+
 
 SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable& sprite, int& width, int& height) {
 	const std::string& spriteTag = sprite.GetSpriteTag();
@@ -152,22 +159,34 @@ SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable& sprite, int& w
 	return result.second ? result.first->second.get() : nullptr;
 }
 
-void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransform& transform) {
+void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::vec4* sourceRect) {
 	if (!texture) {
 		std::cerr << "Cannot render null texture." << std::endl;
 		return;
 	}
 
 	SDL_FRect destRect = {
-			(transform.position.x - transform.scale.x / 2.0f),
-			(transform.position.y - transform.scale.y / 2.0f),
+			transform.position.x - transform.scale.x / 2.0f,
+			transform.position.y - transform.scale.y / 2.0f,
 			transform.scale.x,
 			transform.scale.y
 	};
 
+	SDL_Rect sdlSourceRect;
+	if (sourceRect) {
+		sdlSourceRect = {
+				static_cast<int>(sourceRect->x),
+				static_cast<int>(sourceRect->y),
+				static_cast<int>(sourceRect->z),
+				static_cast<int>(sourceRect->w)
+		};
+	}
+
 	SDL_RenderCopyExF(
-			renderer, texture, nullptr, &destRect,
+			renderer, texture, sourceRect ? &sdlSourceRect : nullptr, &destRect,
 			transform.rotation, nullptr, SDL_RendererFlip::SDL_FLIP_NONE
 	);
 }
+
+
 

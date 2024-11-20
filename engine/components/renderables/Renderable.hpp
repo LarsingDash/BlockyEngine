@@ -6,17 +6,21 @@
 #define BLOCKYENGINE_RENDERABLE_HPP
 
 #include "components/Component.hpp"
+#include "glm/vec4.hpp"
 
 enum RenderableType {
 	RECTANGLE,
 	ELLIPSE,
-	SPRITE
+	SPRITE,
+	ANIMATED
 };
 
 class Renderable : public Component {
 	public:
 		Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType);
 		~Renderable() override;
+
+		[[nodiscard]] virtual const glm::vec4* GetSourceRect() const;
 
 		void Start() override;
 		void Update(float delta) override;

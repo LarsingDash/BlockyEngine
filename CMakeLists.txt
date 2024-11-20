@@ -20,7 +20,12 @@ add_executable(${PROJECT_NAME} main.cpp)
 add_subdirectory(engine)
 add_subdirectory(libs/SDL2_gfx)
 
+#todo: vcpkg: stb used by renderer
+find_package(Stb REQUIRED)
+include_directories("${Stb_INCLUDE_DIR}")
+
 target_link_libraries(${PROJECT_NAME}
         mingw32
         sdl_gfx
 )
+

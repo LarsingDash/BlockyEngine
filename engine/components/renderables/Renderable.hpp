@@ -6,17 +6,23 @@
 #define BLOCKYENGINE_RENDERABLE_HPP
 
 #include "components/Component.hpp"
+#include "SDL_rect.h"
 
 enum RenderableType {
 	RECTANGLE,
 	ELLIPSE,
-	SPRITE
+	SPRITE,
+	ANIMATED
 };
 
 class Renderable : public Component {
 	public:
 		Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType);
 		~Renderable() override;
+
+		[[nodiscard]] virtual const SDL_Rect* GetSourceRect() const {
+			return nullptr;
+		}
 
 		void Start() override;
 		void Update(float delta) override;

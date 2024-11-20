@@ -32,7 +32,7 @@ class RenderingModule {
 		void RenderRectangle(RectangleRenderable& renderable);
 		void RenderEllipse(EllipseRenderable& renderable);
 		void RenderSprite(SpriteRenderable& renderable);
-		void RenderTexture(SDL_Texture* texture, const ComponentTransform& transform);
+		void RenderTexture(SDL_Texture* texture, const ComponentTransform& transform, const SDL_Rect* sourceRect);
 		SDL_Texture* LoadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
 

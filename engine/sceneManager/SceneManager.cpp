@@ -7,12 +7,15 @@
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
+#include "components/animation/AnimationController.hpp"
+#include "components/renderables/AnimationRenderable.hpp"
 
 SceneManager::SceneManager() : testScene{} {
 	testScene.reserve(10);
 
 	auto& objectA = testScene.emplace_back(std::make_unique<GameObject>("objectA"));
 	auto& objectB = testScene.emplace_back(std::make_unique<GameObject>("objectB"));
+	auto& objectC = testScene.emplace_back(std::make_unique<GameObject>("objectC"));
 
 	//aA with default pos (50, 50)
 	auto& aA = objectA->AddComponent<RectangleRenderable>("aA", glm::ivec4(255, 0, 0, 255), true);
@@ -32,10 +35,23 @@ SceneManager::SceneManager() : testScene{} {
 	auto& spriteA = objectB->AddComponent<SpriteRenderable>("spriteA", "../assets/kaboom.png", "kaboom");
 	spriteA.componentTransform->position = glm::vec2{350.f, 150.f};
 	spriteA.componentTransform->rotation = -65.f;
+
+	auto& animatedObject = objectC->AddComponent<AnimationRenderable>("animTag", "../assets/character_spritesheet.png",
+																	  "spriteTag", 32, 32);
+	animatedObject.LoadFrames(256, 416);
+
+	auto& animationController = objectC->AddComponent<AnimationController>("animControllerTag", animatedObject);
+	animationController.SetFrameDuration(0.1f);
+
+	animationController.AddAnimation("idle", 0, 7, true);
+	animationController.AddAnimation("run", 8, 15, true);
+
+	animationController.PlayAnimation("idle");
 }
 
 void SceneManager::Update(float delta) {
 	for (auto& gameObject : testScene) {
 		gameObject->Update(delta);
 	}
+
 }

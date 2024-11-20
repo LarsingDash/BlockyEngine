@@ -14,6 +14,8 @@ public:
     CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, float radius);
     ~CircleCollider() override = default;
 
+    [[nodiscard]] float GetRadius() const { return _radius; }
+
 private:
     float _radius;
 };

@@ -22,7 +22,7 @@ SceneManager::SceneManager() : testScene(std::make_unique<GameObject>("root")) {
 	bRed.componentTransform->position = glm::vec2{50, 150};
 	auto& bBlue = b.AddComponent<EllipseRenderable>("Blue", glm::vec4{0, 0, 255, 255}, true);
 	bBlue.componentTransform->position = glm::vec2{150, 150};
-	
+
 	std::cout << testScene->RemoveChild(*testScene->GetChild("A")) << std::endl;
 }
 

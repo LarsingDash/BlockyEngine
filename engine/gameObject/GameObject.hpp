@@ -39,7 +39,7 @@ class GameObject {
 			//Return newly created child
 			return *children.back();
 		}
-		
+
 		GameObject* GetChild(const std::string& t);
 
 		bool RemoveChild(GameObject& child);

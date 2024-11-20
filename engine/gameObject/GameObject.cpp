@@ -22,7 +22,7 @@ GameObject::~GameObject() {
 	children.clear();
 }
 
-void GameObject::Update(float delta) {	// NOLINT(*-no-recursion)
+void GameObject::Update(float delta) {    // NOLINT(*-no-recursion)
 	//Cascade update to components
 	for (auto& type : _components) {
 		for (auto& component : type.second) {
@@ -31,7 +31,7 @@ void GameObject::Update(float delta) {	// NOLINT(*-no-recursion)
 	}
 
 	//Cascade update to child objects
-	for (auto& child: children) {
+	for (auto& child : children) {
 		child->Update(delta);
 	}
 }
@@ -41,7 +41,7 @@ GameObject* GameObject::GetChild(const std::string& t) {
 						   [&](std::unique_ptr<GameObject>& cur) {
 							   return (t == cur->tag);
 						   });
-	
+
 	return (it != children.end()) ? (*it).get() : nullptr;
 }
 

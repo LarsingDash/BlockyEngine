@@ -8,7 +8,7 @@
 
 enum ColliderType
 {
-	RECTANGLE,
+	BOX,
 	CIRCLE
 };
 

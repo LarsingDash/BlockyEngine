@@ -5,8 +5,8 @@
 #include "GameObject.hpp"
 #include <iostream>
 
-GameObject::GameObject(const char* tag, GameObject* parent) :
-		tag(tag), parent(parent), transform(std::make_unique<Transform>()) {
+GameObject::GameObject(std::string tag, GameObject* parent) :
+		tag(std::move(tag)), parent(parent), transform(std::make_unique<Transform>()) {
 }
 
 GameObject::~GameObject() {
@@ -34,4 +34,38 @@ void GameObject::Update(float delta) {	// NOLINT(*-no-recursion)
 	for (auto& child: children) {
 		child->Update(delta);
 	}
+}
+
+GameObject* GameObject::GetChild(const std::string& t) {
+	auto it = std::find_if(children.begin(), children.end(),
+						   [&](std::unique_ptr<GameObject>& cur) {
+							   return (t == cur->tag);
+						   });
+	
+	return (it != children.end()) ? (*it).get() : nullptr;
+}
+
+bool GameObject::RemoveChild(GameObject& child) {
+	auto it = std::find_if(children.begin(), children.end(),
+						   [&](std::unique_ptr<GameObject>& cur) {
+							   return (&child == cur.get());
+						   });
+
+	return _removeChild(it);
+}
+
+bool GameObject::RemoveChild(const std::string& t) {
+	auto it = std::find_if(children.begin(), children.end(),
+						   [&](std::unique_ptr<GameObject>& cur) {
+							   return (t == cur->tag);
+						   });
+
+	return _removeChild(it);
+}
+
+bool GameObject::_removeChild(std::vector<std::unique_ptr<GameObject>>::iterator it) {
+	if (it == children.end()) return false;
+
+	children.erase(it);
+	return true;
 }

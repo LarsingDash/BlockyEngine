@@ -19,7 +19,7 @@
 class GameObject {
 	public:
 		//----- RULE OF FIVE
-		explicit GameObject(const char* tag, GameObject* parent = nullptr);
+		explicit GameObject(std::string tag, GameObject* parent = nullptr);
 		~GameObject();
 
 		GameObject(const GameObject& other) = delete;
@@ -29,6 +29,23 @@ class GameObject {
 
 		//----- CYCLE
 		void Update(float delta);
+
+		//----- CHILD / PARENT
+		template<typename... Args>
+		GameObject& AddChild(Args&& ... args) {
+			//Instantiate new GameObject in this children list
+			children.emplace_back(std::make_unique<GameObject>(std::forward<Args>(args)..., this));
+
+			//Return newly created child
+			return *children.back();
+		}
+		
+		GameObject* GetChild(const std::string& t);
+
+		bool RemoveChild(GameObject& child);
+		bool RemoveChild(const std::string& t);
+
+		inline const std::vector<std::unique_ptr<GameObject>>& GetChildren() { return children; };
 
 		//----- COMPONENTS
 		template<typename T, typename... Args>
@@ -83,10 +100,15 @@ class GameObject {
 		const std::string tag;
 		GameObject* parent;
 		std::unique_ptr<Transform> transform;
-		
-		std::vector<std::unique_ptr<GameObject>> children;
 
 	private:
+		//----- USINGS
+		using GameObjectList = std::vector<std::unique_ptr<GameObject>>;
+		using ComponentsList = std::vector<std::unique_ptr<Component>>;
+
+		//----- CHILD / PARENT
+		bool _removeChild(GameObjectList::iterator child);
+
 		//----- COMPONENTS
 		template<typename T>
 		inline void _componentValidityCheck() {
@@ -94,7 +116,6 @@ class GameObject {
 			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
 		}
 
-		using ComponentsList = std::vector<std::unique_ptr<Component>>;
 		//Finds an iterator to the component with the templated tag and given tag
 		//If the component was found, the given pointer will be set to it
 		template<typename T>
@@ -122,6 +143,7 @@ class GameObject {
 		}
 
 		std::unordered_map<std::type_index, ComponentsList> _components;
+		std::vector<std::unique_ptr<GameObject>> children;
 };
 
 #endif //BLOCKYENGINE_GAMEOBJECT_HPP

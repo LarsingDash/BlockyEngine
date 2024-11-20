@@ -24,8 +24,11 @@ add_subdirectory(libs/SDL2_gfx)
 find_package(Stb REQUIRED)
 include_directories("${Stb_INCLUDE_DIR}")
 
+#Box2d
+find_package(box2d CONFIG REQUIRED) #todo: use same include strategy as other libs
+
 target_link_libraries(${PROJECT_NAME}
         mingw32
         sdl_gfx
+        box2d::box2d
 )
-

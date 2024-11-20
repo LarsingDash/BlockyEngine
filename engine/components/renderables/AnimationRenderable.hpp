@@ -15,15 +15,17 @@ class AnimationRenderable : public SpriteRenderable {
 		AnimationRenderable(GameObject& gameObject, const char* tag,
 							std::string filePath, std::string spriteTag, int frameWidth, int frameHeight);
 
-		void LoadFrames();
 		[[nodiscard]] const glm::vec4* GetSourceRect() const override;
 		[[nodiscard]] const glm::vec4& GetFrame(int index) const;
-		glm::vec4 sourceRect{};
+		void SetCurrentFrame(int frameIndex);
 
 	private:
+		void LoadFrames();
 		int frameWidth{}, frameHeight{};
 		int sheetWidth{}, sheetHeight{};
 		std::vector<glm::vec4> frames;
+		glm::vec4 sourceRect{};
+
 };
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_RENDERABLES_ANIMATIONRENDERABLE_HPP_

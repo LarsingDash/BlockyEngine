@@ -75,7 +75,6 @@ void AnimationController::StopAnimation() {
 }
 
 void AnimationController::UpdateSourceRect() {
-	const glm::vec4& frame = renderable.GetFrame(currentFrame);
-	renderable.sourceRect = frame;
+	renderable.SetCurrentFrame(currentFrame);
 }
 

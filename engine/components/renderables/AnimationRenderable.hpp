@@ -12,20 +12,17 @@
 
 class AnimationRenderable : public SpriteRenderable {
 	public:
-		AnimationRenderable(GameObject& gameObject, const char* tag, std::string filePath,
-							std::string spriteTag, int frameWidth, int frameHeight);
+		AnimationRenderable(GameObject& gameObject, const char* tag,
+							std::string filePath, std::string spriteTag, int frameWidth, int frameHeight);
 
-		void LoadFrames(int sheetWidth, int sheetHeight);
-
+		void LoadFrames();
 		[[nodiscard]] const glm::vec4* GetSourceRect() const override;
-
 		[[nodiscard]] const glm::vec4& GetFrame(int index) const;
-
 		glm::vec4 sourceRect{};
-	private:
-		int frameWidth, frameHeight;
-		int sheetWidth{}, sheetHeight{};
 
+	private:
+		int frameWidth{}, frameHeight{};
+		int sheetWidth{}, sheetHeight{};
 		std::vector<glm::vec4> frames;
 };
 

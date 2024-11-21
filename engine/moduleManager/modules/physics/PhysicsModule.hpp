@@ -34,6 +34,8 @@ private:
 	static glm::vec2 VecConvert(const b2Vec2& a);
 	static b2Vec2 Position(const Collider& collider);
 	static float Angle(const Collider& collider);
+	static b2Vec2 Dimensions(const Collider& collider);
+	static void AddFixture(b2Body* body, b2Vec2 dimensions);
 	static b2Body* createDynamicBody(b2World& world, const Collider& collider);
 
 	b2World* _box2dWorldObject;

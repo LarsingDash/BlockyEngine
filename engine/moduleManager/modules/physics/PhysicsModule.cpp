@@ -4,6 +4,7 @@
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
+//todo:for box and circle
 PhysicsModule::PhysicsModule()
 {
 	//todo: Create a new Box2D world gravity not needed yet
@@ -24,28 +25,34 @@ void PhysicsModule::Update(float delta)
 	// todo: writing external input in box2d world
 	for (auto pair : _colliderToBodyMap)
 	{
+		// todo: only update if needed
 		pair.second->SetTransform(Position(*pair.first), Angle(*pair.first));
-		// pair.second->DestroyFixture(); //todo:
-		// pair.second->CreateFixture()
 
-		//todo set size
+		// todo: only update if needed
+		// Destroy all existing fixtures so if there is a resize the resize can be applied
+		for (b2Fixture* fixture = pair.second->GetFixtureList(); fixture;)
+		{
+			b2Fixture* next = fixture->GetNext();
+			pair.second->DestroyFixture(fixture);
+			fixture = next;
+		}
+
+		AddFixture(pair.second, Dimensions(*pair.first));
 	}
 
 	// Step the Box2D world simulation, only to handle the collisions
 	_box2dWorldObject->Step(delta, 6, 2);
 
 	// overwrite all positions, collisions are partly handled.
-	int index = 0; //todo: for debug
 	for (auto pair : _colliderToBodyMap)
 	{
 		//todo: does gameobject udate form this?
 		pair.first->componentTransform->position = VecConvert(pair.second->GetPosition());
 
-		BLOCKY_ENGINE_DEBUG_STREAM(index << ": " << tick <<
+		BLOCKY_ENGINE_DEBUG_STREAM(tick <<
 			"\tPosition: " << round(pair.second->GetPosition().x) << ", " << round(pair.second-> GetPosition().y) <<
 			"\tVelocity: " << pair.second->GetLinearVelocity().Length() <<
 			"\tGetMass: " << pair.second->GetMass());
-		index++; //todo: for debug
 	}
 
 	tick++; //todo: for debug
@@ -72,6 +79,32 @@ float PhysicsModule::Angle(const Collider& collider)
 	return collider.componentTransform->rotation;
 }
 
+b2Vec2 PhysicsModule::Dimensions(const Collider& collider)
+{
+	//todo: add gameObject transforms
+	return VecConvert(collider.componentTransform->scale);
+}
+
+void PhysicsModule::AddFixture(b2Body* body, b2Vec2 dimensions)
+{
+	// Define another box shape for the first dynamic body.
+	b2PolygonShape dynamicBox;
+	dynamicBox.SetAsBox(dimensions.x, dimensions.y);
+	// Define the dynamic body fixture.
+	b2FixtureDef fixtureDef;
+
+	fixtureDef.shape = &dynamicBox;
+
+	// Set the box density to be non-zero, so it will be dynamic.
+	fixtureDef.density = 1.0f;
+
+	// Override the default friction.
+	fixtureDef.friction = 0.3f;
+
+	// Add the shape to the body.
+	body->CreateFixture(&fixtureDef);
+}
+
 b2Body* PhysicsModule::createDynamicBody(b2World& world, const Collider& collider)
 {
 	float x = collider.componentTransform->position.x;
@@ -90,22 +123,7 @@ b2Body* PhysicsModule::createDynamicBody(b2World& world, const Collider& collide
 	bodyDef.angle = angle;
 	b2Body* body = world.CreateBody(&bodyDef);
 
-	// Define another box shape for the first dynamic body.
-	b2PolygonShape dynamicBox;
-	dynamicBox.SetAsBox(width, height);
-
-	// Define the dynamic body fixture.
-	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &dynamicBox;
-
-	// Set the box density to be non-zero, so it will be dynamic.
-	fixtureDef.density = 1.0f;
-
-	// Override the default friction.
-	fixtureDef.friction = 0.3f;
-
-	// Add the shape to the body.
-	body->CreateFixture(&fixtureDef);
+	AddFixture(body, {width, height});
 
 	return body;
 }

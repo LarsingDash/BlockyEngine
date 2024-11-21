@@ -1,6 +1,5 @@
 #include "PhysicsModule.hpp"
 
-#include <iostream>
 #include <Box2D/Box2D.h>
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
@@ -12,87 +11,44 @@ PhysicsModule::PhysicsModule()
 	b2Vec2 gravity(0.0f, 0.0f);
 
 	// Construct a world object, which will hold and simulate the rigid bodies.
-	_world = new b2World(gravity);
+	_box2dWorldObject = new b2World(gravity);
 }
 
 PhysicsModule::~PhysicsModule()
 {
-	delete _world;
+	delete _box2dWorldObject;
 }
 
 void PhysicsModule::Update(float delta)
 {
-	// 8 velocity iterations and 3 position iterations is a standard setting.
-	int32 velocityIterations = 8;
-	int32 positionIterations = 3;
-	// Prepare for simulation. Typically we use a time step of 1/60 of a second.
-	float timeStep = 1.0f / 60.0f;
-
-	// Simulate the world for 60 steps.
-	for (int32 i = 0; i < 430; ++i)
+	// todo: writing external input in box2d world
+	for (auto pair : _colliderToBodyMap)
 	{
-		// Instruct the world to perform a single step of simulation.
-		_world->Step(timeStep, velocityIterations, positionIterations);
+		pair.second->SetTransform(Position(*pair.first), Angle(*pair.first));
+		// pair.second->DestroyFixture(); //todo:
+		// pair.second->CreateFixture()
 
-		// std::cout << i << "\t"
-		// 	<< " body1: " << " Pos: (" << round(body1->GetPosition().x) << ", " << round(body1->GetPosition().y) <<
-		// 		") Angle: " << round(body1->GetAngle())<<
-		// 		", V: " << (round(body2->GetLinearVelocity().Length())) <<
-		// 		", M: " << (round(body2->GetMass())) << "\t"
-		// 	<< " body2: " << " Pos: (" << round(body2->GetPosition().x) << ", " << round(body2->GetPosition().y) <<
-		// 		") Angle: " << round(body2->GetAngle()) <<
-		// 		", V: " << (round(body2->GetLinearVelocity().Length())) <<
-		// 		", M: " << (round(body2->GetMass())) << std::endl;
-		for (auto pair : _colliderToBodyMap)
-		{
-			//todo: does gameobject udate form this?
-			pair.first->componentTransform->position = VecConvert(pair.second->GetPosition());
-
-			BLOCKY_ENGINE_DEBUG(std::to_string(i)+": " + std::to_string(tick) + ", " +
-				std::to_string(pair.second->GetPosition().x) + ", " +std::to_string(pair.second->GetPosition().y) +
-				", Velocity: " + std::to_string(round(pair.second->GetLinearVelocity().Length())) +
-				", GetMass: " + std::to_string(round(pair.second->GetMass())));
-		}
+		//todo set size
 	}
 
-	while (1)
+	// Step the Box2D world simulation, only to handle the collisions
+	_box2dWorldObject->Step(delta, 6, 2);
+
+	// overwrite all positions, collisions are partly handled.
+	int index = 0; //todo: for debug
+	for (auto pair : _colliderToBodyMap)
 	{
+		//todo: does gameobject udate form this?
+		pair.first->componentTransform->position = VecConvert(pair.second->GetPosition());
+
+		BLOCKY_ENGINE_DEBUG_STREAM(index << ": " << tick <<
+			"\tPosition: " << round(pair.second->GetPosition().x) << ", " << round(pair.second-> GetPosition().y) <<
+			"\tVelocity: " << pair.second->GetLinearVelocity().Length() <<
+			"\tGetMass: " << pair.second->GetMass());
+		index++; //todo: for debug
 	}
 
-	// //todo:
-	// // delta = delta * 2000000;
-	// // just overwrite all positions, this is done to separate the box2d lib form the rest of the project
-	// // todo: write external input in box2d world
-	// for (auto pair : _colliderToBodyMap)
-	// {
-	// 	// pair.second->
-	// 	// pair.second->SetTransform(Position(*pair.first), Angle(*pair.first));
-	// 	// BLOCKY_ENGINE_DEBUG("set: " +
-	// 	// 	std::to_string(pair.second->GetPosition().x) + ", " +std::to_string(pair.second->GetPosition().x))
-	// }
-	//
-	// // Step the Box2D world simulation, only to handle the collisions
-	// _world->Step(delta, 6, 2);
-	//
-	// // just overwrite all positions, this is done to separate the box2d lib form the rest of the project
-	// int index = 0;
-	// for (auto pair : _colliderToBodyMap)
-	// {
-	// 	//todo: does gameobject udate form this?
-	// 	pair.first->componentTransform->position = VecConvert(pair.second->GetPosition());
-	//
-	// 	BLOCKY_ENGINE_DEBUG(std::to_string(index)+": " + std::to_string(tick) + ", " +
-	// 		std::to_string(pair.second->GetPosition().x) + ", " +std::to_string(pair.second->GetPosition().y) +
-	// 		", Velocity: " + std::to_string(round(pair.second->GetLinearVelocity().Length())) +
-	// 		", GetMass: " + std::to_string(round(pair.second->GetMass())));
-	//
-	// 	// std::cout << tick << "\t" << index
-	// 	// 	<< "Pos: (" << round(pair.second->GetPosition().x) << ", " << round(pair.second->GetPosition().y)
-	// 	// 	<< ") Angle: " << round(pair.second->GetAngle()) << std::endl;
-	// 	index++;
-	// }
-	//
-	// tick++;
+	tick++; //todo: for debug
 }
 
 b2Vec2 PhysicsModule::VecConvert(const glm::vec2& a)
@@ -116,7 +72,7 @@ float PhysicsModule::Angle(const Collider& collider)
 	return collider.componentTransform->rotation;
 }
 
-b2Body* createDynamicBody(b2World& world, const Collider& collider)
+b2Body* PhysicsModule::createDynamicBody(b2World& world, const Collider& collider)
 {
 	float x = collider.componentTransform->position.x;
 	float y = collider.componentTransform->position.y;
@@ -124,8 +80,8 @@ b2Body* createDynamicBody(b2World& world, const Collider& collider)
 	float height = collider.componentTransform->scale.y;
 	float angle = collider.componentTransform->rotation;
 
-	std::cout << "createDynamicBody: x: " << x << ", y: " << y << ", width: " << width << ", height: " << height <<
-		", angle: " << angle << std::endl;
+	BLOCKY_ENGINE_DEBUG_STREAM("createDynamicBody: x: " << x << ", y: " << y << ", width: " << width << ", height: " <<
+		height << ", angle: " << angle);
 
 	// Define the first dynamic body. We set its position and call the body factory.
 	b2BodyDef bodyDef;
@@ -156,7 +112,7 @@ b2Body* createDynamicBody(b2World& world, const Collider& collider)
 
 void PhysicsModule::AddCollider(Collider& collider)
 {
-	b2Body* body = createDynamicBody(*_world, collider);
+	b2Body* body = createDynamicBody(*_box2dWorldObject, collider);
 
 	_colliderToBodyMap[&collider] = body;
 }
@@ -166,7 +122,7 @@ void PhysicsModule::RemoveCollider(Collider& collider)
 	auto it = _colliderToBodyMap.find(&collider);
 	if (it != _colliderToBodyMap.end())
 	{
-		_world->DestroyBody(it->second);
+		_box2dWorldObject->DestroyBody(it->second);
 		_colliderToBodyMap.erase(it);
 	}
 }

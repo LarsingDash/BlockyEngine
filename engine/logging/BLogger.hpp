@@ -6,6 +6,8 @@
 #define LOG_HPP
 
 #include <fstream>
+#include <iostream>
+#include <sstream>
 #include <glm/vec2.hpp>
 
 #define LOG_TO_CONSOLE 1
@@ -26,6 +28,8 @@ constexpr bool REMOVE_RETURN_TYPE = true;
 #define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, msg);
 #define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, msg);
 
+#define BLOCKY_ENGINE_DEBUG_STREAM(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, (std::stringstream() << msg).str());
+
 enum LogLevel
 {
     INFO,
@@ -42,7 +46,9 @@ public:
     ~BLogger();
 
     void Log(LogLevel level, const std::string& funcName = "", const std::string& message = "");
+    void Log(LogLevel level, const std::string& funcName = "", const std::stringstream& message = std::stringstream());
     void Log(LogLevel level, const std::string& funcName = "", const glm::vec2& message = {});
+    void Log(LogLevel level, const std::string& funcName = "", const std::ostream& message = std::cout);
 
 private:
     std::ofstream _logFile; // File stream for the log file

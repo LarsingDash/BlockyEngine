@@ -35,7 +35,8 @@ private:
 
 	std::unique_ptr<PhysicsModule> _physicsModule;
 	std::vector<std::reference_wrapper<Collider>> _collides;
-	std::vector<std::pair<Collider*, Collider*>> _toResolveList;
+	std::vector<std::pair<std::reference_wrapper<Collider>*, std::reference_wrapper<Collider>*>> _toResolveList;
+	//todo: reference_wrapper
 };
 
 #endif //PHYSICSMODULE_HPP

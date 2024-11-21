@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
 #include "components/collider/CircleCollider.hpp"
@@ -22,12 +23,11 @@ void PhysicsModule::Update(float delta)
 
 void PhysicsModule::Collide()
 {
-	std::vector<std::pair<Collider*, Collider*>> _toResolveList;
 	// todo: quad tree
 
-	for (Collider& collider1 : _collides)
+	for (auto& collider1 : _collides)
 	{
-		for (Collider& collider2 : _collides)
+		for (auto& collider2 : _collides)
 		{
 			if (&collider1 != &collider2 && DoOverlap(collider1, collider2))
 			{
@@ -35,32 +35,79 @@ void PhysicsModule::Collide()
 				_toResolveList.emplace_back(&collider1, &collider2);
 			}
 		}
-		// BLOCKY_ENGINE_DEBUG("coliders: " + collider.tag);
-		// switch (collider._colliderType)
-		// {
-		// case RECTANGLE:
-		// 	RectangleCollider(reinterpret_cast<RectangleCollider&>(collider));
-		// 	break;
-		//   default: ;
-		//   }
 	}
 }
 
+#include <glm/glm.hpp>
+
 void PhysicsModule::Resolve()
 {
-	// BLOCKY_ENGINE_DEBUG("Resolve");
+	for (const auto& pair : _toResolveList)
+	{
+		auto* collider1 = pair.first;
+		auto* collider2 = pair.second;
 
-	//todo: resolve physics
-	// for (Collider& collider : _collides)
-	// {
-	// 	switch (collider.GetColliderType())
-	// 	{
-	// 	case RECTANGLE:
-	// 		RectangleCollider(reinterpret_cast<RectangleCollider&>(collider));
-	// 		break;
-	// 	}
-	// }
+		// Get the centers of both colliders
+		glm::vec2 center1 = collider1->get().componentTransform->position + collider1->get().gameObject.transform->
+			position;
+		glm::vec2 center2 = collider2->get().componentTransform->position + collider2->get().gameObject.transform->
+			position;
+		BLOCKY_ENGINE_DEBUG(
+			"center1: (" + std::to_string(center1.x) + ", " + std::to_string(center1.y) + ")" + ", "
+			"center2: (" + std::to_string(center1.x) + ", " + std::to_string(center1.y) + ")" + ", "
+		);
+		BLOCKY_ENGINE_DEBUG(
+			"center1: (" + std::to_string(center1.x) + ", " + std::to_string(center1.y) + ")" + ", "
+			"center2: (" + std::to_string(center1.x) + ", " + std::to_string(center1.y) + ")" + ", "
+		);
+
+		// Calculate the direction from collider1 to collider2
+		glm::vec2 direction = center2 - center1;
+
+		// BLOCKY_ENGINE_DEBUG("\n"
+		// 	"direction: (" + std::to_string(direction.x) + ", " + std::to_string(direction.y) + ")" + "\n"
+		// 	"center2: (" + std::to_string(center2.x) + ", " + std::to_string(center2.y) + ")" + "\n"
+		// 	"center1: (" + std::to_string(center1.x) + ", " + std::to_string(center1.y) + ")" + "\n"
+		// 	"collider1->get().gameObject.transform->position: ("
+		// 	+ std::to_string(collider1->get().gameObject.transform-> position.x) + ", "
+		// 	+ std::to_string(collider1->get().gameObject.transform-> position.y) + ")" + "\n"
+		// 	"collider1->get().componentTransform->position: ("
+		// 	+ std::to_string(collider1->get().componentTransform-> position.x) + ", "
+		// 	+ std::to_string(collider1->get().componentTransform-> position.y) + ")" + "\n"
+		// );
+
+		// Normalize the direction vector
+		glm::vec2 normalizedDirection = glm::normalize(direction);
+
+		// To prevent nan being writen as a position value
+		if (glm::isnan(normalizedDirection.x)) { normalizedDirection.x = 0; }
+		if (glm::isnan(normalizedDirection.y)) { normalizedDirection.y = 0; }
+
+		// Calculate the force to apply (you can adjust the force magnitude as needed)
+		float forceMagnitude = 1.0f; // Adjust this value based on your requirements
+		glm::vec2 force = normalizedDirection * forceMagnitude;
+
+		// Apply the force to both colliders
+		collider1->get().gameObject.transform->position -= force;
+		collider2->get().gameObject.transform->position += force;
+	}
+
+	// Clear the list after resolving collisions
+	_toResolveList.clear();
 }
+
+// BLOCKY_ENGINE_DEBUG("Resolve");
+
+//todo: resolve physics
+// for (Collider& collider : _collides)
+// {
+// 	switch (collider.GetColliderType())
+// 	{
+// 	case RECTANGLE:
+// 		RectangleCollider(reinterpret_cast<RectangleCollider&>(collider));
+// 		break;
+// 	}
+// }
 
 void PhysicsModule::AddCollider(Collider& collider)
 {

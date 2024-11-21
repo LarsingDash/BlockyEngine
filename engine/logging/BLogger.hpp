@@ -6,6 +6,7 @@
 #define LOG_HPP
 
 #include <fstream>
+#include <glm/vec2.hpp>
 
 #define LOG_TO_CONSOLE 1
 #define LOG_TO_FILE 1
@@ -21,34 +22,35 @@ constexpr bool REMOVE_RETURN_TYPE = true;
 // for function name only: __func__
 #define BLOCKY_ENGINE_INFO(msg) bLogger.Log(LogLevel::INFO, __PRETTY_FUNCTION__, msg);
 #define BLOCKY_ENGINE_DEBUG(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, msg);
+// #define BLOCKY_ENGINE_DEBUG(msg,msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, msg);
 #define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, msg);
 #define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, msg);
 
-enum LogLevel {
+enum LogLevel
+{
     INFO,
     DEBUG,
     WARN,
     ERROR
 };
 
-class BLogger {
-    public:
-        explicit BLogger(const std::string &filename);
+class BLogger
+{
+public:
+    explicit BLogger(const std::string& filename);
 
-        ~BLogger();
+    ~BLogger();
 
-        void Log(LogLevel level, const std::string &funcName = "", const std::string &message = "");
+    void Log(LogLevel level, const std::string& funcName = "", const std::string& message = "");
+    void Log(LogLevel level, const std::string& funcName = "", const glm::vec2& message = {});
 
-    private:
-        std::ofstream _logFile; // File stream for the log file
+private:
+    std::ofstream _logFile; // File stream for the log file
 
-        static std::string _levelToString(LogLevel level);
-
-        static std::string _funcSignToString(std::string funcName);
-
-        static std::stringstream _makeTimeStamp();
-
-        void _writeLog(const std::stringstream &logMessage);
+    static std::string _levelToString(LogLevel level);
+    static std::string _funcSignToString(std::string funcName);
+    static std::stringstream _makeTimeStamp();
+    void _writeLog(const std::stringstream& logMessage);
 };
 
 // Definition of global variable 'BLogger bLogger' in a header file should have an 'inline' specifier.

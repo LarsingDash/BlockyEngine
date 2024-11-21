@@ -35,7 +35,7 @@ private:
 
 	static b2Vec2 Position(const Collider& collider);
 	static float Angle(const Collider& collider);
-	static b2BodyDef SetBodyDef(Collider& collider);
+	static b2BodyDef SetBodyDef(const Collider& collider);
 	b2FixtureDef* SetFixtureDef();
 
 	void AddCollider(b2Body* body);
@@ -60,6 +60,8 @@ private:
 
 	// Map to store a reference to the Collider object and its corresponding b2Body
 	std::unordered_map<Collider*, b2Body*> _colliderToBodyMap;
+
+	int tick = 0;
 };
 
 #endif //PHYSICSMODULE_HPP

@@ -18,10 +18,12 @@ SceneManager::SceneManager() : testScene{}
 {
 	testScene.reserve(10);
 
+	float x, y;
+	float w, h;
 	auto& objectA = testScene.emplace_back(std::make_unique<GameObject>("objectA"));
 	auto& objectB = testScene.emplace_back(std::make_unique<GameObject>("objectB"));
-	float x = 400.f, y = 400.f;
-	float w = 100.f, h = 100.f, r = 10;
+	x = 0.f, y = 200.f;
+	w = 100.f, h = 100.f;
 
 	//aA with default pos (50, 50)
 	auto& aA = objectA->AddComponent<RectangleRenderable>("aA", glm::ivec4(255, 0, 0, 255), true);
@@ -31,7 +33,8 @@ SceneManager::SceneManager() : testScene{}
 	aB.componentTransform->position = {x, y};
 	BLOCKY_ENGINE_DEBUG(objectA->transform->position)
 
-	x = 320.f, y = 320.f;
+	x = 0.f, y = 200.f;
+	w = 100.f, h = 100.f;
 	auto& bA = objectB->AddComponent<RectangleRenderable>("bA", glm::ivec4(0, 255, 0, 255));
 	auto& bB = objectB->AddComponent<BoxCollider>("BoxColliderB", true, w, h);
 	objectB->transform->position = glm::vec2(x, y);

@@ -26,7 +26,7 @@ void RenderingModule::Render(const std::vector<std::reference_wrapper<Renderable
 				RenderSprite(reinterpret_cast<SpriteRenderable&>(renderable));
 				break;
 			case ANIMATED:
-				RenderSprite(reinterpret_cast<AnimationRenderable&>(renderable));
+				RenderAnimatedSprite(reinterpret_cast<AnimationRenderable&>(renderable));
 				break;
 		}
 	}
@@ -103,12 +103,19 @@ void RenderingModule::RenderSprite(SpriteRenderable& renderable) {
 	if (!texture) {
 		return;
 	}
+	RenderTexture(texture, *renderable.componentTransform, nullptr);
+}
+void RenderingModule::RenderAnimatedSprite(AnimationRenderable& renderable) {
+	int width, height;
+	SDL_Texture* texture = LoadTexture(renderable, width, height);
+	if (!texture) {
+		return;
+	}
 
 	const glm::vec4* sourceRect = renderable.GetSourceRect();
 
 	RenderTexture(texture, *renderable.componentTransform, sourceRect);
 }
-
 
 SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable& sprite, int& width, int& height) {
 	const std::string& spriteTag = sprite.GetSpriteTag();

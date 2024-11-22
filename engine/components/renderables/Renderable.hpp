@@ -20,8 +20,6 @@ class Renderable : public Component {
 		Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType);
 		~Renderable() override;
 
-		[[nodiscard]] virtual const glm::vec4* GetSourceRect() const;
-
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;

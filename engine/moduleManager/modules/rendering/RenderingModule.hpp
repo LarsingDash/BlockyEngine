@@ -18,6 +18,7 @@
 #include "SDL.h"
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "SDL2_gfx/SDL2_rotozoom.h"
+#include "components/renderables/AnimationRenderable.hpp"
 
 class RenderingModule {
 	public:
@@ -33,6 +34,7 @@ class RenderingModule {
 		void RenderEllipse(EllipseRenderable& renderable);
 		void RenderSprite(SpriteRenderable& renderable);
 		void RenderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::vec4* sourceRect);
+		void RenderAnimatedSprite(AnimationRenderable& renderable);
 		SDL_Texture* LoadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
 

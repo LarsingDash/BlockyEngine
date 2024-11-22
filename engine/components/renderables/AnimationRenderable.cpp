@@ -3,8 +3,12 @@
 
 AnimationRenderable::AnimationRenderable(GameObject& gameObject, const char* tag,
 										 std::string filePath, std::string spriteTag, int frameWidth, int frameHeight)
-		: SpriteRenderable(gameObject, tag, std::move(filePath), std::move(spriteTag)),
-		  _frameWidth(frameWidth), _frameHeight(frameHeight) {
+		: SpriteRenderable(gameObject, tag, std::move(filePath), std::move(spriteTag)) {
+	_renderableType = RenderableType::ANIMATED;
+
+	_frameWidth = frameWidth;
+	_frameHeight = frameHeight;
+
 	if (GetFilePath().empty()) {
 		throw std::invalid_argument("File path for animation cannot be empty.");
 	}

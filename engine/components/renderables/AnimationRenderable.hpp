@@ -15,7 +15,7 @@ class AnimationRenderable : public SpriteRenderable {
 		AnimationRenderable(GameObject& gameObject, const char* tag,
 							std::string filePath, std::string spriteTag, int frameWidth, int frameHeight);
 
-		[[nodiscard]] const glm::vec4* GetSourceRect() const override;
+		[[nodiscard]] const glm::vec4* GetSourceRect() const;
 		[[nodiscard]] const glm::vec4& GetFrame(int index) const;
 		void SetCurrentFrame(int frameIndex);
 

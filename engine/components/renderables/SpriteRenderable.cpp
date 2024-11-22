@@ -18,3 +18,4 @@ std::string SpriteRenderable::GetFilePath() const {
 std::string SpriteRenderable::GetSpriteTag() const {
 	return _spriteTag;
 }
+

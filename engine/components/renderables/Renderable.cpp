@@ -28,7 +28,4 @@ RenderableType Renderable::GetRenderableType() {
 	return _renderableType;
 }
 
-//Return nullptr by default as source rect is ony used for _animations (atleast right now)
-const glm::vec4* Renderable::GetSourceRect() const {
-	return nullptr;
-}
+

@@ -24,20 +24,20 @@ class GameObject {
 
 		GameObject(const GameObject& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
-		GameObject(const GameObject&& other) = delete;
-		GameObject& operator=(const GameObject&& other) = delete;
+		GameObject(GameObject&& other) noexcept = delete;
+		GameObject& operator=(GameObject&& other) noexcept = delete;
 
 		//----- CYCLE
-		void Update(float delta);
+		void Update(float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList);
 
 		//----- CHILD / PARENT
 		template<typename... Args>
 		GameObject& AddChild(Args&& ... args) {
 			//Instantiate new GameObject in this children list
-			children.emplace_back(std::make_unique<GameObject>(std::forward<Args>(args)..., this));
+			_children.emplace_back(std::make_unique<GameObject>(std::forward<Args>(args)..., this));
 
 			//Return newly created child
-			return *children.back();
+			return *_children.back();
 		}
 
 		GameObject* GetChild(const std::string& t);
@@ -45,7 +45,7 @@ class GameObject {
 		bool RemoveChild(GameObject& child);
 		bool RemoveChild(const std::string& t);
 
-		inline const std::vector<std::unique_ptr<GameObject>>& GetChildren() { return children; };
+		inline const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return _children; };
 
 		//----- COMPONENTS
 		template<typename T, typename... Args>
@@ -143,7 +143,7 @@ class GameObject {
 		}
 
 		std::unordered_map<std::type_index, ComponentsList> _components;
-		std::vector<std::unique_ptr<GameObject>> children;
+		std::vector<std::unique_ptr<GameObject>> _children;
 };
 
 #endif //BLOCKYENGINE_GAMEOBJECT_HPP

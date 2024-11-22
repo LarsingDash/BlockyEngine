@@ -17,6 +17,11 @@ class Component {
 		Component(GameObject& gameObject, const char* tag);
 		virtual ~Component();
 
+		Component(const Component& other) = delete;
+		Component& operator=(const Component& other) = delete;
+		Component(Component&& other) noexcept = delete;
+		Component& operator=(Component&& other) noexcept = delete;
+
 		virtual void Start() = 0;
 		virtual void Update(float delta) = 0;
 		virtual void End() = 0;

@@ -8,6 +8,8 @@
 #include <string>
 #include <string>
 #include <unordered_map>
+#include <stdexcept>
+#include <iostream>
 #include "components/renderables/AnimationRenderable.hpp"
 
 
@@ -27,18 +29,17 @@ class AnimationController : public Component {
 
 		void SetFrameDuration(float duration);
 		void AddAnimation(const std::string& animationName, int startFrame, int endFrame, bool looping);
-		void PlayAnimation(const std::string& animationName);
+		bool PlayAnimation(const std::string& animationName);
 		void StopAnimation();
 
 	private:
 		AnimationRenderable& renderable;
 		float frameTimer = 0.0f;
 		float frameDuration = 0.1f;
-
 		int currentFrame = 0;
 		bool isAnimating = false;
-		std::string currentAnimationName;
 
+		std::string currentAnimationName;
 		std::unordered_map<std::string, Animation> animations;
 
 		void UpdateSourceRect();

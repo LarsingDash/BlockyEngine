@@ -4,11 +4,11 @@
 
 #ifndef BLOCKYENGINE_ENGINE_COMPONENTS_RENDERABLES_ANIMATIONRENDERABLE_HPP_
 #define BLOCKYENGINE_ENGINE_COMPONENTS_RENDERABLES_ANIMATIONRENDERABLE_HPP_
-
 #include <string>
 #include <vector>
-#include "SpriteRenderable.hpp"
+#include <iostream>
 #include <glm/vec4.hpp>
+#include "SpriteRenderable.hpp"
 
 class AnimationRenderable : public SpriteRenderable {
 	public:

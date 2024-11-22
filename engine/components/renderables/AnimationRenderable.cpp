@@ -1,6 +1,5 @@
 #include "AnimationRenderable.hpp"
 #include "stb_image.h"
-#include <iostream>
 
 AnimationRenderable::AnimationRenderable(GameObject& gameObject, const char* tag,
 										 std::string filePath, std::string spriteTag, int frameWidth, int frameHeight)
@@ -12,6 +11,7 @@ AnimationRenderable::AnimationRenderable(GameObject& gameObject, const char* tag
 	LoadFrames();
 }
 
+//Gets the image, checks pixels parameters and divides the spritesheet into frames adding them to a vector
 void AnimationRenderable::LoadFrames() {
 	int channels;
 
@@ -44,10 +44,13 @@ void AnimationRenderable::LoadFrames() {
 	std::cout << "Loaded " << frames.size() << " frames from texture sheet: " << filePath << std::endl;
 }
 
+
+//Returns the source rect (current frame)
 const glm::vec4* AnimationRenderable::GetSourceRect() const {
 	return &sourceRect;
 }
 
+//Returns frame by index
 const glm::vec4& AnimationRenderable::GetFrame(int index) const {
 	if (index >= 0 && index < frames.size()) {
 		return frames[index];
@@ -55,6 +58,8 @@ const glm::vec4& AnimationRenderable::GetFrame(int index) const {
 		throw std::out_of_range("Frame index out of range");
 	}
 }
+
+//Sets the current frame
 void AnimationRenderable::SetCurrentFrame(int frameIndex) {
 	sourceRect = GetFrame(frameIndex);
 }

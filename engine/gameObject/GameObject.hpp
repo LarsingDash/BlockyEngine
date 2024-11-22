@@ -77,7 +77,7 @@ class GameObject {
 			auto componentIt = findComponentByTag<T>(componentTag);
 
 			//Return tagged component cast to T* if found
-			return componentIt ? (**componentIt).get() : nullptr;
+			return componentIt ? static_cast<T*>((**componentIt).get()) : nullptr;
 		}
 
 		const std::string tag;

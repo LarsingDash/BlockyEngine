@@ -48,7 +48,8 @@ SceneManager::SceneManager() : testScene{} {
 	animationController.AddAnimation("idle", 0, 7, true);
 	animationController.AddAnimation("run", 8, 15, true);
 
-	animationController.PlayAnimation("idle");
+//	animationController.PlayAnimation("idle");
+	objectC->GetComponent<AnimationController>()->PlayAnimation("run");
 }
 
 void SceneManager::Update(float delta) {

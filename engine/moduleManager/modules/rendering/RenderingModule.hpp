@@ -33,7 +33,7 @@ class RenderingModule {
 		void RenderRectangle(RectangleRenderable& renderable);
 		void RenderEllipse(EllipseRenderable& renderable);
 		void RenderSprite(SpriteRenderable& renderable);
-		void RenderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::vec4* sourceRect);
+		void RenderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect);
 		void RenderAnimatedSprite(AnimationRenderable& renderable);
 		SDL_Texture* LoadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };

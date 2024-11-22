@@ -112,7 +112,7 @@ void RenderingModule::RenderAnimatedSprite(AnimationRenderable& renderable) {
 		return;
 	}
 
-	const glm::vec4* sourceRect = renderable.GetSourceRect();
+	const glm::ivec4* sourceRect = renderable.GetSourceRect();
 
 	RenderTexture(texture, *renderable.componentTransform, sourceRect);
 }
@@ -166,7 +166,7 @@ SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable& sprite, int& w
 	return result.second ? result.first->second.get() : nullptr;
 }
 
-void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::vec4* sourceRect) {
+void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect) {
 	if (!texture) {
 		std::cerr << "Cannot render null texture." << std::endl;
 		return;
@@ -182,10 +182,10 @@ void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransfo
 	SDL_Rect sdlSourceRect;
 	if (sourceRect) {
 		sdlSourceRect = {
-				static_cast<int>(sourceRect->x),
-				static_cast<int>(sourceRect->y),
-				static_cast<int>(sourceRect->z),
-				static_cast<int>(sourceRect->w)
+				sourceRect->x,
+				sourceRect->y,
+				sourceRect->z,
+				sourceRect->w
 		};
 	}
 

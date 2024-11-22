@@ -15,16 +15,16 @@ class AnimationRenderable : public SpriteRenderable {
 		AnimationRenderable(GameObject& gameObject, const char* tag,
 							std::string filePath, std::string spriteTag, int frameWidth, int frameHeight);
 
-		[[nodiscard]] const glm::vec4* GetSourceRect() const;
-		[[nodiscard]] const glm::vec4& GetFrame(int index) const;
+		[[nodiscard]] const glm::ivec4* GetSourceRect() const;
+		[[nodiscard]] const glm::ivec4& GetFrame(int index) const;
 		void SetCurrentFrame(int frameIndex);
 
 	private:
 		void _loadFrames();
 		int _frameWidth{}, _frameHeight{};
 		int _sheetWidth{}, _sheetHeight{};
-		std::vector<glm::vec4> _frames;
-		glm::vec4 _sourceRect{};
+		std::vector<glm::ivec4> _frames;
+		glm::ivec4 _sourceRect{};
 
 };
 

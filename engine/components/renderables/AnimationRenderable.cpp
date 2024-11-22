@@ -50,12 +50,12 @@ void AnimationRenderable::_loadFrames() {
 
 
 //Returns the source rect (current frame)
-const glm::vec4* AnimationRenderable::GetSourceRect() const {
+const glm::ivec4* AnimationRenderable::GetSourceRect() const {
 	return &_sourceRect;
 }
 
 //Returns frame by index
-const glm::vec4& AnimationRenderable::GetFrame(int index) const {
+const glm::ivec4& AnimationRenderable::GetFrame(int index) const {
 	if (index >= 0 && index < _frames.size()) {
 		return _frames[index];
 	} else {

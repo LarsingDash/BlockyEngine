@@ -5,16 +5,12 @@
 #ifndef PHYSICSMODULE_HPP
 #define PHYSICSMODULE_HPP
 #include <memory>
-#include <string>
 #include <unordered_map>
-#include <vector>
-#include <box2d/box2d.h>
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_math.h>
 #include <Box2D/b2_world.h>
 #include <moduleManager/ModuleWrapper.hpp>
-#include "components/collider/BoxCollider.hpp"
-#include "components/collider/CircleCollider.hpp"
+#include "components/collider/Collider.hpp"
 
 struct b2BodyDef;
 class b2Body;
@@ -45,6 +41,7 @@ private:
 	static b2Vec2 Dimensions(const Collider& collider);
 
 	std::unique_ptr<b2World> _box2dWorldObject;
+	// std::unique_ptr<MyContactListener> _contactListener;
 	std::unordered_map<Collider*, b2Body*> _colliderToBodyMap;
 
 	int tick = 0; //todo: for debug

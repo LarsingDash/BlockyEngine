@@ -3,7 +3,6 @@
 //
 
 #include "GameObject.hpp"
-#include <iostream>
 
 GameObject::GameObject(const char* tag) :
 		tag{tag}, transform{std::make_unique<Transform>()} {

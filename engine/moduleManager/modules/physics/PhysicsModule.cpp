@@ -1,16 +1,84 @@
 #include "PhysicsModule.hpp"
 
 #include <Box2D/Box2D.h>
+#include <components/collider/BoxCollider.hpp>
+#include <components/collider/CircleCollider.hpp>
 #include <components/renderables/EllipseRenderable.hpp>
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
-//todo:for box and circle
+#include "MyContactListener.hpp"
+
+// //todo: move
+// class MyContactListener : public b2ContactListener
+// {
+// public:
+// 	/// This is called after a contact is updated. This allows you to inspect a
+// 	/// contact before it goes to the solver. If you are careful, you can modify the
+// 	/// contact manifold (e.g. disable contact).
+// 	/// A copy of the old manifold is provided so that you can detect changes.
+// 	/// Note: this is called only for awake bodies.
+// 	/// Note: this is called even when the number of contact points is zero.
+// 	/// Note: this is not called for sensors.
+// 	/// Note: if you set the number of contact points to zero, you will not
+// 	/// get an EndContact callback. However, you may get a BeginContact callback
+// 	/// the next step.
+// 	void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override
+// 	{
+// 		BLOCKY_ENGINE_DEBUG("PreSolve")
+//
+// 		auto body1 = contact->GetFixtureA()->GetBody();
+// 		auto body2 = contact->GetFixtureB()->GetBody();
+//
+// 		std::cout << "PreSolve!" << body1->GetPosition().y << ", " << body2->GetPosition().y << std::endl;
+//
+// 		std::unordered_map<Collider*, b2Body*> _colliderToBodyMap; //todo:
+//
+// 		Collider* collider1 = nullptr;
+// 		Collider* collider2 = nullptr;
+//
+// 		// todo: 2 way map
+// 		for (auto [collider, body] : _colliderToBodyMap)
+// 		{
+// 			if (body1 == body)
+// 			{
+// 				collider1 = collider;
+// 			}
+// 			if (body2 == body)
+// 			{
+// 				collider2 = collider;
+// 			}
+// 		}
+//
+// 		if (collider1 != nullptr && collider1->isTrigger)
+// 		{
+// 			//todo:			collider1.DoTrigger(&collider2)
+// 			collider1->SetTriggerEnterCallback();
+// 		}
+// 		if (collider2 != nullptr && collider2->isTrigger)
+// 		{
+// 			//todo:			collider1.DoTrigger(&collider1)
+// 			collider2->SetTriggerEnterCallback();
+// 		}
+//
+// 		if (body1->GetPosition().y < 51)
+// 		{
+// 			contact->SetEnabled(false);
+// 		}
+//
+// 		std::cout << "done" << std::endl;
+// 	}
+// };
+
 PhysicsModule::PhysicsModule()
 {
 	b2Vec2 gravity(0.0f, 0.0f);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
+
+	// _contactListener = std::make_unique<MyContactListener>();
+
+	// _box2dWorldObject->SetContactListener(_contactListener.get());
 }
 
 void PhysicsModule::Update(const float delta)
@@ -34,6 +102,7 @@ void PhysicsModule::WritingExternalInputToBox2DWorld()
 		body->SetTransform(Position(*collider), Angle(*collider));
 
 		// todo: only update if needed
+		// todo: onliner delete? body->DestroyFixture(body->GetFixtureList());
 		// Destroy all existing fixtures so if there is a resize the resize can be applied
 		for (b2Fixture* fixture = body->GetFixtureList(); fixture;)
 		{
@@ -53,10 +122,10 @@ void PhysicsModule::WritingBox2DWorldToOutside()
 		//todo: does gameobject udate form this?
 		collider->componentTransform->position = VecConvert(body->GetPosition());
 
-		BLOCKY_ENGINE_DEBUG_STREAM(tick <<
-			"\tPosition: " << round(body->GetPosition().x) << ", " << round(body-> GetPosition().y) <<
-			"\tVelocity: " << body->GetLinearVelocity().Length() <<
-			"\tGetMass: " << body->GetMass());
+		// BLOCKY_ENGINE_DEBUG_STREAM(tick <<
+		// 	"\tPosition: " << round(body->GetPosition().x) << ", " << round(body-> GetPosition().y) <<
+		// 	"\tVelocity: " << body->GetLinearVelocity().Length() <<
+		// 	"\tGetMass: " << body->GetMass());
 	}
 
 	tick++; //todo: for debug
@@ -180,3 +249,4 @@ b2Vec2 PhysicsModule::Dimensions(const Collider& collider)
 	//todo: add gameObject transforms
 	return VecConvert(collider.componentTransform->scale); //todo: scale to box or circle
 }
+

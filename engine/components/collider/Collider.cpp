@@ -30,3 +30,9 @@ void Collider::End()
 {
 	ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);
 }
+
+void Collider::SetTriggerEnterCallback()
+{
+	//todo: create all triggers
+	BLOCKY_ENGINE_DEBUG("SetTriggerEnterCallback: " + this->tag)
+}

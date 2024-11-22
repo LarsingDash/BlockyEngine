@@ -10,9 +10,10 @@
 class CircleCollider : public Collider
 {
 public:
-    // explicit RectangleCollider(GameObject& gameObject);
     CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, float radius);
     ~CircleCollider() override = default;
+
+    ColliderType GetColliderType() override;
 
     [[nodiscard]] float GetRadius() const { return _radius; }
 

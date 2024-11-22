@@ -9,7 +9,7 @@
 #include <moduleManager/modules/physics/PhysicsModule.hpp>
 
 Collider::Collider(GameObject& gameObject, const char* tag, ColliderType colliderType, bool isTrigger) :
-	Component(gameObject, tag), isTrigger(isTrigger), _colliderType(colliderType)
+	Component(gameObject, tag), isTrigger(isTrigger) //todo, _colliderType(colliderType)
 {
 }
 
@@ -28,10 +28,5 @@ void Collider::Update(float delta)
 
 void Collider::End()
 {
-	//	ModuleManager::getInstance().getModule<WindowModule>().RemoveCollider(*this);
+	ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);
 }
-
-// ColliderType Collider::GetColliderType()
-// {
-// 	return _colliderType;
-// }

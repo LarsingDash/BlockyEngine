@@ -9,3 +9,8 @@ BoxCollider::BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger
     : Collider(gameObject, tag, ColliderType::BOX, isTrigger), _height(height), _width(width)
 {
 }
+
+ColliderType BoxCollider::GetColliderType()
+{
+    return ColliderType::BOX;
+}

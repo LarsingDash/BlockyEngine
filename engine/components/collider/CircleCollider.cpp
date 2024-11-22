@@ -9,3 +9,8 @@ CircleCollider::CircleCollider(GameObject& gameObject, const char* tag, bool isT
     : Collider(gameObject, tag, ColliderType::CIRCLE, isTrigger), _radius(radius)
 {
 }
+
+ColliderType CircleCollider::GetColliderType()
+{
+    return ColliderType::CIRCLE;
+}

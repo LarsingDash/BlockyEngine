@@ -1,61 +1,157 @@
 #include "PhysicsModule.hpp"
 
 #include <Box2D/Box2D.h>
+#include <components/renderables/EllipseRenderable.hpp>
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
 //todo:for box and circle
 PhysicsModule::PhysicsModule()
 {
-	//todo: Create a new Box2D world gravity not needed yet
-	// Define the gravity vector.
 	b2Vec2 gravity(0.0f, 0.0f);
 
-	// Construct a world object, which will hold and simulate the rigid bodies.
-	_box2dWorldObject = new b2World(gravity);
+	_box2dWorldObject = std::make_unique<b2World>(gravity);
 }
 
-PhysicsModule::~PhysicsModule()
+void PhysicsModule::Update(const float delta)
 {
-	delete _box2dWorldObject;
+	WritingExternalInputToBox2DWorld();
+
+	// set arbitrarily high positionIterations, so that collisions are handled in a few ticks.
+	constexpr int32 positionIterations = 2 * 1000;
+	constexpr int32 velocityIterations = 6;
+
+	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
+
+	WritingBox2DWorldToOutside();
 }
 
-void PhysicsModule::Update(float delta)
+void PhysicsModule::WritingExternalInputToBox2DWorld()
 {
-	// todo: writing external input in box2d world
-	for (auto pair : _colliderToBodyMap)
+	for (auto [collider, body] : _colliderToBodyMap)
 	{
 		// todo: only update if needed
-		pair.second->SetTransform(Position(*pair.first), Angle(*pair.first));
+		body->SetTransform(Position(*collider), Angle(*collider));
 
 		// todo: only update if needed
 		// Destroy all existing fixtures so if there is a resize the resize can be applied
-		for (b2Fixture* fixture = pair.second->GetFixtureList(); fixture;)
+		for (b2Fixture* fixture = body->GetFixtureList(); fixture;)
 		{
 			b2Fixture* next = fixture->GetNext();
-			pair.second->DestroyFixture(fixture);
+			body->DestroyFixture(fixture);
 			fixture = next;
 		}
 
-		AddFixture(pair.second, Dimensions(*pair.first));
+		AddFixture(*collider, body);
 	}
+}
 
-	// Step the Box2D world simulation, only to handle the collisions
-	_box2dWorldObject->Step(delta, 6, 2);
-
-	// overwrite all positions, collisions are partly handled.
-	for (auto pair : _colliderToBodyMap)
+void PhysicsModule::WritingBox2DWorldToOutside()
+{
+	for (auto [collider, body] : _colliderToBodyMap)
 	{
 		//todo: does gameobject udate form this?
-		pair.first->componentTransform->position = VecConvert(pair.second->GetPosition());
+		collider->componentTransform->position = VecConvert(body->GetPosition());
 
 		BLOCKY_ENGINE_DEBUG_STREAM(tick <<
-			"\tPosition: " << round(pair.second->GetPosition().x) << ", " << round(pair.second-> GetPosition().y) <<
-			"\tVelocity: " << pair.second->GetLinearVelocity().Length() <<
-			"\tGetMass: " << pair.second->GetMass());
+			"\tPosition: " << round(body->GetPosition().x) << ", " << round(body-> GetPosition().y) <<
+			"\tVelocity: " << body->GetLinearVelocity().Length() <<
+			"\tGetMass: " << body->GetMass());
 	}
 
 	tick++; //todo: for debug
+}
+
+void PhysicsModule::AddCollider(Collider& collider)
+{
+	b2Body* body = CreateBody(*_box2dWorldObject, collider);
+
+	_colliderToBodyMap[&collider] = body;
+}
+
+void PhysicsModule::RemoveCollider(Collider& collider)
+{
+	auto it = _colliderToBodyMap.find(&collider);
+	if (it != _colliderToBodyMap.end())
+	{
+		_box2dWorldObject->DestroyBody(it->second);
+		_colliderToBodyMap.erase(it);
+	}
+}
+
+std::unique_ptr<b2Shape> AddBoxShape(const BoxCollider& collider)
+{
+	// Define another box shape for the first dynamic body.
+	auto dynamicBox = std::make_unique<b2PolygonShape>();
+	// Blocky Engine uses width and height, Box2D uses x&y height&width above,below&left,right of origin. so: /2
+	dynamicBox->SetAsBox(collider.GetWidth() / 2, collider.GetHeight() / 2);
+	return dynamicBox;
+}
+
+std::unique_ptr<b2Shape> AddCircleShape(const CircleCollider& collider)
+{
+	auto dynamicCircle = std::make_unique<b2CircleShape>();
+	dynamicCircle->m_radius = collider.GetRadius();
+	return dynamicCircle;
+}
+
+void PhysicsModule::AddFixture(Collider& collider, b2Body* body)
+{
+	b2FixtureDef fixtureDef;
+
+	//todo: read if colliderIsStatic
+	bool colliderIsStatic = true;
+
+	// todo: if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
+	switch (collider.GetColliderType())
+	{
+	case BOX:
+		fixtureDef.shape = AddBoxShape(reinterpret_cast<BoxCollider&>(collider)).release();
+		colliderIsStatic = false;
+		break;
+	case CIRCLE:
+		fixtureDef.shape = AddCircleShape(reinterpret_cast<CircleCollider&>(collider)).release();
+		colliderIsStatic = true;
+		break;
+	}
+
+	// set all object to static, and later overwrite the mass if object is not static
+	constexpr float staticObject = 0.0f;
+	fixtureDef.density = staticObject;
+
+	body->CreateFixture(&fixtureDef);
+
+	if (colliderIsStatic)
+	{
+		/* don't set mass */
+	}
+	else
+	{
+		// to have all object apply the same force on another, set all bodies to mass 1
+		b2MassData mass = {1.f};
+		body->SetMassData(&mass);
+	}
+
+	delete fixtureDef.shape;
+}
+
+b2Body* PhysicsModule::CreateBody(b2World& world, Collider& collider)
+{
+	const float x = collider.componentTransform->position.x;
+	const float y = collider.componentTransform->position.y;
+	const float angle = collider.componentTransform->rotation;
+
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_dynamicBody;
+	bodyDef.position.Set(x, y);
+	bodyDef.angle = angle;
+	b2Body* body = world.CreateBody(&bodyDef);
+
+	AddFixture(collider, body);
+
+	BLOCKY_ENGINE_DEBUG_STREAM("CreateBody: x: " << x << ", y: " << y << ", angle: " << angle);
+
+	return body;
 }
 
 b2Vec2 PhysicsModule::VecConvert(const glm::vec2& a)
@@ -82,65 +178,5 @@ float PhysicsModule::Angle(const Collider& collider)
 b2Vec2 PhysicsModule::Dimensions(const Collider& collider)
 {
 	//todo: add gameObject transforms
-	return VecConvert(collider.componentTransform->scale);
-}
-
-void PhysicsModule::AddFixture(b2Body* body, b2Vec2 dimensions)
-{
-	// Define another box shape for the first dynamic body.
-	b2PolygonShape dynamicBox;
-	dynamicBox.SetAsBox(dimensions.x, dimensions.y);
-	// Define the dynamic body fixture.
-	b2FixtureDef fixtureDef;
-
-	fixtureDef.shape = &dynamicBox;
-
-	// Set the box density to be non-zero, so it will be dynamic.
-	fixtureDef.density = 1.0f;
-
-	// Override the default friction.
-	fixtureDef.friction = 0.3f;
-
-	// Add the shape to the body.
-	body->CreateFixture(&fixtureDef);
-}
-
-b2Body* PhysicsModule::createDynamicBody(b2World& world, const Collider& collider)
-{
-	float x = collider.componentTransform->position.x;
-	float y = collider.componentTransform->position.y;
-	float width = collider.componentTransform->scale.x;
-	float height = collider.componentTransform->scale.y;
-	float angle = collider.componentTransform->rotation;
-
-	BLOCKY_ENGINE_DEBUG_STREAM("createDynamicBody: x: " << x << ", y: " << y << ", width: " << width << ", height: " <<
-		height << ", angle: " << angle);
-
-	// Define the first dynamic body. We set its position and call the body factory.
-	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
-	bodyDef.position.Set(x, y); // Positioned left of center
-	bodyDef.angle = angle;
-	b2Body* body = world.CreateBody(&bodyDef);
-
-	AddFixture(body, {width, height});
-
-	return body;
-}
-
-void PhysicsModule::AddCollider(Collider& collider)
-{
-	b2Body* body = createDynamicBody(*_box2dWorldObject, collider);
-
-	_colliderToBodyMap[&collider] = body;
-}
-
-void PhysicsModule::RemoveCollider(Collider& collider)
-{
-	auto it = _colliderToBodyMap.find(&collider);
-	if (it != _colliderToBodyMap.end())
-	{
-		_box2dWorldObject->DestroyBody(it->second);
-		_colliderToBodyMap.erase(it);
-	}
+	return VecConvert(collider.componentTransform->scale); //todo: scale to box or circle
 }

@@ -15,7 +15,6 @@ enum ColliderType
 class Collider : public Component
 {
 public:
-	// explicit Collider(GameObject& gameObject);
 	Collider(GameObject& gameObject, const char* tag, ColliderType colliderType, bool isTrigger);
 	~Collider() override;
 
@@ -27,8 +26,11 @@ public:
 	void ClearTriggerEnterCallback();
 	void SetTriggerExitCallback();
 	void ClearTriggerExitCallback();
+	virtual ColliderType GetColliderType() = 0;
 
 	bool isTrigger{false}; //todo: how should isTrigger be used?
+
+protected:
 	ColliderType _colliderType;
 };
 

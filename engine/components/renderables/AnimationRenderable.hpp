@@ -20,11 +20,11 @@ class AnimationRenderable : public SpriteRenderable {
 		void SetCurrentFrame(int frameIndex);
 
 	private:
-		void LoadFrames();
-		int frameWidth{}, frameHeight{};
-		int sheetWidth{}, sheetHeight{};
-		std::vector<glm::vec4> frames;
-		glm::vec4 sourceRect{};
+		void _loadFrames();
+		int _frameWidth{}, _frameHeight{};
+		int _sheetWidth{}, _sheetHeight{};
+		std::vector<glm::vec4> _frames;
+		glm::vec4 _sourceRect{};
 
 };
 

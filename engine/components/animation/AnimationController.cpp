@@ -1,89 +1,73 @@
 //
 // Created by 11896 on 19/11/2024.
 //
-
 #include "AnimationController.hpp"
 
-
 AnimationController::AnimationController(GameObject& gameObject, const char* tag, AnimationRenderable& renderable)
-		: Component(gameObject, tag), renderable(renderable) {}
+		: Component(gameObject, tag), _renderable(renderable) {}
 
-void AnimationController::Start() {};
+void AnimationController::Start() {}
 
-
-//Updates the animation state
 void AnimationController::Update(float delta) {
 	//Skips update if animation is not active
-	if (!isAnimating) return;
+	if (!_isAnimating || !_currentAnimation) return;
 
-	//Find the current animation in the unordered map
-	auto it = animations.find(currentAnimationName);
-	if (it == animations.end()) return;
-
-	const Animation& animation = it->second;
-
-	frameTimer += delta;
-	while (frameTimer >= frameDuration) {
-		frameTimer -= frameDuration;
+	_frameTimer += delta;
+	while (_frameTimer >= _frameDuration) {
+		_frameTimer -= _frameDuration;
 
 		//Move to the next frame
-		currentFrame++;
-		if (currentFrame > animation.endFrame) {
-			if (animation.looping) {
+		_currentFrame++;
+		if (_currentFrame > _currentAnimation->endFrame) {
+			if (_currentAnimation->looping) {
 				//Loop back to the start frame if the animation is looping
-				currentFrame = animation.startFrame;
+				_currentFrame = _currentAnimation->startFrame;
 			} else {
-				//Stop animation if its a non-looping animation
-				currentFrame = animation.endFrame;
+				//Stop animation if it's a non-looping animation
+				_currentFrame = _currentAnimation->endFrame;
 				StopAnimation();
 				break;
 			}
 		}
 		//Update the source rect for the current frame
-		UpdateSourceRect();
+		_updateSourceRect();
 	}
 }
-
 
 void AnimationController::End() {
 	StopAnimation();
 }
 
-//Sets the duration for each frame in the animation
 void AnimationController::SetFrameDuration(float duration) {
-	frameDuration = duration;
+	_frameDuration = duration;
 }
 
-//Adds a new animation to the controller
 void AnimationController::AddAnimation(const std::string& animationName, int startFrame, int endFrame, bool looping) {
-	animations[animationName] = {startFrame, endFrame, looping};
+	_animations[animationName] = {startFrame, endFrame, looping};
 }
 
-// Starts playing the specified animation by tag
 bool AnimationController::PlayAnimation(const std::string& animationName) {
-
 	//Check if the animation exists in the map
-	if (animations.find(animationName) == animations.end()) {
+	auto it = _animations.find(animationName);
+	if (it == _animations.end()) {
 		std::cerr << "Animation not found: " << animationName << std::endl;
 		return false;
 	}
 
-	currentAnimationName = animationName;
-	const Animation& animation = animations[animationName];
-	currentFrame = animation.startFrame;
-	isAnimating = true;
+	_currentAnimationName = animationName;
+	_currentAnimation = &it->second;  //Cache pointer to current animation
+	_currentFrame = _currentAnimation->startFrame;
+	_isAnimating = true;
 
-	UpdateSourceRect();
+	_updateSourceRect();
 	return true;
 }
 
-//Stops the currently playing animation
 void AnimationController::StopAnimation() {
-	isAnimating = false;
+	_isAnimating = false;
+	_currentAnimation = nullptr;  //Set cached animation to nullptr
 }
 
-//Updates the source rectangle of the renderable to match the current frame
-void AnimationController::UpdateSourceRect() {
-	renderable.SetCurrentFrame(currentFrame);
+void AnimationController::_updateSourceRect() {
+	_renderable.SetCurrentFrame(_currentFrame);
 }
-

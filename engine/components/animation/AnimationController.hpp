@@ -33,16 +33,17 @@ class AnimationController : public Component {
 		void StopAnimation();
 
 	private:
-		AnimationRenderable& renderable;
-		float frameTimer = 0.0f;
-		float frameDuration = 0.1f;
-		int currentFrame = 0;
-		bool isAnimating = false;
+		AnimationRenderable& _renderable;
+		float _frameTimer = 0.0f;
+		float _frameDuration = 0.1f;
+		int _currentFrame = 0;
+		bool _isAnimating = false;
 
-		std::string currentAnimationName;
-		std::unordered_map<std::string, Animation> animations;
+		std::string _currentAnimationName;
+		std::unordered_map<std::string, Animation> _animations;
+		const Animation* _currentAnimation = nullptr;
 
-		void UpdateSourceRect();
+		void _updateSourceRect();
 };
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_ANIMATION_ANIMATIONCONTROLLER_HPP_

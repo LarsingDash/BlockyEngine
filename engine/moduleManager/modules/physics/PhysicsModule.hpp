@@ -11,6 +11,7 @@
 #include <Box2D/b2_world.h>
 #include <moduleManager/ModuleWrapper.hpp>
 #include "components/collider/Collider.hpp"
+#include "MyContactListener.hpp"
 
 struct b2BodyDef;
 class b2Body;
@@ -41,7 +42,7 @@ private:
 	static b2Vec2 Dimensions(const Collider& collider);
 
 	std::unique_ptr<b2World> _box2dWorldObject;
-	// std::unique_ptr<MyContactListener> _contactListener;
+	std::unique_ptr<MyContactListener> _contactListener;
 	std::unordered_map<Collider*, b2Body*> _colliderToBodyMap;
 
 	int tick = 0; //todo: for debug

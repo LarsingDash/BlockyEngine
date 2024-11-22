@@ -4,6 +4,8 @@
 
 #include "Transform.hpp"
 
+#include <iostream>
+
 #include "gameObject/GameObject.hpp"
 
 Transform::Transform(GameObject& gameObject) :
@@ -18,17 +20,17 @@ const float& Transform::GetLocalRotation() const { return _rotation; }
 const glm::vec2& Transform::GetLocalScale() { return _scale; }
 
 glm::vec2 Transform::GetWorldPosition() {
-	return _worldMatrix[2];
+	return {_worldMatrix[0][2], _worldMatrix[1][2]};
 }
 
 float Transform::GetWorldRotation() const {
-	return atan2f(_worldMatrix[0][1], _worldMatrix[0][0]);
+	return atan2f(_worldMatrix[1][0], _worldMatrix[0][0]);
 }
 
 glm::vec2 Transform::GetWorldScale() {
 	return glm::vec2{
-			glm::length(glm::vec2(_worldMatrix[0])),
-			glm::length(glm::vec2(_worldMatrix[1]))
+			sqrtf(_worldMatrix[0][0] * _worldMatrix[0][0] + _worldMatrix[0][1] * _worldMatrix[0][1]),
+			sqrtf(_worldMatrix[1][0] * _worldMatrix[1][0] + _worldMatrix[1][1] * _worldMatrix[1][1])
 	};
 }
 
@@ -72,32 +74,21 @@ void Transform::RecalculateWorldMatrix() {    // NOLINT(*-no-recursion)
 }
 
 void Transform::_recalculateWorldMatrix(const glm::mat3& parent) {
+	//Mark transform as recalculated
 	isMarkedForRecalculation = false;
 
-	auto translationMatrix = glm::mat3(1.0f);
-
-	//POSITION
-	translationMatrix[2] = glm::vec3(_position, 1.0f);
-
-	//ROTATION
+	//Precalculate rotation angles
 	float cosTheta = cosf(_rotation);
 	float sinTheta = sinf(_rotation);
-	glm::mat3 rotationMatrix = glm::mat3(
-			cosTheta, -sinTheta, 0.0f,
-			sinTheta, cosTheta, 0.0f,
-			0.0f, 0.0f, 1.0f
+
+	//Build matrix
+	glm::mat3 localMatrix = glm::mat3(
+			_scale.x * cosTheta, -_scale.y * sinTheta, _position.x,
+			_scale.x * sinTheta,  _scale.y * cosTheta, _position.y,
+			0.0f,                 0.0f,                1.0f
 	);
 
-	//SCALE
-	glm::mat3 scaleMatrix = glm::mat3(
-			_scale.x, 0.0f, 0.0f,
-			0.0f, _scale.y, 0.0f,
-			0.0f, 0.0f, 1.0f
-	);
-
-	//Combine segments
-	glm::mat3 localMatrix = translationMatrix * rotationMatrix * scaleMatrix;
-
+	//Reassign _worldMatrix
 	_worldMatrix = parent * localMatrix;
 	if (gameObject.tag == "A")
 		std::cout << gameObject.tag << ": Local: " << GetLocalPosition().x << "\tWorld: " << GetWorldPosition().x

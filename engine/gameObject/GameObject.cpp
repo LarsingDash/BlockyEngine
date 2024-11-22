@@ -30,6 +30,7 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 			component->Update(delta);
 		}
 	}
+	if (tag == "root" || tag == "A") transform->Translate(0.1f, 0.f);
 
 	//Add transform to the recalculation list before updating children so that the order will be top to bottom
 	if (transform->isMarkedForRecalculation) recalculationList.emplace_back(*transform);

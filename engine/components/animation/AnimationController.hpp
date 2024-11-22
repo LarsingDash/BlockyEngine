@@ -19,6 +19,7 @@ class AnimationController : public Component {
 			int startFrame;
 			int endFrame;
 			bool looping;
+			float frameDuration;
 		};
 
 		AnimationController(GameObject& gameObject, const char* tag, AnimationRenderable& renderable);
@@ -27,15 +28,13 @@ class AnimationController : public Component {
 		void Update(float delta) override;
 		void End() override;
 
-		void SetFrameDuration(float duration);
-		void AddAnimation(const std::string& animationName, int startFrame, int endFrame, bool looping);
+		void AddAnimation(const std::string& animationName, int startFrame, int endFrame, float frameDuration, bool looping);
 		bool PlayAnimation(const std::string& animationName);
 		void StopAnimation();
 
 	private:
 		AnimationRenderable& _renderable;
 		float _frameTimer = 0.0f;
-		float _frameDuration = 0.1f;
 		int _currentFrame = 0;
 		bool _isAnimating = false;
 

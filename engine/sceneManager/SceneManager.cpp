@@ -43,13 +43,12 @@ SceneManager::SceneManager() : testScene{} {
 	animatedObject.componentTransform->position = glm::vec2{100.f, 100.f};
 
 	auto& animationController = objectC->AddComponent<AnimationController>("animControllerTag", animatedObject);
-	animationController.SetFrameDuration(0.15f);
 
-	animationController.AddAnimation("idle", 0, 7, true);
-	animationController.AddAnimation("run", 8, 15, true);
+	animationController.AddAnimation("idle", 0, 7, 0.1f,true);
+	animationController.AddAnimation("run", 8, 15, 0.1f, true);
 
 //	animationController.PlayAnimation("idle");
-	objectC->GetComponent<AnimationController>()->PlayAnimation("run");
+	objectC->GetComponent<AnimationController>()->PlayAnimation("idle");
 }
 
 void SceneManager::Update(float delta) {

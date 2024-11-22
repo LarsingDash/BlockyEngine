@@ -13,8 +13,8 @@ void AnimationController::Update(float delta) {
 	if (!_isAnimating || !_currentAnimation) return;
 
 	_frameTimer += delta;
-	while (_frameTimer >= _frameDuration) {
-		_frameTimer -= _frameDuration;
+	while (_frameTimer >= _currentAnimation->frameDuration) {
+		_frameTimer -= _currentAnimation->frameDuration;
 
 		//Move to the next frame
 		_currentFrame++;
@@ -38,12 +38,8 @@ void AnimationController::End() {
 	StopAnimation();
 }
 
-void AnimationController::SetFrameDuration(float duration) {
-	_frameDuration = duration;
-}
-
-void AnimationController::AddAnimation(const std::string& animationName, int startFrame, int endFrame, bool looping) {
-	_animations[animationName] = {startFrame, endFrame, looping};
+void AnimationController::AddAnimation(const std::string& animationName, int startFrame, int endFrame, float frameDuration, bool looping) {
+	_animations[animationName] = {startFrame, endFrame, looping, frameDuration};
 }
 
 bool AnimationController::PlayAnimation(const std::string& animationName) {
@@ -57,6 +53,7 @@ bool AnimationController::PlayAnimation(const std::string& animationName) {
 	_currentAnimationName = animationName;
 	_currentAnimation = &it->second;  //Cache pointer to current animation
 	_currentFrame = _currentAnimation->startFrame;
+	_frameTimer = 0.0f;
 	_isAnimating = true;
 
 	_updateSourceRect();

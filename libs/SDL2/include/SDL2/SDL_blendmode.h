@@ -92,7 +92,7 @@ typedef enum
  * Compose a custom blend mode for renderers.
  *
  * The functions SDL_SetRenderDrawBlendMode and SDL_SetTextureBlendMode accept
- * the SDL_BlendMode returned by this function if the renderer supports it.
+ * the SDL_BlendMode returned by this function if the _renderer supports it.
  *
  * A blend mode controls how the pixels from a drawing operation (source) get
  * combined with the pixels from the render target (destination). First, the
@@ -124,12 +124,12 @@ typedef enum
  * SDL_BlendFactor. The other components are not used in the alpha
  * calculation.
  *
- * Support for these blend modes varies for each renderer. To check if a
- * specific SDL_BlendMode is supported, create a renderer and pass it to
+ * Support for these blend modes varies for each _renderer. To check if a
+ * specific SDL_BlendMode is supported, create a _renderer and pass it to
  * either SDL_SetRenderDrawBlendMode or SDL_SetTextureBlendMode. They will
  * return with an error if the blend mode is not supported.
  *
- * This list describes the support of custom blend modes for each renderer in
+ * This list describes the support of custom blend modes for each _renderer in
  * SDL 2.0.6. All renderers support the four blend modes listed in the
  * SDL_BlendMode enumeration.
  *

@@ -443,7 +443,7 @@ extern "C" {
  *
  *  This variable can be set to the following values:
  *    "0"       - Disable 3D acceleration
- *    "1"       - Enable 3D acceleration, using the default renderer.
+ *    "1"       - Enable 3D acceleration, using the default _renderer.
  *    "X"       - Enable 3D acceleration, using X where X is one of the valid rendering drivers.  (e.g. "direct3d", "opengl", etc.)
  *
  *  By default SDL tries to make a best guess for each platform whether
@@ -1386,13 +1386,13 @@ extern "C" {
 #define SDL_HINT_MOUSE_RELATIVE_MODE_WARP    "SDL_MOUSE_RELATIVE_MODE_WARP"
 
 /**
- *  \brief  A variable controlling whether relative mouse motion is affected by renderer scaling
+ *  \brief  A variable controlling whether relative mouse motion is affected by _renderer scaling
  *
  *  This variable can be set to the following values:
- *    "0"       - Relative motion is unaffected by DPI or renderer's logical size
+ *    "0"       - Relative motion is unaffected by DPI or _renderer's logical size
  *    "1"       - Relative motion is scaled according to DPI scaling and logical size
  *
- *  By default relative mouse deltas are affected by DPI and renderer scaling
+ *  By default relative mouse deltas are affected by DPI and _renderer scaling
  */
 #define SDL_HINT_MOUSE_RELATIVE_SCALING "SDL_MOUSE_RELATIVE_SCALING"
 
@@ -1605,14 +1605,14 @@ extern "C" {
  *    "2"     - Use the driver line API (occasionally misses line endpoints based on hardware driver quirks, was the default before 2.0.20)
  *    "3"     - Use the driver geometry API (correct, draws thicker diagonal lines)
  *
- *  This variable should be set when the renderer is created.
+ *  This variable should be set when the _renderer is created.
  */
 #define SDL_HINT_RENDER_LINE_METHOD "SDL_RENDER_LINE_METHOD"
 
 /**
  *  \brief  A variable controlling whether to enable Direct3D 11+'s Debug Layer.
  *
- *  This variable does not have any effect on the Direct3D 9 based renderer.
+ *  This variable does not have any effect on the Direct3D 9 based _renderer.
  *
  *  This variable can be set to the following values:
  *    "0"       - Disable Debug Layer use
@@ -1636,9 +1636,9 @@ extern "C" {
 /**
  *  \brief  A variable specifying which render driver to use.
  *
- *  If the application doesn't pick a specific renderer to use, this variable
- *  specifies the name of the preferred renderer.  If the preferred renderer
- *  can't be initialized, the normal default renderer is used.
+ *  If the application doesn't pick a specific _renderer to use, this variable
+ *  specifies the name of the preferred _renderer.  If the preferred _renderer
+ *  can't be initialized, the normal default _renderer is used.
  *
  *  This variable is case insensitive and can be set to the following values:
  *    "direct3d"

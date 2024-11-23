@@ -8,8 +8,8 @@
 #include <moduleManager/ModuleManager.hpp>
 #include <moduleManager/modules/physics/PhysicsModule.hpp>
 
-Collider::Collider(GameObject& gameObject, const char* tag, ColliderType colliderType, bool isTrigger) :
-	Component(gameObject, tag), isTrigger(isTrigger) //todo, _colliderType(colliderType)
+Collider::Collider(GameObject& gameObject, const char* tag, bool isTrigger) :
+	Component(gameObject, tag), isTrigger(isTrigger)
 {
 }
 
@@ -23,7 +23,6 @@ void Collider::Start()
 
 void Collider::Update(float delta)
 {
-	//todo: Collider::Update
 }
 
 void Collider::End()
@@ -31,8 +30,3 @@ void Collider::End()
 	ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);
 }
 
-void Collider::SetTriggerEnterCallback()
-{
-	//todo: create all triggers
-	BLOCKY_ENGINE_DEBUG("SetTriggerEnterCallback: " + this->tag)
-}

@@ -15,11 +15,13 @@ enum ColliderType
 class Collider : public Component
 {
 public:
-	Collider(GameObject& gameObject, const char* tag, ColliderType colliderType, bool isTrigger);
+	Collider(GameObject& gameObject, const char* tag, bool isTrigger);
 	~Collider() override;
 
 	void Start() override;
+
 	void Update(float delta) override;
+
 	void End() override;
 
 	void SetTriggerEnterCallback();
@@ -28,10 +30,7 @@ public:
 	void ClearTriggerExitCallback();
 	virtual ColliderType GetColliderType() = 0;
 
-	bool isTrigger{false}; //todo: how should isTrigger be used?
-
-protected:
-	ColliderType _colliderType;
+	bool isTrigger{false};
 };
 
 #endif //COLLIDER_HPP

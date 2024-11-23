@@ -6,7 +6,7 @@
 #include <gameObject/GameObject.hpp>
 
 CircleCollider::CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, float radius)
-    : Collider(gameObject, tag, ColliderType::CIRCLE, isTrigger), _radius(radius)
+    : Collider(gameObject, tag, isTrigger), _radius(radius)
 {
 }
 

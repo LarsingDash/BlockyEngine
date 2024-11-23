@@ -6,7 +6,7 @@
 #include <gameObject/GameObject.hpp>
 
 BoxCollider::BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, float height, float width)
-    : Collider(gameObject, tag, ColliderType::BOX, isTrigger), _height(height), _width(width)
+    : Collider(gameObject, tag, isTrigger), _height(height), _width(width)
 {
 }
 

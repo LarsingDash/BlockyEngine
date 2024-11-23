@@ -4,6 +4,8 @@
 
 #include "MyContactListener.hpp"
 
+#include <logging/BLogger.hpp>
+
 MyContactListener::MyContactListener(std::unordered_map<Collider*, b2Body*>* colliderToBodyMap)
 {
     _colliderToBodyMap = colliderToBodyMap;
@@ -21,14 +23,8 @@ MyContactListener::MyContactListener(std::unordered_map<Collider*, b2Body*>* col
 /// the next step.
 void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
 {
-    BLOCKY_ENGINE_DEBUG("PreSolve")
-
     auto body1 = contact->GetFixtureA()->GetBody();
     auto body2 = contact->GetFixtureB()->GetBody();
-
-    std::cout << "PreSolve!" << body1->GetPosition().y << ", " << body2->GetPosition().y << std::endl;
-
-    // std::unordered_map<Collider*, b2Body*> _colliderToBodyMap; //todo:
 
     Collider* collider1 = nullptr;
     Collider* collider2 = nullptr;
@@ -49,18 +45,14 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
     if (collider1 != nullptr && collider1->isTrigger)
     {
         //todo:			collider1.DoTrigger(&collider2)
-        collider1->SetTriggerEnterCallback();
     }
     if (collider2 != nullptr && collider2->isTrigger)
     {
-        //todo:			collider1.DoTrigger(&collider1)
-        collider2->SetTriggerEnterCallback();
+        //todo:			collider2.DoTrigger(&collider1)
     }
 
     if (body1->GetPosition().y < 51)
     {
         contact->SetEnabled(false);
     }
-
-    std::cout << "done" << std::endl;
 }

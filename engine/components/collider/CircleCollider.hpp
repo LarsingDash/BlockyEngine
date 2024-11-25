@@ -10,7 +10,7 @@
 class CircleCollider : public Collider
 {
 public:
-    CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, float radius);
+    CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius);
     ~CircleCollider() override = default;
 
     ColliderType GetColliderType() override;

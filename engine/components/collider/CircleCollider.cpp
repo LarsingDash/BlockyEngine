@@ -5,8 +5,8 @@
 #include "CircleCollider.hpp"
 #include <gameObject/GameObject.hpp>
 
-CircleCollider::CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, float radius)
-    : Collider(gameObject, tag, isTrigger), _radius(radius)
+CircleCollider::CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius)
+    : Collider(gameObject, tag, isTrigger, isStatic), _radius(radius)
 {
 }
 

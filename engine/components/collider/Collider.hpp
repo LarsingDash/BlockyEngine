@@ -15,7 +15,7 @@ enum ColliderType
 class Collider : public Component
 {
 public:
-	Collider(GameObject& gameObject, const char* tag, bool isTrigger);
+	Collider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic);
 	~Collider() override;
 
 	void Start() override;
@@ -24,13 +24,11 @@ public:
 
 	void End() override;
 
-	void SetTriggerEnterCallback();
-	void ClearTriggerEnterCallback();
-	void SetTriggerExitCallback();
-	void ClearTriggerExitCallback();
+	void CollisionCallback(Collider& other);
 	virtual ColliderType GetColliderType() = 0;
 
 	bool isTrigger{false};
+	bool isStatic{false};
 };
 
 #endif //COLLIDER_HPP

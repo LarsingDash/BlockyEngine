@@ -27,7 +27,7 @@ SceneManager::SceneManager() : testScene{}
 
 	//aA with default pos (50, 50)
 	auto& aA = objectA->AddComponent<RectangleRenderable>("aA", glm::ivec4(255, 0, 0, 255), true);
-	auto& aB = objectA->AddComponent<BoxCollider>("BoxColliderA", true, w, h);
+	auto& aB = objectA->AddComponent<BoxCollider>("BoxColliderA", true, false, w, h);
 	objectA->transform->position = glm::vec2(x, y);
 	aA.componentTransform->position = {x, y};
 	aB.componentTransform->position = {x, y};
@@ -36,7 +36,7 @@ SceneManager::SceneManager() : testScene{}
 	x = 0.f, y = 200.f;
 	r = 50.f;
 	auto& bA = objectB->AddComponent<RectangleRenderable>("bA", glm::ivec4(0, 255, 0, 255));
-	auto& bB = objectB->AddComponent<CircleCollider>("CircleColliderB", true, r);
+	auto& bB = objectB->AddComponent<CircleCollider>("CircleColliderB", true, false, r);
 	objectB->transform->position = glm::vec2(x, y);
 	bA.componentTransform->position = {x, y};
 	bB.componentTransform->position = {x, y};

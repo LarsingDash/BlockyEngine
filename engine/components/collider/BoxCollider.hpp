@@ -9,13 +9,13 @@
 class BoxCollider : public Collider
 {
 public:
-	BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, float height, float width);
+	BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width);
 	~BoxCollider() override = default;
 
 	ColliderType GetColliderType() override;
 
-	[[nodiscard]] float GetWidth() const {return _width;}
-	[[nodiscard]] float GetHeight() const {return _height;}
+	[[nodiscard]] float GetWidth() const { return _width; }
+	[[nodiscard]] float GetHeight() const { return _height; }
 
 private:
 	float _width, _height;

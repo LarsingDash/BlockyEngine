@@ -42,13 +42,10 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
         }
     }
 
-    if (collider1 != nullptr && collider1->isTrigger)
+    if (collider1 != nullptr && collider2 != nullptr && collider1->isTrigger)
     {
-        //todo:			collider1.DoTrigger(&collider2)
-    }
-    if (collider2 != nullptr && collider2->isTrigger)
-    {
-        //todo:			collider2.DoTrigger(&collider1)
+        collider1->CollisionCallback(*collider2);
+        collider2->CollisionCallback(*collider1);
     }
 
     if (body1->GetPosition().y < 51)

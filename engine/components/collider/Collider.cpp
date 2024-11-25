@@ -8,8 +8,8 @@
 #include <moduleManager/ModuleManager.hpp>
 #include <moduleManager/modules/physics/PhysicsModule.hpp>
 
-Collider::Collider(GameObject& gameObject, const char* tag, bool isTrigger) :
-	Component(gameObject, tag), isTrigger(isTrigger)
+Collider::Collider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic) :
+	Component(gameObject, tag), isTrigger(isTrigger), isStatic(isStatic)
 {
 }
 
@@ -28,5 +28,9 @@ void Collider::Update(float delta)
 void Collider::End()
 {
 	ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);
+}
+
+void Collider::CollisionCallback(Collider& other)
+{
 }
 

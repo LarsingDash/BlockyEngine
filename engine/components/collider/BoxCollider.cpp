@@ -5,8 +5,9 @@
 #include "BoxCollider.hpp"
 #include <gameObject/GameObject.hpp>
 
-BoxCollider::BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, float height, float width)
-    : Collider(gameObject, tag, isTrigger), _height(height), _width(width)
+BoxCollider::BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height,
+                         float width)
+    : Collider(gameObject, tag, isTrigger, isStatic), _width(width), _height(height)
 {
 }
 

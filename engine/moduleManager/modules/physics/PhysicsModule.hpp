@@ -17,7 +17,6 @@ struct b2BodyDef;
 class b2Body;
 class b2World;
 
-//todo: PhysicsModule
 class PhysicsModule : public ModuleWrapper
 {
 public:
@@ -25,6 +24,7 @@ public:
 	~PhysicsModule() override = default;
 
 	void Update(float delta) override;
+	static bool IsSame(const Collider* collider, const b2Body* body);
 	void AddCollider(Collider& collider);
 	void RemoveCollider(Collider& collider);
 

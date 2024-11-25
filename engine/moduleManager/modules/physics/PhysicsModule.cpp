@@ -31,15 +31,25 @@ void PhysicsModule::Update(const float delta)
 	WritingBox2DWorldToOutside();
 }
 
+bool PhysicsModule::IsSame(const Collider* const collider, const b2Body* const body)
+{
+	if (collider == nullptr || body == nullptr) { return false; }
+
+	if (body->GetPosition() != Position(*collider)) { return false; }
+
+	if (body->GetAngle() != Angle(*collider)) { return false; }
+
+	return true;
+}
+
 void PhysicsModule::WritingExternalInputToBox2DWorld()
 {
 	for (auto [collider, body] : _colliderToBodyMap)
 	{
-		// todo: only update if needed
+		if (IsSame(collider, body)) { continue; }
+
 		body->SetTransform(Position(*collider), Angle(*collider));
 
-		// todo: only update if needed
-		// todo: onliner delete? body->DestroyFixture(body->GetFixtureList());
 		// Destroy all existing fixtures so if there is a resize the resize can be applied
 		for (b2Fixture* fixture = body->GetFixtureList(); fixture;)
 		{
@@ -58,6 +68,7 @@ void PhysicsModule::WritingBox2DWorldToOutside()
 	{
 		//todo: does gameobject udate form this?
 		collider->componentTransform->position = VecConvert(body->GetPosition());
+		collider->componentTransform->rotation = body->GetAngle();
 	}
 }
 
@@ -98,19 +109,14 @@ void PhysicsModule::AddFixture(Collider& collider, b2Body* body)
 {
 	b2FixtureDef fixtureDef;
 
-	//todo: read if colliderIsStatic
-	bool colliderIsStatic = true;
-
 	// todo: if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
 	switch (collider.GetColliderType())
 	{
 	case BOX:
 		fixtureDef.shape = AddBoxShape(reinterpret_cast<BoxCollider&>(collider)).release();
-		colliderIsStatic = false;
 		break;
 	case CIRCLE:
 		fixtureDef.shape = AddCircleShape(reinterpret_cast<CircleCollider&>(collider)).release();
-		colliderIsStatic = true;
 		break;
 	}
 
@@ -120,13 +126,9 @@ void PhysicsModule::AddFixture(Collider& collider, b2Body* body)
 
 	body->CreateFixture(&fixtureDef);
 
-	if (colliderIsStatic)
+	if (!collider.isStatic)
 	{
-		/* don't set mass */
-	}
-	else
-	{
-		// to have all object apply the same force on another, set all bodies to mass 1
+		// to have all non-static object apply the same force on another, set all bodies to mass 1
 		b2MassData mass = {1.f};
 		body->SetMassData(&mass);
 	}
@@ -136,9 +138,8 @@ void PhysicsModule::AddFixture(Collider& collider, b2Body* body)
 
 b2Body* PhysicsModule::CreateBody(b2World& world, Collider& collider)
 {
-	const float x = collider.componentTransform->position.x;
-	const float y = collider.componentTransform->position.y;
-	const float angle = collider.componentTransform->rotation;
+	auto [x,y] = Position(collider);
+	auto angle = Angle(collider);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -165,6 +166,7 @@ glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a)
 
 b2Vec2 PhysicsModule::Position(const Collider& collider)
 {
+	//todo: add gameObject transforms
 	return VecConvert(collider.componentTransform->position);
 }
 

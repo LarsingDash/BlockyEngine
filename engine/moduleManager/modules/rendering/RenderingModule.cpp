@@ -33,15 +33,17 @@ void RenderingModule::RenderRectangle(RectangleRenderable& renderable) {
 	ComponentTransform& transform = *renderable.componentTransform;
 
 	//Precalculating rotation angle
-	float rad = transform.rotation * static_cast<float>(M_PI) / 180.f;
+	float rad = transform.GetWorldRotation() * static_cast<float>(M_PI) / 180.f;
 	float cosTheta = cos(rad);
 	float sinTheta = sin(rad);
 
 	//Pre-getting dimensions
-	float x = transform.position.x;
-	float y = transform.position.y;
-	float w = transform.scale.x / 2.f;
-	float h = transform.scale.y / 2.f;
+	const auto& position = transform.GetWorldPosition();
+	const auto& scale = transform.GetWorldScale();
+	float x = position.x;
+	float y = position.y;
+	float w = scale.x / 2.f;
+	float h = scale.y / 2.f;
 
 	//Precalculating rotated dimensions
 	float cosW = w * cosTheta;
@@ -78,11 +80,13 @@ void RenderingModule::RenderEllipse(EllipseRenderable& renderable) {
 	glm::ivec4 color = renderable.GetColor();
 
 	ComponentTransform& transform = *renderable.componentTransform;
+	const auto& position = transform.GetWorldPosition();
+	const auto& scale = transform.GetWorldScale();
 
-	auto centerX = static_cast<Sint16>(transform.position.x);
-	auto centerY = static_cast<Sint16>(transform.position.y);
-	auto radiusX = static_cast<Sint16>(transform.scale.x / 2.0f);
-	auto radiusY = static_cast<Sint16>(transform.scale.y / 2.0f);
+	auto centerX = static_cast<Sint16>(position.x);
+	auto centerY = static_cast<Sint16>(position.y);
+	auto radiusX = static_cast<Sint16>(scale.x / 2.0f);
+	auto radiusY = static_cast<Sint16>(scale.y / 2.0f);
 
 	if (renderable.IsFilled()) {
 		filledEllipseRGBA(renderer, centerX, centerY, radiusX, radiusY,
@@ -158,16 +162,17 @@ void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransfo
 		return;
 	}
 
+	const auto& position = transform.GetWorldPosition();
+	const auto& scale = transform.GetWorldScale();
 	SDL_FRect destRect = {
-			(transform.position.x - transform.scale.x / 2.0f),
-			(transform.position.y - transform.scale.y / 2.0f),
-			transform.scale.x,
-			transform.scale.y
+			(position.x - scale.x / 2.0f),
+			(position.y - scale.y / 2.0f),
+			scale.x,
+			scale.y
 	};
-
 	SDL_RenderCopyExF(
 			renderer, texture, nullptr, &destRect,
-			transform.rotation, nullptr, SDL_RendererFlip::SDL_FLIP_NONE
+			transform.GetWorldRotation(), nullptr, SDL_RendererFlip::SDL_FLIP_NONE
 	);
 }
 

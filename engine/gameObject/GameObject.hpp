@@ -13,7 +13,7 @@
 #include <typeindex>
 #include <optional>
 
-#include "Transform.hpp"
+#include "gameObject/GameObjectTransform.hpp"
 #include "components/Component.hpp"
 
 class GameObject {
@@ -48,6 +48,8 @@ class GameObject {
 		inline const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return _children; };
 
 		//----- COMPONENTS
+		using ComponentsList = std::vector<std::unique_ptr<Component>>;
+
 		template<typename T, typename... Args>
 		T& AddComponent(const char* componentTag = "Untagged", Args&& ... args) {
 			//Perform validity checks
@@ -97,14 +99,15 @@ class GameObject {
 			return componentIt ? (**componentIt).get() : nullptr;
 		}
 
+		inline const std::unordered_map<std::type_index, ComponentsList>& GetComponents() { return _components; };
+
 		const std::string tag;
 		GameObject* parent;
-		std::unique_ptr<Transform> transform;
+		std::unique_ptr<GameObjectTransform> transform;
 
 	private:
 		//----- USINGS
 		using GameObjectList = std::vector<std::unique_ptr<GameObject>>;
-		using ComponentsList = std::vector<std::unique_ptr<Component>>;
 
 		//----- CHILD / PARENT
 		bool _removeChild(GameObjectList::iterator child);

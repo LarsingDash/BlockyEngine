@@ -4,35 +4,32 @@
 
 #include "Transform.hpp"
 
-#include <iostream>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/matrix_transform_2d.hpp>
 
 #include "gameObject/GameObject.hpp"
 
 Transform::Transform(GameObject& gameObject) :
-		gameObject(gameObject), _position(0.f), _rotation(0.f),
-		_scale(1.f), _worldMatrix(1.f), isMarkedForRecalculation(false) {
-	RecalculateWorldMatrix();
+		gameObject(gameObject), parent(nullptr),
+		_position(0.f), _rotation(0.f), _scale(1.f),
+		_worldPosition(_position), _worldRotation(_rotation), _worldScale(_scale),
+		_worldMatrix(1.f), isMarkedForRecalculation(false) {
 }
 
 ////----- GETTER -----
-const glm::vec2& Transform::GetLocalPosition() { return _position; }
-const float& Transform::GetLocalRotation() const { return _rotation; }
-const glm::vec2& Transform::GetLocalScale() { return _scale; }
+const glm::vec2& Transform::GetLocalPosition() const { return _position; }
+[[maybe_unused]] float Transform::GetLocalRotation() const { return _rotation * (180.0f / static_cast<float>(M_PI)); }
+//[[maybe_unused]] float Transform::GetLocalRotation() const { return _rotation; }
+const glm::vec2& Transform::GetLocalScale() const { return _scale; }
 
-glm::vec2 Transform::GetWorldPosition() {
-	return {_worldMatrix[0][2], _worldMatrix[1][2]};
+const glm::vec2& Transform::GetWorldPosition() const { return _worldPosition; }
+[[maybe_unused]] float Transform::GetWorldRotation() const {
+	return _worldRotation * (180.0f / static_cast<float>(M_PI));
 }
-
-float Transform::GetWorldRotation() const {
-	return atan2f(_worldMatrix[1][0], _worldMatrix[0][0]);
-}
-
-glm::vec2 Transform::GetWorldScale() {
-	return glm::vec2{
-			sqrtf(_worldMatrix[0][0] * _worldMatrix[0][0] + _worldMatrix[0][1] * _worldMatrix[0][1]),
-			sqrtf(_worldMatrix[1][0] * _worldMatrix[1][0] + _worldMatrix[1][1] * _worldMatrix[1][1])
-	};
-}
+//[[maybe_unused]] float Transform::GetWorldRotation() const { return _worldRotation; }
+const glm::vec2& Transform::GetWorldScale() const { return _worldScale; }
 
 //----- SETTER -----
 void Transform::Translate(const float x, const float y) {
@@ -41,13 +38,9 @@ void Transform::Translate(const float x, const float y) {
 	isMarkedForRecalculation = true;
 }
 
-void Transform::Translate(const glm::vec2&& pos) {
-	_position += pos;
-	isMarkedForRecalculation = true;
-}
-
-void Transform::Rotate(const float&& rot) {
-	_rotation += rot;
+void Transform::Rotate(float rotation) {
+//	_rotation += rotation * (static_cast<float>(M_PI) / 180.0f);
+	_rotation += rotation;
 	isMarkedForRecalculation = true;
 }
 
@@ -57,40 +50,49 @@ void Transform::Scale(float x, float y) {
 	isMarkedForRecalculation = true;
 }
 
-void Transform::Scale(const glm::vec2&& sca) {
-	_scale += sca;
+void Transform::SetPosition(float x, float y) {
+	_position.x = x;
+	_position.y = y;
 	isMarkedForRecalculation = true;
 }
 
-void Transform::RecalculateWorldMatrix() {    // NOLINT(*-no-recursion)
-	GameObject* parent = gameObject.parent;
-
-	if (parent) _recalculateWorldMatrix(parent->transform->_worldMatrix);
-	else _recalculateWorldMatrix(glm::mat3(1.f)); //Default world matrix for the root
-
-	for (const auto& child : gameObject.GetChildren()) {
-		child->transform->RecalculateWorldMatrix();
-	}
+void Transform::SetRotation(float rotation) {
+//	_rotation = rotation * (static_cast<float>(M_PI) / 180.0f);
+	_rotation = rotation;
+	isMarkedForRecalculation = true;
 }
 
-void Transform::_recalculateWorldMatrix(const glm::mat3& parent) {
-	//Mark transform as recalculated
+void Transform::SetScale(float x, float y) {
+	_scale.x = x;
+	_scale.y = y;
+	isMarkedForRecalculation = true;
+}
+
+//----- WORLD -----
+void Transform::_recalculateWorldMatrix() {
 	isMarkedForRecalculation = false;
 
-	//Precalculate rotation angles
-	float cosTheta = cosf(_rotation);
-	float sinTheta = sinf(_rotation);
+	auto localMatrix = glm::mat3(1.0f);
+	localMatrix = glm::translate(localMatrix, _position);
+	localMatrix = glm::rotate(localMatrix, _rotation);
+	localMatrix = glm::scale(localMatrix, _scale);
 
-	//Build matrix
-	glm::mat3 localMatrix = glm::mat3(
-			_scale.x * cosTheta, -_scale.y * sinTheta, _position.x,
-			_scale.x * sinTheta,  _scale.y * cosTheta, _position.y,
-			0.0f,                 0.0f,                1.0f
-	);
+	if (parent) {
+		_worldMatrix = parent->_worldMatrix * localMatrix;
 
-	//Reassign _worldMatrix
-	_worldMatrix = parent * localMatrix;
-	if (gameObject.tag == "A")
-		std::cout << gameObject.tag << ": Local: " << GetLocalPosition().x << "\tWorld: " << GetWorldPosition().x
-				  << std::endl;
+		//Correct rotation extraction
+		glm::vec2 parentX = glm::normalize(glm::vec2(parent->_worldMatrix[0][0], parent->_worldMatrix[0][1]));
+		glm::vec2 parentY = glm::normalize(glm::vec2(parent->_worldMatrix[1][0], parent->_worldMatrix[1][1]));
+
+		glm::mat2 parentRotationMatrix = { parentX, parentY };
+		_worldRotation = std::atan2(parentRotationMatrix[0][1], parentRotationMatrix[0][0]) + _rotation;
+
+		_worldScale = parent->_worldScale * _scale;
+	} else {
+		_worldMatrix = localMatrix;
+		_worldRotation = _rotation;
+		_worldScale = _scale;
+	}
+
+	_worldPosition = glm::vec2(_worldMatrix[2][0], _worldMatrix[2][1]);
 }

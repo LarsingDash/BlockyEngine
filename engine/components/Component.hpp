@@ -14,7 +14,7 @@ class GameObject;
 
 class Component {
 	public:
-		Component(GameObject& gameObject, const char* tag);
+		Component(GameObject& gameObject, const char* tag, bool hasTransform = true);
 		virtual ~Component();
 
 		Component(const Component& other) = delete;

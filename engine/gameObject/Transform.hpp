@@ -13,7 +13,7 @@ class GameObject;
 class Transform {
 	public:
 		explicit Transform(GameObject& gameObject);
-		~Transform() = default;
+		virtual ~Transform() = default;
 
 		Transform(const Transform& other) = delete;
 		Transform& operator=(const Transform& other) = delete;
@@ -22,34 +22,42 @@ class Transform {
 		Transform& operator=(Transform&& other) noexcept = delete;
 
 		//GETTER
-		const glm::vec2& GetLocalPosition();
-		[[nodiscard]] const float& GetLocalRotation() const;
-		const glm::vec2& GetLocalScale();
-
-		glm::vec2 GetWorldPosition();
-		[[nodiscard]] float GetWorldRotation() const;
-		glm::vec2 GetWorldScale();
-
+		[[maybe_unused]] [[nodiscard]] const glm::vec2& GetLocalPosition() const;
+		[[maybe_unused]] [[nodiscard]] float GetLocalRotation() const;
+		[[maybe_unused]] [[nodiscard]] const glm::vec2& GetLocalScale() const;
+		
+		[[maybe_unused]] [[nodiscard]] const glm::vec2& GetWorldPosition() const;
+		[[maybe_unused]] [[nodiscard]] float GetWorldRotation() const;
+		[[maybe_unused]] [[nodiscard]] const glm::vec2& GetWorldScale() const;
+		
 		//SETTER
-		void Translate(float x, float y);
-		void Translate(const glm::vec2&& position);
-		void Rotate(const float&& rotation);
-		void Scale(float x, float y);
-		void Scale(const glm::vec2&& scale);
+		[[maybe_unused]] void Translate(float x, float y);
+		[[maybe_unused]] void Rotate(float rotation);
+		[[maybe_unused]] void Scale(float x, float y);
+
+		[[maybe_unused]] void SetPosition(float x, float y);
+		[[maybe_unused]] void SetRotation(float rotation);
+		[[maybe_unused]] void SetScale(float x, float y);
 
 		GameObject& gameObject;
 
 		//WORLD
-		void RecalculateWorldMatrix();
+		virtual void RecalculateWorldMatrix() = 0;
 		bool isMarkedForRecalculation;
+
+	protected:
+		Transform* parent;
+		glm::mat3 _worldMatrix;
+		void _recalculateWorldMatrix();
 
 	private:
 		glm::vec2 _position;
 		float _rotation;
 		glm::vec2 _scale;
 
-		glm::mat3 _worldMatrix;
-		void _recalculateWorldMatrix(const glm::mat3& parent);
+		glm::vec2 _worldPosition;
+		float _worldRotation;
+		glm::vec2 _worldScale;
 };
 
 #endif //BLOCKYENGINE_TRANSFORM_HPP

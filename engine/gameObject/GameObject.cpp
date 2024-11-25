@@ -6,7 +6,7 @@
 
 GameObject::GameObject(std::string tag, GameObject* parent) :
 		tag(std::move(tag)), parent(parent) {
-	transform = std::make_unique<Transform>(*this);
+	transform = std::make_unique<GameObjectTransform>(*this);
 }
 
 GameObject::~GameObject() {
@@ -30,10 +30,17 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 			component->Update(delta);
 		}
 	}
-	if (tag == "root" || tag == "A") transform->Translate(0.1f, 0.f);
 
 	//Add transform to the recalculation list before updating children so that the order will be top to bottom
 	if (transform->isMarkedForRecalculation) recalculationList.emplace_back(*transform);
+	else    //If not, search through components and add any that are marked
+		for (const auto& [key, list] : _components) {
+			for (const auto& component : list) {
+				if (component->componentTransform != nullptr &&
+						component->componentTransform->isMarkedForRecalculation)
+					recalculationList.emplace_back(*transform);
+			}
+		}
 
 	//Cascade update to child objects
 	for (auto& child : _children) {

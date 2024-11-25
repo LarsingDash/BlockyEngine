@@ -3,7 +3,6 @@
 //
 
 #include "GameObject.hpp"
-#include <iostream>
 
 GameObject::GameObject(std::string tag, GameObject* parent) :
 		tag(std::move(tag)), parent(parent), transform(std::make_unique<Transform>()) {

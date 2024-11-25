@@ -2,4 +2,5 @@
         Component.cpp
         ComponentTransform.cpp
 )
+add_subdirectory(collider)
 add_subdirectory(renderables)

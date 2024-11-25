@@ -42,6 +42,20 @@ void BLoggerTest::Test() {
 	BLOCKY_ENGINE_ERROR("An error occurred.");
 	BLOCKY_ENGINE_WARNING("An warning occurred.");
 
+	float x = 0.0f;
+	float y = 0.0f;
+	float width = 0.0f;
+	float height = 0.0f;
+	float angle = 0.0f;
+
+	BLOCKY_ENGINE_DEBUG(
+	(std::stringstream() << "Test: x: " << x << ", y: " << y << ", width: " << width << ", height: " <<
+		height << ", angle: " << angle).str()
+);
+
+	BLOCKY_ENGINE_DEBUG_STREAM("Test: x: " << x << ", y: " << y << ", width: " << width << ", height: " <<
+			height << ", angle: " << angle);
+
 	TestBLoggerFunc();
 	BloggerClass::FuncBloggerClass();
 }

@@ -24,7 +24,6 @@ constexpr bool REMOVE_RETURN_TYPE = true;
 // for function name only: __func__
 #define BLOCKY_ENGINE_INFO(msg) bLogger.Log(LogLevel::INFO, __PRETTY_FUNCTION__, msg);
 #define BLOCKY_ENGINE_DEBUG(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, msg);
-// #define BLOCKY_ENGINE_DEBUG(msg,msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, msg);
 #define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, msg);
 #define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, msg);
 
@@ -46,9 +45,7 @@ public:
     ~BLogger();
 
     void Log(LogLevel level, const std::string& funcName = "", const std::string& message = "");
-    void Log(LogLevel level, const std::string& funcName = "", const std::stringstream& message = std::stringstream());
     void Log(LogLevel level, const std::string& funcName = "", const glm::vec2& message = {});
-    void Log(LogLevel level, const std::string& funcName = "", const std::ostream& message = std::cout);
 
 private:
     std::ofstream _logFile; // File stream for the log file

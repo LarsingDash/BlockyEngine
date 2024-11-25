@@ -96,7 +96,7 @@ class GameObject {
 			auto componentIt = _findComponentByTag<T>(componentTag);
 
 			//Return tagged component cast to T* if found
-			return componentIt ? (**componentIt).get() : nullptr;
+			return componentIt ? static_cast<T*>((**componentIt).get()) : nullptr;
 		}
 
 		inline const std::unordered_map<std::type_index, ComponentsList>& GetComponents() { return _components; };

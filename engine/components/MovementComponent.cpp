@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "gameObject/GameObject.hpp"
+#include "components/renderables/RectangleRenderable.hpp"
 
 MovementComponent::MovementComponent(GameObject& gameObject, const char* tag) :
 		Component(gameObject, tag, false) {}
@@ -20,7 +21,9 @@ void MovementComponent::Update(float delta) {
 //	gameObject.transform->Scale(delta * 100, delta * 100);
 //	gameObject.transform->Rotate(1.f);
 	gameObject.transform->Rotate(0.025f);
-	
+	auto blue = gameObject.GetComponent<RectangleRenderable>("GreyR");
+	if (blue) blue->componentTransform->Scale(0, 0.01f);
+
 //	std::cout << gameObject.tag << ": " << gameObject.transform->GetWorldPosition().x << std::endl;
 //	std::cout << gameObject.tag << ": " << gameObject.transform->GetWorldRotation() << std::endl;
 //	std::cout << gameObject.tag << ": " << gameObject.transform->GetLocalScale().x << std::endl;

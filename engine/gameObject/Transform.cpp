@@ -5,8 +5,6 @@
 #include "Transform.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
 
 #include "gameObject/GameObject.hpp"
@@ -72,21 +70,16 @@ void Transform::SetScale(float x, float y) {
 void Transform::_recalculateWorldMatrix() {
 	isMarkedForRecalculation = false;
 
+	//Build local matrix
 	auto localMatrix = glm::mat3(1.0f);
 	localMatrix = glm::translate(localMatrix, _position);
 	localMatrix = glm::rotate(localMatrix, _rotation);
 	localMatrix = glm::scale(localMatrix, _scale);
 
+	//Parent check for root: Assign worldMatrix and Rotation and Scale
 	if (parent) {
 		_worldMatrix = parent->_worldMatrix * localMatrix;
-
-		//Correct rotation extraction
-		glm::vec2 parentX = glm::normalize(glm::vec2(parent->_worldMatrix[0][0], parent->_worldMatrix[0][1]));
-		glm::vec2 parentY = glm::normalize(glm::vec2(parent->_worldMatrix[1][0], parent->_worldMatrix[1][1]));
-
-		glm::mat2 parentRotationMatrix = { parentX, parentY };
-		_worldRotation = std::atan2(parentRotationMatrix[0][1], parentRotationMatrix[0][0]) + _rotation;
-
+		_worldRotation = parent->_worldRotation + _rotation;
 		_worldScale = parent->_worldScale * _scale;
 	} else {
 		_worldMatrix = localMatrix;
@@ -94,5 +87,6 @@ void Transform::_recalculateWorldMatrix() {
 		_worldScale = _scale;
 	}
 
+	//Location can be simply extracted, regardless of scale and rotation
 	_worldPosition = glm::vec2(_worldMatrix[2][0], _worldMatrix[2][1]);
 }

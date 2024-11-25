@@ -39,13 +39,10 @@ private:
 	static glm::vec2 VecConvert(const b2Vec2& a);
 	static b2Vec2 Position(const Collider& collider);
 	static float Angle(const Collider& collider);
-	static b2Vec2 Dimensions(const Collider& collider);
 
 	std::unique_ptr<b2World> _box2dWorldObject;
 	std::unique_ptr<MyContactListener> _contactListener;
 	std::unordered_map<Collider*, b2Body*> _colliderToBodyMap;
-
-	int tick = 0; //todo: for debug
 };
 
 #endif //PHYSICSMODULE_HPP

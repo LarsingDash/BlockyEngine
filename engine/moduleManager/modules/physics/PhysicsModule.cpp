@@ -58,14 +58,7 @@ void PhysicsModule::WritingBox2DWorldToOutside()
 	{
 		//todo: does gameobject udate form this?
 		collider->componentTransform->position = VecConvert(body->GetPosition());
-
-		// BLOCKY_ENGINE_DEBUG_STREAM(tick <<
-		// 	"\tPosition: " << round(body->GetPosition().x) << ", " << round(body-> GetPosition().y) <<
-		// 	"\tVelocity: " << body->GetLinearVelocity().Length() <<
-		// 	"\tGetMass: " << body->GetMass());
 	}
-
-	tick++; //todo: for debug
 }
 
 void PhysicsModule::AddCollider(Collider& collider)
@@ -179,11 +172,5 @@ float PhysicsModule::Angle(const Collider& collider)
 {
 	//todo: add gameObject transforms
 	return collider.componentTransform->rotation;
-}
-
-b2Vec2 PhysicsModule::Dimensions(const Collider& collider)
-{
-	//todo: add gameObject transforms
-	return VecConvert(collider.componentTransform->scale); //todo: scale to box or circle
 }
 

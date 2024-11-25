@@ -19,14 +19,10 @@ Transform::Transform(GameObject& gameObject) :
 ////----- GETTER -----
 const glm::vec2& Transform::GetLocalPosition() const { return _position; }
 [[maybe_unused]] float Transform::GetLocalRotation() const { return _rotation * (180.0f / static_cast<float>(M_PI)); }
-//[[maybe_unused]] float Transform::GetLocalRotation() const { return _rotation; }
 const glm::vec2& Transform::GetLocalScale() const { return _scale; }
 
 const glm::vec2& Transform::GetWorldPosition() const { return _worldPosition; }
-[[maybe_unused]] float Transform::GetWorldRotation() const {
-	return _worldRotation * (180.0f / static_cast<float>(M_PI));
-}
-//[[maybe_unused]] float Transform::GetWorldRotation() const { return _worldRotation; }
+[[maybe_unused]] float Transform::GetWorldRotation() const { return _worldRotation * (180.0f / static_cast<float>(M_PI)); }
 const glm::vec2& Transform::GetWorldScale() const { return _worldScale; }
 
 //----- SETTER -----
@@ -37,8 +33,7 @@ void Transform::Translate(const float x, const float y) {
 }
 
 void Transform::Rotate(float rotation) {
-//	_rotation += rotation * (static_cast<float>(M_PI) / 180.0f);
-	_rotation += rotation;
+	_rotation -= rotation * (static_cast<float>(M_PI) / 180.0f);
 	isMarkedForRecalculation = true;
 }
 
@@ -55,8 +50,7 @@ void Transform::SetPosition(float x, float y) {
 }
 
 void Transform::SetRotation(float rotation) {
-//	_rotation = rotation * (static_cast<float>(M_PI) / 180.0f);
-	_rotation = rotation;
+	_rotation = -(rotation * (static_cast<float>(M_PI) / 180.0f));
 	isMarkedForRecalculation = true;
 }
 

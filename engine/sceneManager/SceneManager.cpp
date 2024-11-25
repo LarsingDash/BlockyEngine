@@ -4,7 +4,6 @@
 
 #include "SceneManager.hpp"
 
-#include "components/MovementComponent.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
@@ -13,50 +12,28 @@ SceneManager::SceneManager() :
 		testScene(std::make_unique<GameObject>("root")),
 		recalculationList() {
 	recalculationList.reserve(25);
-//	testScene->transform->SetPosition(300, 300);
-//	testScene->transform->SetScale(0.5, 0.5);
-//	testScene->transform->SetScale(200, 50);
-//	testScene->transform->SetRotation(45);
-//	testScene->AddComponent<SpriteRenderable>("Kaboom", "../assets/kaboom.png", "Kaboom");
-//	testScene->AddComponent<MovementComponent>();
 
-//2222222222222222222
-//	testScene->transform->SetPosition(250, 250);
-//	auto& row = testScene->AddChild("TopRow");
-//	row.transform->SetScale(200, 50);
-////	row.AddComponent<RectangleRenderable>("TopRowBack", glm::vec4{100}, true);
-//	row.AddComponent<SpriteRenderable>("Kaboom", "../assets/kaboom.png", "Kaboom");
-//	row.AddComponent<MovementComponent>();
-//
-//	auto& tRLeft = row.AddChild("tRLeft");
-//	tRLeft.AddComponent<RectangleRenderable>("tRLeftR", glm::vec4{255, 0, 0, 255}, true);
-//	tRLeft.transform->SetScale(0.25f, 1);
-//	tRLeft.transform->Translate(-0.5f + tRLeft.transform->GetLocalScale().x / 2.f, 0);
-//	tRLeft.AddComponent<MovementComponent>();
-//
-//	auto& tRRight = row.AddChild("trRight");
-//	tRRight.AddComponent<RectangleRenderable>("trRightR", glm::vec4{0, 255, 0, 255}, true);
-//	tRRight.transform->SetScale(0.5f, 1);
-//	tRRight.transform->Translate(0.5f - tRRight.transform->GetLocalScale().x / 2.f, 0);
-//	tRRight.AddComponent<MovementComponent>();
-//
-//	auto& test = tRRight.AddChild("Test");
-//	test.AddComponent<RectangleRenderable>("TestR", glm::vec4{0, 0, 255, 255});
-//	test.AddComponent<MovementComponent>();
+	testScene->transform->SetPosition(250, 250);
+	auto& row = testScene->AddChild("TopRow");
+	row.transform->SetRotation(10);
+	row.transform->SetScale(200, 50);
+	row.AddComponent<SpriteRenderable>("Kaboom", "../assets/kaboom.png", "Kaboom");
 
-//33333333333333333
-	testScene->transform->SetPosition(300, 300);
-	testScene->transform->SetScale(50, 50);
+	auto& tRLeft = row.AddChild("tRLeft");
+	tRLeft.AddComponent<EllipseRenderable>("tRLeftR", glm::vec4{255, 0, 0, 255}, true);
+	tRLeft.transform->SetRotation(-35);
+	tRLeft.transform->SetScale(0.25f, 1);
+	tRLeft.transform->Translate(-0.5f + tRLeft.transform->GetLocalScale().x / 2.f, 0);
 
-	auto& grey = testScene->AddChild("Grey");
-	grey.AddComponent<RectangleRenderable>("GreyR", glm::vec4{150}, true);
-	grey.AddComponent<MovementComponent>();
-	grey.transform->SetScale(2, 1);
+	auto& tRRight = row.AddChild("trRight");
+	tRRight.AddComponent<RectangleRenderable>("trRightR", glm::vec4{0, 255, 0, 255}, true);
+	tRRight.transform->SetRotation(25);
+	tRRight.transform->SetScale(0.5f, 1);
+	tRRight.transform->Translate(0.5f - tRRight.transform->GetLocalScale().x / 2.f, 0);
 
-	auto& blue = grey.AddChild("Blue");
-	blue.AddComponent<RectangleRenderable>("BlueR", glm::vec4{0, 0, 255, 255});
-	blue.AddComponent<MovementComponent>();
-	blue.transform->SetPosition(1, 0);
+	auto& test = tRRight.AddChild("Test");
+	test.transform->SetRotation(15);
+	test.AddComponent<RectangleRenderable>("TestR", glm::vec4{0, 0, 255, 255});
 }
 
 void SceneManager::Update(float delta) {

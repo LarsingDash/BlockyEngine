@@ -23,7 +23,6 @@ SceneManager::SceneManager() : testScene(std::make_unique<GameObject>("root"))
 	x = 0.f, y = 200.f;
 	w = 200.f, h = 200.f;
 
-	//aA with default pos (50, 50)
 	auto& aRed = objectA.AddComponent<RectangleRenderable>("Red", glm::vec4{255, 0, 0, 255}, true);
 	auto& aBoxCollider = objectA.AddComponent<BoxCollider>("BoxColliderA", true, false, w, h);
 	objectA.transform->position = glm::vec2(x, y);

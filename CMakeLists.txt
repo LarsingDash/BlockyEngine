@@ -15,7 +15,9 @@ include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
 include_directories("${CMAKE_MODULE_PATH}")
 
 #Final
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp
+        engine/components/rigidbody/Rigidbody.cpp
+        engine/components/rigidbody/Rigidbody.hpp)
 
 add_subdirectory(engine)
 add_subdirectory(libs/SDL2_gfx)

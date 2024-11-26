@@ -14,8 +14,13 @@ class GameObject;
 
 class Component {
 	public:
-		Component(GameObject& gameObject, const char* tag);
+		Component(GameObject& gameObject, const char* tag, bool hasTransform = true);
 		virtual ~Component();
+
+		Component(const Component& other) = delete;
+		Component& operator=(const Component& other) = delete;
+		Component(Component&& other) noexcept = delete;
+		Component& operator=(Component&& other) noexcept = delete;
 
 		virtual void Start() = 0;
 		virtual void Update(float delta) = 0;

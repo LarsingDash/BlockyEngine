@@ -3,25 +3,81 @@
 //
 
 #include "GameObject.hpp"
-#include <iostream>
 
-GameObject::GameObject(const char* tag) :
-		tag{tag}, transform{std::make_unique<Transform>()} {
+GameObject::GameObject(std::string tag, GameObject* parent) :
+		tag(std::move(tag)), parent(parent) {
+	transform = std::make_unique<GameObjectTransform>(*this);
 }
 
 GameObject::~GameObject() {
-	for (auto& type : components) {
+	//Delete all components
+	for (auto& type : _components) {
 		for (auto& component : type.second) {
 			component->End();
 		}
 	}
+	_components.clear();
+
+	//Delete all child gameObjects
+	_children.clear();
 }
 
-void GameObject::Update(float delta) {
+void GameObject::Update(    // NOLINT(*-no-recursion)
+		float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList) {
 	//Cascade update to components
-	for (auto& type : components) {
+	for (auto& type : _components) {
 		for (auto& component : type.second) {
 			component->Update(delta);
 		}
 	}
+
+	//Add transform to the recalculation list before updating children so that the order will be top to bottom
+	if (transform->isMarkedForRecalculation) recalculationList.emplace_back(*transform);
+	else    //If not, search through components and add any that are marked
+		for (const auto& [key, list] : _components) {
+			for (const auto& component : list) {
+				if (component->componentTransform != nullptr &&
+						component->componentTransform->isMarkedForRecalculation)
+					recalculationList.emplace_back(*transform);
+			}
+		}
+
+	//Cascade update to child objects
+	for (auto& child : _children) {
+		child->Update(delta, recalculationList);
+	}
+}
+
+GameObject* GameObject::GetChild(const std::string& t) {
+	auto it = std::find_if(_children.begin(), _children.end(),
+						   [&](std::unique_ptr<GameObject>& cur) {
+							   return (t == cur->tag);
+						   });
+
+	return (it != _children.end()) ? (*it).get() : nullptr;
+}
+
+bool GameObject::RemoveChild(GameObject& child) {
+	auto it = std::find_if(_children.begin(), _children.end(),
+						   [&](std::unique_ptr<GameObject>& cur) {
+							   return (&child == cur.get());
+						   });
+
+	return _removeChild(it);
+}
+
+bool GameObject::RemoveChild(const std::string& t) {
+	auto it = std::find_if(_children.begin(), _children.end(),
+						   [&](std::unique_ptr<GameObject>& cur) {
+							   return (t == cur->tag);
+						   });
+
+	return _removeChild(it);
+}
+
+bool GameObject::_removeChild(std::vector<std::unique_ptr<GameObject>>::iterator it) {
+	if (it == _children.end()) return false;
+
+	_children.erase(it);
+	return true;
 }

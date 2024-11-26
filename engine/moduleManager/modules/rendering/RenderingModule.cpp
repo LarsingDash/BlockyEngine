@@ -16,13 +16,17 @@ RenderingModule::~RenderingModule() = default;
 void RenderingModule::Render(const std::vector<std::reference_wrapper<Renderable>>& renderables) {
 	for (Renderable& renderable : renderables) {
 		switch (renderable.GetRenderableType()) {
-			case RECTANGLE: _renderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
+			case RECTANGLE:
+				_renderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
 				break;
-			case ELLIPSE: _renderEllipse(reinterpret_cast<EllipseRenderable&>(renderable));
+			case ELLIPSE:
+				_renderEllipse(reinterpret_cast<EllipseRenderable&>(renderable));
 				break;
-			case SPRITE: _renderSprite(reinterpret_cast<SpriteRenderable&>(renderable));
+			case SPRITE:
+				_renderSprite(reinterpret_cast<SpriteRenderable&>(renderable));
 				break;
-			case ANIMATED: _renderAnimatedSprite(reinterpret_cast<AnimationRenderable&>(renderable));
+			case ANIMATED:
+				_renderAnimatedSprite(reinterpret_cast<AnimationRenderable&>(renderable));
 				break;
 		}
 	}
@@ -33,15 +37,17 @@ void RenderingModule::_renderRectangle(RectangleRenderable& renderable) {
 	ComponentTransform& transform = *renderable.componentTransform;
 
 	//Precalculating rotation angle
-	float rad = transform.rotation * static_cast<float>(M_PI) / 180.f;
+	float rad = transform.GetWorldRotation() * static_cast<float>(M_PI) / 180.f;
 	float cosTheta = cos(rad);
 	float sinTheta = sin(rad);
 
 	//Pre-getting dimensions
-	float x = transform.position.x;
-	float y = transform.position.y;
-	float w = transform.scale.x / 2.f;
-	float h = transform.scale.y / 2.f;
+	const auto& position = transform.GetWorldPosition();
+	const auto& scale = transform.GetWorldScale();
+	float x = position.x;
+	float y = position.y;
+	float w = scale.x / 2.f;
+	float h = scale.y / 2.f;
 
 	//Precalculating rotated dimensions
 	float cosW = w * cosTheta;
@@ -78,11 +84,13 @@ void RenderingModule::_renderEllipse(EllipseRenderable& renderable) {
 	glm::ivec4 color = renderable.GetColor();
 
 	ComponentTransform& transform = *renderable.componentTransform;
+	const auto& position = transform.GetWorldPosition();
+	const auto& scale = transform.GetWorldScale();
 
-	auto centerX = static_cast<Sint16>(transform.position.x);
-	auto centerY = static_cast<Sint16>(transform.position.y);
-	auto radiusX = static_cast<Sint16>(transform.scale.x / 2.0f);
-	auto radiusY = static_cast<Sint16>(transform.scale.y / 2.0f);
+	auto centerX = static_cast<Sint16>(position.x);
+	auto centerY = static_cast<Sint16>(position.y);
+	auto radiusX = static_cast<Sint16>(scale.x / 2.0f);
+	auto radiusY = static_cast<Sint16>(scale.y / 2.0f);
 
 	if (renderable.IsFilled()) {
 		filledEllipseRGBA(_renderer, centerX, centerY, radiusX, radiusY,
@@ -162,17 +170,21 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 	return result.second ? result.first->second.get() : nullptr;
 }
 
-void RenderingModule::_renderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect) {
+void RenderingModule::_renderTexture(SDL_Texture* texture,
+									 const ComponentTransform& transform,
+									 const glm::ivec4* sourceRect) {
 	if (!texture) {
 		std::cerr << "Cannot render null texture." << std::endl;
 		return;
 	}
 
+	const auto& position = transform.GetWorldPosition();
+	const auto& scale = transform.GetWorldScale();
 	SDL_FRect destRect = {
-			transform.position.x - transform.scale.x / 2.0f,
-			transform.position.y - transform.scale.y / 2.0f,
-			transform.scale.x,
-			transform.scale.y
+			position.x - scale.x / 2.0f,
+			position.y - scale.y / 2.0f,
+			scale.x,
+			scale.y
 	};
 
 	SDL_Rect sdlSourceRect;
@@ -187,9 +199,6 @@ void RenderingModule::_renderTexture(SDL_Texture* texture, const ComponentTransf
 
 	SDL_RenderCopyExF(
 			_renderer, texture, sourceRect ? &sdlSourceRect : nullptr, &destRect,
-			transform.rotation, nullptr, SDL_RendererFlip::SDL_FLIP_NONE
+			transform.GetWorldRotation(), nullptr, SDL_RendererFlip::SDL_FLIP_NONE
 	);
 }
-
-
-

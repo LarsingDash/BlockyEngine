@@ -4,26 +4,46 @@
 
 #include "SceneManager.hpp"
 
-#include <iostream>
-
-#include "components/renderables/Renderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 
-SceneManager::SceneManager() : testScene(std::make_unique<GameObject>("root")) {
-	auto& a = testScene->AddChild("A");
-	auto& sprite = a.AddComponent<SpriteRenderable>("Kaboom", "../assets/kaboom.png", "Kaboom");
-	sprite.componentTransform->position = glm::vec2{100, 50};
-	sprite.componentTransform->scale = glm::vec2{200, 100};
+SceneManager::SceneManager() :
+		testScene(std::make_unique<GameObject>("root")),
+		recalculationList() {
+	recalculationList.reserve(25);
 
-	auto& b = testScene->AddChild("B");
-	auto& bRed = b.AddComponent<RectangleRenderable>("Red", glm::vec4{255, 0, 0, 255}, true);
-	bRed.componentTransform->position = glm::vec2{50, 150};
-	auto& bBlue = b.AddComponent<EllipseRenderable>("Blue", glm::vec4{0, 0, 255, 255}, true);
-	bBlue.componentTransform->position = glm::vec2{150, 150};
+	testScene->transform->SetPosition(250, 250);
+	auto& row = testScene->AddChild("TopRow");
+	row.transform->SetRotation(10);
+	row.transform->SetScale(200, 50);
+	row.AddComponent<SpriteRenderable>("Kaboom", "../assets/kaboom.png", "Kaboom");
 
-	std::cout << testScene->RemoveChild(*testScene->GetChild("A")) << std::endl;
+	auto& tRLeft = row.AddChild("tRLeft");
+	tRLeft.AddComponent<EllipseRenderable>("tRLeftR", glm::vec4{255, 0, 0, 255}, true);
+	tRLeft.transform->SetRotation(-35);
+	tRLeft.transform->SetScale(0.25f, 1);
+	tRLeft.transform->Translate(-0.5f + tRLeft.transform->GetLocalScale().x / 2.f, 0);
+
+	auto& tRRight = row.AddChild("trRight");
+	tRRight.AddComponent<RectangleRenderable>("trRightR", glm::vec4{0, 255, 0, 255}, true);
+	tRRight.transform->SetRotation(25);
+	tRRight.transform->SetScale(0.5f, 1);
+	tRRight.transform->Translate(0.5f - tRRight.transform->GetLocalScale().x / 2.f, 0);
+
+	auto& test = tRRight.AddChild("Test");
+	test.transform->SetRotation(15);
+	test.AddComponent<RectangleRenderable>("TestR", glm::vec4{0, 0, 255, 255});
 }
 
-void SceneManager::Update(float delta) { testScene->Update(delta); }
+void SceneManager::Update(float delta) {
+	//Update active scene starting from the root
+	testScene->Update(delta, recalculationList);
+
+	//Go through all transforms that marked themselves to be recalculated
+	for (auto& trans : recalculationList) {
+		auto& cur = trans.get();
+		if (cur.isMarkedForRecalculation) cur.RecalculateWorldMatrix();
+	}
+	recalculationList.clear();
+}

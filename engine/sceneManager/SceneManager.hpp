@@ -24,6 +24,7 @@ class SceneManager {
 
 	private:
 		std::unique_ptr<GameObject> testScene;
+		std::vector<std::reference_wrapper<Transform>> recalculationList;
 };
 
 #endif //BLOCKYENGINE_SCENEMANAGER_HPP

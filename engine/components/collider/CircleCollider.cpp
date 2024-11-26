@@ -10,7 +10,7 @@ CircleCollider::CircleCollider(GameObject& gameObject, const char* tag, bool isT
 {
 }
 
-ColliderType CircleCollider::GetColliderType()
+PhysicsType CircleCollider::GetType()
 {
-    return ColliderType::CIRCLE;
+    return PhysicsType::CIRCLE;
 }

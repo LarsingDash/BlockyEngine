@@ -11,7 +11,7 @@ BoxCollider::BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger
 {
 }
 
-ColliderType BoxCollider::GetColliderType()
+PhysicsType BoxCollider::GetType()
 {
-    return ColliderType::BOX;
+    return PhysicsType::BOX;
 }

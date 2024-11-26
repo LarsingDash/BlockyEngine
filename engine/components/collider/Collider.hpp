@@ -6,7 +6,7 @@
 #define COLLIDER_HPP
 #include <components/Component.hpp>
 
-enum ColliderType
+enum PhysicsType
 {
 	BOX,
 	CIRCLE
@@ -25,7 +25,8 @@ public:
 	void End() override;
 
 	void CollisionCallback(Collider& other);
-	virtual ColliderType GetColliderType() = 0;
+
+	virtual PhysicsType GetType() = 0;
 
 	bool isTrigger{false};
 	bool isStatic{false};

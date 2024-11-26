@@ -13,7 +13,7 @@ public:
     CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius);
     ~CircleCollider() override = default;
 
-    ColliderType GetColliderType() override;
+    PhysicsType GetType() override;
 
     [[nodiscard]] float GetRadius() const { return _radius; }
 

@@ -7,8 +7,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
+#include "components/renderables/AnimationRenderable.hpp"
 
-RenderingModule::RenderingModule(SDL_Renderer* renderer) : renderer(renderer) {}
+RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {}
 
 RenderingModule::~RenderingModule() = default;
 
@@ -16,19 +17,22 @@ void RenderingModule::Render(const std::vector<std::reference_wrapper<Renderable
 	for (Renderable& renderable : renderables) {
 		switch (renderable.GetRenderableType()) {
 			case RECTANGLE:
-				RenderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
+				_renderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
 				break;
 			case ELLIPSE:
-				RenderEllipse(reinterpret_cast<EllipseRenderable&>(renderable));
+				_renderEllipse(reinterpret_cast<EllipseRenderable&>(renderable));
 				break;
 			case SPRITE:
-				RenderSprite(reinterpret_cast<SpriteRenderable&>(renderable));
+				_renderSprite(reinterpret_cast<SpriteRenderable&>(renderable));
+				break;
+			case ANIMATED:
+				_renderAnimatedSprite(reinterpret_cast<AnimationRenderable&>(renderable));
 				break;
 		}
 	}
 }
 
-void RenderingModule::RenderRectangle(RectangleRenderable& renderable) {
+void RenderingModule::_renderRectangle(RectangleRenderable& renderable) {
 	glm::ivec4 color = renderable.GetColor();
 	ComponentTransform& transform = *renderable.componentTransform;
 
@@ -68,15 +72,15 @@ void RenderingModule::RenderRectangle(RectangleRenderable& renderable) {
 
 	//SDL2_gfx (Filled)PolygonRGBA
 	if (renderable.IsFilled()) {
-		filledPolygonRGBA(renderer, xPoints, yPoints, 4,
+		filledPolygonRGBA(_renderer, xPoints, yPoints, 4,
 						  color.r, color.g, color.b, color.a);
 	} else {
-		polygonRGBA(renderer, xPoints, yPoints, 4,
+		polygonRGBA(_renderer, xPoints, yPoints, 4,
 					color.r, color.g, color.b, color.a);
 	}
 }
 
-void RenderingModule::RenderEllipse(EllipseRenderable& renderable) {
+void RenderingModule::_renderEllipse(EllipseRenderable& renderable) {
 	glm::ivec4 color = renderable.GetColor();
 
 	ComponentTransform& transform = *renderable.componentTransform;
@@ -89,30 +93,40 @@ void RenderingModule::RenderEllipse(EllipseRenderable& renderable) {
 	auto radiusY = static_cast<Sint16>(scale.y / 2.0f);
 
 	if (renderable.IsFilled()) {
-		filledEllipseRGBA(renderer, centerX, centerY, radiusX, radiusY,
+		filledEllipseRGBA(_renderer, centerX, centerY, radiusX, radiusY,
 						  color.r, color.g, color.b, color.a);
 	} else {
-		ellipseRGBA(renderer, centerX, centerY, radiusX, radiusY,
+		ellipseRGBA(_renderer, centerX, centerY, radiusX, radiusY,
 					color.r, color.g, color.b, color.a);
 	}
 }
 
-void RenderingModule::RenderSprite(SpriteRenderable& renderable) {
+void RenderingModule::_renderSprite(SpriteRenderable& renderable) {
 	int width, height;
-	SDL_Texture* texture = LoadTexture(renderable, width, height);
+	SDL_Texture* texture = _loadTexture(renderable, width, height);
+	if (!texture) {
+		return;
+	}
+	_renderTexture(texture, *renderable.componentTransform, nullptr);
+}
+void RenderingModule::_renderAnimatedSprite(AnimationRenderable& renderable) {
+	int width, height;
+	SDL_Texture* texture = _loadTexture(renderable, width, height);
 	if (!texture) {
 		return;
 	}
 
-	RenderTexture(texture, *renderable.componentTransform);
+	const glm::ivec4* sourceRect = renderable.GetSourceRect();
+
+	_renderTexture(texture, *renderable.componentTransform, sourceRect);
 }
 
-SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable& sprite, int& width, int& height) {
+SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& width, int& height) {
 	const std::string& spriteTag = sprite.GetSpriteTag();
 
 	//Check if the texture is already cached
-	auto it = textureCache.find(spriteTag);
-	if (it != textureCache.end()) {
+	auto it = _textureCache.find(spriteTag);
+	if (it != _textureCache.end()) {
 		SDL_QueryTexture(it->second.get(), nullptr, nullptr, &width, &height);
 		return it->second.get();
 	}
@@ -139,7 +153,7 @@ SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable& sprite, int& w
 	}
 
 	std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)> texture(
-			SDL_CreateTextureFromSurface(renderer, surface), SDL_DestroyTexture
+			SDL_CreateTextureFromSurface(_renderer, surface), SDL_DestroyTexture
 	);
 
 	SDL_FreeSurface(surface);
@@ -150,13 +164,15 @@ SDL_Texture* RenderingModule::LoadTexture(const SpriteRenderable& sprite, int& w
 		return nullptr;
 	}
 
-	auto result = textureCache.emplace(spriteTag, std::move(texture));
+	auto result = _textureCache.emplace(spriteTag, std::move(texture));
 
 	//Return texture address if the emplacement was successful (result.second == true)
 	return result.second ? result.first->second.get() : nullptr;
 }
 
-void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransform& transform) {
+void RenderingModule::_renderTexture(SDL_Texture* texture,
+									 const ComponentTransform& transform,
+									 const glm::ivec4* sourceRect) {
 	if (!texture) {
 		std::cerr << "Cannot render null texture." << std::endl;
 		return;
@@ -165,14 +181,24 @@ void RenderingModule::RenderTexture(SDL_Texture* texture, const ComponentTransfo
 	const auto& position = transform.GetWorldPosition();
 	const auto& scale = transform.GetWorldScale();
 	SDL_FRect destRect = {
-			(position.x - scale.x / 2.0f),
-			(position.y - scale.y / 2.0f),
+			position.x - scale.x / 2.0f,
+			position.y - scale.y / 2.0f,
 			scale.x,
 			scale.y
 	};
+
+	SDL_Rect sdlSourceRect;
+	if (sourceRect) {
+		sdlSourceRect = {
+				sourceRect->x,
+				sourceRect->y,
+				sourceRect->z,
+				sourceRect->w
+		};
+	}
+
 	SDL_RenderCopyExF(
-			renderer, texture, nullptr, &destRect,
+			_renderer, texture, sourceRect ? &sdlSourceRect : nullptr, &destRect,
 			transform.GetWorldRotation(), nullptr, SDL_RendererFlip::SDL_FLIP_NONE
 	);
 }
-

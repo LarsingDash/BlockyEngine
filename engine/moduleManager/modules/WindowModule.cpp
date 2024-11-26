@@ -30,7 +30,7 @@ WindowModule::WindowModule() : renderingModule(nullptr) {
 	//Renderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!renderer) {
-		std::cerr << "Couldn't create renderer: " << SDL_GetError() << std::endl;
+		std::cerr << "Couldn't create _renderer: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		SDL_DestroyWindow(window);
 		return;

@@ -47,6 +47,9 @@ class GameObject {
 
 		inline const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return _children; };
 
+		void Reparent(GameObject& target);
+		void Destroy();
+
 		//----- COMPONENTS
 		using ComponentsList = std::vector<std::unique_ptr<Component>>;
 
@@ -111,6 +114,7 @@ class GameObject {
 
 		//----- CHILD / PARENT
 		bool _removeChild(GameObjectList::iterator child);
+		void _reparent(GameObject* target);
 
 		//----- COMPONENTS
 		template<typename T>
@@ -147,6 +151,8 @@ class GameObject {
 
 		std::unordered_map<std::type_index, ComponentsList> _components;
 		std::vector<std::unique_ptr<GameObject>> _children;
+
+		bool _isMarkedForDeletion;
 };
 
 #endif //BLOCKYENGINE_GAMEOBJECT_HPP

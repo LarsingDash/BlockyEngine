@@ -10,7 +10,7 @@
 #include "gameObject/GameObject.hpp"
 
 Transform::Transform(GameObject& gameObject) :
-		gameObject(gameObject), parent(nullptr),
+		gameObject(gameObject), _parent(nullptr),
 		_position(0.f), _rotation(0.f), _scale(1.f),
 		_worldPosition(_position), _worldRotation(_rotation), _worldScale(_scale),
 		_worldMatrix(1.f), isMarkedForRecalculation(false) {
@@ -22,7 +22,9 @@ const glm::vec2& Transform::GetLocalPosition() const { return _position; }
 const glm::vec2& Transform::GetLocalScale() const { return _scale; }
 
 const glm::vec2& Transform::GetWorldPosition() const { return _worldPosition; }
-[[maybe_unused]] float Transform::GetWorldRotation() const { return _worldRotation * (180.0f / static_cast<float>(M_PI)); }
+[[maybe_unused]] float Transform::GetWorldRotation() const {
+	return _worldRotation * (180.0f / static_cast<float>(M_PI));
+}
 const glm::vec2& Transform::GetWorldScale() const { return _worldScale; }
 
 //----- SETTER -----
@@ -61,6 +63,8 @@ void Transform::SetScale(float x, float y) {
 }
 
 //----- WORLD -----
+void Transform::SetParent(Transform& target) { _parent = &target; }
+
 void Transform::_recalculateWorldMatrix() {
 	isMarkedForRecalculation = false;
 
@@ -71,10 +75,10 @@ void Transform::_recalculateWorldMatrix() {
 	localMatrix = glm::scale(localMatrix, _scale);
 
 	//Parent check for root: Assign worldMatrix and Rotation and Scale
-	if (parent) {
-		_worldMatrix = parent->_worldMatrix * localMatrix;
-		_worldRotation = parent->_worldRotation + _rotation;
-		_worldScale = parent->_worldScale * _scale;
+	if (_parent) {
+		_worldMatrix = _parent->_worldMatrix * localMatrix;
+		_worldRotation = _parent->_worldRotation + _rotation;
+		_worldScale = _parent->_worldScale * _scale;
 	} else {
 		_worldMatrix = localMatrix;
 		_worldRotation = _rotation;

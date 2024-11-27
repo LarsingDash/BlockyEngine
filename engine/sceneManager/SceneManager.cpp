@@ -9,11 +9,14 @@
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/animation/AnimationController.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
+#include "moduleManager/modules/WindowModule.hpp"
+#include "moduleManager/ModuleManager.hpp"
 
 SceneManager::SceneManager() :
 		testScene(std::make_unique<GameObject>("root")),
 		recalculationList() {
 	recalculationList.reserve(25);
+	InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
 
 
 	// Animations
@@ -32,7 +35,7 @@ SceneManager::SceneManager() :
 
 	animatedObject.GetComponent<AnimationController>()->PlayAnimation("idle");
 
-	InputModule::GetInstance().AddKeyListener([&animationController](KeyEvent event) {
+	inputModule.AddKeyListener([&animationController](KeyEvent event) {
 		if(event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_Q){
 			animationController.PlayAnimation("idle");
 		}

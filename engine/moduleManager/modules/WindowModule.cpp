@@ -11,7 +11,7 @@
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 
-WindowModule::WindowModule() : renderingModule(nullptr), inputModule(InputModule::GetInstance()) {
+WindowModule::WindowModule() : renderingModule(nullptr), inputModule(nullptr) {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 		std::cerr << "Couldn't init video: " << SDL_GetError() << std::endl;
 		return;
@@ -36,6 +36,7 @@ WindowModule::WindowModule() : renderingModule(nullptr), inputModule(InputModule
 		return;
 	}
 	renderingModule = std::make_unique<RenderingModule>(renderer);
+	inputModule = std::make_unique<InputModule>();
 
 }
 
@@ -50,9 +51,9 @@ void WindowModule::Update(float delta) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
 
-	inputModule.PollEvents();
+	inputModule->PollEvents();
 
-	Render();
+	_render();
 	SDL_RenderPresent(renderer);
 }
 void WindowModule::AddRenderable(Renderable& renderable) {
@@ -94,6 +95,14 @@ void WindowModule::ProcessEvents() {
 	}
 }
 
-void WindowModule::Render() {
+void WindowModule::_render() {
 	renderingModule->Render(renderables);
 }
+
+InputModule& WindowModule::GetInputModule() {
+	if (!inputModule) {
+		throw std::runtime_error("InputModule is not initialized.");
+	}
+	return *inputModule;
+}
+

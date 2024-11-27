@@ -71,29 +71,6 @@ void WindowModule::RemoveRenderable(Renderable& renderable) {
 	}
 }
 
-void WindowModule::ProcessEvents() {
-	SDL_Event event;
-	while (SDL_PollEvent(&event) != 0) {
-		switch (event.type) {
-			default:
-				break;
-			case SDL_KEYDOWN: {
-				SDL_Scancode key = event.key.keysym.scancode;
-				switch (key) {
-					default:
-						break;
-					case SDL_SCANCODE_ESCAPE:
-						BlockyEngine::isRunning = false;
-						break;
-				}
-			}
-				break;
-			case SDL_QUIT:
-				BlockyEngine::isRunning = false;
-				break;
-		}
-	}
-}
 
 void WindowModule::_render() {
 	renderingModule->Render(renderables);

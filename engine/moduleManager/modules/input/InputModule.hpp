@@ -20,6 +20,7 @@ class InputModule {
 		void RemoveKeyListener(const std::function<void(KeyEvent)>& listener);
 		void AddMouseListener(const std::function<void(MouseEvent)>& listener);
 		void RemoveMouseListener(const std::function<void(MouseEvent)>& listener);
+		static std::pair<int, int> GetCursorPosition() ;
 
 	private:
 		std::vector<std::function<void(KeyEvent)>> _keyListeners;

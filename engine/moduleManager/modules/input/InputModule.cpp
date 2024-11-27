@@ -99,3 +99,8 @@ void InputModule::RemoveMouseListener(const std::function<void(MouseEvent)>& lis
 		_mouseListeners.erase(it);
 	}
 }
+std::pair<int, int> InputModule::GetCursorPosition() {
+	int x, y;
+	SDL_GetMouseState(&x, &y);
+	return {x, y};
+}

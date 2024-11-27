@@ -11,7 +11,7 @@
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 
-WindowModule::WindowModule() : renderingModule(nullptr) {
+WindowModule::WindowModule() : renderingModule(nullptr), inputModule(InputModule::GetInstance()) {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 		std::cerr << "Couldn't init video: " << SDL_GetError() << std::endl;
 		return;
@@ -36,6 +36,7 @@ WindowModule::WindowModule() : renderingModule(nullptr) {
 		return;
 	}
 	renderingModule = std::make_unique<RenderingModule>(renderer);
+
 }
 
 WindowModule::~WindowModule() {
@@ -49,12 +50,11 @@ void WindowModule::Update(float delta) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
 
-	ProcessEvents();
-	Render();
+	inputModule.PollEvents();
 
+	Render();
 	SDL_RenderPresent(renderer);
 }
-
 void WindowModule::AddRenderable(Renderable& renderable) {
 	renderables.emplace_back(renderable);
 }

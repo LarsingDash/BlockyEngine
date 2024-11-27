@@ -14,6 +14,7 @@
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "moduleManager/modules/rendering/RenderingModule.hpp"
+#include "moduleManager/modules/input/InputModule.hpp"
 
 class WindowModule : public ModuleWrapper {
 	public:
@@ -35,6 +36,8 @@ class WindowModule : public ModuleWrapper {
 		SDL_Renderer* renderer;
 		std::unique_ptr<RenderingModule> renderingModule;
 		std::vector<std::reference_wrapper<Renderable>> renderables;
+
+		InputModule& inputModule;
 };
 
 #endif //BLOCKYENGINE_WINDOWMODULE_HPP

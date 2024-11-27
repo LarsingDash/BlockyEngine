@@ -26,6 +26,8 @@ void BlockyEngine::Run() {
 		float delta = static_cast<float>((currentTime - lastTime).count()) / 1000000000.f;
 		lastTime = currentTime;
 
+
+
 		//Update cycle
 		sceneManager->Update(delta);
 		moduleManager.Update(delta);

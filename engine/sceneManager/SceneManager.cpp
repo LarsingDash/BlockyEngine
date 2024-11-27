@@ -18,12 +18,29 @@ SceneManager::SceneManager() :
 	recalculationList.reserve(25);
 	InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
 
+	inputModule.AddMouseListener([this](const MouseEvent& mouseEvent) {
+		auto& rectangle = testScene->AddChild("Rectangle_" + std::to_string(mouseEvent.x) + "_" + std::to_string(mouseEvent.y));
+		rectangle.transform->SetPosition(static_cast<float>(mouseEvent.x), static_cast<float>(mouseEvent.y));
+
+		glm::vec4 color;
+		if (mouseEvent.button == MouseInput::BUTTON_LEFT) {
+			color = glm::vec4(255.f, 0.f, 0.f, 255.f);
+		} else if (mouseEvent.button == MouseInput::BUTTON_RIGHT) {
+			color = glm::vec4(0.f, 0.f, 255.f, 255.f);
+		} else if (mouseEvent.button == MouseInput::BUTTON_MIDDLE) {
+			color = glm::vec4(0.f, 255.f, 0.f, 255.f);
+		}
+
+		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
+		rectangle.transform->SetScale(10.f, 10.f);
+	});
+
+
 
 	// Animations
 	auto& animatedObject = testScene->AddChild("AnimatedObject");
 	animatedObject.transform->SetScale(200.f, 200.f);
 	animatedObject.transform->SetPosition(100.f, 100.f);
-
 	auto& animatedSprite = animatedObject.AddComponent<AnimationRenderable>(
 			"animTag", "../assets/character_spritesheet.png",
 			"spriteTag", 32, 32

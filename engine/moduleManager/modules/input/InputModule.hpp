@@ -7,6 +7,7 @@
 
 #include <functional>
 #include "KeyEvent.hpp"
+#include "MouseEvent.hpp"
 
 class InputModule {
 	public:
@@ -17,9 +18,12 @@ class InputModule {
 		void PollEvents();
 		void AddKeyListener(const std::function<void(KeyEvent)>& listener);
 		void RemoveKeyListener(const std::function<void(KeyEvent)>& listener);
+		void AddMouseListener(const std::function<void(MouseEvent)>& listener);
+		void RemoveMouseListener(const std::function<void(MouseEvent)>& listener);
 
 	private:
 		std::vector<std::function<void(KeyEvent)>> _keyListeners;
+		std::vector<std::function<void(MouseEvent)>> _mouseListeners;
 		static KeyInput _getKeyInput(SDL_Keycode sdlKey);
 };
 

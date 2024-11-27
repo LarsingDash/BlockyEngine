@@ -5,6 +5,7 @@
 #include "InputModule.hpp"
 #include "SDL.h"
 #include "BlockyEngine.hpp"
+#include "MouseInput.hpp"
 
 KeyInput InputModule::_getKeyInput(SDL_Keycode sdlKey) {
 	return SDLKeyToCustomKey(sdlKey);
@@ -19,7 +20,7 @@ void InputModule::PollEvents() {
 			case SDL_KEYUP:
 			case SDL_KEYDOWN: {
 				KeyState state = (event.type == SDL_KEYDOWN) ? KeyState::KEY_DOWN : KeyState::KEY_UP;
-				KeyInput key = _getKeyInput(event.key.keysym.sym);
+				auto key = _getKeyInput(event.key.keysym.sym);
 				KeyEvent keyEvent(key, state);
 
 				std::cout << "Processing key event: " << static_cast<int>(key) << ", state: "
@@ -33,8 +34,31 @@ void InputModule::PollEvents() {
 				}
 			}
 				break;
-			case SDL_QUIT: BlockyEngine::isRunning = false;
+
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP: {
+				MouseButtonState mouseState = (event.type == SDL_MOUSEBUTTONDOWN) ? MouseButtonState::BUTTON_DOWN : MouseButtonState::BUTTON_UP;
+
+				auto button = SDLMouseButtonToCustomMouseButton(event.button.button);
+				int x = event.button.x;
+				int y = event.button.y;
+
+				MouseEvent mouseEvent(button, mouseState, x, y);
+
+				std::cout << "Processing mouse event: button " << static_cast<int>(button) << ", state: "
+						  << (mouseState == MouseButtonState::BUTTON_DOWN ? "down" : "up")
+						  << ", position: (" << x << ", " << y << ")" << std::endl;
+				for (auto& listener : _mouseListeners) {
+					if (listener) {
+						listener(mouseEvent);
+					} else {
+						std::cerr << "Invalid listener detected!" << std::endl;
+					}
+				}
+			}
 				break;
+
+			case SDL_QUIT: BlockyEngine::isRunning = false; break;
 		}
 	}
 }
@@ -55,5 +79,23 @@ void InputModule::RemoveKeyListener(const std::function<void(KeyEvent)>& listene
 
 	if (it != _keyListeners.end()) {
 		_keyListeners.erase(it);
+	}
+}
+
+void InputModule::AddMouseListener(const std::function<void(MouseEvent)>& listener) {
+	std::cout << "Adding mouse listener" << std::endl;
+	_mouseListeners.push_back(listener);
+}
+
+void InputModule::RemoveMouseListener(const std::function<void(MouseEvent)>& listener) {
+	std::cout << "Removing mouse listener" << std::endl;
+
+	auto it = std::find_if(_mouseListeners.begin(), _mouseListeners.end(),
+						   [&listener](const std::function<void(MouseEvent)>& existingListener) {
+							   return existingListener.target<void(*)(MouseEvent)>() == listener.target<void(*)(MouseEvent)>();
+						   });
+
+	if (it != _mouseListeners.end()) {
+		_mouseListeners.erase(it);
 	}
 }

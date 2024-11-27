@@ -8,7 +8,7 @@
 
 ComponentTransform::ComponentTransform(GameObject& gameObject, Component& component) :
 		Transform(gameObject), component(component) {
-	parent = gameObject.transform.get();
+	_parent = gameObject.transform.get();
 	_recalculateWorldMatrix();
 }
 

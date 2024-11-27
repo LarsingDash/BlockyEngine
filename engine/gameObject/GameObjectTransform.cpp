@@ -7,7 +7,7 @@
 #include "GameObjectTransform.hpp"
 
 GameObjectTransform::GameObjectTransform(GameObject& gameObject) : Transform(gameObject) {
-	if (gameObject.parent) parent = gameObject.parent->transform.get();
+	if (gameObject.parent) _parent = gameObject.parent->transform.get();
 	_recalculateWorldMatrix();
 }
 

@@ -40,6 +40,20 @@ void InputModule::PollEvents() {
 }
 
 void InputModule::AddKeyListener(const std::function<void(KeyEvent)>& listener) {
-	std::cout << "adding listener!" << std::endl;
+	std::cout << "Adding listener" << std::endl;
 	_keyListeners.push_back(listener);
+}
+
+
+void InputModule::RemoveKeyListener(const std::function<void(KeyEvent)>& listener) {
+	std::cout << "Removing listener" << std::endl;
+
+	auto it = std::find_if(_keyListeners.begin(), _keyListeners.end(),
+						   [&listener](const std::function<void(KeyEvent)>& existingListener) {
+							   return existingListener.target<void(*)(KeyEvent)>() == listener.target<void(*)(KeyEvent)>();
+						   });
+
+	if (it != _keyListeners.end()) {
+		_keyListeners.erase(it);
+	}
 }

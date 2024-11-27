@@ -16,10 +16,11 @@ class InputModule {
 
 		void PollEvents();
 		void AddKeyListener(const std::function<void(KeyEvent)>& listener);
+		void RemoveKeyListener(const std::function<void(KeyEvent)>& listener);
 
 	private:
 		std::vector<std::function<void(KeyEvent)>> _keyListeners;
-		KeyInput _getKeyInput(SDL_Keycode sdlKey);
+		static KeyInput _getKeyInput(SDL_Keycode sdlKey);
 };
 
 #endif //BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_INPUT_INPUTMODULE_HPP_

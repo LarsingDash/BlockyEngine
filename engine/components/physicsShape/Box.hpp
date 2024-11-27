@@ -4,15 +4,15 @@
 
 #ifndef RECTANGLECOLLIDER_HPP
 #define RECTANGLECOLLIDER_HPP
-#include "Collider.hpp"
+#include "PhysicsShape.hpp"
 
-class BoxCollider : public Collider
+class Box : public PhysicsShape
 {
 public:
-	BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width);
-	~BoxCollider() override = default;
+	Box(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width);
+	~Box() override = default;
 
-	ColliderType GetType() override;
+	PhysicsType GetType() override;
 
 	[[nodiscard]] float GetWidth() const { return _width; }
 	[[nodiscard]] float GetHeight() const { return _height; }

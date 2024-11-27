@@ -5,13 +5,13 @@
 #ifndef CIRCLECOLLIDER_HPP
 #define CIRCLECOLLIDER_HPP
 
-#include "Collider.hpp"
+#include "PhysicsShape.hpp"
 
-class CircleCollider : public Collider
+class Circle : public PhysicsShape
 {
 public:
-    CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius);
-    ~CircleCollider() override = default;
+    Circle(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius);
+    ~Circle() override = default;
 
     PhysicsType GetType() override;
 

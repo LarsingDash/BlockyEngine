@@ -6,7 +6,7 @@
 
 #include <logging/BLogger.hpp>
 
-MyContactListener::MyContactListener(std::unordered_map<Collider*, b2Body*>* colliderToBodyMap)
+MyContactListener::MyContactListener(std::unordered_map<PhysicsShape*, b2Body*>* colliderToBodyMap)
 {
     _colliderToBodyMap = colliderToBodyMap;
 }
@@ -26,8 +26,8 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
     auto body1 = contact->GetFixtureA()->GetBody();
     auto body2 = contact->GetFixtureB()->GetBody();
 
-    Collider* collider1 = nullptr;
-    Collider* collider2 = nullptr;
+    PhysicsShape* collider1 = nullptr;
+    PhysicsShape* collider2 = nullptr;
 
     // todo: 2 way map
     for (auto [collider, body] : *_colliderToBodyMap)

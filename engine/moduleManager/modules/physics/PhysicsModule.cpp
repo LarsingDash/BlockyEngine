@@ -1,8 +1,7 @@
 #include "PhysicsModule.hpp"
-
 #include <Box2D/Box2D.h>
-#include <components/collider/BoxCollider.hpp>
-#include <components/collider/CircleCollider.hpp>
+#include <components/physicsShape/Box.hpp>
+#include <components/physicsShape/Circle.hpp>
 #include <components/renderables/EllipseRenderable.hpp>
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
@@ -31,7 +30,7 @@ void PhysicsModule::Update(const float delta)
 	WritingBox2DWorldToOutside();
 }
 
-bool PhysicsModule::IsSame(const Collider* const collider, const b2Body* const body)
+bool PhysicsModule::IsSame(const PhysicsShape* const collider, const b2Body* const body)
 {
 	if (collider == nullptr || body == nullptr) { return false; }
 
@@ -72,14 +71,14 @@ void PhysicsModule::WritingBox2DWorldToOutside()
 	}
 }
 
-void PhysicsModule::AddCollider(Collider& collider)
+void PhysicsModule::AddCollider(PhysicsShape& collider)
 {
 	b2Body* body = CreateBody(*_box2dWorldObject, collider);
 
 	_colliderToBodyMap[&collider] = body;
 }
 
-void PhysicsModule::RemoveCollider(Collider& collider)
+void PhysicsModule::RemoveCollider(PhysicsShape& collider)
 {
 	auto it = _colliderToBodyMap.find(&collider);
 	if (it != _colliderToBodyMap.end())
@@ -89,24 +88,24 @@ void PhysicsModule::RemoveCollider(Collider& collider)
 	}
 }
 
-void PhysicsModule::AddRigidBody(RigidBody& rigidBody)
-{
-	b2Body* body = CreateBody(*_box2dWorldObject, rigidBody);
-
-	_colliderToBodyMap[&rigidBody] = body;
-}
-
-void PhysicsModule::RemoveRigidBody(RigidBody& rigidBody)
-{
-	auto it = _colliderToBodyMap.find(&rigidBody);
-	if (it != _colliderToBodyMap.end())
-	{
-		_box2dWorldObject->DestroyBody(it->second);
-		_colliderToBodyMap.erase(it);
-	}
-}
-
-std::unique_ptr<b2Shape> AddBoxShape(const BoxCollider& collider)
+//
+// void PhysicsModule::AddRigidBody(RigidBody& rigidBody)
+// {
+// 	b2Body* body = CreateBody(*_box2dWorldObject, rigidBody);
+//
+// 	_colliderToBodyMap[&rigidBody] = body;
+// }
+//
+// void PhysicsModule::RemoveRigidBody(RigidBody& rigidBody)
+// {
+// 	auto it = _colliderToBodyMap.find(&rigidBody);
+// 	if (it != _colliderToBodyMap.end())
+// 	{
+// 		_box2dWorldObject->DestroyBody(it->second);
+// 		_colliderToBodyMap.erase(it);
+// 	}
+// }
+std::unique_ptr<b2Shape> AddBoxShape(const Box& collider)
 {
 	// Define another box shape for the first dynamic body.
 	auto dynamicBox = std::make_unique<b2PolygonShape>();
@@ -115,45 +114,44 @@ std::unique_ptr<b2Shape> AddBoxShape(const BoxCollider& collider)
 	return dynamicBox;
 }
 
-std::unique_ptr<b2Shape> AddCircleShape(const CircleCollider& collider)
+std::unique_ptr<b2Shape> AddCircleShape(const Circle& collider)
 {
 	auto dynamicCircle = std::make_unique<b2CircleShape>();
 	dynamicCircle->m_radius = collider.GetRadius();
 	return dynamicCircle;
 }
 
-void PhysicsModule::AddFixture(RigidBody& rigidBody, b2Body* body)
-{
-	b2FixtureDef fixtureDef;
-
-	// todo: if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
-	switch (rigidBody.GetType())
-	{
-	case BOX:
-		fixtureDef.shape = AddBoxShape(reinterpret_cast<BoxCollider&>(rigidBody)).release();
-		break;
-	case CIRCLE:
-		fixtureDef.shape = AddCircleShape(reinterpret_cast<CircleCollider&>(rigidBody)).release();
-		break;
-	}
-
-	// set all object to static, and later overwrite the mass if object is not static
-	constexpr float staticObject = 0.0f;
-	fixtureDef.density = staticObject;
-
-	body->CreateFixture(&fixtureDef);
-
-	// if (!rigidBody.isStatic)
-	{
-		// to have all non-static object apply the same force on another, set all bodies to mass 1
-		b2MassData mass = {1.f};
-		body->SetMassData(&mass);
-	}
-
-	delete fixtureDef.shape;
-}
-
-void PhysicsModule::AddFixture(Collider& collider, b2Body* body)
+// void PhysicsModule::AddFixture(RigidBody& rigidBody, b2Body* body)
+// {
+// 	b2FixtureDef fixtureDef;
+//
+// 	// todo: if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
+// 	switch (rigidBody.GetType())
+// 	{
+// 	case BOX:
+// 		fixtureDef.shape = AddBoxShape(reinterpret_cast<Box&>(rigidBody)).release();
+// 		break;
+// 	case CIRCLE:
+// 		fixtureDef.shape = AddCircleShape(reinterpret_cast<Circle&>(rigidBody)).release();
+// 		break;
+// 	}
+//
+// 	// set all object to static, and later overwrite the mass if object is not static
+// 	constexpr float staticObject = 0.0f;
+// 	fixtureDef.density = staticObject;
+//
+// 	body->CreateFixture(&fixtureDef);
+//
+// 	// if (!rigidBody.isStatic)
+// 	{
+// 		// to have all non-static object apply the same force on another, set all bodies to mass 1
+// 		b2MassData mass = {1.f};
+// 		body->SetMassData(&mass);
+// 	}
+//
+// 	delete fixtureDef.shape;
+// }
+void PhysicsModule::AddFixture(PhysicsShape& collider, b2Body* body)
 {
 	b2FixtureDef fixtureDef;
 
@@ -161,10 +159,10 @@ void PhysicsModule::AddFixture(Collider& collider, b2Body* body)
 	switch (collider.GetType())
 	{
 	case BOX:
-		fixtureDef.shape = AddBoxShape(reinterpret_cast<BoxCollider&>(collider)).release();
+		fixtureDef.shape = AddBoxShape(reinterpret_cast<Box&>(collider)).release();
 		break;
 	case CIRCLE:
-		fixtureDef.shape = AddCircleShape(reinterpret_cast<CircleCollider&>(collider)).release();
+		fixtureDef.shape = AddCircleShape(reinterpret_cast<Circle&>(collider)).release();
 		break;
 	}
 
@@ -184,25 +182,24 @@ void PhysicsModule::AddFixture(Collider& collider, b2Body* body)
 	delete fixtureDef.shape;
 }
 
-b2Body* PhysicsModule::CreateBody(b2World& world, RigidBody& rigidBody)
-{
-	auto [x,y] = Position(rigidBody);
-	auto angle = Angle(rigidBody);
-
-	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
-	bodyDef.position.Set(x, y);
-	bodyDef.angle = angle;
-	b2Body* body = world.CreateBody(&bodyDef);
-
-	AddFixture(rigidBody, body);
-
-	BLOCKY_ENGINE_DEBUG_STREAM("Created RigidBody: x: " << x << ", y: " << y << ", angle: " << angle);
-
-	return body;
-}
-
-b2Body* PhysicsModule::CreateBody(b2World& world, Collider& collider)
+// b2Body* PhysicsModule::CreateBody(b2World& world, RigidBody& rigidBody)
+// {
+// 	auto [x,y] = Position(rigidBody);
+// 	auto angle = Angle(rigidBody);
+//
+// 	b2BodyDef bodyDef;
+// 	bodyDef.type = b2_dynamicBody;
+// 	bodyDef.position.Set(x, y);
+// 	bodyDef.angle = angle;
+// 	b2Body* body = world.CreateBody(&bodyDef);
+//
+// 	AddFixture(rigidBody, body);
+//
+// 	BLOCKY_ENGINE_DEBUG_STREAM("Created RigidBody: x: " << x << ", y: " << y << ", angle: " << angle);
+//
+// 	return body;
+// }
+b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsShape& collider)
 {
 	auto [x,y] = Position(collider);
 	auto angle = Angle(collider);
@@ -230,13 +227,13 @@ glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a)
 	return {a.x, a.y};
 }
 
-b2Vec2 PhysicsModule::Position(const Collider& collider)
+b2Vec2 PhysicsModule::Position(const PhysicsShape& collider)
 {
 	//todo: add gameObject transforms
 	return VecConvert(collider.componentTransform->position);
 }
 
-float PhysicsModule::Angle(const Collider& collider)
+float PhysicsModule::Angle(const PhysicsShape& collider)
 {
 	//todo: add gameObject transforms
 	return collider.componentTransform->rotation;

@@ -31,8 +31,14 @@ SceneManager::SceneManager() :
 			color = glm::vec4(0.f, 255.f, 0.f, 255.f);
 		}
 
-		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
-		rectangle.transform->SetScale(10.f, 10.f);
+		if(mouseEvent.state == MouseButtonState::BUTTON_DOWN){
+			rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
+			rectangle.transform->SetScale(20.f, 20.f);
+		}else{
+			rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, true);
+			rectangle.transform->SetScale(20.f, 20.f);
+		}
+
 	});
 
 
@@ -49,6 +55,7 @@ SceneManager::SceneManager() :
 
 	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
 	animationController.AddAnimation("run", 12, 19, 0.1f, true);
+	animationController.AddAnimation("jump", 27, 35, 0.1f, false);
 
 	animatedObject.GetComponent<AnimationController>()->PlayAnimation("idle");
 
@@ -58,6 +65,9 @@ SceneManager::SceneManager() :
 		}
 		if(event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_W){
 			animationController.PlayAnimation("run");
+		}
+		if(event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_E){
+			animationController.PlayAnimation("jump");
 		}
 	});
 

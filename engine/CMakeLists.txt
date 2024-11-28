@@ -7,6 +7,6 @@ add_subdirectory(logging)
 target_sources(${PROJECT_NAME} PRIVATE
         BlockyEngine.cpp
 )
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-#add_library(BlockyEngine SHARED BlockyEngine.cpp)
+#add_library(BlockyEngineInternal SHARED BlockyEngine.cpp)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -13,10 +13,10 @@
 class BLogger_Fixture : public ::testing::Test {
 	protected:
 		BLogger_Fixture() {
-
+			b_logger_ = std::make_unique<BLogger>("");
 		}
 
-		BLkkk
+		std::unique_ptr<BLogger> b_logger_;
 };
 
 #endif //BLOCKYENGINE_ENGINE_TESTING_BLOGGER_FIXTURE_HPP_

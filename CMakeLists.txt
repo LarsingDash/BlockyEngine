@@ -40,6 +40,7 @@ message("SDL2 LIBRARY DIRS: ${SDL2_LIBRARIES}")
 
 #GoogleTest
 if (${ENABLE_TESTING})
+    enable_testing()
     build_lib(
             googletest
             "https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip"
@@ -80,10 +81,11 @@ add_subdirectory(engine)
 add_subdirectory(libs/SDL2_gfx)
 add_subdirectory(libs/glm)
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PRIVATE
         glm
         SDL2::SDL2
         sdl_gfx
+        #        BlockyEngineInternal
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -114,21 +116,50 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 #        COMMENT "Copying SDL2.dll to build folder"
 #)
 
+if (WIN32)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(SDL2_DLL "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll")
+    else ()
+        set(SDL2_DLL "${SDL2_DIR}/../i686-w64-mingw32/bin/SDL2.dll")
+    endif ()
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll"
-        "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
-        COMMENT "Copying SDL2.dll to build folder"
-)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${SDL2_DLL}"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+            COMMENT "Copying SDL2.dll to build folder"
+    )
+elseif (${UNIX})
+    #Unix stuff
+
+
+endif ()
+
 
 #Google Test
 # TODO Ctest integration
 if (${ENABLE_TESTING})
-    message(STATUS "Linking Googletest")
-    add_executable(Google_Test engine/testMain.cpp engine/testing/TestLogger.hpp
+    set(TARGET "Testing")
+    message(STATUS "Linking ${TARGET}")
+    add_executable(${TARGET} engine/testMain.cpp
+            engine/testing/TestLogger.hpp
             engine/testing/BLogger_Fixture.cpp
-            engine/testing/BLogger_Fixture.hpp)
-    target_link_libraries(Google_Test gtest gtest_main gmock)
+            engine/testing/BLogger_Fixture.hpp
+            engine/testing/TestTest.cpp
+            engine/testing/TestTest.hpp)
+    target_link_libraries(${TARGET} gtest gtest_main gmock)
     include(GoogleTest)
+    gtest_discover_tests(${TARGET})
+    #    add_test(
+    #            NAME RunAllTests COMMAND ${TARGET}
+    #    )
+    #
+    #    add_test(
+    #            NAME BLogger_Tests
+    #            COMMAND ${TARGET} --gtest_filter=BLogger_Fixture.*
+    #    )
+    #    add_test(
+    #            NAME TestTest
+    #            COMMAND ${TARGET} --gtest_filter=TestTest.*
+    #    )
 endif ()

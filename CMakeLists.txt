@@ -35,19 +35,11 @@ set(SDL2_DIR "${LIBS_DIR}/SDL2_t/cmake")
 message("SDL DIR: ${SDL2_DIR}")
 find_package(SDL2 CONFIG REQUIRED)
 
+message("SDL2 INCLUDE DIRS: ${SDL2_INCLUDE_DIRS}")
+message("SDL2 LIBRARY DIRS: ${SDL2_LIBRARIES}")
+
+#GoogleTest
 if (${ENABLE_TESTING})
-    #    find_package(GTest CONFIG QUIET)
-    #    if (NOT GTest_POPULATED)
-    #        message(STATUS GTest)
-    #        FetchContent_Declare(
-    #                googletest
-    #                URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
-    #        )
-    #
-    #        FetchContent_MakeAvailable(
-    #                googletest
-    #        )
-    #    endif ()
     build_lib(
             googletest
             "https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip"
@@ -68,33 +60,75 @@ build_lib(
         TRUE
 )
 
-#endregion //Dynamic Fetching
+#SDL GFX
+# TODO GFX is a mess to build, either externalproject or make a fork of it to build with CMakeLists.txt
+#build_lib(
+#        sdl_gfx
+#        "http://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-1.0.4.tar.gz"
+#        TRUE
+#)
 
-#SDL
-set(SDL2_PATH "${CMAKE_SOURCE_DIR}/libs/SDL2")
-include_directories("${SDL2_PATH}/include/SDL2")
+#endregion //Dynamic Fetching
 
 #STB_Image TODO Make this a precompiled header :)
 include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
-
-#GLM
-include_directories("${CMAKE_MODULE_PATH}")
 
 #Final
 add_executable(${PROJECT_NAME} main.cpp)
 
 add_subdirectory(engine)
 add_subdirectory(libs/SDL2_gfx)
+add_subdirectory(libs/glm)
 
 target_link_libraries(${PROJECT_NAME}
+        glm
+        SDL2::SDL2
         sdl_gfx
+)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+        ${SDL_INCLUDE_DIRS}
+)
+
+if (EXISTS "${LIBS_DIR}/glm")
+    message("GLM DOES EXIST")
+endif ()
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+        "${LIBS_DIR}"
+)
+
+# Meant to copy the dll to the build-debug,
+# however it cant find the sdl dll behind the bin directory...
+#set_target_properties(${PROJECT_NAME} PROPERTIES
+#        INSTALL_RPATH "$<TARGET_FILE_DIR:${PROJECT_NAME}>/bin"
+#        BUILD_WITH_INSTALL_RPATH TRUE
+#)
+#
+#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E make_directory
+#        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/bin"
+#        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#        "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll"
+#        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/bin"
+#        COMMENT "Copying SDL2.dll to build folder"
+#)
+
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+        COMMENT "Copying SDL2.dll to build folder"
 )
 
 #Google Test
 # TODO Ctest integration
 if (${ENABLE_TESTING})
     message(STATUS "Linking Googletest")
-    add_executable(GoogleTest engine/testMain.cpp engine/testing/TestLogger.hpp)
-    target_link_libraries(${PROJECT_NAME} gtest gtest_main)
+    add_executable(Google_Test engine/testMain.cpp engine/testing/TestLogger.hpp
+            engine/testing/BLogger_Fixture.cpp
+            engine/testing/BLogger_Fixture.hpp)
+    target_link_libraries(Google_Test gtest gtest_main gmock)
     include(GoogleTest)
 endif ()

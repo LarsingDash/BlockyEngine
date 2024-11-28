@@ -2,14 +2,14 @@
 
 #include "BlockyEngine.hpp"
 
-#define TEST 1
+#define TEST 0
 
-int main() {
+int main(int argc, char** argv) {
 #if TEST
-//	return RUN_ALL_TESTS();
-	return 0;
+	//	return RUN_ALL_TESTS();
+		return 0;
 #endif
 
-    BlockyEngine engine;
-    engine.Run();
+	BlockyEngine engine;
+	engine.Run();
 }

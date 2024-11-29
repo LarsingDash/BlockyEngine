@@ -10,11 +10,6 @@ public:
     explicit RigidBody(GameObject& gameObject, const char* tag,
                        std::unique_ptr<PhysicsShape> physicsBody) : PhysicsBody(
         gameObject, tag, std::move(physicsBody)) {}
-
-    //todo:
-    void Start() override {};
-    void Update(float delta) override {};
-    void End() override {};
 };
 
 #endif //RIGIDBODY_HPP

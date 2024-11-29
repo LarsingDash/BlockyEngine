@@ -15,9 +15,9 @@ public:
 
     ~PhysicsBody() override = default;
 
-    void Start() override = 0;
-    void Update(float delta) override = 0;
-    void End() override = 0;
+    void Start() override;
+    void Update(float delta) override;
+    void End() override;;
     virtual PhysicsType GetType();
 
     std::unique_ptr<PhysicsShape> _physicsShape;

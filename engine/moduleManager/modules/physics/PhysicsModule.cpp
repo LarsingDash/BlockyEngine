@@ -7,7 +7,7 @@
 #include <logging/BLogger.hpp>
 
 PhysicsModule::PhysicsModule() {
-	b2Vec2 gravity(0.0f, 0.0f);
+	b2Vec2 gravity(9.8f, 0.0f);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
@@ -57,14 +57,29 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [collider, body] : _colliderToBodyMap) {
+		glm::vec2 worldScale = collider->gameObject.transform->GetWorldScale();
 		//todo: does gameobject udate form this?
 		auto pos = body->GetPosition();
-		collider->componentTransform->SetPosition(pos.x, pos.y);
-		collider->componentTransform->SetRotation(body->GetAngle());
+		// pos.x = pos.x / worldScale.x;
+		// pos.y = pos.y / worldScale.y;
+		// collider->componentTransform->SetPosition(pos.x, pos.y);
+		// collider->componentTransform->SetRotation(body->GetAngle());
+		collider->gameObject.transform->SetPosition(pos.x, pos.y);
+		collider->gameObject.transform->SetRotation(body->GetAngle());
+
+		auto wPos = collider->componentTransform->GetWorldPosition();
+		auto lPos = collider->componentTransform->GetLocalPosition();
+		BLOCKY_ENGINE_DEBUG("GamePosition")
+		BLOCKY_ENGINE_DEBUG_STREAM(round(pos.x) << ";" << round(pos.y));
+		BLOCKY_ENGINE_DEBUG_STREAM(body->GetAngle())
+		BLOCKY_ENGINE_DEBUG("GetWorldPosition")
+		BLOCKY_ENGINE_DEBUG_STREAM(round(wPos.x) << ";" << round(wPos.y))
+		BLOCKY_ENGINE_DEBUG_STREAM(round(lPos.x) << ";"<< round(lPos.y))
 	}
 }
 
 void PhysicsModule::AddCollider(PhysicsBody& collider) {
+	BLOCKY_ENGINE_DEBUG_STREAM("AddCollider: "<<collider.tag)
 	b2Body* body = CreateBody(*_box2dWorldObject, collider);
 
 	_colliderToBodyMap[&collider] = body;
@@ -83,6 +98,8 @@ std::unique_ptr<b2Shape> AddBoxShape(const Box& collider) {
 	auto dynamicBox = std::make_unique<b2PolygonShape>();
 	// Blocky Engine uses width and height, Box2D uses x&y height&width above,below&left,right of origin. so: /2
 	dynamicBox->SetAsBox(collider.GetWidth() / 2, collider.GetHeight() / 2);
+
+	BLOCKY_ENGINE_DEBUG_STREAM("AddBoxShape: "<<collider.GetWidth() << ";" << collider.GetHeight());
 	return dynamicBox;
 }
 
@@ -97,12 +114,16 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 
 	// todo: if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
 	switch (collider.GetType()) {
-	case BOX:
-		fixtureDef.shape = AddBoxShape(reinterpret_cast<Box&>(collider)).release();
-		break;
-	case CIRCLE:
-		fixtureDef.shape = AddCircleShape(reinterpret_cast<Circle&>(collider)).release();
-		break;
+		case BOX: {
+			const auto* const shape = dynamic_cast<Box*>(collider._physicsShape.get());
+			fixtureDef.shape = AddBoxShape(*shape).release();
+			break;
+		}
+		case CIRCLE: {
+			const auto* const shape = dynamic_cast<Circle*>(collider._physicsShape.get());
+			fixtureDef.shape = AddCircleShape(*shape).release();
+			break;
+		}
 	}
 
 	// set all object to static, and later overwrite the mass if object is not static
@@ -148,10 +169,14 @@ glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a) {
 b2Vec2 PhysicsModule::Position(const PhysicsBody& collider) {
 	//todo: add gameObject transforms
 	return VecConvert(collider.componentTransform->GetWorldPosition());
+	// return VecConvert(collider.gameObject.transform->GetWorldPosition());
+	// return VecConvert(collider.componentTransform->GetLocalPosition());
 }
 
 float PhysicsModule::Angle(const PhysicsBody& collider) {
 	//todo: add gameObject transforms
 	return collider.componentTransform->GetWorldRotation();
+	// return collider.gameObject.transform->GetWorldRotation();
+	// return collider.componentTransform->GetLocalRotation();
 }
 

@@ -12,7 +12,7 @@ class TestLogger : public ::testing::EmptyTestEventListener {
 	public:
 		TestLogger() {
 			//logger openen;
-			testLogger.open(R"(../logs/test_logs.txt)");
+			testLogger.open(R"(test_logs.txt)");
 		}
 
 		void OnTestProgramStart(const ::testing::UnitTest& unitTest) override {

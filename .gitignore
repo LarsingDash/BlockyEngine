@@ -35,4 +35,4 @@
 
 .idea
 /cmake-build-*
-/libs
+engine/dependencies/*

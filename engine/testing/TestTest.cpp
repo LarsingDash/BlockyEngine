@@ -12,5 +12,5 @@ TEST_F(TestTest, PrintQueue) {
 }
 
 TEST_F(TestTest, ForceQuit) {
-	EXPECT_EQ(testQueue.front(), 100) << "First index was: " << testQueue.front() << " Expected: 100";
+	EXPECT_NE(testQueue.front(), 100) << "First index was: " << testQueue.front() << " Expected: 100";
 }

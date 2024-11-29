@@ -138,18 +138,26 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 			break;
 		}
 	}
-	// switch (collider.physicsType) { //todo
-	// 	case COLLIDER: {
-	// 		body->SetGravityScale(0.0f);
-	// 		break;
-	// 	}
-	// 	case RIGIDBODY: {
-	// 		const auto* const shape = dynamic_cast<Circle*>(collider.physicsShape.get());
-	// 		fixtureDef.shape = AddCircleShape(*shape).release();
-	//
-	// 		break;
-	// 	}
-	// }
+	switch (collider.typeProperties.physicsType) {
+		case COLLIDER: {
+			body->SetGravityScale(0.0f);
+			break;
+		}
+		case RIGIDBODY: {
+			if (!collider.typeProperties.gravityEnabled) {
+				body->SetGravityScale(0.0f);
+			}
+
+			// collider.typeProperties.resistance;
+			body->SetAngularDamping(collider.typeProperties.angularResistance);
+			body->SetLinearDamping(collider.typeProperties.linearResistance);
+
+			// // // collider.typeProperties.velocity; //todo: add current velocity
+			// body->SetAngularVelocity(collider.typeProperties.rotationVelocity);
+			// body->SetLinearVelocity(VecConvert(collider.typeProperties.velocity));
+			break;
+		}
+	}
 
 	// set all object to static, and later overwrite the mass if object is not static
 	constexpr float staticObject = 0.0f;
@@ -157,11 +165,11 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 
 	body->CreateFixture(&fixtureDef);
 
-	if (!collider.physicsShape->isStatic) {
-		// to have all non-static object apply the same force on another, set all bodies to mass 1
-		b2MassData mass = {0.f};
-		body->SetMassData(&mass);
-	}
+	// if (!collider.physicsShape->isStatic) {
+	//todo:
+	// to have all non-static object apply the same force on another, set all bodies to mass 1
+	b2MassData mass = {0.f};
+	body->SetMassData(&mass);
 
 	delete fixtureDef.shape;
 }

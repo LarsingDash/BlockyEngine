@@ -9,7 +9,8 @@
 
 class BoxCollider : public ColliderBody {
 public:
-    BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width);
+	BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width,
+	            TypeProperties typeProperties);
 };
 
 #endif //BOXCOLLIDER_HPP

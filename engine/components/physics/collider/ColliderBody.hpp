@@ -8,7 +8,8 @@
 
 class ColliderBody : public PhysicsBody {
 public:
-    explicit ColliderBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody);
+	ColliderBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody,
+	             TypeProperties typeProperties);
 };
 
 #endif //COLLIDERBODY_HPP

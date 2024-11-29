@@ -11,7 +11,8 @@
 
 class CircleRigidBody : public RigidBody {
 public:
-    CircleRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius);
+	CircleRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius,
+	                TypeProperties typeProperties);
 };
 
 #endif //CIRCLERIGIDBODY_HPP

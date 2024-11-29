@@ -25,40 +25,45 @@ SceneManager::SceneManager() :
     testScene->transform->SetPosition(x, y);
     testScene->transform->Scale(w, h);
 
+    TypeProperties typeProperties(COLLIDER, {1, 1}, 1, 0, 0, true); //todo: move in component
+
     auto& leftParent = testScene->AddChild("Box_Collider_Red");
     auto& rightParent = testScene->AddChild("RightParent");
 
     leftParent.transform->Translate(-0.3, 0);
     leftParent.AddComponent<RectangleRenderable>("Box_Collider_Red", glm::vec4{255, 0, 0, 255}, true);
-    auto& box1 = leftParent.AddComponent<BoxCollider>("Box_Collider_Red", false, true, w, h);
+    auto& box1 = leftParent.AddComponent<BoxCollider>("Box_Collider_Red", false, true, w, h, typeProperties);
     auto& child1 = testScene->AddChild("Circle_Collider_Red");
     child1.transform->Translate(-0.6, 0);
     child1.AddComponent<EllipseRenderable>("Circle_Collider_Red", glm::vec4{255, 0, 0, 255}, true);
-    auto& circle1 = child1.AddComponent<CircleCollider>("Circle_Collider_Red", true, false, r);
+    auto& circle1 = child1.AddComponent<CircleCollider>("Circle_Collider_Red", true, false, r, typeProperties);
     auto& child2 = testScene->AddChild("Box_Collider_Red_Rigid");
     child2.transform->Translate(-0.9, 0);
     child2.AddComponent<RectangleRenderable>("Box_Collider_Red_Rigid", glm::vec4{255, 0, 0, 255}, false);
-    auto& boxr1 = child2.AddComponent<BoxRigidBody>("Box_Collider_Red_Rigid", true, false, w, h);
+    auto& boxr1 = child2.AddComponent<BoxRigidBody>("Box_Collider_Red_Rigid", true, false, w, h, typeProperties);
     auto& child3 = testScene->AddChild("Circle_Collider_Red_Rigid");
     child3.transform->Translate(-1.3, 0);
     child3.AddComponent<EllipseRenderable>("Circle_Collider_Red_Rigid", glm::vec4{255, 0, 0, 255}, true);
-    auto& circler1 = child3.AddComponent<CircleRigidBody>("Circle_Collider_Red_Rigid", false, true, r);
+    auto& circler1 = child3.AddComponent<CircleRigidBody>("Circle_Collider_Red_Rigid", false, true, r, typeProperties);
+
+    TypeProperties typeProperties2(RIGIDBODY, {1, 1}, 1, 0, 0, true); //todo: move in component
 
     rightParent.transform->Translate(0.3, 0);
     rightParent.AddComponent<RectangleRenderable>("Box_Collider_Green", glm::vec4{0, 255, 0, 255}, true);
-    auto& box2 = rightParent.AddComponent<BoxCollider>("Box_Collider_Green", true, false, w, h);
+    auto& box2 = rightParent.AddComponent<BoxCollider>("Box_Collider_Green", true, false, w, h, typeProperties2);
     auto& child11 = testScene->AddChild("Circle_Collider_Green");
     child11.transform->Translate(-0.6, 0);
     child11.AddComponent<EllipseRenderable>("Circle_Collider_Green", glm::vec4{0, 255, 0, 255}, true);
-    auto& circle2 = child11.AddComponent<CircleCollider>("Circle_Collider_Green", false, true, r);
+    auto& circle2 = child11.AddComponent<CircleCollider>("Circle_Collider_Green", false, true, r, typeProperties2);
     auto& child12 = testScene->AddChild("Box_Collider_Green_Rigid");
     child12.transform->Translate(-0.9, 0);
     child12.AddComponent<RectangleRenderable>("Box_Collider_Green_Rigid", glm::vec4{0, 255, 0, 255}, true);
-    auto& boxr2 = child12.AddComponent<BoxRigidBody>("Box_Collider_Green_Rigid", false, true, w, h);
+    auto& boxr2 = child12.AddComponent<BoxRigidBody>("Box_Collider_Green_Rigid", false, true, w, h, typeProperties2);
     auto& child13 = testScene->AddChild("Circle_Collider_Green_Rigid");
     child13.transform->Translate(-1.3, 0);
     child13.AddComponent<EllipseRenderable>("Circle_Collider_Green_Rigid", glm::vec4{0, 255, 0, 255}, false);
-    auto& circler2 = child13.AddComponent<CircleRigidBody>("Circle_Collider_Green_Rigid", true, false, r);
+    auto& circler2 = child13.AddComponent<CircleRigidBody>("Circle_Collider_Green_Rigid", true, false, r,
+                                                           typeProperties2);
 
     //
     // child.AddComponent<RectangleRenderable>("ChildR", glm::vec4{0, 0, 255, 255});

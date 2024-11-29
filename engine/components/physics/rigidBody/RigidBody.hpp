@@ -7,11 +7,10 @@
 
 class RigidBody : public PhysicsBody {
 public:
-	explicit RigidBody(GameObject& gameObject, const char* tag,
-	                   std::unique_ptr<Shape> physicsBody) : PhysicsBody(
-		gameObject, tag, std::move(physicsBody), PhysicsType::RIGIDBODY) {}
-
-	bool gravityEnabled = true;
+	RigidBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody,
+	          TypeProperties typeProperties);
 };
 
 #endif //RIGIDBODY_HPP
+
+//todo: remove ridigbody and colliderbody

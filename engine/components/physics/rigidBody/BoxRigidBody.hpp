@@ -11,7 +11,8 @@
 
 class BoxRigidBody : public RigidBody {
 public:
-    BoxRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width);
+	BoxRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width,
+	             TypeProperties typeProperties);
 };
 
 #endif //BOXRIGIDBODY_HPP

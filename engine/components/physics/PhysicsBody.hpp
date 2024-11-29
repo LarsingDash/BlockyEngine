@@ -8,11 +8,7 @@
 
 #include "components/Component.hpp"
 #include "components/physics/shape/Shape.hpp"
-
-enum PhysicsType {
-    COLLIDER,
-    RIGIDBODY
-};
+#include "type/Type.hpp"
 
 class PhysicsBody : public Component {
 public:
@@ -26,8 +22,8 @@ public:
     virtual PhysicsType GetType();
     void CollisionCallback(PhysicsBody& other); //todo: implement
 
-    std::unique_ptr<Shape> physicsShape; //todo: to PhysicsShape?? like PhysicsType
-    PhysicsType physicsType;
+    std::unique_ptr<Shape> physicsShape;
+    std::unique_ptr<PhysicsType> physicsType;
     glm::vec2 lastPos;
     float lastRotation{};
 };

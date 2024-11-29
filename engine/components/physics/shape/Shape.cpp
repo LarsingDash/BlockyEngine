@@ -14,6 +14,6 @@ Shape::~Shape() = default;
 
 void Shape::CollisionCallback(Shape& other) {
 	BLOCKY_ENGINE_DEBUG_STREAM(
-		"CollisionCallback()" << " GetType(): " << GetType() << " other.GetType() : " << other.GetType());
+		"CollisionCallback()" << " GetType(): " << GetShape() << " other.GetType() : " << other.GetShape());
 }
 

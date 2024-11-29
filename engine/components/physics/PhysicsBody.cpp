@@ -10,7 +10,7 @@
 
 PhysicsBody::PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody,
                          PhysicsType physicsType) : Component(gameObject, tag), physicsShape(std::move(physicsBody)),
-                                                    physicsType(physicsType),
+                                                    //physicsType(physicsType),
                                                     lastPos(gameObject.transform->GetWorldPosition()),
                                                     lastRotation(gameObject.transform->GetWorldRotation()) {}
 
@@ -27,8 +27,8 @@ void PhysicsBody::End() {
     ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);
 };
 
-PhysicsShape PhysicsBody::GetShape() { return physicsShape->GetType(); }
-PhysicsType PhysicsBody::GetType() { return physicsType; }
+PhysicsShape PhysicsBody::GetShape() { return physicsShape->GetShape(); }
+PhysicsType PhysicsBody::GetType() { return PhysicsType::COLLIDER; } //physicsType->GetType(); } //todo:
 
 void PhysicsBody::CollisionCallback(PhysicsBody& other) {
     BLOCKY_ENGINE_DEBUG_STREAM(

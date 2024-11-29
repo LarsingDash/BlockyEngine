@@ -138,15 +138,18 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 			break;
 		}
 	}
-	switch (collider.physicsType) {
-		case COLLIDER: {
-			body->SetGravityScale(0.0f);
-			break;
-		}
-		case RIGIDBODY: {
-			break;
-		}
-	}
+	// switch (collider.physicsType) { //todo
+	// 	case COLLIDER: {
+	// 		body->SetGravityScale(0.0f);
+	// 		break;
+	// 	}
+	// 	case RIGIDBODY: {
+	// 		const auto* const shape = dynamic_cast<Circle*>(collider.physicsShape.get());
+	// 		fixtureDef.shape = AddCircleShape(*shape).release();
+	//
+	// 		break;
+	// 	}
+	// }
 
 	// set all object to static, and later overwrite the mass if object is not static
 	constexpr float staticObject = 0.0f;

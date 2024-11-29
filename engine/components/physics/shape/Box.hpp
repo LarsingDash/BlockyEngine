@@ -11,7 +11,7 @@ public:
 	Box(bool isTrigger, bool isStatic, float height, float width);
 	~Box() override = default;
 
-	PhysicsShape GetType() override;
+	PhysicsShape GetShape() override;
 
 	[[nodiscard]] float GetWidth() const { return _width; }
 	[[nodiscard]] float GetHeight() const { return _height; }

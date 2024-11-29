@@ -10,6 +10,8 @@ public:
 	explicit RigidBody(GameObject& gameObject, const char* tag,
 	                   std::unique_ptr<Shape> physicsBody) : PhysicsBody(
 		gameObject, tag, std::move(physicsBody), PhysicsType::RIGIDBODY) {}
+
+	bool gravityEnabled = true;
 };
 
 #endif //RIGIDBODY_HPP

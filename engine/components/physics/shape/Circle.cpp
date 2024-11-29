@@ -6,6 +6,6 @@
 Circle::Circle(bool isTrigger, bool isStatic, float radius)
     : Shape(isTrigger, isStatic), _radius(radius) {}
 
-PhysicsShape Circle::GetType() {
+PhysicsShape Circle::GetShape() {
     return PhysicsShape::CIRCLE;
 }

@@ -10,6 +10,6 @@ Box::Box(bool isTrigger, bool isStatic, float height, float width)
     BLOCKY_ENGINE_DEBUG_STREAM("Box::Box(): " << width << ", "<< height);
 }
 
-PhysicsShape Box::GetType() {
+PhysicsShape Box::GetShape() {
     return PhysicsShape::BOX;
 }

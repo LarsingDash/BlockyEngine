@@ -12,7 +12,7 @@ public:
     Circle(bool isTrigger, bool isStatic, float radius);
     ~Circle() override = default;
 
-    PhysicsShape GetType() override;
+    PhysicsShape GetShape() override;
 
     [[nodiscard]] float GetRadius() const { return _radius; }
 

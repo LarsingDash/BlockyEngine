@@ -20,7 +20,7 @@ public:
 	void CollisionCallback(Shape& other); //todo: check
 	//todo: add subscribe to callback function
 
-	virtual PhysicsShape GetType() = 0;
+	virtual PhysicsShape GetShape() = 0;
 
 	bool isTrigger{false};
 	bool isStatic{false};

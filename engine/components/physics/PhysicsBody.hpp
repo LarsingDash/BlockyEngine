@@ -11,9 +11,7 @@
 
 class PhysicsBody : public Component {
 public:
-    explicit PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<PhysicsShape> physicsBody) :
-        Component(gameObject, tag), _physicsShape(std::move(physicsBody)) {}
-
+    PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<PhysicsShape> physicsBody);
     ~PhysicsBody() override = default;
 
     void Start() override;
@@ -21,7 +19,8 @@ public:
     void End() override;;
     virtual PhysicsType GetType();
 
-    std::unique_ptr<PhysicsShape> _physicsShape;
+    std::unique_ptr<PhysicsShape> physicsShape;
     glm::vec2 lastPos;
+    float lastRotation{};
 };
 #endif //PHYSICSBODY_HPP

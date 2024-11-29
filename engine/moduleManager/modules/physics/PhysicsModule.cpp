@@ -56,38 +56,26 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [collider, body] : _colliderToBodyMap) {
-		//todo: does gameobject udate form this?
-		auto pos = body->GetPosition();
-		float dx = pos.x - collider->lastPos.x;
-		float dy = pos.y - collider->lastPos.y;
+		b2Vec2 pos = body->GetPosition();
+		b2Vec2 d = {pos.x - collider->lastPos.x, pos.y - collider->lastPos.y};
+
+		float deltaAngle = body->GetAngle() - collider->lastRotation;
 		const auto scale = collider->gameObject.transform->GetWorldScale();
 		//todo: for first setup after init all is 0 and -> 400
-		if (abs(dx) <= 100 && abs(dy) <= 100) {
-			collider->gameObject.transform->Translate(dx / scale.x, dy / scale.y);
-			collider->componentTransform->SetRotation(body->GetAngle()); //todo: angle
+		if (abs(d.x) <= 100 && abs(d.y) <= 100) {
+			collider->gameObject.transform->Translate(d.x / scale.x, d.y / scale.y);
+			collider->gameObject.transform->Rotate(deltaAngle);
 		}
-
-		// collider->gameObject.transform->SetPosition(pos.x, pos.y);
-		// collider->gameObject.transform->SetRotation(body->GetAngle());
-
-		BLOCKY_ENGINE_DEBUG(collider->gameObject.tag);
-		auto goPos = collider->gameObject.transform->GetWorldPosition();
-		BLOCKY_ENGINE_DEBUG_STREAM("pos  \t" << pos.x << " ; " << pos.y);
-		BLOCKY_ENGINE_DEBUG_STREAM("gopos\t" << goPos.x << " ; " << goPos.y);
-		BLOCKY_ENGINE_DEBUG_STREAM("last \t" << collider->lastPos.x << " ; " << collider->lastPos.y);
-		BLOCKY_ENGINE_DEBUG_STREAM("dx dy\t" << dx<< " ; " << dy)
-		BLOCKY_ENGINE_DEBUG_STREAM("scale\t" << scale.x << " ; " << scale.y);
 
 		collider->lastPos = glm::vec2{pos.x, pos.y};
 
-		// auto wPos = collider->componentTransform->GetWorldPosition();
-		// auto lPos = collider->componentTransform->GetLocalPosition();
-		// BLOCKY_ENGINE_DEBUG("GamePosition")
-		// BLOCKY_ENGINE_DEBUG_STREAM(round(pos.x) << ";" << round(pos.y));
-		// BLOCKY_ENGINE_DEBUG_STREAM(body->GetAngle())
-		// BLOCKY_ENGINE_DEBUG("GetWorldPosition")
-		// BLOCKY_ENGINE_DEBUG_STREAM(round(wPos.x) << ";" << round(wPos.y))
-		// BLOCKY_ENGINE_DEBUG_STREAM(round(lPos.x) << ";"<< round(lPos.y))
+		// BLOCKY_ENGINE_DEBUG(collider->gameObject.tag);
+		// auto goPos = collider->gameObject.transform->GetWorldPosition();
+		// BLOCKY_ENGINE_DEBUG_STREAM("pos  \t" << pos.x << " ; " << pos.y);
+		// BLOCKY_ENGINE_DEBUG_STREAM("gopos\t" << goPos.x << " ; " << goPos.y);
+		// BLOCKY_ENGINE_DEBUG_STREAM("last \t" << collider->lastPos.x << " ; " << collider->lastPos.y);
+		// BLOCKY_ENGINE_DEBUG_STREAM("dx dy\t" << d.x<< " ; " << d.y)
+		// BLOCKY_ENGINE_DEBUG_STREAM("scale\t" << scale.x << " ; " << scale.y);
 	}
 }
 
@@ -125,15 +113,15 @@ std::unique_ptr<b2Shape> AddCircleShape(const Circle& collider) {
 void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 	b2FixtureDef fixtureDef;
 
-	// todo: if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
+	// if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
 	switch (collider.GetType()) {
 		case BOX: {
-			const auto* const shape = dynamic_cast<Box*>(collider._physicsShape.get());
+			const auto* const shape = dynamic_cast<Box*>(collider.physicsShape.get());
 			fixtureDef.shape = AddBoxShape(*shape).release();
 			break;
 		}
 		case CIRCLE: {
-			const auto* const shape = dynamic_cast<Circle*>(collider._physicsShape.get());
+			const auto* const shape = dynamic_cast<Circle*>(collider.physicsShape.get());
 			fixtureDef.shape = AddCircleShape(*shape).release();
 			break;
 		}
@@ -145,9 +133,9 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 
 	body->CreateFixture(&fixtureDef);
 
-	if (!collider._physicsShape->isStatic) {
+	if (!collider.physicsShape->isStatic) {
 		// to have all non-static object apply the same force on another, set all bodies to mass 1
-		b2MassData mass = {1.f};
+		b2MassData mass = {0.f};
 		body->SetMassData(&mass);
 	}
 

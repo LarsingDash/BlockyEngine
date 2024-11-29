@@ -31,15 +31,15 @@ SceneManager::SceneManager() :
 
     // leftParent.transform->Translate(-3, 0);
     leftParent.AddComponent<RectangleRenderable>("LeftR", glm::vec4{255, 0, 0, 255}, true);
-    // auto& box1 = leftParent.AddComponent<BoxCollider>("BoxColliderL", false, false, w, h);
-    auto& circle1 = leftParent.AddComponent<CircleCollider>("CircleColliderL", false, false, r);
+    auto& box1 = leftParent.AddComponent<BoxCollider>("BoxColliderL", false, false, w, h);
+    // auto& circle1 = leftParent.AddComponent<CircleCollider>("CircleColliderL", false, false, r);
     // auto& boxr1 = leftParent.AddComponent<BoxRigidBody>("BoxColliderL", false, false, w, h);
     // auto& circler1 = leftParent.AddComponent<CircleRigidBody>("CircleRigidBody", false, false, r);
 
     rightParent.transform->Translate(0.5, 0);
     rightParent.AddComponent<RectangleRenderable>("RightR", glm::vec4{0, 255, 0, 255}, true);
-    // auto& box2 = rightParent.AddComponent<BoxCollider>("BoxColliderR", true, false, w, h);
-    auto& circle2 = rightParent.AddComponent<CircleCollider>("CircleColliderR", true, false, r);
+    auto& box2 = rightParent.AddComponent<BoxCollider>("BoxColliderR", true, false, w, h);
+    // auto& circle2 = rightParent.AddComponent<CircleCollider>("CircleColliderR", true, false, r);
     // auto& boxr2 = rightParent.AddComponent<BoxRigidBody>("BoxColliderR", true, false, w, h);
     // auto& circler2 = rightParent.AddComponent<CircleRigidBody>("CircleColliderR", true, false, r);
 

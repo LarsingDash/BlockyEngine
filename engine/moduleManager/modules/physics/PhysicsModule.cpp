@@ -16,11 +16,14 @@ PhysicsModule::PhysicsModule() {
 	_box2dWorldObject->SetContactListener(_contactListener.get());
 }
 
-void PhysicsModule::Update(const float delta) {
+void PhysicsModule::Update(float delta) {
 	WritingExternalInputToBox2DWorld();
 
-	constexpr int32 positionIterations = 2;
-	constexpr int32 velocityIterations = 6;
+	//todo:remove
+	delta = 1.0f / 60.0f;
+
+	constexpr int32 positionIterations = 2 * 1000;
+	constexpr int32 velocityIterations = 6 * 1000;
 
 	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
 
@@ -41,16 +44,27 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 	for (auto [collider, body] : _colliderToBodyMap) {
 		if (IsSame(collider, body)) { continue; }
 
-		body->SetTransform(Position(*collider), Angle(*collider));
+		BLOCKY_ENGINE_DEBUG_STREAM("diff: ")
+		// BLOCKY_ENGINE_DEBUG(VecConvert(Position(*collider)))
+		BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetWorldPosition()))
+		BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetWorldPosition()))
+		BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetLocalPosition()))
+		BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetLocalPosition()))
+		BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
 
-		// Destroy all existing fixtures so if there is a resize the resize can be applied
-		for (b2Fixture* fixture = body->GetFixtureList(); fixture;) {
-			b2Fixture* next = fixture->GetNext();
-			body->DestroyFixture(fixture);
-			fixture = next;
-		}
+		_box2dWorldObject->DestroyBody(body);
+		CreateBody(*_box2dWorldObject, *collider);
 
-		AddFixture(*collider, body);
+		// body->SetTransform(Position(*collider), Angle(*collider));
+		//
+		// // Destroy all existing fixtures so if there is a resize the resize can be applied
+		// for (b2Fixture* fixture = body->GetFixtureList(); fixture;) {
+		// 	b2Fixture* next = fixture->GetNext();
+		// 	body->DestroyFixture(fixture);
+		// 	fixture = next;
+		// }
+		//
+		// AddFixture(*collider, body);
 	}
 }
 
@@ -61,21 +75,24 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 
 		float deltaAngle = body->GetAngle() - collider->lastRotation;
 		const auto scale = collider->gameObject.transform->GetWorldScale();
-		//todo: for first setup after init all is 0 and -> 400
+		//todo: fix this for first setup after init all is 0 and -> 400
 		if (abs(d.x) <= 100 && abs(d.y) <= 100) {
-			collider->gameObject.transform->Translate(d.x / scale.x, d.y / scale.y);
+			// todo: uitleg GetWorldScale is to small and generates runaway if to large
+			collider->gameObject.transform->Translate(d.x / scale.x / 2, d.y / scale.y / 2);
 			collider->gameObject.transform->Rotate(deltaAngle);
 		}
 
-		collider->lastPos = glm::vec2{pos.x, pos.y};
+		BLOCKY_ENGINE_DEBUG(collider->gameObject.tag);
+		auto goPos = collider->gameObject.transform->GetWorldPosition();
+		auto coPos = collider->componentTransform->GetWorldPosition();
+		BLOCKY_ENGINE_DEBUG_STREAM("pos  \t" << pos.x << " ; " << pos.y);
+		BLOCKY_ENGINE_DEBUG_STREAM("gopos\t" << goPos.x << " ; " << goPos.y);
+		BLOCKY_ENGINE_DEBUG_STREAM("coPos\t" << coPos.x << " ; " << coPos.y);
+		BLOCKY_ENGINE_DEBUG_STREAM("last \t" << collider->lastPos.x << " ; " << collider->lastPos.y);
+		BLOCKY_ENGINE_DEBUG_STREAM("dx dy\t" << d.x<< " ; " << d.y)
+		BLOCKY_ENGINE_DEBUG_STREAM("scale\t" << scale.x << " ; " << scale.y);
 
-		// BLOCKY_ENGINE_DEBUG(collider->gameObject.tag);
-		// auto goPos = collider->gameObject.transform->GetWorldPosition();
-		// BLOCKY_ENGINE_DEBUG_STREAM("pos  \t" << pos.x << " ; " << pos.y);
-		// BLOCKY_ENGINE_DEBUG_STREAM("gopos\t" << goPos.x << " ; " << goPos.y);
-		// BLOCKY_ENGINE_DEBUG_STREAM("last \t" << collider->lastPos.x << " ; " << collider->lastPos.y);
-		// BLOCKY_ENGINE_DEBUG_STREAM("dx dy\t" << d.x<< " ; " << d.y)
-		// BLOCKY_ENGINE_DEBUG_STREAM("scale\t" << scale.x << " ; " << scale.y);
+		collider->lastPos = glm::vec2{pos.x, pos.y};
 	}
 }
 
@@ -169,12 +186,14 @@ glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a) {
 
 b2Vec2 PhysicsModule::Position(const PhysicsBody& collider) {
 	//todo: add gameObject transforms
+	// return VecConvert(collider.gameObject.transform->GetWorldPosition());
 	return VecConvert(collider.componentTransform->GetWorldPosition());
 	// return VecConvert(collider.componentTransform->GetLocalPosition());
 }
 
 float PhysicsModule::Angle(const PhysicsBody& collider) {
 	//todo: add gameObject transforms
+	// return collider.gameObject.transform->GetWorldRotation();
 	return collider.componentTransform->GetWorldRotation();
 	// return collider.componentTransform->GetLocalRotation();
 }

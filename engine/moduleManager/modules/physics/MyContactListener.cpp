@@ -37,12 +37,16 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
         }
     }
 
-    //todo implement
-    // if (collider1 != nullptr && collider2 != nullptr && collider1->isTrigger)
-    // {
-    //     collider1->CollisionCallback(*collider2);
-    //     collider2->CollisionCallback(*collider1);
-    // }
+    if (collider1 != nullptr && collider2 != nullptr) {
+        //todo: _physicsShape collision with _physicsShape/PhysicsBody?
+        if (collider1->_physicsShape->isTrigger) {
+            collider1->_physicsShape->CollisionCallback(*collider2->_physicsShape);
+        }
+
+        if (collider2->_physicsShape->isTrigger) {
+            collider2->_physicsShape->CollisionCallback(*collider1->_physicsShape);
+        }
+    }
 
     if (body1->GetPosition().y < 51) {
         contact->SetEnabled(false);

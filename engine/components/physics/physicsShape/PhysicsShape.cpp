@@ -11,5 +11,9 @@ PhysicsShape::PhysicsShape(bool isTrigger, bool isStatic) :
 
 PhysicsShape::~PhysicsShape() = default;
 
-void PhysicsShape::CollisionCallback(PhysicsShape& other) {}
+void PhysicsShape::CollisionCallback(PhysicsShape& other) {
+	BLOCKY_ENGINE_DEBUG_STREAM(
+		"CollisionCallback()" << other.GetType() << " isTrigger: " << other.isTrigger << " isStatic: " << other.
+		isStatic);
+}
 

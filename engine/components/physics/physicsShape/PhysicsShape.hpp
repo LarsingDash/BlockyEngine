@@ -3,7 +3,6 @@
 //
 #ifndef COLLIDER_HPP
 #define COLLIDER_HPP
-#include <components/Component.hpp>
 
 enum PhysicsType {
 	BOX,
@@ -16,7 +15,9 @@ public:
 	PhysicsShape(bool isTrigger, bool isStatic);
 	virtual ~PhysicsShape();
 
-	void CollisionCallback(PhysicsShape& other); //todo:
+	void CollisionCallback(PhysicsShape& other); //todo: check
+	//todo: add subscribe to callback function
+
 	virtual PhysicsType GetType() = 0;
 
 	bool isTrigger{false};

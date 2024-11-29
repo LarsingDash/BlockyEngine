@@ -4,13 +4,14 @@
 #ifndef PHYSICSBODY_HPP
 #define PHYSICSBODY_HPP
 #include <memory>
+#include "components/Component.hpp"
 #include "components/physics/physicsShape/PhysicsShape.hpp"
 
 class PhysicsBody : public Component {
     /**
     * @var physicsBody
     */
-protected:
+public: //todo: protected:
     std::unique_ptr<PhysicsShape> _physicsShape;
 
 public:

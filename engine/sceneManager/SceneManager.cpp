@@ -29,35 +29,35 @@ SceneManager::SceneManager() :
     auto& rightParent = testScene->AddChild("RightParent");
 
     leftParent.transform->Translate(-0.3, 0);
-    leftParent.AddComponent<RectangleRenderable>("Box_Collider_Red", glm::vec4{255, 0, 0, 255}, false);
-    auto& box1 = leftParent.AddComponent<BoxCollider>("Box_Collider_Red", false, false, w, h);
+    leftParent.AddComponent<RectangleRenderable>("Box_Collider_Red", glm::vec4{255, 0, 0, 255}, true);
+    auto& box1 = leftParent.AddComponent<BoxCollider>("Box_Collider_Red", false, true, w, h);
     auto& child1 = testScene->AddChild("Circle_Collider_Red");
     child1.transform->Translate(-0.6, 0);
-    child1.AddComponent<EllipseRenderable>("Circle_Collider_Red", glm::vec4{255, 0, 0, 255}, false);
-    auto& circle1 = child1.AddComponent<CircleCollider>("Circle_Collider_Red", false, false, r);
+    child1.AddComponent<EllipseRenderable>("Circle_Collider_Red", glm::vec4{255, 0, 0, 255}, true);
+    auto& circle1 = child1.AddComponent<CircleCollider>("Circle_Collider_Red", true, false, r);
     auto& child2 = testScene->AddChild("Box_Collider_Red_Rigid");
     child2.transform->Translate(-0.9, 0);
-    child2.AddComponent<RectangleRenderable>("Box_Collider_Red_Rigid", glm::vec4{255, 0, 0, 255}, true);
-    auto& boxr1 = child2.AddComponent<BoxRigidBody>("Box_Collider_Red_Rigid", false, false, w, h);
+    child2.AddComponent<RectangleRenderable>("Box_Collider_Red_Rigid", glm::vec4{255, 0, 0, 255}, false);
+    auto& boxr1 = child2.AddComponent<BoxRigidBody>("Box_Collider_Red_Rigid", true, false, w, h);
     auto& child3 = testScene->AddChild("Circle_Collider_Red_Rigid");
     child3.transform->Translate(-1.3, 0);
     child3.AddComponent<EllipseRenderable>("Circle_Collider_Red_Rigid", glm::vec4{255, 0, 0, 255}, true);
-    auto& circler1 = child3.AddComponent<CircleRigidBody>("Circle_Collider_Red_Rigid", false, false, r);
+    auto& circler1 = child3.AddComponent<CircleRigidBody>("Circle_Collider_Red_Rigid", false, true, r);
 
     rightParent.transform->Translate(0.3, 0);
-    rightParent.AddComponent<RectangleRenderable>("Box_Collider_Green", glm::vec4{0, 255, 0, 255}, false);
+    rightParent.AddComponent<RectangleRenderable>("Box_Collider_Green", glm::vec4{0, 255, 0, 255}, true);
     auto& box2 = rightParent.AddComponent<BoxCollider>("Box_Collider_Green", true, false, w, h);
     auto& child11 = testScene->AddChild("Circle_Collider_Green");
     child11.transform->Translate(-0.6, 0);
-    child11.AddComponent<EllipseRenderable>("Circle_Collider_Green", glm::vec4{0, 255, 0, 255}, false);
-    auto& circle2 = child11.AddComponent<CircleCollider>("Circle_Collider_Green", true, false, r);
+    child11.AddComponent<EllipseRenderable>("Circle_Collider_Green", glm::vec4{0, 255, 0, 255}, true);
+    auto& circle2 = child11.AddComponent<CircleCollider>("Circle_Collider_Green", false, true, r);
     auto& child12 = testScene->AddChild("Box_Collider_Green_Rigid");
     child12.transform->Translate(-0.9, 0);
     child12.AddComponent<RectangleRenderable>("Box_Collider_Green_Rigid", glm::vec4{0, 255, 0, 255}, true);
-    auto& boxr2 = child12.AddComponent<BoxRigidBody>("Box_Collider_Green_Rigid", true, false, w, h);
+    auto& boxr2 = child12.AddComponent<BoxRigidBody>("Box_Collider_Green_Rigid", false, true, w, h);
     auto& child13 = testScene->AddChild("Circle_Collider_Green_Rigid");
     child13.transform->Translate(-1.3, 0);
-    child13.AddComponent<EllipseRenderable>("Circle_Collider_Green_Rigid", glm::vec4{0, 255, 0, 255}, true);
+    child13.AddComponent<EllipseRenderable>("Circle_Collider_Green_Rigid", glm::vec4{0, 255, 0, 255}, false);
     auto& circler2 = child13.AddComponent<CircleRigidBody>("Circle_Collider_Green_Rigid", true, false, r);
 
     //

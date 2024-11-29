@@ -3,40 +3,42 @@
 //
 #include "SceneManager.hpp"
 #include <iostream>
-#include <components/physicsShape/Box.hpp>
-#include <components/physicsShape/Circle.hpp>
+#include <components/physics/physicsShape/Box.hpp>
+#include <components/physics/physicsShape/Circle.hpp>
 #include <logging/BLogger.hpp>
 #include "components/renderables/Renderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
+#include "components/physics/rigidBody/BoxRigidBody.hpp"
+#include "components/physics/physicsBody/ColliderBody.hpp"
 
-SceneManager::SceneManager() : testScene(std::make_unique<GameObject>("root"))
-{
-	float x, y;
-	float w, h, r;
-	auto& objectA = testScene->AddChild("objectA");
-	auto& objectB = testScene->AddChild("objectB");
-	x = 0.f, y = 200.f;
-	w = 200.f, h = 200.f;
-
-	auto& aRed = objectA.AddComponent<RectangleRenderable>("Red", glm::vec4{255, 0, 0, 255}, true);
-	auto& aBoxCollider = objectA.AddComponent<Box>("BoxColliderA", true, false, w, h);
-	objectA.transform->position = glm::vec2(x, y);
-	aRed.componentTransform->position = glm::vec2{x, y};
-	aBoxCollider.componentTransform->position = glm::vec2{x, y};
-	BLOCKY_ENGINE_DEBUG(objectA.transform->position)
-
-	x = 0.f, y = 200.f;
-	r = 50.f;
-	auto& bA = objectB.AddComponent<EllipseRenderable>("bA", glm::ivec4(0, 255, 0, 255));
-	auto& bB = objectB.AddComponent<Circle>("CircleColliderB", true, false, r);
-	objectB.transform->position = glm::vec2(x, y);
-	bA.componentTransform->position = glm::vec2{x, y};
-	bB.componentTransform->position = glm::vec2{x, y};
-	BLOCKY_ENGINE_DEBUG(objectA.transform->position)
-
-	std::cout << testScene->RemoveChild(*testScene->GetChild("A")) << std::endl;
+SceneManager::SceneManager() : testScene(std::make_unique<GameObject>("root")) {
+	//todo:
+	// float x, y;
+	// float w, h, r;
+	// auto& objectA = testScene->AddChild("objectA");
+	// auto& objectB = testScene->AddChild("objectB");
+	// x = 0.f, y = 200.f;
+	// w = 200.f, h = 200.f;
+	//
+	// auto& aRed = objectA.AddComponent<RectangleRenderable>("Red", glm::vec4{255, 0, 0, 255}, true);
+	// auto& aBoxCollider = objectA.AddComponent<BoxRigidBody>("BoxColliderA", true, false, w, h);
+	// objectA.transform->position = glm::vec2(x, y);
+	// aRed.componentTransform->position = glm::vec2{x, y};
+	// // aBoxCollider.componentTransform->position = glm::vec2{x, y}; //todo:
+	// BLOCKY_ENGINE_DEBUG(objectA.transform->position)
+	//
+	// x = 0.f, y = 200.f;
+	// r = 50.f;
+	// auto& bA = objectB.AddComponent<EllipseRenderable>("bA", glm::ivec4(0, 255, 0, 255));
+	// auto& bB = objectB.AddComponent<CircleCollider>("CircleColliderB", true, false, r);
+	// objectB.transform->position = glm::vec2(x, y);
+	// bA.componentTransform->position = glm::vec2{x, y};
+	// // bB.componentTransform->position = glm::vec2{x, y}; //todo
+	// BLOCKY_ENGINE_DEBUG(objectA.transform->position)
+	//
+	// std::cout << testScene->RemoveChild(*testScene->GetChild("A")) << std::endl;
 }
 
 void SceneManager::Update(float delta) { testScene->Update(delta); }

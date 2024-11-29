@@ -15,8 +15,8 @@ PhysicsShape::~PhysicsShape() = default;
 
 void PhysicsShape::Start()
 {
-	ModuleManager::getInstance().getModule<PhysicsModule>().AddCollider(*this);
-	BLOCKY_ENGINE_DEBUG("Start: " + this->tag)
+	// ModuleManager::getInstance().getModule<PhysicsModule>().AddCollider(*this);
+	BLOCKY_ENGINE_DEBUG("Start todo: removed: " + this->tag) // todo:
 }
 
 void PhysicsShape::Update(float delta)
@@ -25,7 +25,7 @@ void PhysicsShape::Update(float delta)
 
 void PhysicsShape::End()
 {
-	ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);
+	// ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this); //todo:
 }
 
 void PhysicsShape::CollisionCallback(PhysicsShape& other)

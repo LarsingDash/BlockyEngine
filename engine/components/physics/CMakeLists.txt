@@ -1,0 +1,3 @@
+﻿add_subdirectory(physicsBody)
+add_subdirectory(physicsShape)
+add_subdirectory(rigidBody)

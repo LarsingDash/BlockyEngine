@@ -11,7 +11,7 @@ enum PhysicsType
 	CIRCLE
 };
 
-class PhysicsShape : public Component
+class PhysicsShape : public Component //todo:
 {
 public:
 	PhysicsShape(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic);

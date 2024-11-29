@@ -6,8 +6,7 @@
 
 #include <logging/BLogger.hpp>
 
-MyContactListener::MyContactListener(std::unordered_map<PhysicsShape*, b2Body*>* colliderToBodyMap)
-{
+MyContactListener::MyContactListener(std::unordered_map<PhysicsBody*, b2Body*>* colliderToBodyMap) {
     _colliderToBodyMap = colliderToBodyMap;
 }
 
@@ -21,35 +20,31 @@ MyContactListener::MyContactListener(std::unordered_map<PhysicsShape*, b2Body*>*
 /// Note: if you set the number of contact points to zero, you will not
 /// get an EndContact callback. However, you may get a BeginContact callback
 /// the next step.
-void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
-{
+void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold) {
     auto body1 = contact->GetFixtureA()->GetBody();
     auto body2 = contact->GetFixtureB()->GetBody();
 
-    PhysicsShape* collider1 = nullptr;
-    PhysicsShape* collider2 = nullptr;
+    PhysicsBody* collider1 = nullptr;
+    PhysicsBody* collider2 = nullptr;
 
     // todo: 2 way map
-    for (auto [collider, body] : *_colliderToBodyMap)
-    {
-        if (body1 == body)
-        {
+    for (auto [collider, body] : *_colliderToBodyMap) {
+        if (body1 == body) {
             collider1 = collider;
         }
-        if (body2 == body)
-        {
+        if (body2 == body) {
             collider2 = collider;
         }
     }
 
-    if (collider1 != nullptr && collider2 != nullptr && collider1->isTrigger)
-    {
-        collider1->CollisionCallback(*collider2);
-        collider2->CollisionCallback(*collider1);
-    }
+    //todo implement
+    // if (collider1 != nullptr && collider2 != nullptr && collider1->isTrigger)
+    // {
+    //     collider1->CollisionCallback(*collider2);
+    //     collider2->CollisionCallback(*collider1);
+    // }
 
-    if (body1->GetPosition().y < 51)
-    {
+    if (body1->GetPosition().y < 51) {
         contact->SetEnabled(false);
     }
 }

@@ -18,6 +18,7 @@ public:
     void Update(float delta) override;
     void End() override;;
     virtual PhysicsType GetType();
+    void CollisionCallback(PhysicsBody& other); //todo: implement
 
     std::unique_ptr<PhysicsShape> physicsShape;
     glm::vec2 lastPos;

@@ -4,6 +4,7 @@
 
 #include "PhysicsBody.hpp"
 
+#include <logging/BLogger.hpp>
 #include <moduleManager/ModuleManager.hpp>
 #include <moduleManager/modules/physics/PhysicsModule.hpp>
 
@@ -25,3 +26,8 @@ void PhysicsBody::End() {
 };
 
 PhysicsType PhysicsBody::GetType() { return physicsShape->GetType(); }
+
+void PhysicsBody::CollisionCallback(PhysicsBody& other) {
+    BLOCKY_ENGINE_DEBUG_STREAM(
+        "CollisionCallback()" << " tag: " << tag << " other.tag : " << other.tag);
+}

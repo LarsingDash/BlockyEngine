@@ -8,8 +8,8 @@
 
 //todo: fix multiple rigid bodys on same gameobject, so that they can overlap
 PhysicsModule::PhysicsModule() {
-	// b2Vec2 gravity(0.f, 9.8f);
-	b2Vec2 gravity(0.f, 0.f);
+	b2Vec2 gravity(0.f, 9.8f);
+	// b2Vec2 gravity(0.f, 0.f);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
@@ -20,9 +20,6 @@ PhysicsModule::PhysicsModule() {
 
 void PhysicsModule::Update(float delta) {
 	WritingExternalInputToBox2DWorld();
-
-	//todo:remove
-	delta = 1.0f / 60.0f;
 
 	constexpr int32 positionIterations = 2 * 1000;
 	constexpr int32 velocityIterations = 6 * 1000;
@@ -46,13 +43,13 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 	for (auto [collider, body] : _colliderToBodyMap) {
 		if (IsSame(collider, body)) { continue; }
 
-		BLOCKY_ENGINE_DEBUG_STREAM("diff: ")
-		// BLOCKY_ENGINE_DEBUG(VecConvert(Position(*collider)))
-		BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetWorldPosition()))
-		BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetWorldPosition()))
-		BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetLocalPosition()))
-		BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetLocalPosition()))
-		BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
+		// BLOCKY_ENGINE_DEBUG_STREAM("diff: ")
+		// // BLOCKY_ENGINE_DEBUG(VecConvert(Position(*collider)))
+		// BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetWorldPosition()))
+		// BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetWorldPosition()))
+		// BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetLocalPosition()))
+		// BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetLocalPosition()))
+		// BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
 
 		body->SetTransform(Position(*collider), Angle(*collider));
 
@@ -81,15 +78,15 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 			collider->gameObject.transform->Rotate(deltaAngle);
 		}
 
-		BLOCKY_ENGINE_DEBUG(collider->gameObject.tag);
-		auto goPos = collider->gameObject.transform->GetWorldPosition();
-		auto coPos = collider->componentTransform->GetWorldPosition();
-		BLOCKY_ENGINE_DEBUG_STREAM("pos  \t" << pos.x << " ; " << pos.y);
-		BLOCKY_ENGINE_DEBUG_STREAM("gopos\t" << goPos.x << " ; " << goPos.y);
-		BLOCKY_ENGINE_DEBUG_STREAM("coPos\t" << coPos.x << " ; " << coPos.y);
-		BLOCKY_ENGINE_DEBUG_STREAM("last \t" << collider->lastPos.x << " ; " << collider->lastPos.y);
-		BLOCKY_ENGINE_DEBUG_STREAM("dx dy\t" << d.x<< " ; " << d.y)
-		BLOCKY_ENGINE_DEBUG_STREAM("scale\t" << scale.x << " ; " << scale.y);
+		// BLOCKY_ENGINE_DEBUG(collider->gameObject.tag);
+		// auto goPos = collider->gameObject.transform->GetWorldPosition();
+		// auto coPos = collider->componentTransform->GetWorldPosition();
+		// BLOCKY_ENGINE_DEBUG_STREAM("pos  \t" << pos.x << " ; " << pos.y);
+		// BLOCKY_ENGINE_DEBUG_STREAM("gopos\t" << goPos.x << " ; " << goPos.y);
+		// BLOCKY_ENGINE_DEBUG_STREAM("coPos\t" << coPos.x << " ; " << coPos.y);
+		// BLOCKY_ENGINE_DEBUG_STREAM("last \t" << collider->lastPos.x << " ; " << collider->lastPos.y);
+		// BLOCKY_ENGINE_DEBUG_STREAM("dx dy\t" << d.x<< " ; " << d.y)
+		// BLOCKY_ENGINE_DEBUG_STREAM("scale\t" << scale.x << " ; " << scale.y);
 
 		collider->lastPos = glm::vec2{pos.x, pos.y};
 	}

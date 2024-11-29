@@ -7,7 +7,7 @@
 #include <logging/BLogger.hpp>
 
 PhysicsModule::PhysicsModule() {
-	b2Vec2 gravity(9.8f, 0.0f);
+	b2Vec2 gravity(0.f, 9.8f);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
@@ -19,8 +19,7 @@ PhysicsModule::PhysicsModule() {
 void PhysicsModule::Update(const float delta) {
 	WritingExternalInputToBox2DWorld();
 
-	// set arbitrarily high positionIterations, so that collisions are handled in a few ticks.
-	constexpr int32 positionIterations = 2 * 1000;
+	constexpr int32 positionIterations = 2;
 	constexpr int32 velocityIterations = 6;
 
 	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
@@ -61,23 +60,25 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 		auto pos = body->GetPosition();
 		float dx = pos.x - collider->lastPos.x;
 		float dy = pos.y - collider->lastPos.y;
-
+		const auto scale = collider->gameObject.transform->GetWorldScale();
 		//todo: for first setup after init all is 0 and -> 400
 		if (abs(dx) <= 100 && abs(dy) <= 100) {
-			const auto scale = collider->gameObject.transform->GetWorldScale();
 			collider->gameObject.transform->Translate(dx / scale.x, dy / scale.y);
 			collider->componentTransform->SetRotation(body->GetAngle()); //todo: angle
 		}
 
-		collider->lastPos = glm::vec2{pos.x, pos.y};
 		// collider->gameObject.transform->SetPosition(pos.x, pos.y);
 		// collider->gameObject.transform->SetRotation(body->GetAngle());
 
 		BLOCKY_ENGINE_DEBUG(collider->gameObject.tag);
-		BLOCKY_ENGINE_DEBUG_STREAM('\t' << pos.x << " ; " << pos.y);
 		auto goPos = collider->gameObject.transform->GetWorldPosition();
-		BLOCKY_ENGINE_DEBUG_STREAM('\t' << goPos.x << " ; " << goPos.y);
-		BLOCKY_ENGINE_DEBUG_STREAM('\t' << dx<< " ; " << dy);
+		BLOCKY_ENGINE_DEBUG_STREAM("pos  \t" << pos.x << " ; " << pos.y);
+		BLOCKY_ENGINE_DEBUG_STREAM("gopos\t" << goPos.x << " ; " << goPos.y);
+		BLOCKY_ENGINE_DEBUG_STREAM("last \t" << collider->lastPos.x << " ; " << collider->lastPos.y);
+		BLOCKY_ENGINE_DEBUG_STREAM("dx dy\t" << dx<< " ; " << dy)
+		BLOCKY_ENGINE_DEBUG_STREAM("scale\t" << scale.x << " ; " << scale.y);
+
+		collider->lastPos = glm::vec2{pos.x, pos.y};
 
 		// auto wPos = collider->componentTransform->GetWorldPosition();
 		// auto lPos = collider->componentTransform->GetLocalPosition();

@@ -4,7 +4,8 @@
 
 #include "Component.hpp"
 
-Component::Component(GameObject& gameObject, const char* tag) :
-		gameObject{gameObject}, tag{tag}, componentTransform{std::make_unique<ComponentTransform>()} {}
+Component::Component(GameObject& gameObject, const char* tag, bool hasTransform) :
+		gameObject{gameObject}, tag{tag},
+		componentTransform(hasTransform ? std::make_unique<ComponentTransform>(gameObject, *this) : nullptr) {}
 
 Component::~Component() = default;

@@ -4,3 +4,4 @@
 )
 add_subdirectory(physics)
 add_subdirectory(renderables)
+add_subdirectory(animation)

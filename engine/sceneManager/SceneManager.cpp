@@ -1,44 +1,49 @@
 ﻿//
 // Created by larsv on 12/11/2024.
 //
+
 #include "SceneManager.hpp"
-#include <iostream>
-#include <logging/BLogger.hpp>
 #include "components/renderables/Renderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
-#include "components/physics/rigidBody/BoxRigidBody.hpp"
-#include "components/physics/collider/CircleCollider.hpp"
+#include "components/animation/AnimationController.hpp"
+#include "components/renderables/AnimationRenderable.hpp"
 
-SceneManager::SceneManager() : testScene(std::make_unique<GameObject>("root")) {
-	float x, y;
-	float w, h, r;
-	auto& objectA = testScene->AddChild("objectA");
-	auto& objectB = testScene->AddChild("objectB");
-	x = 0.f, y = 200.f;
-	w = 200.f, h = 200.f;
+SceneManager::SceneManager() :
+		testScene(std::make_unique<GameObject>("root")),
+		recalculationList() {
+	testScene->transform->SetPosition(400, 300);
+	testScene->transform->Scale(50, 50);
 
-	auto& aRed = objectA.AddComponent<RectangleRenderable>("Red", glm::vec4{255, 0, 0, 255}, true);
-	auto& aBoxCollider = objectA.AddComponent<BoxRigidBody>("BoxColliderA", true, false, w, h);
-	objectA.transform->position = glm::vec2(x, y);
-	aRed.componentTransform->position = glm::vec2{x, y};
-	aBoxCollider.componentTransform->position = glm::vec2{x, y};
-	BLOCKY_ENGINE_DEBUG(objectA.transform->position)
+	auto& leftParent = testScene->AddChild("LeftParent");
+	auto& rightParent = testScene->AddChild("RightParent");
 
-	x = 0.f, y = 200.f;
-	r = 50.f;
-	auto& bA = objectB.AddComponent<EllipseRenderable>("bA", glm::ivec4(0, 255, 0, 255));
-	auto& bB = objectB.AddComponent<CircleCollider>("CircleColliderB", true, false, r);
-	objectB.transform->position = glm::vec2(x, y);
-	bA.componentTransform->position = glm::vec2{x, y};
-	bB.componentTransform->position = glm::vec2{x, y};
-	BLOCKY_ENGINE_DEBUG(objectA.transform->position)
+	leftParent.transform->Translate(-3, 0);
+	leftParent.AddComponent<RectangleRenderable>("LeftR", glm::vec4{255, 0, 0, 255}, true);
 
-	std::cout << testScene->RemoveChild(*testScene->GetChild("A")) << std::endl;
+	rightParent.transform->Translate(3, 0);
+	rightParent.AddComponent<RectangleRenderable>("RightR", glm::vec4{0, 255, 0, 255}, true);
+
+	auto& child = leftParent.AddChild("Child");
+	auto& childChild = child.AddChild("ChildChild");
+	childChild.transform->Translate(0, -1);
+
+	child.AddComponent<RectangleRenderable>("ChildR", glm::vec4{0, 0, 255, 255});
+	childChild.AddComponent<RectangleRenderable>("ChildChildR", glm::vec4{255, 255, 255, 255});
+
+	child.Reparent(rightParent);
+	childChild.Destroy();
 }
 
-void SceneManager::Update(float delta) { testScene->Update(delta); }
+void SceneManager::Update(float delta) {
+	//Update active scene starting from the root
+	testScene->Update(delta, recalculationList);
 
-
-
+	//Go through all transforms that marked themselves to be recalculated
+	for (auto& trans : recalculationList) {
+		auto& cur = trans.get();
+		if (cur.isMarkedForRecalculation) cur.RecalculateWorldMatrix();
+	}
+	recalculationList.clear();
+}

@@ -13,7 +13,7 @@
 #include <typeindex>
 #include <optional>
 
-#include "Transform.hpp"
+#include "gameObject/GameObjectTransform.hpp"
 #include "components/Component.hpp"
 
 class GameObject {
@@ -24,20 +24,20 @@ class GameObject {
 
 		GameObject(const GameObject& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
-		GameObject(const GameObject&& other) = delete;
-		GameObject& operator=(const GameObject&& other) = delete;
+		GameObject(GameObject&& other) noexcept = delete;
+		GameObject& operator=(GameObject&& other) noexcept = delete;
 
 		//----- CYCLE
-		void Update(float delta);
+		void Update(float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList);
 
 		//----- CHILD / PARENT
 		template<typename... Args>
 		GameObject& AddChild(Args&& ... args) {
 			//Instantiate new GameObject in this children list
-			children.emplace_back(std::make_unique<GameObject>(std::forward<Args>(args)..., this));
+			_children.emplace_back(std::make_unique<GameObject>(std::forward<Args>(args)..., this));
 
 			//Return newly created child
-			return *children.back();
+			return *_children.back();
 		}
 
 		GameObject* GetChild(const std::string& t);
@@ -45,9 +45,14 @@ class GameObject {
 		bool RemoveChild(GameObject& child);
 		bool RemoveChild(const std::string& t);
 
-		inline const std::vector<std::unique_ptr<GameObject>>& GetChildren() { return children; };
+		inline const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return _children; };
+
+		void Reparent(GameObject& target);
+		void Destroy();
 
 		//----- COMPONENTS
+		using ComponentsList = std::vector<std::unique_ptr<Component>>;
+
 		template<typename T, typename... Args>
 		T& AddComponent(const char* componentTag = "Untagged", Args&& ... args) {
 			//Perform validity checks
@@ -94,20 +99,22 @@ class GameObject {
 			auto componentIt = _findComponentByTag<T>(componentTag);
 
 			//Return tagged component cast to T* if found
-			return componentIt ? (**componentIt).get() : nullptr;
+			return componentIt ? static_cast<T*>((**componentIt).get()) : nullptr;
 		}
+
+		inline const std::unordered_map<std::type_index, ComponentsList>& GetComponents() { return _components; };
 
 		const std::string tag;
 		GameObject* parent;
-		std::unique_ptr<Transform> transform;
+		std::unique_ptr<GameObjectTransform> transform;
 
 	private:
 		//----- USINGS
 		using GameObjectList = std::vector<std::unique_ptr<GameObject>>;
-		using ComponentsList = std::vector<std::unique_ptr<Component>>;
 
 		//----- CHILD / PARENT
 		bool _removeChild(GameObjectList::iterator child);
+		void _reparent(GameObject* target);
 
 		//----- COMPONENTS
 		template<typename T>
@@ -143,7 +150,9 @@ class GameObject {
 		}
 
 		std::unordered_map<std::type_index, ComponentsList> _components;
-		std::vector<std::unique_ptr<GameObject>> children;
+		std::vector<std::unique_ptr<GameObject>> _children;
+
+		bool _isMarkedForDeletion;
 };
 
 #endif //BLOCKYENGINE_GAMEOBJECT_HPP

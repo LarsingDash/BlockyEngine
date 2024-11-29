@@ -6,11 +6,13 @@
 #define BLOCKYENGINE_RENDERABLE_HPP
 
 #include "components/Component.hpp"
+#include "glm/vec4.hpp"
 
 enum RenderableType {
 	RECTANGLE,
 	ELLIPSE,
-	SPRITE
+	SPRITE,
+	ANIMATED
 };
 
 class Renderable : public Component {

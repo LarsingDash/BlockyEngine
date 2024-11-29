@@ -58,8 +58,9 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [collider, body] : _colliderToBodyMap) {
 		//todo: does gameobject udate form this?
-		collider->componentTransform->position = VecConvert(body->GetPosition());
-		collider->componentTransform->rotation = body->GetAngle();
+		auto pos = body->GetPosition();
+		collider->componentTransform->SetPosition(pos.x, pos.y);
+		collider->componentTransform->SetRotation(body->GetAngle());
 	}
 }
 
@@ -146,11 +147,11 @@ glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a) {
 
 b2Vec2 PhysicsModule::Position(const PhysicsBody& collider) {
 	//todo: add gameObject transforms
-	return VecConvert(collider.componentTransform->position);
+	return VecConvert(collider.componentTransform->GetWorldPosition());
 }
 
 float PhysicsModule::Angle(const PhysicsBody& collider) {
 	//todo: add gameObject transforms
-	return collider.componentTransform->rotation;
+	return collider.componentTransform->GetWorldRotation();
 }
 

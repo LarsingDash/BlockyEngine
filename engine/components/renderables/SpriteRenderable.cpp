@@ -6,10 +6,15 @@
 
 #include <utility>
 
-SpriteRenderable::SpriteRenderable(GameObject& gameObject, const char* tag, std::string filePath,
+SpriteRenderable::SpriteRenderable(GameObject* gameObject, const char* tag, std::string filePath,
 								   std::string spriteTag) :
 		Renderable(gameObject, tag, RenderableType::SPRITE),
 		_filePath(std::move(filePath)), _spriteTag(std::move(spriteTag)) {}
+
+Component* SpriteRenderable::clone() {
+	auto clone = new SpriteRenderable(*this);
+	return clone;
+}
 
 std::string SpriteRenderable::GetFilePath() const {
 	return _filePath;

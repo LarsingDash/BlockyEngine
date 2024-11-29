@@ -22,7 +22,7 @@ class GameObject {
 		explicit GameObject(std::string tag, GameObject* parent = nullptr);
 		~GameObject();
 
-		GameObject(const GameObject& other) = delete;
+		GameObject(const GameObject& other);
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject(GameObject&& other) noexcept = delete;
 		GameObject& operator=(GameObject&& other) noexcept = delete;
@@ -31,13 +31,18 @@ class GameObject {
 		void Update(float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList);
 
 		//----- CHILD / PARENT
+		void SetActive(bool active);
+		
 		template<typename... Args>
 		GameObject& AddChild(Args&& ... args) {
 			//Instantiate new GameObject in this children list
-			_children.emplace_back(std::make_unique<GameObject>(std::forward<Args>(args)..., this));
+			GameObject& child = *_children.emplace_back(std::make_unique<GameObject>(std::forward<Args>(args)..., this));
+			
+			//Pass active mode onto child
+			child.SetActive(_isActive);
 
 			//Return newly created child
-			return *_children.back();
+			return child;
 		}
 
 		GameObject* GetChild(const std::string& t);
@@ -61,8 +66,10 @@ class GameObject {
 
 			//Create component and call Start() on it
 			auto typeIt = _components.find(type);
-			std::unique_ptr<T> component = std::make_unique<T>(*this, componentTag, std::forward<Args>(args)...);
-			component->Start();
+			std::unique_ptr<T> component = std::make_unique<T>(this, componentTag, std::forward<Args>(args)...);
+			if (!_isActive) {
+				component->Start(); 
+			}
 
 			//Find component list, create it if there was none
 			if (typeIt == _components.end()) {
@@ -81,7 +88,9 @@ class GameObject {
 
 			if (componentIt) {
 				//Call End()
-				(*componentIt.value())->End();
+				if (!_isActive) {
+					(*componentIt.value())->End();
+				}
 
 				//Erase
 				auto& typeList = _components[typeid(T)];
@@ -152,6 +161,7 @@ class GameObject {
 		std::unordered_map<std::type_index, ComponentsList> _components;
 		std::vector<std::unique_ptr<GameObject>> _children;
 
+		bool _isActive;
 		bool _isMarkedForDeletion;
 };
 

@@ -12,8 +12,10 @@
 
 class AnimationRenderable : public SpriteRenderable {
 	public:
-		AnimationRenderable(GameObject& gameObject, const char* tag,
+		AnimationRenderable(GameObject* gameObject, const char* tag,
 							std::string filePath, std::string spriteTag, int frameWidth, int frameHeight);
+
+		Component* clone() override;
 
 		[[nodiscard]] const glm::ivec4* GetSourceRect() const;
 		[[nodiscard]] const glm::ivec4& GetFrame(int index) const;

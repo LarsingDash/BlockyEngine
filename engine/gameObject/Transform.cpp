@@ -10,7 +10,7 @@
 #include "gameObject/GameObject.hpp"
 
 Transform::Transform(GameObject& gameObject) :
-		gameObject(gameObject), _parent(nullptr),
+		gameObject(&gameObject), _parent(nullptr),
 		_position(0.f), _rotation(0.f), _scale(1.f),
 		_worldPosition(_position), _worldRotation(_rotation), _worldScale(_scale),
 		_worldMatrix(1.f), isMarkedForRecalculation(false) {
@@ -64,6 +64,8 @@ void Transform::SetScale(float x, float y) {
 
 //----- WORLD -----
 void Transform::SetParent(Transform& target) { _parent = &target; }
+
+void Transform::SetGameObject(GameObject& target) { gameObject = &target; }
 
 void Transform::_recalculateWorldMatrix() {
 	isMarkedForRecalculation = false;

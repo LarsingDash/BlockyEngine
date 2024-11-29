@@ -9,8 +9,11 @@
 
 class SpriteRenderable : public Renderable {
 	public:
-		SpriteRenderable(GameObject& gameObject, const char* tag, std::string filePath, std::string spriteTag);
+		SpriteRenderable(GameObject* gameObject, const char* tag, std::string filePath, std::string spriteTag);
 		~SpriteRenderable() override = default;
+
+		Component* clone() override;
+
 		[[nodiscard]] std::string GetFilePath() const;
 		[[nodiscard]] std::string GetSpriteTag() const;
 

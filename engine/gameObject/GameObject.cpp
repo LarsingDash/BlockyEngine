@@ -7,7 +7,7 @@
 #include "logging/BLogger.hpp"
 
 GameObject::GameObject(std::string tag, GameObject* parent) :
-		tag(std::move(tag)), parent(parent), _isMarkedForDeletion(false) {
+		tag(std::move(tag)), parent(parent), _isMarkedForDeletion(false), _isActive(true) {
 	transform = std::make_unique<GameObjectTransform>(*this);
 }
 
@@ -22,13 +22,35 @@ GameObject::~GameObject() {
 	for (auto& type : _components) {
 		for (auto& component : type.second) {
 			//Call end before deleting
-			component->End();
+			if (!_isActive) {
+				component->End();
+			}
 		}
 	}
 	_components.clear();
 
 	//Delete all child gameObjects
 	_children.clear();
+}
+
+GameObject::GameObject(const GameObject& other) :
+		tag(other.tag), parent(nullptr), transform(std::make_unique<GameObjectTransform>(*other.transform)),
+		_isActive(other._isActive), _isMarkedForDeletion(other._isMarkedForDeletion) {
+	transform->SetGameObject(*this);
+	
+	for (const auto& type : other._components) {
+		for (const auto& comp : type.second) {
+			_components[type.first].emplace_back(
+					std::unique_ptr<Component>(comp->clone())
+			)->Reparent(this);
+		}
+	}
+
+	_children.reserve(other._children.size());
+	for (const auto& child : other._children) {
+		auto& created = _children.emplace_back(std::make_unique<GameObject>(*child));
+		created->_reparent(this);
+	}
 }
 
 void GameObject::Update(    // NOLINT(*-no-recursion)
@@ -71,6 +93,31 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 	//Cascade update to child objects
 	for (auto& child : _children) {
 		child->Update(delta, recalculationList);
+	}
+}
+
+void GameObject::SetActive(bool active) {    // NOLINT(*-no-recursion)
+	_isActive = active;
+
+	//Cascade End to components
+	if (_isActive) {
+		transform->RecalculateWorldMatrix();
+
+		for (auto& type : _components) {
+			for (auto& component : type.second) {
+				component->Start();
+			}
+		}
+	} else {
+		for (auto& type : _components) {
+			for (auto& component : type.second) {
+				component->End();
+			}
+		}
+	}
+
+	for (auto& child : _children) {
+		child->SetActive(_isActive);
 	}
 }
 
@@ -157,7 +204,7 @@ void GameObject::_reparent(GameObject* target) {
 			//Rebind parent pointer on self and transform unless destroyed
 			if (target) {
 				parent = target;
-				transform->SetParent(*target->transform);
+				transform->SetParent(*(target->transform));
 			}
 		} catch (const std::exception& e) {
 			std::string err = "Exception occurred while reparenting: ";

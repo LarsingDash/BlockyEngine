@@ -4,11 +4,16 @@
 
 #include "RectangleRenderable.hpp"
 
-RectangleRenderable::RectangleRenderable(GameObject& gameObject, const char* tag,
+RectangleRenderable::RectangleRenderable(GameObject* gameObject, const char* tag,
 										 const glm::ivec4& color, bool isFilled) :
 		Renderable(gameObject, tag, RenderableType::RECTANGLE),
 		_color(color), _isFilled(isFilled) {}
 
+Component* RectangleRenderable::clone() {
+	auto clone = new RectangleRenderable(*this);
+	return clone;
+}
+		
 glm::ivec4 RectangleRenderable::GetColor() const {
 	return _color;
 }

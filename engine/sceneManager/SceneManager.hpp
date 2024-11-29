@@ -20,11 +20,14 @@ class SceneManager {
 		SceneManager(SceneManager&& other) noexcept = default;
 		SceneManager& operator=(SceneManager&& other) noexcept = default;
 
+		void AddScene(std::unique_ptr<GameObject>&& scene);
+		void SwitchScene(const std::string& tag);
 		void Update(float delta);
 
 	private:
-		std::unique_ptr<GameObject> testScene;
-		std::vector<std::reference_wrapper<Transform>> recalculationList;
+		std::vector<std::unique_ptr<GameObject>> _scenes;
+		std::unique_ptr<GameObject> _activeScene;
+		std::vector<std::reference_wrapper<Transform>> _recalculationList;
 };
 
 #endif //BLOCKYENGINE_SCENEMANAGER_HPP

@@ -3,47 +3,32 @@
 //
 
 #include "SceneManager.hpp"
-#include "components/renderables/Renderable.hpp"
-#include "components/renderables/RectangleRenderable.hpp"
-#include "components/renderables/EllipseRenderable.hpp"
-#include "components/renderables/SpriteRenderable.hpp"
-#include "components/animation/AnimationController.hpp"
-#include "components/renderables/AnimationRenderable.hpp"
 
-SceneManager::SceneManager() :
-		testScene(std::make_unique<GameObject>("root")),
-		recalculationList() {
-	testScene->transform->SetPosition(400, 300);
-	testScene->transform->Scale(50, 50);
+SceneManager::SceneManager() : _recalculationList() {}
 
-	auto& leftParent = testScene->AddChild("LeftParent");
-	auto& rightParent = testScene->AddChild("RightParent");
+void SceneManager::AddScene(std::unique_ptr<GameObject>&& scene) {
+	_scenes.emplace_back(std::move(scene));
+}
 
-	leftParent.transform->Translate(-3, 0);
-	leftParent.AddComponent<RectangleRenderable>("LeftR", glm::vec4{255, 0, 0, 255}, true);
-
-	rightParent.transform->Translate(3, 0);
-	rightParent.AddComponent<RectangleRenderable>("RightR", glm::vec4{0, 255, 0, 255}, true);
-
-	auto& child = leftParent.AddChild("Child");
-	auto& childChild = child.AddChild("ChildChild");
-	childChild.transform->Translate(0, -1);
-
-	child.AddComponent<RectangleRenderable>("ChildR", glm::vec4{0, 0, 255, 255});
-	childChild.AddComponent<RectangleRenderable>("ChildChildR", glm::vec4{255, 255, 255, 255});
-
-	child.Reparent(rightParent);
-	childChild.Destroy();
+void SceneManager::SwitchScene(const std::string& tag) {
+	auto it = std::find_if(_scenes.begin(), _scenes.end(), [&tag](const std::unique_ptr<GameObject>& scene) {
+		return scene->tag == tag;
+	});
+	
+	if (it != _scenes.end()) {
+		_activeScene = std::make_unique<GameObject>(**it);
+		_activeScene->SetActive(true);
+	}
 }
 
 void SceneManager::Update(float delta) {
 	//Update active scene starting from the root
-	testScene->Update(delta, recalculationList);
+	if (_activeScene) _activeScene->Update(delta, _recalculationList);
 
 	//Go through all transforms that marked themselves to be recalculated
-	for (auto& trans : recalculationList) {
+	for (auto& trans : _recalculationList) {
 		auto& cur = trans.get();
 		if (cur.isMarkedForRecalculation) cur.RecalculateWorldMatrix();
 	}
-	recalculationList.clear();
+	_recalculationList.clear();
 }

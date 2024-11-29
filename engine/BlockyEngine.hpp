@@ -19,6 +19,8 @@ class BlockyEngine {
 		BlockyEngine(BlockyEngine&& other) noexcept = delete;
 		BlockyEngine& operator=(BlockyEngine&& other) noexcept = delete;
 
+		[[nodiscard]] SceneManager& GetSceneManager() const;
+
 		void Run();
 
 		//Game

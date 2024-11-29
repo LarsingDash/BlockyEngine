@@ -4,8 +4,13 @@
 
 #include "EllipseRenderable.hpp"
 
-EllipseRenderable::EllipseRenderable(GameObject& gameObject, const char* tag, const glm::ivec4& color, bool isFilled)
+EllipseRenderable::EllipseRenderable(GameObject* gameObject, const char* tag, const glm::ivec4& color, bool isFilled)
 		: Renderable(gameObject, tag, RenderableType::ELLIPSE), _color(color), _isFilled(isFilled) {}
+
+Component* EllipseRenderable::clone() {
+	auto clone = new EllipseRenderable(*this);
+	return clone;
+}
 
 glm::ivec4 EllipseRenderable::GetColor() const {
 	return _color;

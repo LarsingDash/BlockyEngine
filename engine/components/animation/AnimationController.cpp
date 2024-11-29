@@ -3,8 +3,13 @@
 //
 #include "AnimationController.hpp"
 
-AnimationController::AnimationController(GameObject& gameObject, const char* tag, AnimationRenderable& renderable)
+AnimationController::AnimationController(GameObject* gameObject, const char* tag, AnimationRenderable& renderable)
 		: Component(gameObject, tag), _renderable(renderable) {}
+
+Component* AnimationController::clone() {
+	auto clone = new AnimationController(*this);
+	return clone;
+}
 
 void AnimationController::Start() {}
 

@@ -7,7 +7,7 @@
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
 
-Renderable::Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType) :
+Renderable::Renderable(GameObject* gameObject, const char* tag, RenderableType renderableType) :
 		Component(gameObject, tag), _renderableType(renderableType) {}
 
 Renderable::~Renderable() = default;
@@ -27,5 +27,3 @@ void Renderable::End() {
 RenderableType Renderable::GetRenderableType() {
 	return _renderableType;
 }
-
-

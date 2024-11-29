@@ -22,7 +22,9 @@ class AnimationController : public Component {
 			float frameDuration;
 		};
 
-		AnimationController(GameObject& gameObject, const char* tag, AnimationRenderable& renderable);
+		AnimationController(GameObject* gameObject, const char* tag, AnimationRenderable& renderable);
+
+		Component* clone() override;
 
 		void Start() override;
 		void Update(float delta) override;

@@ -11,6 +11,8 @@ bool BlockyEngine::isRunning{false};
 BlockyEngine::BlockyEngine() : moduleManager{ModuleManager::getInstance()},
 							   sceneManager{std::make_unique<SceneManager>()} {}
 
+SceneManager& BlockyEngine::GetSceneManager() const {return *sceneManager;}
+
 void BlockyEngine::Run() {
 	//Prepare variables for tracking FPS
 	int frames = 0;

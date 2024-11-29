@@ -1,7 +1,7 @@
 #include "AnimationRenderable.hpp"
 #include "stb_image.h"
 
-AnimationRenderable::AnimationRenderable(GameObject& gameObject, const char* tag,
+AnimationRenderable::AnimationRenderable(GameObject* gameObject, const char* tag,
 										 std::string filePath, std::string spriteTag, int frameWidth, int frameHeight)
 		: SpriteRenderable(gameObject, tag, std::move(filePath), std::move(spriteTag)) {
 	_renderableType = RenderableType::ANIMATED;
@@ -13,6 +13,11 @@ AnimationRenderable::AnimationRenderable(GameObject& gameObject, const char* tag
 		throw std::invalid_argument("File path for animation cannot be empty.");
 	}
 	_loadFrames();
+}
+
+Component* AnimationRenderable::clone() {
+	auto clone = new AnimationRenderable(*this);
+	return clone;
 }
 
 //Gets the image, checks pixels parameters and divides the spritesheet into _frames adding them to a vector

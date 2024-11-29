@@ -10,9 +10,12 @@
 
 class RectangleRenderable : public Renderable {
 	public:
-		RectangleRenderable(GameObject& gameObject, const char* tag,
+		RectangleRenderable(GameObject* gameObject, const char* tag,
 							const glm::ivec4& color, bool isFilled = false);
 		~RectangleRenderable() override = default;
+
+		Component* clone() override;
+		
 		[[nodiscard]] glm::ivec4 GetColor() const;
 		[[nodiscard]] bool IsFilled() const;
 

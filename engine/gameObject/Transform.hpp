@@ -15,7 +15,7 @@ class Transform {
 		explicit Transform(GameObject& gameObject);
 		virtual ~Transform() = default;
 
-		Transform(const Transform& other) = delete;
+		Transform(const Transform& other) = default;
 		Transform& operator=(const Transform& other) = delete;
 
 		Transform(Transform&& other) noexcept = delete;
@@ -39,10 +39,11 @@ class Transform {
 		[[maybe_unused]] void SetRotation(float rotation);
 		[[maybe_unused]] void SetScale(float x, float y);
 
-		GameObject& gameObject;
+		GameObject* gameObject;
 
 		//WORLD
 		void SetParent(Transform& target);
+		void SetGameObject(GameObject& target);
 		virtual void RecalculateWorldMatrix() = 0;
 		bool isMarkedForRecalculation;
 

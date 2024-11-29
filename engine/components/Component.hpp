@@ -14,20 +14,23 @@ class GameObject;
 
 class Component {
 	public:
-		Component(GameObject& gameObject, const char* tag, bool hasTransform = true);
+		Component(GameObject* gameObject, const char* tag, bool hasTransform = true);
 		virtual ~Component();
 
-		Component(const Component& other) = delete;
+		Component(const Component& other);
 		Component& operator=(const Component& other) = delete;
 		Component(Component&& other) noexcept = delete;
 		Component& operator=(Component&& other) noexcept = delete;
+		
+		virtual Component* clone() = 0;
+		void Reparent(GameObject* parent);
 
 		virtual void Start() = 0;
 		virtual void Update(float delta) = 0;
 		virtual void End() = 0;
 
 		std::string tag;
-		GameObject& gameObject;
+		GameObject* gameObject;
 		std::unique_ptr<ComponentTransform> componentTransform;
 };
 

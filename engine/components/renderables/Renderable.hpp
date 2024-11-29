@@ -15,11 +15,14 @@ enum RenderableType {
 	ANIMATED
 };
 
+#include <iostream>
 class Renderable : public Component {
 	public:
-		Renderable(GameObject& gameObject, const char* tag, RenderableType renderableType);
+		Renderable(GameObject* gameObject, const char* tag, RenderableType renderableType);
 		~Renderable() override;
 
+		Renderable(const Renderable& other) = default;
+		
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;

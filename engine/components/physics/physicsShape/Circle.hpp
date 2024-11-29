@@ -7,10 +7,9 @@
 
 #include "PhysicsShape.hpp"
 
-class Circle : public PhysicsShape
-{
+class Circle : public PhysicsShape {
 public:
-    Circle(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius);
+    Circle(bool isTrigger, bool isStatic, float radius);
     ~Circle() override = default;
 
     PhysicsType GetType() override;

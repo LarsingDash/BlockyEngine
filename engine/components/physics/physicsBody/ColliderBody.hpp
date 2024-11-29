@@ -13,22 +13,27 @@ public:
                           std::unique_ptr<PhysicsShape> physicsBody) : PhysicsBody(
         gameObject, tag, std::move(physicsBody)) {}
 
-    [[nodiscard]] std::string Operation() const override {
-        return "RigidBody operation: \n" + this->PhysicsBody::Operation();
-    }
+    //todo:
+    void Start() override {};
+    void Update(float delta) override {};
+    void End() override {};
+    PhysicsType GetType() override = 0;
 };
 
 class BoxCollider : public ColliderBody {
 public:
     BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height,
                 float width): ColliderBody(gameObject, tag,
-                                           std::make_unique<Box>(gameObject, tag, isTrigger, isStatic, height,
-                                                                 width)) {}
+                                           std::make_unique<Box>(isTrigger, isStatic, height, width)) {}
+
+    PhysicsType GetType() override { return PhysicsType::BOX; };
 };
 
 class CircleCollider : public ColliderBody {
 public:
     CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius):
-        ColliderBody(gameObject, tag, std::make_unique<Circle>(gameObject, tag, isTrigger, isStatic, radius)) {}
+        ColliderBody(gameObject, tag, std::make_unique<Circle>(isTrigger, isStatic, radius)) {}
+
+    PhysicsType GetType() override { return PhysicsType::CIRCLE; };
 };
 #endif //COLLIDERBODY_HPP

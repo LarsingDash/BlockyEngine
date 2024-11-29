@@ -5,22 +5,20 @@
 #define COLLIDER_HPP
 #include <components/Component.hpp>
 
-enum PhysicsType
-{
+enum PhysicsType {
 	BOX,
 	CIRCLE
 };
 
-class PhysicsShape : public Component //todo:
+class PhysicsShape //todo:
 {
 public:
-	PhysicsShape(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic);
-	~PhysicsShape() override;
-	void Start() override;
-	void Update(float delta) override;
-	void End() override;
-	void CollisionCallback(PhysicsShape& other);
+	PhysicsShape(bool isTrigger, bool isStatic);
+	virtual ~PhysicsShape();
+
+	void CollisionCallback(PhysicsShape& other); //todo:
 	virtual PhysicsType GetType() = 0;
+
 	bool isTrigger{false};
 	bool isStatic{false};
 };

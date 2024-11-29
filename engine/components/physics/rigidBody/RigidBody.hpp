@@ -5,19 +5,17 @@
 #define RIGIDBODY_HPP
 #include "components/physics/physicsBody/PhysicsBody.hpp"
 
-//todo:
-class RigidBody : public PhysicsBody
-{
+class RigidBody : public PhysicsBody {
 public:
     explicit RigidBody(GameObject& gameObject, const char* tag,
-                       std::unique_ptr<PhysicsShape> physicsBody) : PhysicsBody(gameObject, tag, std::move(physicsBody))
-    {
-    }
+                       std::unique_ptr<PhysicsShape> physicsBody) : PhysicsBody(
+        gameObject, tag, std::move(physicsBody)) {}
 
-    [[nodiscard]] std::string Operation() const override
-    {
-        return "RigidBody operation: \n" + this->PhysicsBody::Operation();
-    }
+    //todo:
+    void Start() override {};
+    void Update(float delta) override {};
+    void End() override {};
+    PhysicsType GetType() override = 0;
 };
 
 #endif //RIGIDBODY_HPP

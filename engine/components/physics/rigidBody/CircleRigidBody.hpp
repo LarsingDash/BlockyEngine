@@ -12,7 +12,9 @@
 class CircleRigidBody : public RigidBody {
 public:
     CircleRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius):
-        RigidBody(gameObject, tag, std::make_unique<Circle>(gameObject, tag, isTrigger, isStatic, radius)) {}
+        RigidBody(gameObject, tag, std::make_unique<Circle>(isTrigger, isStatic, radius)) {}
+
+    PhysicsType GetType() override { return PhysicsType::CIRCLE; };
 };
 
 #endif //CIRCLERIGIDBODY_HPP

@@ -6,10 +6,9 @@
 #define RECTANGLECOLLIDER_HPP
 #include "PhysicsShape.hpp"
 
-class Box : public PhysicsShape
-{
+class Box : public PhysicsShape {
 public:
-	Box(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width);
+	Box(bool isTrigger, bool isStatic, float height, float width);
 	~Box() override = default;
 
 	PhysicsType GetType() override;

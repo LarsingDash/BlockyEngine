@@ -4,12 +4,9 @@
 #include "Circle.hpp"
 #include <gameObject/GameObject.hpp>
 
-Circle::Circle(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius)
-    : PhysicsShape(gameObject, tag, isTrigger, isStatic), _radius(radius)
-{
-}
+Circle::Circle(bool isTrigger, bool isStatic, float radius)
+    : PhysicsShape(isTrigger, isStatic), _radius(radius) {}
 
-PhysicsType Circle::GetType()
-{
+PhysicsType Circle::GetType() {
     return PhysicsType::CIRCLE;
 }

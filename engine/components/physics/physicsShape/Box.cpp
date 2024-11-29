@@ -4,13 +4,9 @@
 #include "Box.hpp"
 #include <gameObject/GameObject.hpp>
 
-Box::Box(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height,
-         float width)
-    : PhysicsShape(gameObject, tag, isTrigger, isStatic), _width(width), _height(height)
-{
-}
+Box::Box(bool isTrigger, bool isStatic, float height, float width)
+    : PhysicsShape(isTrigger, isStatic), _width(width), _height(height) {}
 
-PhysicsType Box::GetType()
-{
+PhysicsType Box::GetType() {
     return PhysicsType::BOX;
 }

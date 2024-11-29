@@ -77,23 +77,6 @@ void PhysicsModule::RemoveCollider(PhysicsBody& collider) {
 	}
 }
 
-//
-// void PhysicsModule::AddRigidBody(RigidBody& rigidBody)
-// {
-// 	b2Body* body = CreateBody(*_box2dWorldObject, rigidBody);
-//
-// 	_colliderToBodyMap[&rigidBody] = body;
-// }
-//
-// void PhysicsModule::RemoveRigidBody(RigidBody& rigidBody)
-// {
-// 	auto it = _colliderToBodyMap.find(&rigidBody);
-// 	if (it != _colliderToBodyMap.end())
-// 	{
-// 		_box2dWorldObject->DestroyBody(it->second);
-// 		_colliderToBodyMap.erase(it);
-// 	}
-// }
 std::unique_ptr<b2Shape> AddBoxShape(const Box& collider) {
 	// Define another box shape for the first dynamic body.
 	auto dynamicBox = std::make_unique<b2PolygonShape>();
@@ -108,81 +91,34 @@ std::unique_ptr<b2Shape> AddCircleShape(const Circle& collider) {
 	return dynamicCircle;
 }
 
-// void PhysicsModule::AddFixture(RigidBody& rigidBody, b2Body* body)
-// {
-// 	b2FixtureDef fixtureDef;
-//
-// 	// todo: if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
-// 	switch (rigidBody.GetType())
-// 	{
-// 	case BOX:
-// 		fixtureDef.shape = AddBoxShape(reinterpret_cast<Box&>(rigidBody)).release();
-// 		break;
-// 	case CIRCLE:
-// 		fixtureDef.shape = AddCircleShape(reinterpret_cast<Circle&>(rigidBody)).release();
-// 		break;
-// 	}
-//
-// 	// set all object to static, and later overwrite the mass if object is not static
-// 	constexpr float staticObject = 0.0f;
-// 	fixtureDef.density = staticObject;
-//
-// 	body->CreateFixture(&fixtureDef);
-//
-// 	// if (!rigidBody.isStatic)
-// 	{
-// 		// to have all non-static object apply the same force on another, set all bodies to mass 1
-// 		b2MassData mass = {1.f};
-// 		body->SetMassData(&mass);
-// 	}
-//
-// 	delete fixtureDef.shape;
-// }
 void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 	b2FixtureDef fixtureDef;
 
 	// todo: if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
-	// switch (collider.GetType()) { //todo: add
-	// case BOX:
-	// 	fixtureDef.shape = AddBoxShape(reinterpret_cast<Box&>(collider)).release();
-	// 	break;
-	// case CIRCLE:
-	// 	fixtureDef.shape = AddCircleShape(reinterpret_cast<Circle&>(collider)).release();
-	// 	break;
-	// }
-	//
-	// // set all object to static, and later overwrite the mass if object is not static
-	// constexpr float staticObject = 0.0f;
-	// fixtureDef.density = staticObject;
-	//
-	// body->CreateFixture(&fixtureDef);
-	//
-	// if (!collider.isStatic) {
-	// 	// to have all non-static object apply the same force on another, set all bodies to mass 1
-	// 	b2MassData mass = {1.f};
-	// 	body->SetMassData(&mass);
-	// }
+	switch (collider.GetType()) {
+	case BOX:
+		fixtureDef.shape = AddBoxShape(reinterpret_cast<Box&>(collider)).release();
+		break;
+	case CIRCLE:
+		fixtureDef.shape = AddCircleShape(reinterpret_cast<Circle&>(collider)).release();
+		break;
+	}
+
+	// set all object to static, and later overwrite the mass if object is not static
+	constexpr float staticObject = 0.0f;
+	fixtureDef.density = staticObject;
+
+	body->CreateFixture(&fixtureDef);
+
+	if (!collider.isStatic) {
+		// to have all non-static object apply the same force on another, set all bodies to mass 1
+		b2MassData mass = {1.f};
+		body->SetMassData(&mass);
+	}
 
 	delete fixtureDef.shape;
 }
 
-// b2Body* PhysicsModule::CreateBody(b2World& world, RigidBody& rigidBody)
-// {
-// 	auto [x,y] = Position(rigidBody);
-// 	auto angle = Angle(rigidBody);
-//
-// 	b2BodyDef bodyDef;
-// 	bodyDef.type = b2_dynamicBody;
-// 	bodyDef.position.Set(x, y);
-// 	bodyDef.angle = angle;
-// 	b2Body* body = world.CreateBody(&bodyDef);
-//
-// 	AddFixture(rigidBody, body);
-//
-// 	BLOCKY_ENGINE_DEBUG_STREAM("Created RigidBody: x: " << x << ", y: " << y << ", angle: " << angle);
-//
-// 	return body;
-// }
 b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& collider) {
 	auto [x,y] = Position(collider);
 	auto angle = Angle(collider);

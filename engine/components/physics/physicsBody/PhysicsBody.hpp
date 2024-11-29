@@ -6,9 +6,7 @@
 #include <memory>
 #include "components/physics/physicsShape/PhysicsShape.hpp"
 
-//todo:
-class PhysicsBody : public Component //todo:
-{
+class PhysicsBody : public Component {
     /**
     * @var physicsBody
     */
@@ -20,23 +18,12 @@ public:
         Component(gameObject, tag), _physicsShape(std::move(physicsBody)) {}
 
     ~PhysicsBody() override = default;
-    [[nodiscard]] virtual std::string Operation() const =0;
 
-    PhysicsBody(GameObject& gameObject, const char* tag, PhysicsBody&& other) noexcept : Component(gameObject, tag),
-        _physicsShape(std::move(other._physicsShape))
-    //todo: needed
-    {}
-
-    //todo:
     void Start() override = 0;
     void Update(float delta) override = 0;
     void End() override = 0;
-
-    PhysicsBody& operator=(PhysicsBody&& other) noexcept
-    //todo: needed
-    {
-        _physicsShape = std::move(other._physicsShape);
-        return *this;
-    }
+    virtual PhysicsType GetType() = 0;
+    //todo:remove? //todo: use get and set, for override functionality
+    bool isStatic{false};
 };
 #endif //PHYSICSBODY_HPP

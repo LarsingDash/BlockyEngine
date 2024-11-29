@@ -13,9 +13,9 @@ class BoxRigidBody : public RigidBody {
 public:
     BoxRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height,
                  float width): RigidBody(gameObject, tag,
-                                         std::make_unique<Box>(gameObject, tag, isTrigger, isStatic, height, width))
-    //todo, box and gameObject, tag, 2x meegegeven
-    {}
+                                         std::make_unique<Box>(isTrigger, isStatic, height, width)) {}
+
+    PhysicsType GetType() override { return PhysicsType::BOX; };
 };
 
 #endif //BOXRIGIDBODY_HPP

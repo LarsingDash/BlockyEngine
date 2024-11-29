@@ -17,6 +17,7 @@ struct b2BodyDef;
 class b2Body;
 class b2World;
 
+//todo: add rigidBody
 class PhysicsModule : public ModuleWrapper {
 public:
 	PhysicsModule();
@@ -32,9 +33,7 @@ private:
 	void WritingBox2DWorldToOutside();
 
 	static b2Body* CreateBody(b2World& world, PhysicsBody& collider);
-	// void AddFixture(RigidBody& rigidBody, b2Body* body);
 	static void AddFixture(PhysicsBody& collider, b2Body* body);
-	// b2Body* CreateBody(b2World& world, RigidBody& rigidBody);
 
 	static b2Vec2 VecConvert(const glm::vec2& a);
 	static glm::vec2 VecConvert(const b2Vec2& a);

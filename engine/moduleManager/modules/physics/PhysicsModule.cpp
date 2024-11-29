@@ -59,19 +59,34 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [collider, body] : _colliderToBodyMap) {
 		//todo: does gameobject udate form this?
 		auto pos = body->GetPosition();
-		collider->componentTransform->SetPosition(pos.x, pos.y);
-		collider->componentTransform->SetRotation(body->GetAngle());
+		float dx = pos.x - collider->lastPos.x;
+		float dy = pos.y - collider->lastPos.y;
+
+		//todo: for first setup after init all is 0 and -> 400
+		if (abs(dx) <= 100 && abs(dy) <= 100) {
+			const auto scale = collider->gameObject.transform->GetWorldScale();
+			collider->gameObject.transform->Translate(dx / scale.x, dy / scale.y);
+			collider->componentTransform->SetRotation(body->GetAngle()); //todo: angle
+		}
+
+		collider->lastPos = glm::vec2{pos.x, pos.y};
 		// collider->gameObject.transform->SetPosition(pos.x, pos.y);
 		// collider->gameObject.transform->SetRotation(body->GetAngle());
 
-		auto wPos = collider->componentTransform->GetWorldPosition();
-		auto lPos = collider->componentTransform->GetLocalPosition();
-		BLOCKY_ENGINE_DEBUG("GamePosition")
-		BLOCKY_ENGINE_DEBUG_STREAM(round(pos.x) << ";" << round(pos.y));
-		BLOCKY_ENGINE_DEBUG_STREAM(body->GetAngle())
-		BLOCKY_ENGINE_DEBUG("GetWorldPosition")
-		BLOCKY_ENGINE_DEBUG_STREAM(round(wPos.x) << ";" << round(wPos.y))
-		BLOCKY_ENGINE_DEBUG_STREAM(round(lPos.x) << ";"<< round(lPos.y))
+		BLOCKY_ENGINE_DEBUG(collider->gameObject.tag);
+		BLOCKY_ENGINE_DEBUG_STREAM('\t' << pos.x << " ; " << pos.y);
+		auto goPos = collider->gameObject.transform->GetWorldPosition();
+		BLOCKY_ENGINE_DEBUG_STREAM('\t' << goPos.x << " ; " << goPos.y);
+		BLOCKY_ENGINE_DEBUG_STREAM('\t' << dx<< " ; " << dy);
+
+		// auto wPos = collider->componentTransform->GetWorldPosition();
+		// auto lPos = collider->componentTransform->GetLocalPosition();
+		// BLOCKY_ENGINE_DEBUG("GamePosition")
+		// BLOCKY_ENGINE_DEBUG_STREAM(round(pos.x) << ";" << round(pos.y));
+		// BLOCKY_ENGINE_DEBUG_STREAM(body->GetAngle())
+		// BLOCKY_ENGINE_DEBUG("GetWorldPosition")
+		// BLOCKY_ENGINE_DEBUG_STREAM(round(wPos.x) << ";" << round(wPos.y))
+		// BLOCKY_ENGINE_DEBUG_STREAM(round(lPos.x) << ";"<< round(lPos.y))
 	}
 }
 
@@ -96,7 +111,7 @@ std::unique_ptr<b2Shape> AddBoxShape(const Box& collider) {
 	// Blocky Engine uses width and height, Box2D uses x&y height&width above,below&left,right of origin. so: /2
 	dynamicBox->SetAsBox(collider.GetWidth() / 2, collider.GetHeight() / 2);
 
-	BLOCKY_ENGINE_DEBUG_STREAM("AddBoxShape: "<<collider.GetWidth() << ";" << collider.GetHeight());
+	// BLOCKY_ENGINE_DEBUG_STREAM("AddBoxShape: "<<collider.GetWidth() << ";" << collider.GetHeight());
 	return dynamicBox;
 }
 
@@ -150,7 +165,7 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& collider) {
 
 	AddFixture(collider, body);
 
-	BLOCKY_ENGINE_DEBUG_STREAM("CreateBody: x: " << x << ", y: " << y << ", angle: " << angle);
+	// BLOCKY_ENGINE_DEBUG_STREAM("CreateBody: x: " << x << ", y: " << y << ", angle: " << angle);
 
 	return body;
 }

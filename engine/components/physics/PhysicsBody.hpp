@@ -4,6 +4,7 @@
 #ifndef PHYSICSBODY_HPP
 #define PHYSICSBODY_HPP
 #include <memory>
+#include <gameObject/GameObject.hpp>
 
 #include "components/Component.hpp"
 #include "components/physics/shape/PhysicsShape.hpp"
@@ -21,5 +22,6 @@ public:
     virtual PhysicsType GetType();
 
     std::unique_ptr<PhysicsShape> _physicsShape;
+    glm::vec2 lastPos;
 };
 #endif //PHYSICSBODY_HPP

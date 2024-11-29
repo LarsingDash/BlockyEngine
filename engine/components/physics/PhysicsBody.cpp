@@ -11,7 +11,9 @@ void PhysicsBody::Start() {
     ModuleManager::getInstance().getModule<PhysicsModule>().AddCollider(*this);
 }
 
-void PhysicsBody::Update(float delta) {};
+void PhysicsBody::Update(float delta) {
+    lastPos = gameObject.transform->GetWorldPosition();
+};
 
 void PhysicsBody::End() {
     ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);

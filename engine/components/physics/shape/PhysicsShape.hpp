@@ -4,6 +4,8 @@
 #ifndef COLLIDER_HPP
 #define COLLIDER_HPP
 
+#include <glm/vec2.hpp>
+
 enum PhysicsType {
 	BOX,
 	CIRCLE

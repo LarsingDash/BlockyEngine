@@ -8,23 +8,19 @@
 #include <iomanip>
 #include <iostream>
 
-BLogger::BLogger(const std::string& filename)
-{
-	_logFile.open(filename, std::ios::app); // Opens file in append mode
-	if (!_logFile.is_open())
-	{
+BLogger::BLogger(const std::string& filename) {
+	_logFile.open(filename, std::ios::out); // Opens file in out mode
+	if (!_logFile.is_open()) {
 		std::cerr << "Error opening log file." << std::endl;
 	}
-	else
-	{
+	else {
 		BLOCKY_ENGINE_INFO("Logging started.")
 	}
 }
 
 BLogger::~BLogger() { _logFile.close(); }
 
-void BLogger::Log(const LogLevel level, const std::string& funcName, const std::string& message)
-{
+void BLogger::Log(const LogLevel level, const std::string& funcName, const std::string& message) {
 	auto logMessage = _makeTimeStamp();
 
 	logMessage << "   "
@@ -35,61 +31,49 @@ void BLogger::Log(const LogLevel level, const std::string& funcName, const std::
 	_writeLog(logMessage);
 }
 
-void BLogger::Log(LogLevel level, const std::string& funcName, const glm::vec2& message)
-{
+void BLogger::Log(LogLevel level, const std::string& funcName, const glm::vec2& message) {
 	Log(level, funcName, "(" + std::to_string(message.x) + ", " + std::to_string(message.y) + ")");
 }
 
-std::string BLogger::_levelToString(LogLevel level)
-{
-	switch (level)
-	{
-	case DEBUG:
-		return "DEBUG";
-	case INFO:
-		return "INFO ";
-	case WARN:
-		return "WARN ";
-	case ERROR:
-		return "ERROR";
-	default:
-		return "UNKNOWN";
+std::string BLogger::_levelToString(LogLevel level) {
+	switch (level) {
+		case DEBUG:
+			return "DEBUG";
+		case INFO:
+			return "INFO ";
+		case WARN:
+			return "WARN ";
+		case ERROR:
+			return "ERROR";
+		default:
+			return "UNKNOWN";
 	}
 }
 
-std::string BLogger::_funcSignToString(std::string funcName)
-{
-	if constexpr (REMOVE_ARGS || REMOVE_FUNCTION_NAME_FROM_CLASSES || REMOVE_RETURN_TYPE)
-	{
+std::string BLogger::_funcSignToString(std::string funcName) {
+	if constexpr (REMOVE_ARGS || REMOVE_FUNCTION_NAME_FROM_CLASSES || REMOVE_RETURN_TYPE) {
 		size_t pos1, pos2;
 
-		if constexpr (REMOVE_ARGS)
-		{
+		if constexpr (REMOVE_ARGS) {
 			pos1 = funcName.rfind('(');
-			if (pos1 != std::string::npos)
-			{
+			if (pos1 != std::string::npos) {
 				funcName = funcName.substr(0, pos1);
 			}
 		}
 
-		if constexpr (REMOVE_FUNCTION_NAME_FROM_CLASSES)
-		{
-			if constexpr ((REMOVE_ARGS))
-			{
+		if constexpr (REMOVE_FUNCTION_NAME_FROM_CLASSES) {
+			if constexpr ((REMOVE_ARGS)) {
 				pos1 = funcName.rfind("::");
 
-				if (pos1 != std::string::npos)
-				{
+				if (pos1 != std::string::npos) {
 					funcName = funcName.substr(0, pos1);
 				}
 			}
-			else
-			{
+			else {
 				// temp remove args
 				std::string tempFuncName;
 				pos2 = funcName.rfind('(');
-				if (pos2 != std::string::npos)
-				{
+				if (pos2 != std::string::npos) {
 					tempFuncName = funcName.substr(0, pos2);
 				}
 
@@ -97,50 +81,42 @@ std::string BLogger::_funcSignToString(std::string funcName)
 				pos1 = tempFuncName.rfind("::");
 
 				// remove funtion beteween class and args
-				if (pos1 != std::string::npos && pos2 != std::string::npos)
-				{
+				if (pos1 != std::string::npos && pos2 != std::string::npos) {
 					funcName = funcName.substr(0, pos1) + funcName.substr(pos2, funcName.length());
 				}
 			}
 		}
 
-		if constexpr (REMOVE_RETURN_TYPE)
-		{
-			if constexpr (!(REMOVE_ARGS))
-			{
+		if constexpr (REMOVE_RETURN_TYPE) {
+			if constexpr (!(REMOVE_ARGS)) {
 				// temp remove args
 				std::string tempFuncName;
 				pos1 = funcName.rfind('(');
-				if (pos1 != std::string::npos)
-				{
+				if (pos1 != std::string::npos) {
 					tempFuncName = funcName.substr(0, pos1);
 				}
 
 				// after temp remove args remove class from funcName
 				pos1 = tempFuncName.rfind(' ');
 			}
-			else
-			{
+			else {
 				pos1 = funcName.rfind(' ');
 			}
-			if (pos1 != std::string::npos)
-			{
+			if (pos1 != std::string::npos) {
 				funcName = funcName.substr(pos1 + 1);
 			}
 		}
 	}
 
 	// try to align all function names, without shorting function name
-	if (funcName.size() < MAX_FUNCTION_NAME_LENGTH)
-	{
+	if (funcName.size() < MAX_FUNCTION_NAME_LENGTH) {
 		funcName.resize(MAX_FUNCTION_NAME_LENGTH, ' ');
 	}
 	return funcName;
 }
 
 // Format the time string, including milliseconds
-std::stringstream BLogger::_makeTimeStamp()
-{
+std::stringstream BLogger::_makeTimeStamp() {
 	auto now = std::chrono::system_clock::now();
 	auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
 
@@ -159,18 +135,14 @@ std::stringstream BLogger::_makeTimeStamp()
 	return ss;
 }
 
-void BLogger::_writeLog(const std::stringstream& logMessage)
-{
-	if (LOG_TO_CONSOLE)
-	{
+void BLogger::_writeLog(const std::stringstream& logMessage) {
+	if (LOG_TO_CONSOLE) {
 		std::cout << logMessage.str();
 	}
 
-	if (LOG_TO_FILE)
-	{
+	if (LOG_TO_FILE) {
 		// Output to log file
-		if (_logFile.is_open())
-		{
+		if (_logFile.is_open()) {
 			_logFile << logMessage.str();
 			_logFile.flush(); // Ensure immediate write to file
 		}

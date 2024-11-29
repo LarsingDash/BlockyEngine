@@ -3,8 +3,9 @@
 //
 #include "PhysicsShape.hpp"
 #include <logging/BLogger.hpp>
-#include <moduleManager/ModuleManager.hpp>
-#include <moduleManager/modules/physics/PhysicsModule.hpp>
+// todo:
+// #include <moduleManager/ModuleManager.hpp>
+// #include <moduleManager/modules/physics/PhysicsModule.hpp>
 
 PhysicsShape::PhysicsShape(bool isTrigger, bool isStatic) :
 	isTrigger(isTrigger), isStatic(isStatic) {}

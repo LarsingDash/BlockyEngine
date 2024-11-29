@@ -2,8 +2,8 @@
 // Created by hmkam on 20/11/2024.
 //
 
-#ifndef CIRCLECOLLIDER_HPP
-#define CIRCLECOLLIDER_HPP
+#ifndef CIRCLE_HPP
+#define CIRCLE_HPP
 
 #include "PhysicsShape.hpp"
 
@@ -20,5 +20,5 @@ private:
     float _radius;
 };
 
-#endif //CIRCLECOLLIDER_HPP
+#endif //CIRCLE_HPP
 

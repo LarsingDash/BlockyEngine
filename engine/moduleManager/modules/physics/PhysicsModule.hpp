@@ -10,7 +10,7 @@
 #include <box2d/b2_math.h>
 #include <Box2D/b2_world.h>
 #include <moduleManager/ModuleWrapper.hpp>
-#include "components/physics/physicsBody/PhysicsBody.hpp"
+#include "components/physics/PhysicsBody.hpp"
 #include "MyContactListener.hpp"
 
 struct b2BodyDef;

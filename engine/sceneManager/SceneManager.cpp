@@ -3,15 +3,13 @@
 //
 #include "SceneManager.hpp"
 #include <iostream>
-#include <components/physics/physicsShape/Box.hpp>
-#include <components/physics/physicsShape/Circle.hpp>
 #include <logging/BLogger.hpp>
 #include "components/renderables/Renderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/physics/rigidBody/BoxRigidBody.hpp"
-#include "components/physics/physicsBody/ColliderBody.hpp"
+#include "components/physics/collider/CircleCollider.hpp"
 
 SceneManager::SceneManager() : testScene(std::make_unique<GameObject>("root")) {
 	float x, y;

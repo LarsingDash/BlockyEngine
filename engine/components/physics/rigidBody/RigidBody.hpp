@@ -3,7 +3,7 @@
 //
 #ifndef RIGIDBODY_HPP
 #define RIGIDBODY_HPP
-#include "components/physics/physicsBody/PhysicsBody.hpp"
+#include "components/physics/PhysicsBody.hpp"
 
 class RigidBody : public PhysicsBody {
 public:
@@ -15,7 +15,6 @@ public:
     void Start() override {};
     void Update(float delta) override {};
     void End() override {};
-    PhysicsType GetType() override = 0;
 };
 
 #endif //RIGIDBODY_HPP

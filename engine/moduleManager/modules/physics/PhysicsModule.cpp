@@ -1,7 +1,7 @@
 #include "PhysicsModule.hpp"
 #include <Box2D/Box2D.h>
-#include <components/physics/physicsShape/Box.hpp>
-#include <components/physics/physicsShape/Circle.hpp>
+#include <components/physics/shape/Box.hpp>
+#include <components/physics/shape/Circle.hpp>
 #include <components/renderables/EllipseRenderable.hpp>
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
@@ -110,7 +110,7 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 
 	body->CreateFixture(&fixtureDef);
 
-	if (!collider.isStatic) {
+	if (!collider._physicsShape->isStatic) {
 		// to have all non-static object apply the same force on another, set all bodies to mass 1
 		b2MassData mass = {1.f};
 		body->SetMassData(&mass);

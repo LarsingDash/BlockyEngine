@@ -3,3 +3,6 @@
 //
 
 #include "CircleRigidBody.hpp"
+
+CircleRigidBody::CircleRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius) :
+    RigidBody(gameObject, tag, std::make_unique<Circle>(isTrigger, isStatic, radius)) {}

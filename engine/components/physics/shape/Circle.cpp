@@ -2,7 +2,6 @@
 // Created by hmkam on 20/11/2024.
 //
 #include "Circle.hpp"
-#include <gameObject/GameObject.hpp>
 
 Circle::Circle(bool isTrigger, bool isStatic, float radius)
     : PhysicsShape(isTrigger, isStatic), _radius(radius) {}

@@ -3,3 +3,7 @@
 //
 
 #include "BoxRigidBody.hpp"
+
+BoxRigidBody::BoxRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height,
+                           float width) : RigidBody(gameObject, tag,
+                                                    std::make_unique<Box>(isTrigger, isStatic, height, width)) {}

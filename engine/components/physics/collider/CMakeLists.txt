@@ -1,5 +1,5 @@
 ﻿target_sources(${PROJECT_NAME} PRIVATE
+        BoxCollider.cpp
+        CircleCollider.cpp
         ColliderBody.cpp
-        PhysicsBody.cpp
-        RigidBody.cpp
 )

@@ -2,8 +2,8 @@
 // Created by hmkam on 19/11/2024.
 //
 
-#ifndef RECTANGLECOLLIDER_HPP
-#define RECTANGLECOLLIDER_HPP
+#ifndef BOX_HPP
+#define BOX_HPP
 #include "PhysicsShape.hpp"
 
 class Box : public PhysicsShape {
@@ -20,4 +20,4 @@ private:
 	float _width, _height;
 };
 
-#endif //RECTANGLECOLLIDER_HPP
+#endif //BOX_HPP

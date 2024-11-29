@@ -2,5 +2,5 @@
         Component.cpp
         ComponentTransform.cpp
 )
-add_subdirectory(physics/physicsShape)
+add_subdirectory(physics)
 add_subdirectory(renderables)

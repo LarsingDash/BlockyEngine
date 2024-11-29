@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 #include <stdexcept>
-#include <iostream>
 #include "components/renderables/AnimationRenderable.hpp"
 
 

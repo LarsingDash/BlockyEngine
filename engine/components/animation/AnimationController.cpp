@@ -3,6 +3,8 @@
 //
 #include "AnimationController.hpp"
 
+#include "logging/BLogger.hpp"
+
 AnimationController::AnimationController(GameObject* gameObject, const char* tag, AnimationRenderable& renderable)
 		: Component(gameObject, tag), _renderable(renderable) {}
 
@@ -51,7 +53,9 @@ bool AnimationController::PlayAnimation(const std::string& animationName) {
 	//Check if the animation exists in the map
 	auto it = _animations.find(animationName);
 	if (it == _animations.end()) {
-		std::cerr << "Animation not found: " << animationName << std::endl;
+		std::string err ("Animation not found: ");
+		err += animationName;
+		BLOCKY_ENGINE_ERROR(err)
 		return false;
 	}
 

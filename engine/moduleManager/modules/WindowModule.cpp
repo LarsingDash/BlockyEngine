@@ -7,13 +7,15 @@
 #include <cmath>
 #include <SDL.h>
 
-#include <iostream>
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
+#include "logging/BLogger.hpp"
 
 WindowModule::WindowModule() : renderingModule(nullptr) {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-		std::cerr << "Couldn't init video: " << SDL_GetError() << std::endl;
+		std::string err("Couldn't init video: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
 		return;
 	}
 
@@ -22,7 +24,9 @@ WindowModule::WindowModule() : renderingModule(nullptr) {
 							  WindowModule::WINDOW_WIDTH, WindowModule::WINDOW_HEIGHT,
 							  SDL_WINDOW_SHOWN);
 	if (!window) {
-		std::cerr << "Couldn't create window: " << SDL_GetError() << std::endl;
+		std::string err("Couldn't create window: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
 		SDL_Quit();
 		return;
 	}
@@ -30,7 +34,9 @@ WindowModule::WindowModule() : renderingModule(nullptr) {
 	//Renderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!renderer) {
-		std::cerr << "Couldn't create _renderer: " << SDL_GetError() << std::endl;
+		std::string err("Couldn't create _renderer: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
 		SDL_Quit();
 		SDL_DestroyWindow(window);
 		return;

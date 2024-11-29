@@ -6,7 +6,6 @@
 #define BLOCKYENGINE_ENGINE_COMPONENTS_RENDERABLES_ANIMATIONRENDERABLE_HPP_
 #include <string>
 #include <vector>
-#include <iostream>
 #include <glm/vec4.hpp>
 #include "SpriteRenderable.hpp"
 

@@ -1,5 +1,10 @@
 #include "AnimationRenderable.hpp"
-#include "stb_image.h"
+
+#include <stdexcept>
+#include <stb_image.h>
+#include <sstream>
+
+#include "logging/BLogger.hpp"
 
 AnimationRenderable::AnimationRenderable(GameObject* gameObject, const char* tag,
 										 std::string filePath, std::string spriteTag, int frameWidth, int frameHeight)
@@ -27,7 +32,9 @@ void AnimationRenderable::_loadFrames() {
 	const std::string& filePath = GetFilePath();
 	unsigned char* imageData = stbi_load(filePath.c_str(), &_sheetWidth, &_sheetHeight, &channels, 0);
 	if (!imageData) {
-		std::cerr << "Failed to load texture sheet: " << filePath << std::endl;
+		std::string err("Failed to load texture sheet: ");
+		err += filePath;
+		BLOCKY_ENGINE_ERROR(err)
 		return;
 	}
 
@@ -50,7 +57,12 @@ void AnimationRenderable::_loadFrames() {
 	//Free image data
 	stbi_image_free(imageData);
 
-	std::cout << "Loaded " << _frames.size() << " _frames from texture sheet: " << filePath << std::endl;
+	std::stringstream msg{};
+	msg << "Loaded ";
+	msg << std::string();
+	msg << " _frames from texture sheet: ";
+	msg << filePath;
+	BLOCKY_ENGINE_DEBUG(msg.str())
 }
 
 

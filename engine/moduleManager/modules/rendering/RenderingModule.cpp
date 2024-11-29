@@ -8,6 +8,7 @@
 
 #include "stb_image.h"
 #include "components/renderables/AnimationRenderable.hpp"
+#include "logging/BLogger.hpp"
 
 RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {}
 
@@ -138,7 +139,9 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 			filePath.c_str(), &width, &height, &channels, STBI_rgb_alpha
 	);
 	if (!imageData) {
-		std::cerr << "Failed to load image: " << filePath << std::endl;
+		std::string err("Failed to load image: ");
+		err += filePath;
+		BLOCKY_ENGINE_ERROR(err)
 		return nullptr;
 	}
 
@@ -147,7 +150,9 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 			imageData, width, height, 32, width * 4, SDL_PIXELFORMAT_RGBA32
 	);
 	if (!surface) {
-		std::cerr << "Failed to create SDL surface: " << SDL_GetError() << std::endl;
+		std::string err("Failed to create SDL surface: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
 		stbi_image_free(imageData);
 		return nullptr;
 	}
@@ -160,7 +165,9 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 	stbi_image_free(imageData);
 
 	if (!texture) {
-		std::cerr << "Failed to create SDL texture: " << SDL_GetError() << std::endl;
+		std::string err("Failed to create SDL texture: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
 		return nullptr;
 	}
 
@@ -174,7 +181,7 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 									 const ComponentTransform& transform,
 									 const glm::ivec4* sourceRect) {
 	if (!texture) {
-		std::cerr << "Cannot render null texture." << std::endl;
+		BLOCKY_ENGINE_ERROR("Cannot render null texture.")
 		return;
 	}
 

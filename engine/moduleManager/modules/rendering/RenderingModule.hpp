@@ -5,7 +5,6 @@
 #ifndef BLOCKYENGINE_RENDERINGMODULE_HPP
 #define BLOCKYENGINE_RENDERINGMODULE_HPP
 
-#include <iostream>
 #include <vector>
 #include <unordered_map>
 

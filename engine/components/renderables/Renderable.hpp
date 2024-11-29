@@ -15,7 +15,6 @@ enum RenderableType {
 	ANIMATED
 };
 
-#include <iostream>
 class Renderable : public Component {
 	public:
 		Renderable(GameObject* gameObject, const char* tag, RenderableType renderableType);

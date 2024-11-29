@@ -7,6 +7,8 @@ project(BlockyEngine)
 if (${LINUX})
 endif ()
 
+set(blocky_build_tests ON CACHE BOOL "")
+
 #region Dynamic Fetching
 
 #SDL GFX

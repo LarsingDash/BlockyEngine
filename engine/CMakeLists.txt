@@ -62,13 +62,18 @@ find_package(SDL2 CONFIG REQUIRED)
 message("SDL2 INCLUDE DIRS: ${SDL2_INCLUDE_DIRS}")
 message("SDL2 LIBRARY DIRS: ${SDL2_LIBRARIES}")
 
-add_subdirectory(dependencies/SDL2_gfx)
-add_subdirectory(dependencies/glm)
+add_subdirectory("${DEPS_DIR}/SDL2_gfx")
+add_subdirectory("${DEPS_DIR}/glm")
 
 ########################################################################################################################
 
 if (blocky_build_tests)
     message(STATUS "Building the blocky engine tests along with it")
+
+    enable_testing()
+
+    set(GTest_DIR "${DEPS_DIR}/googletest")
+    add_subdirectory(${GTest_DIR})
     add_subdirectory(testing)
 endif ()
 

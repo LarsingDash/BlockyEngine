@@ -8,9 +8,11 @@
 #include <moduleManager/ModuleManager.hpp>
 #include <moduleManager/modules/physics/PhysicsModule.hpp>
 
-PhysicsBody::PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<PhysicsShape> physicsBody) :
-    Component(gameObject, tag), physicsShape(std::move(physicsBody)), lastPos(gameObject.transform->GetWorldPosition()),
-    lastRotation(gameObject.transform->GetWorldRotation()) {}
+PhysicsBody::PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody,
+                         PhysicsType physicsType) : Component(gameObject, tag), physicsShape(std::move(physicsBody)),
+                                                    physicsType(physicsType),
+                                                    lastPos(gameObject.transform->GetWorldPosition()),
+                                                    lastRotation(gameObject.transform->GetWorldRotation()) {}
 
 void PhysicsBody::Start() {
     ModuleManager::getInstance().getModule<PhysicsModule>().AddCollider(*this);
@@ -25,7 +27,8 @@ void PhysicsBody::End() {
     ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);
 };
 
-PhysicsType PhysicsBody::GetType() { return physicsShape->GetType(); }
+PhysicsShape PhysicsBody::GetShape() { return physicsShape->GetType(); }
+PhysicsType PhysicsBody::GetType() { return physicsType; }
 
 void PhysicsBody::CollisionCallback(PhysicsBody& other) {
     BLOCKY_ENGINE_DEBUG_STREAM(

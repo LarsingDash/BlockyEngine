@@ -5,14 +5,14 @@
 #ifndef CIRCLE_HPP
 #define CIRCLE_HPP
 
-#include "PhysicsShape.hpp"
+#include "Shape.hpp"
 
-class Circle : public PhysicsShape {
+class Circle : public Shape {
 public:
     Circle(bool isTrigger, bool isStatic, float radius);
     ~Circle() override = default;
 
-    PhysicsType GetType() override;
+    PhysicsShape GetType() override;
 
     [[nodiscard]] float GetRadius() const { return _radius; }
 

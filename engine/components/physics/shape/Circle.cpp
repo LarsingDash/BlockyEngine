@@ -4,8 +4,8 @@
 #include "Circle.hpp"
 
 Circle::Circle(bool isTrigger, bool isStatic, float radius)
-    : PhysicsShape(isTrigger, isStatic), _radius(radius) {}
+    : Shape(isTrigger, isStatic), _radius(radius) {}
 
-PhysicsType Circle::GetType() {
-    return PhysicsType::CIRCLE;
+PhysicsShape Circle::GetType() {
+    return PhysicsShape::CIRCLE;
 }

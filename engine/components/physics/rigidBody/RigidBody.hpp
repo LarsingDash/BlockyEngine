@@ -7,9 +7,9 @@
 
 class RigidBody : public PhysicsBody {
 public:
-    explicit RigidBody(GameObject& gameObject, const char* tag,
-                       std::unique_ptr<PhysicsShape> physicsBody) : PhysicsBody(
-        gameObject, tag, std::move(physicsBody)) {}
+	explicit RigidBody(GameObject& gameObject, const char* tag,
+	                   std::unique_ptr<Shape> physicsBody) : PhysicsBody(
+		gameObject, tag, std::move(physicsBody), PhysicsType::RIGIDBODY) {}
 };
 
 #endif //RIGIDBODY_HPP

@@ -1,5 +1,5 @@
 ﻿target_sources(${PROJECT_NAME} PRIVATE
-        PhysicsShape.cpp
+        Shape.cpp
         Box.cpp
         Circle.cpp
 )

@@ -4,14 +4,14 @@
 
 #ifndef BOX_HPP
 #define BOX_HPP
-#include "PhysicsShape.hpp"
+#include "Shape.hpp"
 
-class Box : public PhysicsShape {
+class Box : public Shape {
 public:
 	Box(bool isTrigger, bool isStatic, float height, float width);
 	~Box() override = default;
 
-	PhysicsType GetType() override;
+	PhysicsShape GetType() override;
 
 	[[nodiscard]] float GetWidth() const { return _width; }
 	[[nodiscard]] float GetHeight() const { return _height; }

@@ -9,7 +9,6 @@
 //todo: fix multiple rigid bodys on same gameobject, so that they can overlap
 PhysicsModule::PhysicsModule() {
 	b2Vec2 gravity(0.f, 9.8f);
-	// b2Vec2 gravity(0.f, 0.f);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
@@ -127,7 +126,7 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 	b2FixtureDef fixtureDef;
 
 	// if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
-	switch (collider.GetType()) {
+	switch (collider.GetShape()) {
 		case BOX: {
 			const auto* const shape = dynamic_cast<Box*>(collider.physicsShape.get());
 			fixtureDef.shape = AddBoxShape(*shape).release();
@@ -136,6 +135,15 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 		case CIRCLE: {
 			const auto* const shape = dynamic_cast<Circle*>(collider.physicsShape.get());
 			fixtureDef.shape = AddCircleShape(*shape).release();
+			break;
+		}
+	}
+	switch (collider.physicsType) {
+		case COLLIDER: {
+			body->SetGravityScale(0.0f);
+			break;
+		}
+		case RIGIDBODY: {
 			break;
 		}
 	}

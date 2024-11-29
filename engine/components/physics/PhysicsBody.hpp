@@ -7,20 +7,27 @@
 #include <gameObject/GameObject.hpp>
 
 #include "components/Component.hpp"
-#include "components/physics/shape/PhysicsShape.hpp"
+#include "components/physics/shape/Shape.hpp"
+
+enum PhysicsType {
+    COLLIDER,
+    RIGIDBODY
+};
 
 class PhysicsBody : public Component {
 public:
-    PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<PhysicsShape> physicsBody);
+    PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody, PhysicsType physicsType);
     ~PhysicsBody() override = default;
 
     void Start() override;
     void Update(float delta) override;
     void End() override;;
+    virtual PhysicsShape GetShape();
     virtual PhysicsType GetType();
     void CollisionCallback(PhysicsBody& other); //todo: implement
 
-    std::unique_ptr<PhysicsShape> physicsShape;
+    std::unique_ptr<Shape> physicsShape; //todo: to PhysicsShape?? like PhysicsType
+    PhysicsType physicsType;
     glm::vec2 lastPos;
     float lastRotation{};
 };

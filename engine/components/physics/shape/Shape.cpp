@@ -1,18 +1,18 @@
 //
 // Created by hmkam on 19/11/2024.
 //
-#include "PhysicsShape.hpp"
+#include "Shape.hpp"
 #include <logging/BLogger.hpp>
 // todo:
 // #include <moduleManager/ModuleManager.hpp>
 // #include <moduleManager/modules/physics/PhysicsModule.hpp>
 
-PhysicsShape::PhysicsShape(bool isTrigger, bool isStatic) :
+Shape::Shape(bool isTrigger, bool isStatic) :
 	isTrigger(isTrigger), isStatic(isStatic) {}
 
-PhysicsShape::~PhysicsShape() = default;
+Shape::~Shape() = default;
 
-void PhysicsShape::CollisionCallback(PhysicsShape& other) {
+void Shape::CollisionCallback(Shape& other) {
 	BLOCKY_ENGINE_DEBUG_STREAM(
 		"CollisionCallback()" << " GetType(): " << GetType() << " other.GetType() : " << other.GetType());
 }

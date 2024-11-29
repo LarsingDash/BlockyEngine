@@ -6,21 +6,21 @@
 
 #include <glm/vec2.hpp>
 
-enum PhysicsType {
+enum PhysicsShape {
 	BOX,
 	CIRCLE
 };
 
-class PhysicsShape //todo:
+class Shape //todo:
 {
 public:
-	PhysicsShape(bool isTrigger, bool isStatic);
-	virtual ~PhysicsShape();
+	Shape(bool isTrigger, bool isStatic);
+	virtual ~Shape();
 
-	void CollisionCallback(PhysicsShape& other); //todo: check
+	void CollisionCallback(Shape& other); //todo: check
 	//todo: add subscribe to callback function
 
-	virtual PhysicsType GetType() = 0;
+	virtual PhysicsShape GetType() = 0;
 
 	bool isTrigger{false};
 	bool isStatic{false};

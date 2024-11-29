@@ -6,8 +6,10 @@
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
+//todo: fix multiple rigid bodys on same gameobject, so that they can overlap
 PhysicsModule::PhysicsModule() {
-	b2Vec2 gravity(0.f, 9.8f);
+	// b2Vec2 gravity(0.f, 9.8f);
+	b2Vec2 gravity(0.f, 0.f);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
@@ -52,19 +54,16 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 		BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetLocalPosition()))
 		BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
 
-		_box2dWorldObject->DestroyBody(body);
-		CreateBody(*_box2dWorldObject, *collider);
+		body->SetTransform(Position(*collider), Angle(*collider));
 
-		// body->SetTransform(Position(*collider), Angle(*collider));
-		//
-		// // Destroy all existing fixtures so if there is a resize the resize can be applied
-		// for (b2Fixture* fixture = body->GetFixtureList(); fixture;) {
-		// 	b2Fixture* next = fixture->GetNext();
-		// 	body->DestroyFixture(fixture);
-		// 	fixture = next;
-		// }
-		//
-		// AddFixture(*collider, body);
+		// Destroy all existing fixtures so if there is a resize the resize can be applied
+		for (b2Fixture* fixture = body->GetFixtureList(); fixture;) {
+			b2Fixture* next = fixture->GetNext();
+			body->DestroyFixture(fixture);
+			fixture = next;
+		}
+
+		AddFixture(*collider, body);
 	}
 }
 

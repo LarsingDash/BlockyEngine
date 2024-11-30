@@ -6,6 +6,8 @@
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
+//todo: angle not working everywhere
+//todo: some gamebojects can intersecte one another. nog naar kijken
 //todo: fix multiple rigid bodys on same gameobject, so that they can overlap
 PhysicsModule::PhysicsModule() {
 	b2Vec2 gravity(0.f, 9.8f);
@@ -62,8 +64,6 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 		AddFixture(*collider, body);
 	}
 }
-
-//todo: angle not working everywhere
 
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [collider, body] : _colliderToBodyMap) {

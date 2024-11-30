@@ -3,14 +3,9 @@
 //
 
 #include "InputModule.hpp"
-#include "SDL.h"
-#include "BlockyEngine.hpp"
-#include "MouseInput.hpp"
 
-KeyInput InputModule::_getKeyInput(SDL_Keycode sdlKey) {
-	return SDLKeyToCustomKey(sdlKey);
-}
 
+//Polls events for input and window states
 void InputModule::PollEvents() {
 	SDL_Event event;
 
@@ -63,12 +58,13 @@ void InputModule::PollEvents() {
 	}
 }
 
+//Adds key listener
 void InputModule::AddKeyListener(const std::function<void(KeyEvent)>& listener) {
 	std::cout << "Adding listener" << std::endl;
 	_keyListeners.push_back(listener);
 }
 
-
+//Removes key listener
 void InputModule::RemoveKeyListener(const std::function<void(KeyEvent)>& listener) {
 	std::cout << "Removing listener" << std::endl;
 
@@ -82,11 +78,13 @@ void InputModule::RemoveKeyListener(const std::function<void(KeyEvent)>& listene
 	}
 }
 
+//Adds mouse listener
 void InputModule::AddMouseListener(const std::function<void(MouseEvent)>& listener) {
 	std::cout << "Adding mouse listener" << std::endl;
 	_mouseListeners.push_back(listener);
 }
 
+//Removes mouse listener
 void InputModule::RemoveMouseListener(const std::function<void(MouseEvent)>& listener) {
 	std::cout << "Removing mouse listener" << std::endl;
 
@@ -99,8 +97,15 @@ void InputModule::RemoveMouseListener(const std::function<void(MouseEvent)>& lis
 		_mouseListeners.erase(it);
 	}
 }
+
+//Gets the current mouse position
 std::pair<int, int> InputModule::GetCursorPosition() {
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 	return {x, y};
+}
+
+//Gets the current key input mapped (in this case) from an SDL key
+KeyInput InputModule::_getKeyInput(SDL_Keycode sdlKey) {
+	return SDLKeyToCustomKey(sdlKey);
 }

@@ -8,6 +8,9 @@
 #include <functional>
 #include "KeyEvent.hpp"
 #include "MouseEvent.hpp"
+#include "SDL.h"
+#include "BlockyEngine.hpp"
+#include "MouseInput.hpp"
 
 class InputModule {
 	public:

@@ -12,8 +12,6 @@
 class InputModule {
 	public:
 		InputModule() = default;
-		InputModule(const InputModule&) = default;
-		InputModule& operator=(const InputModule&) = delete;
 
 		void PollEvents();
 		void AddKeyListener(const std::function<void(KeyEvent)>& listener);

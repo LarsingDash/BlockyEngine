@@ -6,7 +6,6 @@
 #include "components/renderables/Renderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
-#include "components/renderables/SpriteRenderable.hpp"
 #include "components/animation/AnimationController.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
@@ -14,12 +13,13 @@
 
 SceneManager::SceneManager() :
 		testScene(std::make_unique<GameObject>("root")),
-		recalculationList() {
+		recalculationList(),
+		_inputModule(ModuleManager::getInstance().getModule<WindowModule>().GetInputModule()) {
 	recalculationList.reserve(25);
-	InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
 
-	inputModule.AddMouseListener([this](const MouseEvent& mouseEvent) {
-		auto& rectangle = testScene->AddChild("Rectangle_" + std::to_string(mouseEvent.x) + "_" + std::to_string(mouseEvent.y));
+	_inputModule.AddMouseListener([this](const MouseEvent& mouseEvent) {
+		auto& rectangle =
+				testScene->AddChild("Rectangle_" + std::to_string(mouseEvent.x) + "_" + std::to_string(mouseEvent.y));
 		rectangle.transform->SetPosition(static_cast<float>(mouseEvent.x), static_cast<float>(mouseEvent.y));
 
 		glm::vec4 color;
@@ -31,10 +31,10 @@ SceneManager::SceneManager() :
 			color = glm::vec4(0.f, 255.f, 0.f, 255.f);
 		}
 
-		if(mouseEvent.state == MouseButtonState::BUTTON_DOWN){
+		if (mouseEvent.state == MouseButtonState::BUTTON_DOWN) {
 			rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
 			rectangle.transform->SetScale(20.f, 20.f);
-		}else{
+		} else {
 			rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, true);
 			rectangle.transform->SetScale(20.f, 20.f);
 		}
@@ -59,14 +59,14 @@ SceneManager::SceneManager() :
 
 	animatedObject.GetComponent<AnimationController>()->PlayAnimation("idle");
 
-	inputModule.AddKeyListener([&animationController](KeyEvent event) {
-		if(event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_Q){
+	_inputModule.AddKeyListener([&animationController](KeyEvent event) {
+		if (event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_Q) {
 			animationController.PlayAnimation("idle");
 		}
-		if(event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_W){
+		if (event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_W) {
 			animationController.PlayAnimation("run");
 		}
-		if(event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_E){
+		if (event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_E) {
 			animationController.PlayAnimation("jump");
 		}
 	});

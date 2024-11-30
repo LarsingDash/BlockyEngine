@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <stdexcept>
 
-#include "ModuleWrapper.hpp"
+#include "moduleManager/ModuleWrapper.hpp"
 
 class ModuleManager {
 	public:

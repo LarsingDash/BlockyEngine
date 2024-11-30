@@ -1,5 +1,24 @@
 cmake_minimum_required(VERSION 3.28)
 
+set(DEPS_FOLDER_NAME "dependencies")
+
+function(build_lib_from_file folder file extension url)
+    if(NOT EXISTS "${folder}")
+        message(STATUS "Creating dependencies folder")
+        file(MAKE_DIRECTORY ${DEPS_FOLDER_NAME})
+    endif ()
+    message("FETCHING: ${file}")
+
+    if(EXISTS "${folder}/${file}")
+        message(STATUS "File already here!")
+        return()
+    endif ()
+
+    message(STATUS "Starting to fetch file...")
+    file(DOWNLOAD ${url} "${folder}/${file}.${extension}")
+
+endfunction()
+
 # A CMake function to download a specified library
 # It's meant to be used when first time building the project.
 # If it downloads the libraries again then something has gone horribly wrong,
@@ -10,7 +29,7 @@ function(build_lib folder library url isPreBuilt)
 
     if (NOT EXISTS "${folder}")
         message(STATUS "Creating dependencies folder")
-        file(MAKE_DIRECTORY "dependencies")
+        file(MAKE_DIRECTORY ${DEPS_FOLDER_NAME})
     endif ()
 
     message("FETCHING: ${library}")

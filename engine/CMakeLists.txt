@@ -24,9 +24,10 @@ set(BOX2D_VERSION "3.0.0")
 set(BLOCKY_DEPS
         googletest https://github.com/google/googletest/releases/download/v${GTEST_VERSION}/googletest-${GTEST_VERSION}.tar.gz
         SDL2 https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.zip
+        SDL2_gfx https://github.com/Dogukan-lab/sdl_gfx_offshoot/releases/download/v1.0.0/SDL_gfx.tar.gz
         glm https://github.com/g-truc/glm/releases/download/1.0.1/glm-1.0.1-light.zip
         box2d https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz
-        spdlog https://github.com/gabime/spdlog/archive/refs/tags/v1.15.0.tar.gz
+        stb_image https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
 )
 
 ########################################################################################################################
@@ -46,15 +47,25 @@ foreach (INDEX RANGE 0 ${LIST_RANGE})
     else ()
         list(GET BLOCKY_DEPS ${INDEX} LIB_URL)
         message(STATUS "Library: ${LIB_NAME}, URL: ${LIB_URL}")
-        build_lib(${DEPS_DIR}
-                ${LIB_NAME}
-                ${LIB_URL}
-                TRUE)
+        if (${LIB_NAME} STREQUAL "stb_image")
+            build_lib_from_file("${DEPS_DIR}/${LIB_NAME}"
+                    "stb_image"
+                    "h"
+                    ${LIB_URL}
+            )
+        else ()
+            build_lib(${DEPS_DIR}
+                    ${LIB_NAME}
+                    ${LIB_URL}
+                    TRUE
+            )
+        endif ()
     endif ()
 endforeach ()
 
 ########################################################################################################################
 
+# IMPORTANT MINGW Toolchain dependent, should not be used for Linux as well!
 set(SDL2_DIR "${DEPS_DIR}/SDL2/cmake")
 message("SDL DIR: ${SDL2_DIR}")
 find_package(SDL2 CONFIG REQUIRED)
@@ -68,7 +79,7 @@ add_subdirectory("${DEPS_DIR}/glm")
 ########################################################################################################################
 
 if (blocky_build_tests)
-    message(STATUS "Building the blocky engine tests along with it")
+    message(STATUS "Building the blocky engine tests")
 
     enable_testing()
 
@@ -84,7 +95,6 @@ else ()
     add_library(${ENGINE_TARGET} STATIC BlockyEngine.cpp)
 endif ()
 
-# TODO I want something nicer for this... -Dogukan
 add_subdirectory(moduleManager)
 add_subdirectory(sceneManager)
 add_subdirectory(components)
@@ -103,22 +113,23 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
         ${DEPS_DIR}
 )
 
-#TODO this copies the dll to the build folder, but it does not want to work. Fix this.
 # Temporarily just copy the SDL2 dll to the build folder
-#if (WIN32)
-#    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-#        set(SDL2_DLL "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll")
-#    else ()
-#        set(SDL2_DLL "${SDL2_DIR}/../i686-w64-mingw32/bin/SDL2.dll")
-#    endif ()
-#
-#    add_custom_target(SDL2_DLL ALL
-#            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#            "${SDL2_DLL}"
-#            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-#
-#            COMMENT "Copying SDL2.dll to build folder"
-#    )
-#elseif (${UNIX})
-#    #Unix stuff
-#endif ()
+if (WIN32)
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(SDL2_DLL "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll")
+    else ()
+        set(SDL2_DLL "${SDL2_DIR}/../i686-w64-mingw32/bin/SDL2.dll")
+    endif ()
+
+    if (EXISTS ${SDL2_DLL})
+        add_custom_command(TARGET ${ENGINE_TARGET} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${SDL2_DLL}"
+                "${CMAKE_BINARY_DIR}"
+                COMMENT "Copying SDL2.dll to build folder"
+        )
+    endif ()
+elseif (${UNIX})
+    #Unix ver not supported yet
+    message(FATAL_ERROR "UNIX SYSTEM ARE NOT YET SUPPORTED FOR DYNAMIC LIBRARY LINKAGE")
+endif ()

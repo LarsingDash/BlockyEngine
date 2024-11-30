@@ -27,3 +27,5 @@ void Renderable::End() {
 RenderableType Renderable::GetRenderableType() {
 	return _renderableType;
 }
+
+

@@ -7,35 +7,43 @@
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
+#include "components/animation/AnimationController.hpp"
+#include "components/renderables/AnimationRenderable.hpp"
 
-SceneManager::SceneManager() : testScene{} {
-	testScene.reserve(10);
+SceneManager::SceneManager() :
+		testScene(std::make_unique<GameObject>("root")),
+		recalculationList() {
+	testScene->transform->SetPosition(400, 300);
+	testScene->transform->Scale(50, 50);
 
-	auto& objectA = testScene.emplace_back(std::make_unique<GameObject>("objectA"));
-	auto& objectB = testScene.emplace_back(std::make_unique<GameObject>("objectB"));
+	auto& leftParent = testScene->AddChild("LeftParent");
+	auto& rightParent = testScene->AddChild("RightParent");
 
-	//aA with default pos (50, 50)
-	auto& aA = objectA->AddComponent<RectangleRenderable>("aA", glm::ivec4(255, 0, 0, 255), true);
-	aA.componentTransform->rotation = 36.f;
+	leftParent.transform->Translate(-3, 0);
+	leftParent.AddComponent<RectangleRenderable>("LeftR", glm::vec4{255, 0, 0, 255}, true);
 
-	//bA with (50, 150)
-	auto& bA = objectB->AddComponent<RectangleRenderable>("bA", glm::ivec4(0, 255, 0, 255));
-	bA.componentTransform->position = glm::vec2{50.f, 150.f};
+	rightParent.transform->Translate(3, 0);
+	rightParent.AddComponent<RectangleRenderable>("RightR", glm::vec4{0, 255, 0, 255}, true);
 
-	auto& ellipseA = objectA->AddComponent<EllipseRenderable>("ellipseA", glm::ivec4(0, 255, 0, 255));
-	ellipseA.componentTransform->position = glm::vec2{150.f, 50.f};
+	auto& child = leftParent.AddChild("Child");
+	auto& childChild = child.AddChild("ChildChild");
+	childChild.transform->Translate(0, -1);
 
-	auto& ellipseB = objectB->AddComponent<EllipseRenderable>("ellipseB", glm::ivec4(0, 0, 255, 255), true);
-	ellipseB.componentTransform->position = glm::vec2{200.f, 150.f};
-	ellipseB.componentTransform->scale = glm::vec2{150.f, 100.f};
+	child.AddComponent<RectangleRenderable>("ChildR", glm::vec4{0, 0, 255, 255});
+	childChild.AddComponent<RectangleRenderable>("ChildChildR", glm::vec4{255, 255, 255, 255});
 
-	auto& spriteA = objectB->AddComponent<SpriteRenderable>("spriteA", "../assets/kaboom.png", "kaboom");
-	spriteA.componentTransform->position = glm::vec2{350.f, 150.f};
-	spriteA.componentTransform->rotation = -65.f;
+	child.Reparent(rightParent);
+	childChild.Destroy();
 }
 
 void SceneManager::Update(float delta) {
-	for (auto& gameObject : testScene) {
-		gameObject->Update(delta);
+	//Update active scene starting from the root
+	testScene->Update(delta, recalculationList);
+
+	//Go through all transforms that marked themselves to be recalculated
+	for (auto& trans : recalculationList) {
+		auto& cur = trans.get();
+		if (cur.isMarkedForRecalculation) cur.RecalculateWorldMatrix();
 	}
+	recalculationList.clear();
 }

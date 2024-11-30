@@ -5,15 +5,16 @@
 #ifndef BLOCKYENGINE_COMPONENTTRANSFORM_HPP
 #define BLOCKYENGINE_COMPONENTTRANSFORM_HPP
 
-#include "glm/vec2.hpp"
+class Component;
 
-class ComponentTransform {
+#include "gameObject/Transform.hpp"
+
+class ComponentTransform : public Transform {
 	public:
-		ComponentTransform();
-
-		glm::vec2 position;
-		float rotation;
-		glm::vec2 scale;
+		explicit ComponentTransform(GameObject& gameObject, Component& component);
+		void RecalculateWorldMatrix() override;
+		
+		Component& component;
 };
 
 #endif //BLOCKYENGINE_COMPONENTTRANSFORM_HPP

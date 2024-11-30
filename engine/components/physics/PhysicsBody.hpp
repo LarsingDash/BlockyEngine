@@ -4,11 +4,14 @@
 #ifndef PHYSICSBODY_HPP
 #define PHYSICSBODY_HPP
 #include <memory>
-#include <gameObject/GameObject.hpp>
 
 #include "components/Component.hpp"
 #include "components/physics/shape/Shape.hpp"
-#include "type/Type.hpp"
+
+enum PhysicsType {
+	COLLIDER,
+	RIGIDBODY
+};
 
 class TypeProperties {
 public:
@@ -43,7 +46,7 @@ public:
 	void End() override;;
 	virtual PhysicsShape GetShape();
 	virtual PhysicsType GetType();
-	void CollisionCallback(PhysicsBody& other); //todo: implement
+	void CollisionCallback(PhysicsBody& other);
 
 	//todo: private
 	std::unique_ptr<Shape> physicsShape;

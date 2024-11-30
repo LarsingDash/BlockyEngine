@@ -63,31 +63,30 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 	}
 }
 
+//todo: angle not working everywhere
+
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [collider, body] : _colliderToBodyMap) {
 		b2Vec2 pos = body->GetPosition();
 		b2Vec2 d = {pos.x - collider->lastPos.x, pos.y - collider->lastPos.y};
 
-		float deltaAngle = body->GetAngle() - collider->lastRotation;
-		const auto scale = collider->gameObject.transform->GetWorldScale();
-		//todo: fix this for first setup after init all is 0 and -> 400
-		if (abs(d.x) <= 100 && abs(d.y) <= 100) {
+		const bool isStartPosition = collider->lastPos.x == 0 && collider->lastPos.y == 0
+			&& collider->lastRotation == 0;
+		const bool isBigMovement = abs(d.x) >= 50 || abs(d.y) >= 50;
+
+		//todo: better fix for is !startposition && !isBigMovement.
+		if (!isStartPosition && !isBigMovement) {
+			float deltaAngle = body->GetAngle() - collider->lastRotation;
+			const auto scale = collider->gameObject.transform->GetWorldScale();
+
 			// todo: uitleg GetWorldScale is to small and generates runaway if to large
 			collider->gameObject.transform->Translate(d.x / scale.x / 2, d.y / scale.y / 2);
 			collider->gameObject.transform->Rotate(deltaAngle);
+
+			BLOCKY_ENGINE_DEBUG(collider->lastPos);
+
+			collider->lastPos = glm::vec2{pos.x, pos.y};
 		}
-
-		// BLOCKY_ENGINE_DEBUG(collider->gameObject.tag);
-		// auto goPos = collider->gameObject.transform->GetWorldPosition();
-		// auto coPos = collider->componentTransform->GetWorldPosition();
-		// BLOCKY_ENGINE_DEBUG_STREAM("pos  \t" << pos.x << " ; " << pos.y);
-		// BLOCKY_ENGINE_DEBUG_STREAM("gopos\t" << goPos.x << " ; " << goPos.y);
-		// BLOCKY_ENGINE_DEBUG_STREAM("coPos\t" << coPos.x << " ; " << coPos.y);
-		// BLOCKY_ENGINE_DEBUG_STREAM("last \t" << collider->lastPos.x << " ; " << collider->lastPos.y);
-		// BLOCKY_ENGINE_DEBUG_STREAM("dx dy\t" << d.x<< " ; " << d.y)
-		// BLOCKY_ENGINE_DEBUG_STREAM("scale\t" << scale.x << " ; " << scale.y);
-
-		collider->lastPos = glm::vec2{pos.x, pos.y};
 	}
 }
 
@@ -107,12 +106,10 @@ void PhysicsModule::RemoveCollider(PhysicsBody& collider) {
 }
 
 std::unique_ptr<b2Shape> AddBoxShape(const Box& collider) {
-	// Define another box shape for the first dynamic body.
 	auto dynamicBox = std::make_unique<b2PolygonShape>();
 	// Blocky Engine uses width and height, Box2D uses x&y height&width above,below&left,right of origin. so: /2
 	dynamicBox->SetAsBox(collider.GetWidth() / 2, collider.GetHeight() / 2);
 
-	// BLOCKY_ENGINE_DEBUG_STREAM("AddBoxShape: "<<collider.GetWidth() << ";" << collider.GetHeight());
 	return dynamicBox;
 }
 
@@ -185,8 +182,6 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& collider) {
 
 	AddFixture(collider, body);
 
-	// BLOCKY_ENGINE_DEBUG_STREAM("CreateBody: x: " << x << ", y: " << y << ", angle: " << angle);
-
 	return body;
 }
 
@@ -199,16 +194,10 @@ glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a) {
 }
 
 b2Vec2 PhysicsModule::Position(const PhysicsBody& collider) {
-	//todo: add gameObject transforms
-	// return VecConvert(collider.gameObject.transform->GetWorldPosition());
 	return VecConvert(collider.componentTransform->GetWorldPosition());
-	// return VecConvert(collider.componentTransform->GetLocalPosition());
 }
 
 float PhysicsModule::Angle(const PhysicsBody& collider) {
-	//todo: add gameObject transforms
-	// return collider.gameObject.transform->GetWorldRotation();
 	return collider.componentTransform->GetWorldRotation();
-	// return collider.componentTransform->GetLocalRotation();
 }
 

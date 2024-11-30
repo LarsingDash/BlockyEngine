@@ -7,6 +7,7 @@
 
 #include "SDL_keycode.h"
 #include "KeyInput.hpp"
+
 enum class KeyState {
 	KEY_UP,
 	KEY_DOWN

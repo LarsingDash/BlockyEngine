@@ -76,6 +76,13 @@ KeyInput SDLKeyToCustomKey(SDL_Keycode sdlKey) {
 		case SDLK_KP_DIVIDE: return KeyInput::KEY_NUMPAD_DIVIDE;
 		case SDLK_KP_PERIOD: return KeyInput::KEY_NUMPAD_PERIOD;
 		case SDLK_KP_COMMA: return KeyInput::KEY_NUMPAD_COMMA;
+		case SDLK_LCTRL: return KeyInput::KEY_LCTRL;
+		case SDLK_RCTRL: return KeyInput::KEY_RCTRL;
+		case SDLK_LSHIFT: return KeyInput::KEY_LSHIFT;
+		case SDLK_RSHIFT: return KeyInput::KEY_RSHIFT;
+		case SDLK_TAB: return KeyInput::KEY_TAB;
+		case SDLK_CAPSLOCK: return KeyInput::KEY_CAPSLOCK;
+
 		default: return KeyInput::KEY_UNKNOWN;
 	}
 }

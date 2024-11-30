@@ -4,6 +4,16 @@
 
 #include "CircleRigidBody.hpp"
 
-CircleRigidBody::CircleRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius,
-                                 TypeProperties typeProperties) : RigidBody(
-	gameObject, tag, std::make_unique<Circle>(isTrigger, isStatic, radius), typeProperties) {}
+#include <components/physics/shape/Circle.hpp>
+
+CircleRigidBody::CircleRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic,
+                                 glm::vec2 velocity,
+                                 float rotationVelocity, float angularResistance, float linearResistance,
+                                 bool gravityEnabled,
+                                 float radius) : PhysicsBody(gameObject, tag,
+                                                             std::make_unique<Circle>(radius),
+                                                             TypeProperties(
+	                                                             RIGIDBODY, isTrigger, isStatic, velocity,
+	                                                             rotationVelocity,
+	                                                             angularResistance, linearResistance,
+	                                                             gravityEnabled)) {}

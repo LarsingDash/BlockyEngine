@@ -15,10 +15,7 @@ include_directories("${CMAKE_SOURCE_DIR}/libs/stb_image")
 include_directories("${CMAKE_MODULE_PATH}")
 
 #Final
-add_executable(${PROJECT_NAME} main.cpp
-        engine/components/physics/type/Type.cpp
-        engine/components/physics/type/Type.hpp
-)
+add_executable(${PROJECT_NAME} main.cpp)
 
 add_subdirectory(engine)
 add_subdirectory(libs/SDL2_gfx)

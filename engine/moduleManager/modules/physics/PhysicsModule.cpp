@@ -148,13 +148,11 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 				body->SetGravityScale(0.0f);
 			}
 
-			// collider.typeProperties.resistance;
 			body->SetAngularDamping(collider.typeProperties.angularResistance);
 			body->SetLinearDamping(collider.typeProperties.linearResistance);
 
-			// // // collider.typeProperties.velocity; //todo: add current velocity
-			// body->SetAngularVelocity(collider.typeProperties.rotationVelocity);
-			// body->SetLinearVelocity(VecConvert(collider.typeProperties.velocity));
+			body->ApplyTorque(collider.typeProperties.rotationVelocity, true);
+			body->ApplyForceToCenter(VecConvert(collider.typeProperties.velocity), true);
 			break;
 		}
 	}
@@ -165,11 +163,12 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 
 	body->CreateFixture(&fixtureDef);
 
-	// if (!collider.physicsShape->isStatic) {
-	//todo:
-	// to have all non-static object apply the same force on another, set all bodies to mass 1
-	b2MassData mass = {0.f};
-	body->SetMassData(&mass);
+	if (!collider.typeProperties.isStatic) {
+		//todo:
+		// to have all non-static object apply the same force on another, set all bodies to mass 1
+		b2MassData mass = {0.f};
+		body->SetMassData(&mass);
+	}
 
 	delete fixtureDef.shape;
 }

@@ -5,8 +5,8 @@
 
 #include <logging/BLogger.hpp>
 
-Box::Box(bool isTrigger, bool isStatic, float height, float width)
-    : Shape(isTrigger, isStatic), _width(width), _height(height) {
+Box::Box(float height, float width)
+    : Shape(), _width(width), _height(height) {
     BLOCKY_ENGINE_DEBUG_STREAM("Box::Box(): " << width << ", "<< height);
 }
 

@@ -8,7 +8,7 @@
 
 class Box : public Shape {
 public:
-	Box(bool isTrigger, bool isStatic, float height, float width);
+	Box(float height, float width);
 	~Box() override = default;
 
 	PhysicsShape GetShape() override;

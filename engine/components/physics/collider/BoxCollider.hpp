@@ -4,13 +4,11 @@
 
 #ifndef BOXCOLLIDER_HPP
 #define BOXCOLLIDER_HPP
+#include <components/physics/PhysicsBody.hpp>
 
-#include "ColliderBody.hpp"
-
-class BoxCollider : public ColliderBody {
+class BoxCollider : public PhysicsBody {
 public:
-	BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width,
-	            TypeProperties typeProperties);
+	BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width);
 };
 
 #endif //BOXCOLLIDER_HPP

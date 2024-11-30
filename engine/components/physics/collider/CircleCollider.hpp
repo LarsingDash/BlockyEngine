@@ -4,13 +4,10 @@
 
 #ifndef CIRCLECOLLIDER_HPP
 #define CIRCLECOLLIDER_HPP
-#include "components/physics/shape/Circle.hpp"
+#include <components/physics/PhysicsBody.hpp>
 
-#include "ColliderBody.hpp"
-
-class CircleCollider : public ColliderBody {
+class CircleCollider : public PhysicsBody {
 public:
-	CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius,
-	               TypeProperties typeProperties);
+	CircleCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float radius);
 };
 #endif //CIRCLECOLLIDER_HPP

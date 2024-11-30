@@ -9,7 +9,7 @@
 
 class Circle : public Shape {
 public:
-    Circle(bool isTrigger, bool isStatic, float radius);
+    Circle(float radius);
     ~Circle() override = default;
 
     PhysicsShape GetShape() override;

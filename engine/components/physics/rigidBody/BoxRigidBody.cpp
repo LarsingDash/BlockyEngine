@@ -4,6 +4,14 @@
 
 #include "BoxRigidBody.hpp"
 
-BoxRigidBody::BoxRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height,
-                           float width, TypeProperties typeProperties) : RigidBody(gameObject, tag,
-	std::make_unique<Box>(isTrigger, isStatic, height, width), typeProperties) {}
+#include <components/physics/shape/Box.hpp>
+
+BoxRigidBody::BoxRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, glm::vec2 velocity,
+                           float rotationVelocity, float angularResistance, float linearResistance, bool gravityEnabled,
+                           float height,
+                           float width) : PhysicsBody(gameObject, tag,
+                                                      std::make_unique<Box>(height, width),
+                                                      TypeProperties(RIGIDBODY, isTrigger, isStatic, velocity,
+                                                                     rotationVelocity,
+                                                                     angularResistance, linearResistance,
+                                                                     gravityEnabled)) {}

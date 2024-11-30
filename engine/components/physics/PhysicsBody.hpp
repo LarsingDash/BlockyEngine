@@ -13,14 +13,18 @@
 class TypeProperties {
 public:
 	//todo PhysicsType physicsType,
-	TypeProperties(PhysicsType physicsType, glm::vec2 velocity, float rotationVelocity, float angularResistance,
-	               float linearResistance, bool gravityEnabled): physicsType(physicsType), velocity(velocity),
-	                                                             rotationVelocity(rotationVelocity),
-	                                                             angularResistance(angularResistance),
-	                                                             linearResistance(linearResistance),
-	                                                             gravityEnabled(gravityEnabled) {}
+	TypeProperties(PhysicsType physicsType, bool isTrigger, bool isStatic, glm::vec2 velocity, float rotationVelocity,
+	               float angularResistance, float linearResistance, bool gravityEnabled): physicsType(physicsType),
+		isTrigger(isTrigger),
+		isStatic(isStatic), velocity(velocity),
+		rotationVelocity(rotationVelocity),
+		angularResistance(angularResistance),
+		linearResistance(linearResistance),
+		gravityEnabled(gravityEnabled) {}
 
 	PhysicsType physicsType;
+	bool isTrigger;
+	bool isStatic;
 	glm::vec2 velocity;
 	float rotationVelocity;
 	float angularResistance;

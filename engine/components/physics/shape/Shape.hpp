@@ -1,28 +1,20 @@
 //
 // Created by hmkam on 19/11/2024.
 //
-#ifndef COLLIDER_HPP
-#define COLLIDER_HPP
+#ifndef SHAPE_HPP
+#define SHAPE_HPP
 
-#include <glm/vec2.hpp>
-
+//todo: delete?
 enum PhysicsShape {
 	BOX,
 	CIRCLE
 };
 
-class Shape //todo:
-{
+class Shape {
 public:
-	Shape(bool isTrigger, bool isStatic);
-	virtual ~Shape();
-
-	void CollisionCallback(Shape& other); //todo: check
-	//todo: add subscribe to callback function
+	Shape() = default;
+	virtual ~Shape() = default;
 
 	virtual PhysicsShape GetShape() = 0;
-
-	bool isTrigger{false};
-	bool isStatic{false};
 };
-#endif //COLLIDER_HPP
+#endif //SHAPE_HPP

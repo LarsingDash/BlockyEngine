@@ -3,8 +3,8 @@
 #include "components/renderables/AnimationRenderable.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
 #include "moduleManager/ModuleManager.hpp"
-#include "components/custom/MouseInputComponent.hpp"
-#include "components/custom/KeyboardInputComponent.hpp"
+#include "components/example/MouseInputComponent.hpp"
+#include "components/example/KeyboardInputComponent.hpp"
 
 SceneManager::SceneManager() :
 		testScene(std::make_unique<GameObject>("root")),

@@ -4,4 +4,4 @@
 )
 add_subdirectory(renderables)
 add_subdirectory(animation)
-add_subdirectory(custom)
+add_subdirectory(example)

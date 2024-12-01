@@ -4,9 +4,6 @@
 
 #include "WindowModule.hpp"
 
-#include <cmath>
-#include <SDL.h>
-
 #include <iostream>
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"

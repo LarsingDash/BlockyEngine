@@ -5,7 +5,7 @@
 #ifndef BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_INPUT_KEYEVENT_HPP_
 #define BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_INPUT_KEYEVENT_HPP_
 
-#include "SDL_keycode.h"
+#include <SDL2/x86_64-w64-mingw32/include/SDL2/SDL_scancode.h>
 #include "KeyInput.hpp"
 
 enum KeyState {

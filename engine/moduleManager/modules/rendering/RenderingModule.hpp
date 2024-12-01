@@ -15,7 +15,6 @@
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 #include "SDL_render.h"
-#include "SDL.h"
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "SDL2_gfx/SDL2_rotozoom.h"
 #include "components/renderables/AnimationRenderable.hpp"

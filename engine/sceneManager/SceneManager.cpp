@@ -1,7 +1,10 @@
-﻿#include "SceneManager.hpp"
+﻿//
+// Created by larsv on 12/11/2024.
+//
+
+#include "SceneManager.hpp"
 #include "components/animation/AnimationController.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
-#include "moduleManager/modules/WindowModule.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "components/example/MouseInputComponent.hpp"
 #include "components/example/KeyboardInputComponent.hpp"
@@ -33,10 +36,10 @@ SceneManager::SceneManager() :
 }
 
 void SceneManager::Update(float delta) {
-	// Update active scene starting from the root
+	//Update active scene starting from the root
 	testScene->Update(delta, recalculationList);
 
-	// Go through all transforms that marked themselves to be recalculated
+	//Go through all transforms that marked themselves to be recalculated
 	for (auto& trans : recalculationList) {
 		auto& cur = trans.get();
 		if (cur.isMarkedForRecalculation) cur.RecalculateWorldMatrix();

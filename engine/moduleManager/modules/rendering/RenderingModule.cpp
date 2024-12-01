@@ -7,7 +7,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 
-#include "stb_image.h"
+#include "stb_image/stb_image.h"
 #include "components/renderables/AnimationRenderable.hpp"
 
 RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {}

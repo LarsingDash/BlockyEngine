@@ -1,5 +1,5 @@
 #include "AnimationRenderable.hpp"
-#include "stb_image.h"
+#include "stb_image/stb_image.h"
 
 AnimationRenderable::AnimationRenderable(GameObject& gameObject, const char* tag,
 										 std::string filePath, std::string spriteTag, int frameWidth, int frameHeight)

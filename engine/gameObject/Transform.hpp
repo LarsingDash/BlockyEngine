@@ -25,11 +25,11 @@ class Transform {
 		[[maybe_unused]] [[nodiscard]] const glm::vec2& GetLocalPosition() const;
 		[[maybe_unused]] [[nodiscard]] float GetLocalRotation() const;
 		[[maybe_unused]] [[nodiscard]] const glm::vec2& GetLocalScale() const;
-		
+
 		[[maybe_unused]] [[nodiscard]] const glm::vec2& GetWorldPosition() const;
 		[[maybe_unused]] [[nodiscard]] float GetWorldRotation() const;
 		[[maybe_unused]] [[nodiscard]] const glm::vec2& GetWorldScale() const;
-		
+
 		//SETTER
 		[[maybe_unused]] void Translate(float x, float y);
 		[[maybe_unused]] void Rotate(float rotation);
@@ -42,11 +42,12 @@ class Transform {
 		GameObject& gameObject;
 
 		//WORLD
+		void SetParent(Transform& target);
 		virtual void RecalculateWorldMatrix() = 0;
 		bool isMarkedForRecalculation;
 
 	protected:
-		Transform* parent;
+		Transform* _parent;
 		glm::mat3 _worldMatrix;
 		void _recalculateWorldMatrix();
 

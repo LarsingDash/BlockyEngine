@@ -33,12 +33,32 @@ void KeyboardInputComponent::Start() {
 			ChangeAnimation("jump");
 		}
 	});
+	_inputModule.AddKeyListener(KeyInput::KEY_ESCAPE, [this](KeyState state) {
+		if (state == KeyState::KEY_DOWN) {
+			End();
+		}
+	});
 }
 
 void KeyboardInputComponent::Update(float delta) {
 }
 
 void KeyboardInputComponent::End() {
+	_inputModule.RemoveKeyListener(KeyInput::KEY_Q, [this](KeyState state) {
+		if (state == KeyState::KEY_DOWN) {
+			ChangeAnimation("idle");
+		}
+	});
+	_inputModule.RemoveKeyListener(KeyInput::KEY_W, [this](KeyState state) {
+		if (state == KeyState::KEY_DOWN) {
+			ChangeAnimation("run");
+		}
+	});
+	_inputModule.RemoveKeyListener(KeyInput::KEY_E, [this](KeyState state) {
+		if (state == KeyState::KEY_DOWN) {
+			ChangeAnimation("jump");
+		}
+	});
 }
 
 void KeyboardInputComponent::ChangeAnimation(const std::string& animationName) {

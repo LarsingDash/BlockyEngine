@@ -3,37 +3,36 @@
 //
 
 #include "SceneManager.hpp"
-#include "components/renderables/Renderable.hpp"
-#include "components/renderables/RectangleRenderable.hpp"
-#include "components/renderables/EllipseRenderable.hpp"
-#include "components/renderables/SpriteRenderable.hpp"
 #include "components/animation/AnimationController.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
+#include "moduleManager/ModuleManager.hpp"
+#include "components/example/MouseInputComponent.hpp"
+#include "components/example/KeyboardInputComponent.hpp"
 
 SceneManager::SceneManager() :
 		testScene(std::make_unique<GameObject>("root")),
-		recalculationList() {
-	testScene->transform->SetPosition(400, 300);
-	testScene->transform->Scale(50, 50);
+		recalculationList(){
+	recalculationList.reserve(25);
 
-	auto& leftParent = testScene->AddChild("LeftParent");
-	auto& rightParent = testScene->AddChild("RightParent");
+	auto& mouseInputComponent = testScene->AddChild("MouseInputComponent");
+	mouseInputComponent.AddComponent<MouseInputComponent>("mouseInputComponent");
 
-	leftParent.transform->Translate(-3, 0);
-	leftParent.AddComponent<RectangleRenderable>("LeftR", glm::vec4{255, 0, 0, 255}, true);
+	auto& animatedObject = testScene->AddChild("AnimatedObject");
+	animatedObject.transform->SetScale(200.f, 200.f);
+	animatedObject.transform->SetPosition(100.f, 100.f);
+	auto& animatedSprite = animatedObject.AddComponent<AnimationRenderable>(
+			"animTag", "../assets/character_spritesheet.png",
+			"spriteTag", 32, 32
+	);
+	auto& animationController = animatedObject.AddComponent<AnimationController>("animControllerTag", animatedSprite);
 
-	rightParent.transform->Translate(3, 0);
-	rightParent.AddComponent<RectangleRenderable>("RightR", glm::vec4{0, 255, 0, 255}, true);
+	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
+	animationController.AddAnimation("run", 12, 19, 0.1f, true);
+	animationController.AddAnimation("jump", 27, 35, 0.1f, false);
+	animatedObject.GetComponent<AnimationController>()->PlayAnimation("idle");
 
-	auto& child = leftParent.AddChild("Child");
-	auto& childChild = child.AddChild("ChildChild");
-	childChild.transform->Translate(0, -1);
-
-	child.AddComponent<RectangleRenderable>("ChildR", glm::vec4{0, 0, 255, 255});
-	childChild.AddComponent<RectangleRenderable>("ChildChildR", glm::vec4{255, 255, 255, 255});
-
-	child.Reparent(rightParent);
-	childChild.Destroy();
+	auto& keyboardInputComponent = testScene->AddChild("KeyboardInputComponent");
+	keyboardInputComponent.AddComponent<KeyboardInputComponent>("keyboardInputComponent", animatedObject);
 }
 
 void SceneManager::Update(float delta) {

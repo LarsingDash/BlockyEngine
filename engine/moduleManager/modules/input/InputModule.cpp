@@ -3,7 +3,8 @@
 //
 
 #include "InputModule.hpp"
-
+#include "SDL.h"
+#include "BlockyEngine.hpp"
 
 //Polls events for input and window states
 void InputModule::PollEvents() {
@@ -99,7 +100,7 @@ void InputModule::RemoveMouseListener(const std::function<void(MouseEvent)>& lis
 }
 
 //Gets the current mouse position
-std::pair<int, int> InputModule::GetCursorPosition() {
+glm::ivec2 InputModule::GetCursorPosition() {
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 	return {x, y};

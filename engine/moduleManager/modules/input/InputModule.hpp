@@ -8,9 +8,8 @@
 #include <functional>
 #include "KeyEvent.hpp"
 #include "MouseEvent.hpp"
-#include "SDL.h"
-#include "BlockyEngine.hpp"
 #include "MouseInput.hpp"
+#include "glm/vec2.hpp"
 
 class InputModule {
 	public:
@@ -21,7 +20,7 @@ class InputModule {
 		void RemoveKeyListener(const std::function<void(KeyEvent)>& listener);
 		void AddMouseListener(const std::function<void(MouseEvent)>& listener);
 		void RemoveMouseListener(const std::function<void(MouseEvent)>& listener);
-		static std::pair<int, int> GetCursorPosition() ;
+		static glm::ivec2 GetCursorPosition() ;
 
 	private:
 		std::vector<std::function<void(KeyEvent)>> _keyListeners;

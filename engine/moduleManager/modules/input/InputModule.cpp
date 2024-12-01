@@ -23,7 +23,7 @@ void InputModule::PollEvents() {
 				auto it = _keyListeners.find(key);
 				if (it != _keyListeners.end()) {
 					for (auto& listener : it->second) {
-						listener(state);
+						listener.second(state);
 					}
 				}
 			}
@@ -44,7 +44,7 @@ void InputModule::PollEvents() {
 				auto it = _mouseListeners.find(button);
 				if (it != _mouseListeners.end()) {
 					for (auto& listener : it->second) {
-						listener(mouseState, x, y);
+						listener.second(mouseState, x, y);
 					}
 				}
 			}
@@ -56,18 +56,19 @@ void InputModule::PollEvents() {
 }
 
 // Adds key listener for a specific key
-void InputModule::AddKeyListener(KeyInput key, const std::function<void(KeyState)>& listener) {
+void InputModule::AddKeyListener(KeyInput key, Component& owner, const std::function<void(KeyState)>& listener) {
 	std::cout << "Adding key listener for key: " << static_cast<int>(key) << std::endl;
-	_keyListeners[key].push_back(listener);
+	_keyListeners[key].emplace_back(&owner, listener);
 }
 
 // Removes key listener for a specific key
-void InputModule::RemoveKeyListener(KeyInput key, const std::function<void(KeyState)>& listener) {
+void InputModule::RemoveKeyListener(KeyInput key, Component& owner) {
 	std::cout << "Removing key listener for key: " << static_cast<int>(key) << std::endl;
+	
 	auto& listeners = _keyListeners[key];
 	auto it = std::find_if(listeners.begin(), listeners.end(),
-						   [&listener](const std::function<void(KeyState)>& existingListener) {
-							   return existingListener.target<void(*)(KeyState)>() == listener.target<void(*)(KeyState)>();
+						   [&owner](const std::pair<Component*, std::function<void(KeyState)>>& listener) {
+							   return listener.first == &owner;
 						   });
 	if (it != listeners.end()) {
 		listeners.erase(it);
@@ -75,19 +76,19 @@ void InputModule::RemoveKeyListener(KeyInput key, const std::function<void(KeySt
 }
 
 // Adds mouse listener for a specific button
-void InputModule::AddMouseListener(MouseInput button, const std::function<void(MouseButtonState, int, int)>& listener) {
+void InputModule::AddMouseListener(MouseInput button, Component& owner, const std::function<void(MouseButtonState, int, int)>& listener) {
 	std::cout << "Adding mouse listener for button: " << static_cast<int>(button) << std::endl;
-	_mouseListeners[button].push_back(listener);
+	_mouseListeners[button].emplace_back(&owner, listener);
 }
 
 // Removes mouse listener for a specific button
-void InputModule::RemoveMouseListener(MouseInput button, const std::function<void(MouseButtonState, int, int)>& listener) {
+void InputModule::RemoveMouseListener(MouseInput button, Component& owner) {
 	std::cout << "Removing mouse listener for button: " << static_cast<int>(button) << std::endl;
 
 	auto& listeners = _mouseListeners[button];
 	auto it = std::find_if(listeners.begin(), listeners.end(),
-						   [&listener](const std::function<void(MouseButtonState, int, int)>& existingListener) {
-							   return existingListener.target<void(*)(MouseButtonState, int, int)>() == listener.target<void(*)(MouseButtonState, int, int)>();
+						   [&owner](const std::pair<Component*, std::function<void(MouseButtonState, int, int)>>& listener) {
+							   return listener.first == &owner;
 						   });
 	if (it != listeners.end()) {
 		listeners.erase(it);

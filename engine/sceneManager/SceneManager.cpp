@@ -8,31 +8,51 @@
 #include "moduleManager/ModuleManager.hpp"
 #include "components/example/MouseInputComponent.hpp"
 #include "components/example/KeyboardInputComponent.hpp"
+#include "components/example/MouseReparenting.hpp"
 
 SceneManager::SceneManager() :
 		testScene(std::make_unique<GameObject>("root")),
 		recalculationList(){
 	recalculationList.reserve(25);
 
+	//Basic mouse input
 	auto& mouseInputComponent = testScene->AddChild("MouseInputComponent");
 	mouseInputComponent.AddComponent<MouseInputComponent>("mouseInputComponent");
 
-	auto& animatedObject = testScene->AddChild("AnimatedObject");
-	animatedObject.transform->SetScale(200.f, 200.f);
-	animatedObject.transform->SetPosition(100.f, 100.f);
+	//ParentA
+	auto& parentA = testScene->AddChild("ParentA");
+	parentA.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, true);
+	parentA.transform->SetPosition(200, 300);	
+	parentA.transform->SetScale(150, 300);
+	parentA.transform->SetRotation(20);
+	
+	//ParentB
+	auto& parentB = testScene->AddChild("ParentB");
+	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 0, 255, 255}, true);
+	parentB.transform->SetPosition(525, 325);
+	parentB.transform->SetScale(350, 200);
+	parentB.transform->SetRotation(-125);
+	
+	//Animated Object
+	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	auto& animatedSprite = animatedObject.AddComponent<AnimationRenderable>(
 			"animTag", "../assets/character_spritesheet.png",
 			"spriteTag", 32, 32
 	);
-	auto& animationController = animatedObject.AddComponent<AnimationController>("animControllerTag", animatedSprite);
 
+	//Animator
+	auto& animationController = animatedObject.AddComponent<AnimationController>("animControllerTag", animatedSprite);
 	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
 	animationController.AddAnimation("run", 12, 19, 0.1f, true);
 	animationController.AddAnimation("jump", 27, 35, 0.1f, false);
 	animatedObject.GetComponent<AnimationController>()->PlayAnimation("idle");
 
+	//Keyboard input
 	auto& keyboardInputComponent = testScene->AddChild("KeyboardInputComponent");
 	keyboardInputComponent.AddComponent<KeyboardInputComponent>("keyboardInputComponent", animatedObject);
+	
+	//Reparenting mouse input
+	animatedObject.AddComponent<MouseReparenting>("Reparenting", parentA, parentB);
 }
 
 void SceneManager::Update(float delta) {

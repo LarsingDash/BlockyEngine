@@ -13,7 +13,10 @@ Renderable::Renderable(GameObject& gameObject, const char* tag, RenderableType r
 Renderable::~Renderable() = default;
 
 void Renderable::Start() {
-	ModuleManager::getInstance().getModule<WindowModule>().AddRenderable(*this);
+	ModuleManager::getInstance()
+			.getModule<WindowModule>()
+			.GetRenderingModule()
+			.AddRenderable(*this);
 }
 
 void Renderable::Update(float delta) {
@@ -21,9 +24,14 @@ void Renderable::Update(float delta) {
 }
 
 void Renderable::End() {
-	ModuleManager::getInstance().getModule<WindowModule>().RemoveRenderable(*this);
+	ModuleManager::getInstance()
+			.getModule<WindowModule>()
+			.GetRenderingModule()
+			.RemoveRenderable(*this);
 }
 
 RenderableType Renderable::GetRenderableType() {
 	return _renderableType;
 }
+
+

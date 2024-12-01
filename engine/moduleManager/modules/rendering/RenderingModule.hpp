@@ -15,25 +15,30 @@
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 #include "SDL_render.h"
-#include "SDL.h"
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "SDL2_gfx/SDL2_rotozoom.h"
+#include "components/renderables/AnimationRenderable.hpp"
 
 class RenderingModule {
 	public:
 		explicit RenderingModule(SDL_Renderer* renderer);
 		~RenderingModule();
-		void Render(const std::vector<std::reference_wrapper<Renderable>>& renderables);
+
+		void Render();
+		void AddRenderable(Renderable& renderable);
+		void RemoveRenderable(Renderable& renderable);
 
 	private:
-		SDL_Renderer* renderer;
-		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> textureCache;
+		SDL_Renderer* _renderer;
+		std::vector<std::reference_wrapper<Renderable>> renderables;
+		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> _textureCache;
 
-		void RenderRectangle(RectangleRenderable& renderable);
-		void RenderEllipse(EllipseRenderable& renderable);
-		void RenderSprite(SpriteRenderable& renderable);
-		void RenderTexture(SDL_Texture* texture, const ComponentTransform& transform);
-		SDL_Texture* LoadTexture(const SpriteRenderable& sprite, int& width, int& height);
+		void _renderRectangle(RectangleRenderable& renderable);
+		void _renderEllipse(EllipseRenderable& renderable);
+		void _renderSprite(SpriteRenderable& renderable);
+		void _renderAnimatedSprite(AnimationRenderable& renderable);
+		void _renderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect);
+		SDL_Texture* _loadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
 
 #endif //BLOCKYENGINE_RENDERINGMODULE_HPP

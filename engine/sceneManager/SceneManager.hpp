@@ -9,6 +9,8 @@
 #include <memory>
 
 #include "gameObject/GameObject.hpp"
+#include "moduleManager/modules/input/InputModule.hpp"
+#include "components/renderables/RectangleRenderable.hpp"
 
 class SceneManager {
 	public:
@@ -23,7 +25,8 @@ class SceneManager {
 		void Update(float delta);
 
 	private:
-		std::vector<std::unique_ptr<GameObject>> testScene;
+		std::unique_ptr<GameObject> testScene;
+		std::vector<std::reference_wrapper<Transform>> recalculationList;
 };
 
 #endif //BLOCKYENGINE_SCENEMANAGER_HPP

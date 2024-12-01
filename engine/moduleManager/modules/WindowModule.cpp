@@ -4,14 +4,11 @@
 
 #include "WindowModule.hpp"
 
-#include <cmath>
-#include <SDL.h>
-
 #include <iostream>
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 
-WindowModule::WindowModule() : renderingModule(nullptr) {
+WindowModule::WindowModule() : renderingModule(nullptr), inputModule(nullptr) {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 		std::cerr << "Couldn't init video: " << SDL_GetError() << std::endl;
 		return;
@@ -30,12 +27,14 @@ WindowModule::WindowModule() : renderingModule(nullptr) {
 	//Renderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!renderer) {
-		std::cerr << "Couldn't create renderer: " << SDL_GetError() << std::endl;
+		std::cerr << "Couldn't create _renderer: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		SDL_DestroyWindow(window);
 		return;
 	}
 	renderingModule = std::make_unique<RenderingModule>(renderer);
+	inputModule = std::make_unique<InputModule>();
+
 }
 
 WindowModule::~WindowModule() {
@@ -49,51 +48,26 @@ void WindowModule::Update(float delta) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
 
-	ProcessEvents();
-	Render();
+	inputModule->PollEvents();
 
+	_render();
 	SDL_RenderPresent(renderer);
 }
 
-void WindowModule::AddRenderable(Renderable& renderable) {
-	renderables.emplace_back(renderable);
+void WindowModule::_render() {
+	renderingModule->Render();
 }
 
-void WindowModule::RemoveRenderable(Renderable& renderable) {
-	auto it = std::find_if(renderables.begin(), renderables.end(),
-						   [&renderable](const std::reference_wrapper<Renderable>& other) {
-							   return &renderable == &other.get();
-						   });
-
-	if (it != renderables.end()) {
-		renderables.erase(it);
+InputModule& WindowModule::GetInputModule() {
+	if (!inputModule) {
+		throw std::runtime_error("InputModule is not initialized.");
 	}
+	return *inputModule;
 }
-
-void WindowModule::ProcessEvents() {
-	SDL_Event event;
-	while (SDL_PollEvent(&event) != 0) {
-		switch (event.type) {
-			default:
-				break;
-			case SDL_KEYDOWN: {
-				SDL_Scancode key = event.key.keysym.scancode;
-				switch (key) {
-					default:
-						break;
-					case SDL_SCANCODE_ESCAPE:
-						BlockyEngine::isRunning = false;
-						break;
-				}
-			}
-				break;
-			case SDL_QUIT:
-				BlockyEngine::isRunning = false;
-				break;
-		}
+RenderingModule& WindowModule::GetRenderingModule() {
+	if (!renderingModule) {
+		throw std::runtime_error("RenderingModule is not initialized.");
 	}
+	return *renderingModule;
 }
 
-void WindowModule::Render() {
-	renderingModule->Render(renderables);
-}

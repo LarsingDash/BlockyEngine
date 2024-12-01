@@ -25,30 +25,30 @@ constexpr bool REMOVE_RETURN_TYPE = true;
 #define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, msg);
 
 enum LogLevel {
-    INFO,
-    DEBUG,
-    WARN,
-    ERROR
+	INFO,
+	DEBUG,
+	WARN,
+	ERROR
 };
 
 class BLogger {
-    public:
-        explicit BLogger(const std::string &filename);
+	public:
+		explicit BLogger(const std::string& filename);
 
-        ~BLogger();
+		~BLogger();
 
-        void Log(LogLevel level, const std::string &funcName = "", const std::string &message = "");
+		void Log(LogLevel level, const std::string& funcName = "", const std::string& message = "");
 
-    private:
-        std::ofstream _logFile; // File stream for the log file
+	private:
+		std::ofstream _logFile; // File stream for the log file
 
-        static std::string _levelToString(LogLevel level);
+		static std::string _levelToString(LogLevel level);
 
-        static std::string _funcSignToString(std::string funcName);
+		static std::string _funcSignToString(std::string funcName);
 
-        static std::stringstream _makeTimeStamp();
+		static std::stringstream _makeTimeStamp();
 
-        void _writeLog(const std::stringstream &logMessage);
+		void _writeLog(const std::stringstream& logMessage);
 };
 
 // Definition of global variable 'BLogger bLogger' in a header file should have an 'inline' specifier.
@@ -57,6 +57,6 @@ class BLogger {
 // https://www.reddit.com/r/cpp_questions/comments/1ewgc22/how_do_inline_static_variables_work/
 // This bLogger object is created so that the BLOCKY_ENGINE_ macros can be called without first
 //  calling the constructor or having multiple BLogger objects.
-inline BLogger bLogger("logfile.txt");
+inline static BLogger bLogger("logfile.txt");
 
 #endif //LOG_HPP

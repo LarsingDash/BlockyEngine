@@ -59,14 +59,20 @@ SceneManager::SceneManager() :
 
 	animatedObject.GetComponent<AnimationController>()->PlayAnimation("idle");
 
-	_inputModule.AddKeyListener([&animationController](KeyEvent event) {
-		if (event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_Q) {
+	_inputModule.AddKeyListener(KeyInput::KEY_Q, [&animationController](KeyState state) {
+		if (state == KeyState::KEY_DOWN) {
 			animationController.PlayAnimation("idle");
 		}
-		if (event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_W) {
+	});
+
+	_inputModule.AddKeyListener(KeyInput::KEY_W, [&animationController](KeyState state) {
+		if (state == KeyState::KEY_DOWN) {
 			animationController.PlayAnimation("run");
 		}
-		if (event.state == KeyState::KEY_DOWN && event.key == KeyInput::KEY_E) {
+	});
+
+	_inputModule.AddKeyListener(KeyInput::KEY_E, [&animationController](KeyState state) {
+		if (state == KeyState::KEY_DOWN) {
 			animationController.PlayAnimation("jump");
 		}
 	});

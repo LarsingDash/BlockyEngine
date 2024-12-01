@@ -17,15 +17,15 @@ void InputModule::PollEvents() {
 			case SDL_KEYDOWN: {
 				KeyState state = (event.type == SDL_KEYDOWN) ? KeyState::KEY_DOWN : KeyState::KEY_UP;
 				auto key = _getKeyInput(event.key.keysym.sym);
-				KeyEvent keyEvent(key, state);
 
 				std::cout << "Processing key event: " << static_cast<int>(key) << ", state: "
 						  << (state == KeyState::KEY_DOWN ? "down" : "up") << std::endl;
-				for (auto& listener : _keyListeners) {
-					if (listener) {
-						listener(keyEvent);
-					} else {
-						std::cerr << "Invalid listener detected!" << std::endl;
+
+				// Directly lookup and invoke listeners from the map
+				auto it = _keyListeners.find(key);
+				if (it != _keyListeners.end()) {
+					for (auto& listener : it->second) {
+						listener(state);
 					}
 				}
 			}
@@ -34,7 +34,6 @@ void InputModule::PollEvents() {
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP: {
 				MouseButtonState mouseState = (event.type == SDL_MOUSEBUTTONDOWN) ? MouseButtonState::BUTTON_DOWN : MouseButtonState::BUTTON_UP;
-
 				auto button = SDLMouseButtonToCustomMouseButton(event.button.button);
 				int x = event.button.x;
 				int y = event.button.y;
@@ -44,12 +43,9 @@ void InputModule::PollEvents() {
 				std::cout << "Processing mouse event: button " << static_cast<int>(button) << ", state: "
 						  << (mouseState == MouseButtonState::BUTTON_DOWN ? "down" : "up")
 						  << ", position: (" << x << ", " << y << ")" << std::endl;
+
 				for (auto& listener : _mouseListeners) {
-					if (listener) {
-						listener(mouseEvent);
-					} else {
-						std::cerr << "Invalid listener detected!" << std::endl;
-					}
+					listener(mouseEvent);
 				}
 			}
 				break;
@@ -60,22 +56,21 @@ void InputModule::PollEvents() {
 }
 
 //Adds key listener
-void InputModule::AddKeyListener(const std::function<void(KeyEvent)>& listener) {
-	std::cout << "Adding listener" << std::endl;
-	_keyListeners.push_back(listener);
+void InputModule::AddKeyListener(KeyInput key, const std::function<void(KeyState)>& listener) {
+	std::cout << "Adding key listener for key: " << static_cast<int>(key) << std::endl;
+	_keyListeners[key].push_back(listener);
 }
 
 //Removes key listener
-void InputModule::RemoveKeyListener(const std::function<void(KeyEvent)>& listener) {
-	std::cout << "Removing listener" << std::endl;
-
-	auto it = std::find_if(_keyListeners.begin(), _keyListeners.end(),
-						   [&listener](const std::function<void(KeyEvent)>& existingListener) {
-							   return existingListener.target<void(*)(KeyEvent)>() == listener.target<void(*)(KeyEvent)>();
+void InputModule::RemoveKeyListener(KeyInput key, const std::function<void(KeyState)>& listener) {
+	std::cout << "Removing key listener for key: " << static_cast<int>(key) << std::endl;
+	auto& listeners = _keyListeners[key];
+	auto it = std::find_if(listeners.begin(), listeners.end(),
+						   [&listener](const std::function<void(KeyState)>& existingListener) {
+							   return existingListener.target<void(*)(KeyState)>() == listener.target<void(*)(KeyState)>();
 						   });
-
-	if (it != _keyListeners.end()) {
-		_keyListeners.erase(it);
+	if (it != listeners.end()) {
+		listeners.erase(it);
 	}
 }
 

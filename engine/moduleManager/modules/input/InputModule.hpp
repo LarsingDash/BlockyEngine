@@ -16,14 +16,14 @@ class InputModule {
 		InputModule() = default;
 
 		void PollEvents();
-		void AddKeyListener(const std::function<void(KeyEvent)>& listener);
-		void RemoveKeyListener(const std::function<void(KeyEvent)>& listener);
+		void AddKeyListener(KeyInput key, const std::function<void(KeyState)>& listener);
+		void RemoveKeyListener(KeyInput key, const std::function<void(KeyState)>& listener);
 		void AddMouseListener(const std::function<void(MouseEvent)>& listener);
 		void RemoveMouseListener(const std::function<void(MouseEvent)>& listener);
 		static glm::ivec2 GetCursorPosition() ;
 
 	private:
-		std::vector<std::function<void(KeyEvent)>> _keyListeners;
+		std::unordered_map<KeyInput, std::vector<std::function<void(KeyState)>>> _keyListeners;
 		std::vector<std::function<void(MouseEvent)>> _mouseListeners;
 		static KeyInput _getKeyInput(SDL_Keycode sdlKey);
 };

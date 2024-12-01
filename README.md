@@ -58,7 +58,7 @@ To make a custom component the following can be done:
 #include <iostream>
 #include <gameObject/GameObject.hpp>
 
-class ExampleComp final : public Component {
+class ExampleComp : public Component {
 public:
     ExampleComp(GameObject &gameObject, const char *tag, bool hasTransform)
         : Component(gameObject, tag, hasTransform) {
@@ -142,7 +142,7 @@ reset these options (which is not necessary). You can also add a description, bu
 To run the Blocky Engine, download this project from GitHub and have CLion installed (or any other IDE that supports
 CMake). Open the project using either a MinGW toolchain configuration. When cloning the engine it should, on its own, be
 able
-to download the dependencies it needs. If it is not able to download anything, then see below to configure it.
+to download the dependencies it needs. If it is not able to download everything, then see below to configure it.
 
 ## Manually download dependencies
 

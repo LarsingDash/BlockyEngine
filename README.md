@@ -140,7 +140,7 @@ reset these options (which is not necessary). You can also add a description, bu
 ## Installation
 
 To run the Blocky Engine, download this project from GitHub and have CLion installed (or any other IDE that supports
-CMake). Open the project using either a MinGW toolchain configuration. When cloning the engine it should, on its own, be
+CMake). Open the project using a MinGW toolchain configuration. When cloning the engine it should, on its own, be
 able
 to download the dependencies it needs. If it is not able to download everything, then see below to configure it.
 

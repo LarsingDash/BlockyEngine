@@ -8,8 +8,7 @@
 
 SceneManager::SceneManager() :
 		testScene(std::make_unique<GameObject>("root")),
-		recalculationList(),
-		_inputModule(ModuleManager::getInstance().getModule<WindowModule>().GetInputModule()) {
+		recalculationList(){
 	recalculationList.reserve(25);
 
 	auto& mouseInputComponent = testScene->AddChild("MouseInputComponent");

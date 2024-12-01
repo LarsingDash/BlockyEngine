@@ -8,15 +8,7 @@ KeyboardInputComponent::KeyboardInputComponent(GameObject& parent, const char* t
 		: Component(parent, tag), _animatedObject(animatedObject) {}
 
 void KeyboardInputComponent::Start() {
-	auto& animatedSprite = _animatedObject.AddComponent<AnimationRenderable>(
-			"animTag", "../assets/character_spritesheet.png",
-			"spriteTag", 32, 32
-	);
-
 	_animationController = _animatedObject.GetComponent<AnimationController>();
-	_animationController->AddAnimation("idle", 0, 11, 0.15f, true);
-	_animationController->AddAnimation("run", 12, 19, 0.1f, true);
-	_animationController->AddAnimation("jump", 27, 35, 0.1f, false);
 
 	_inputModule.AddKeyListener(KeyInput::KEY_Q, [this](KeyState state) {
 		if (state == KeyState::KEY_DOWN) {

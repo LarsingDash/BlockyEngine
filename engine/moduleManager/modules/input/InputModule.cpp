@@ -1,5 +1,6 @@
 #include "InputModule.hpp"
 #include <SDL_events.h>
+#include <iostream>
 #include "BlockyEngine.hpp"
 
 // Polls events for input and window states

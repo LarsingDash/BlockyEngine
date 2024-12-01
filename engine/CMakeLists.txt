@@ -112,7 +112,7 @@ target_link_libraries(${ENGINE_TARGET} PRIVATE
 
 target_include_directories(${ENGINE_TARGET} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${SDL_INCLUDE_DIRS}
+        ${SDL2_INCLUDE_DIRS}
         ${DEPS_DIR}
 )
 

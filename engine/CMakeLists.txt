@@ -1,12 +1,14 @@
 # The engine name
 set(ENGINE_TARGET "BlockyEngineInternal")
 set(DEPS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
+set(DEPS_DOWNLOADED FALSE CACHE BOOL INTERNAL "")
 
 include(cmake/fetch_lib.cmake) #The cmake module used for fetching libraries from the internet
 
 # Options that have to be set by the user, using our engine
 option(blocky_build_as_shared "Builds the engine as a shared library" ON)
 option(blocky_build_tests "Builds the testing folder along with the library" OFF)
+
 
 #This just looks cool...
 mark_as_advanced(
@@ -31,37 +33,40 @@ set(BLOCKY_DEPS
 )
 
 ########################################################################################################################
-
+# TODO This keeps retrying to download, just have this only run once please and thank you :)
 # Get the range for to loop through BLOCKY_DEPS
-list(LENGTH BLOCKY_DEPS DEPS_LENGTH)
-math(EXPR LIST_RANGE "${DEPS_LENGTH}-1")
-#message(STATUS "DEPS LENGTH ${LIST_RANGE}")
+if (NOT DEPS_DOWNLOADED)
+    list(LENGTH BLOCKY_DEPS DEPS_LENGTH)
+    math(EXPR LIST_RANGE "${DEPS_LENGTH}-1")
+    #message(STATUS "DEPS LENGTH ${LIST_RANGE}")
 
-# This for loop goes through the Blocky_DEPS and uses the build_lib function from fetch_lib.cmake
-# Syntax is (var RANGE begin end)
-# Because of the Blocky_DEPS structure as a pair it will go through the loop mod 2, because it will always be NAME;URL
-foreach (INDEX RANGE 0 ${LIST_RANGE})
-    math(EXPR MOD_RESULT "${INDEX} % 2")
-    if (${MOD_RESULT} EQUAL 0)
-        list(GET BLOCKY_DEPS ${INDEX} LIB_NAME)
-    else ()
-        list(GET BLOCKY_DEPS ${INDEX} LIB_URL)
-        message(STATUS "Library: ${LIB_NAME}, URL: ${LIB_URL}")
-        if (${LIB_NAME} STREQUAL "stb_image")
-            build_lib_from_file("${DEPS_DIR}/${LIB_NAME}"
-                    "stb_image"
-                    "h"
-                    ${LIB_URL}
-            )
+    # This for loop goes through the Blocky_DEPS and uses the build_lib function from fetch_lib.cmake
+    # Syntax is (var RANGE begin end)
+    # Because of the Blocky_DEPS structure as a pair it will go through the loop mod 2, because it will always be NAME;URL
+    foreach (INDEX RANGE 0 ${LIST_RANGE})
+        math(EXPR MOD_RESULT "${INDEX} % 2")
+        if (${MOD_RESULT} EQUAL 0)
+            list(GET BLOCKY_DEPS ${INDEX} LIB_NAME)
         else ()
-            build_lib(${DEPS_DIR}
-                    ${LIB_NAME}
-                    ${LIB_URL}
-                    TRUE
-            )
+            list(GET BLOCKY_DEPS ${INDEX} LIB_URL)
+            message(STATUS "Library: ${LIB_NAME}, URL: ${LIB_URL}")
+            if (${LIB_NAME} STREQUAL "stb_image")
+                build_lib_from_file("${DEPS_DIR}/${LIB_NAME}"
+                        "stb_image"
+                        "h"
+                        ${LIB_URL}
+                )
+            else ()
+                build_lib(${DEPS_DIR}
+                        ${LIB_NAME}
+                        ${LIB_URL}
+                        TRUE
+                )
+            endif ()
         endif ()
-    endif ()
-endforeach ()
+    endforeach ()
+    set(DEPS_DOWNLOADED TRUE CACHE BOOL INTERNAL "")
+endif ()
 
 ########################################################################################################################
 

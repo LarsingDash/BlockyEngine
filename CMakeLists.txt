@@ -6,4 +6,4 @@ add_subdirectory(engine)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-target_link_libraries(${PROJECT_NAME} BlockyEngineInternal)
+target_link_libraries(${PROJECT_NAME} Blocky::Engine)

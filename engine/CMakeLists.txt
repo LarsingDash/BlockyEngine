@@ -88,12 +88,15 @@ if (blocky_build_tests)
     add_subdirectory(testing)
 endif ()
 
-#message("${ENGINE_TARGET}")
+# Set the target
 if (block_build_as_shared)
     add_library(${ENGINE_TARGET} SHARED BlockyEngine.cpp)
 else ()
     add_library(${ENGINE_TARGET} STATIC BlockyEngine.cpp)
 endif ()
+
+# Create said target with alias
+add_library(Blocky::Engine ALIAS ${ENGINE_TARGET})
 
 add_subdirectory(moduleManager)
 add_subdirectory(sceneManager)

@@ -21,11 +21,77 @@ int main(void) {
 }
 ```
 
+This engine uses the game development philosophy of Unity, in which, it uses the Game Object, Component, Transform and
+Game Object children as data types.
+
 Temporarily, a scene can be made by adding GameObjects to the `testScene` in the constructor in `SceneManager.cpp`.
 Custom Components can be made by creating a class that inherits from `Component`, implementing a constructor,
 destructor, `void Start()`, `void Update(float delta)` and `void End()`. Note that the constructor and destructor are
 intended to be used for the component's own data, whereas Start and End should be used for interaction with Blocky
 Engine's various modules.
+
+### Data Types
+
+The engine provides different components alongside itself to make use of the engine. It provides the following:
+
+- Component base: This can be used to write your own components! By inheriting from this base,
+  you can create different components that the engine will use.
+- Transform: This is used to move your Game Object around through its position, rotate it through the rotation, and
+  scale it to make, for instance, a gigantic rectangle.
+- Game Object: The core datatype that the user of this engine will mostly be interfacing with when creating scenes and
+  the like. It
+  has support for: Multiple Components of the same type and parent-children relations.
+- Renderables: To make a Game Object visible within your scene you will have to draw it, the engine provides simple
+  shapes to draw a Game Object. It also supports textures to render to the scene.
+- Animation Controller: By attaching the `AnimationController` class to the Game Object you can also animate it through
+  a sprite sheet.
+
+### Custom Components
+
+To make a custom component the following can be done:
+
+```c++
+#ifndef EXAMPLECOMP_H
+#define EXAMPLECOMP_H
+
+#include <components/Component.hpp>
+#include <iostream>
+#include <gameObject/GameObject.hpp>
+
+class ExampleComp final : public Component {
+public:
+    ExampleComp(GameObject &gameObject, const char *tag, bool hasTransform)
+        : Component(gameObject, tag, hasTransform) {
+        _someBool = false;
+    }
+
+    ~ExampleComp() override;
+
+    void Start() override {
+        std::cout << "Initializing ExampleComp!" << "\n";
+        std::cout << gameObject.tag <<std::endl;
+        _someBool = true;
+    }
+
+    void Update(float delta) override {
+        if(_someBool)
+            std::cout << "Printing because _somebool is active!" << std::endl;
+    }
+
+    void End() override {
+        std::cout << "Ending ExampleComp!" << "\n";
+        std::cout << gameObject.tag <<std::endl;
+        _someBool = false;
+    }
+
+private:
+    bool _someBool;
+};
+#endif //EXAMPLECOMP_H
+```
+
+This can be added to the Game Object and will then enact the behaviour within this Component. A Component in our case
+can also be considered a script of sorts to enact behaviour within your game.
 
 ## Custom Modules
 
@@ -37,7 +103,24 @@ included by changing the filepath in this config file.
 
 ## Configuration
 
-The Blocky Engine has simple configuration, it will download its dependencies automatically into its 'dependencies' folder. 
+The Blocky Engine has simple configuration, it will download its dependencies automatically into its 'dependencies'
+folder. To set up the engine through the cmake:
+
+```cmake
+cmake_minimum_required(VERSION 3.27)
+project(CustomProj)
+
+# The options that are provided with the Blocky Engine are always off.
+
+# Since this will be downloaded into your project, but this can be any directory. 
+# It is discouraged to make this a hardcoded path, so use the cmake vars for this.
+add_subdirectory("deps/engine")
+add_executable(${PROJECT_NAME} main.cpp)
+
+# This is the target where we want to link to, this one changes
+# depending on if you turned on the `blocky_build_shared` option.
+target_link_libraries(${PROJECT_NAME} Blocky::Engine) 
+```
 
 ### Options
 
@@ -57,13 +140,14 @@ reset these options (which is not necessary). You can also add a description, bu
 ## Installation
 
 To run the Blocky Engine, download this project from GitHub and have CLion installed (or any other IDE that supports
-CMake). Open the project using either a MinGW toolchain configuration or WSL/Linux toolchain, there is no support for
-Mac devices. When cloning the engine it should, on its own, be able
+CMake). Open the project using either a MinGW toolchain configuration. When cloning the engine it should, on its own, be
+able
 to download the dependencies it needs. If it is not able to download anything, then see below to configure it.
 
-### Manually download dependencies
+## Manually download dependencies
 
-After correctly installing the required libraries (as listed below) everything will be handled in the CMakeLists.txt of the
+After correctly installing the required libraries (as listed below) everything will be handled in the CMakeLists.txt of
+the
 Blocky Engine.
 
 ### SDL2
@@ -71,8 +155,10 @@ Blocky Engine.
 This build of Blocky Engine is intended to be used with SDL release 2.30.9. The library can be downloaded
 at [the official GitHub](https://github.com/libsdl-org/SDL/releases/tag/release-2.30.9) listed as
 `SDL2-devel-2.30.9-mingw.zip`. From this zip file, extract the `bin`, `include` and
-`lib` folders from `x86_64-w64-mingw32` into `engine/dependencies/SDL2/`. 
-In the case of Linux it's required that you have the SDL-development libraries downloaded on your system/distro. If the dependencies are not installed, the Blocky Engine will try to install the dependencies itself, which in the case of Linux is not encouraged. Obscure libraries such as SDL_gfx, will be handled by the engine.
+`lib` folders from `x86_64-w64-mingw32` into `engine/dependencies/SDL2/`.
+In the case of Linux it's required that you have the SDL-development libraries downloaded on your system/distro. If the
+dependencies are not installed, the Blocky Engine will try to install the dependencies itself, which in the case of
+Linux is not encouraged. Obscure libraries such as SDL_gfx, will be handled by the engine.
 The `PATH` environment variable needs to be
 pointing to
 this bin folder. This can be
@@ -80,7 +166,6 @@ done in CLion by setting the variable in the run configuration to `engine/depend
 include
 system environment variables).
 Or if that's too difficult simply copy and paste the DLL/SO into the cmake-build directory.
-
 
 ### SDL2_gfx
 

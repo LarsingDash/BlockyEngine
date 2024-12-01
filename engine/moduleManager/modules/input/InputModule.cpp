@@ -1,18 +1,15 @@
-//
-// Created by 11896 on 26/11/2024.
-//
-
 #include "InputModule.hpp"
 #include "SDL.h"
 #include "BlockyEngine.hpp"
 
-//Polls events for input and window states
+// Polls events for input and window states
 void InputModule::PollEvents() {
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 			default: break;
+
 			case SDL_KEYUP:
 			case SDL_KEYDOWN: {
 				KeyState state = (event.type == SDL_KEYDOWN) ? KeyState::KEY_DOWN : KeyState::KEY_UP;
@@ -38,14 +35,16 @@ void InputModule::PollEvents() {
 				int x = event.button.x;
 				int y = event.button.y;
 
-				MouseEvent mouseEvent(button, mouseState, x, y);
-
 				std::cout << "Processing mouse event: button " << static_cast<int>(button) << ", state: "
 						  << (mouseState == MouseButtonState::BUTTON_DOWN ? "down" : "up")
 						  << ", position: (" << x << ", " << y << ")" << std::endl;
 
-				for (auto& listener : _mouseListeners) {
-					listener(mouseEvent);
+				// Directly lookup and invoke listeners for the specific mouse button
+				auto it = _mouseListeners.find(button);
+				if (it != _mouseListeners.end()) {
+					for (auto& listener : it->second) {
+						listener(mouseState, x, y);
+					}
 				}
 			}
 				break;
@@ -55,13 +54,13 @@ void InputModule::PollEvents() {
 	}
 }
 
-//Adds key listener
+// Adds key listener for a specific key
 void InputModule::AddKeyListener(KeyInput key, const std::function<void(KeyState)>& listener) {
 	std::cout << "Adding key listener for key: " << static_cast<int>(key) << std::endl;
 	_keyListeners[key].push_back(listener);
 }
 
-//Removes key listener
+// Removes key listener for a specific key
 void InputModule::RemoveKeyListener(KeyInput key, const std::function<void(KeyState)>& listener) {
 	std::cout << "Removing key listener for key: " << static_cast<int>(key) << std::endl;
 	auto& listeners = _keyListeners[key];
@@ -74,34 +73,34 @@ void InputModule::RemoveKeyListener(KeyInput key, const std::function<void(KeySt
 	}
 }
 
-//Adds mouse listener
-void InputModule::AddMouseListener(const std::function<void(MouseEvent)>& listener) {
-	std::cout << "Adding mouse listener" << std::endl;
-	_mouseListeners.push_back(listener);
+// Adds mouse listener for a specific button
+void InputModule::AddMouseListener(MouseInput button, const std::function<void(MouseButtonState, int, int)>& listener) {
+	std::cout << "Adding mouse listener for button: " << static_cast<int>(button) << std::endl;
+	_mouseListeners[button].push_back(listener);
 }
 
-//Removes mouse listener
-void InputModule::RemoveMouseListener(const std::function<void(MouseEvent)>& listener) {
-	std::cout << "Removing mouse listener" << std::endl;
+// Removes mouse listener for a specific button
+void InputModule::RemoveMouseListener(MouseInput button, const std::function<void(MouseButtonState, int, int)>& listener) {
+	std::cout << "Removing mouse listener for button: " << static_cast<int>(button) << std::endl;
 
-	auto it = std::find_if(_mouseListeners.begin(), _mouseListeners.end(),
-						   [&listener](const std::function<void(MouseEvent)>& existingListener) {
-							   return existingListener.target<void(*)(MouseEvent)>() == listener.target<void(*)(MouseEvent)>();
+	auto& listeners = _mouseListeners[button];
+	auto it = std::find_if(listeners.begin(), listeners.end(),
+						   [&listener](const std::function<void(MouseButtonState, int, int)>& existingListener) {
+							   return existingListener.target<void(*)(MouseButtonState, int, int)>() == listener.target<void(*)(MouseButtonState, int, int)>();
 						   });
-
-	if (it != _mouseListeners.end()) {
-		_mouseListeners.erase(it);
+	if (it != listeners.end()) {
+		listeners.erase(it);
 	}
 }
 
-//Gets the current mouse position
+// Gets the current mouse position
 glm::ivec2 InputModule::GetCursorPosition() {
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 	return {x, y};
 }
 
-//Gets the current key input mapped (in this case) from an SDL key
+// Maps an SDL key code to the custom KeyInput
 KeyInput InputModule::_getKeyInput(SDL_Keycode sdlKey) {
 	return SDLKeyToCustomKey(sdlKey);
 }

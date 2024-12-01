@@ -17,28 +17,34 @@ SceneManager::SceneManager() :
 		_inputModule(ModuleManager::getInstance().getModule<WindowModule>().GetInputModule()) {
 	recalculationList.reserve(25);
 
-	_inputModule.AddMouseListener([this](const MouseEvent& mouseEvent) {
-		auto& rectangle =
-				testScene->AddChild("Rectangle_" + std::to_string(mouseEvent.x) + "_" + std::to_string(mouseEvent.y));
-		rectangle.transform->SetPosition(static_cast<float>(mouseEvent.x), static_cast<float>(mouseEvent.y));
+	_inputModule.AddMouseListener(MouseInput::BUTTON_LEFT, [this](MouseButtonState state, int x, int y) {
+		auto& rectangle = testScene->AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
+		rectangle.transform->SetPosition(static_cast<float>(x), static_cast<float>(y));
 
-		glm::vec4 color;
-		if (mouseEvent.button == MouseInput::BUTTON_LEFT) {
-			color = glm::vec4(255.f, 0.f, 0.f, 255.f);
-		} else if (mouseEvent.button == MouseInput::BUTTON_RIGHT) {
-			color = glm::vec4(0.f, 0.f, 255.f, 255.f);
-		} else if (mouseEvent.button == MouseInput::BUTTON_MIDDLE) {
-			color = glm::vec4(0.f, 255.f, 0.f, 255.f);
-		}
+		glm::vec4 color = (state == MouseButtonState::BUTTON_DOWN) ? glm::vec4(255.f, 0.f, 0.f, 255.f) : glm::vec4(0.f, 0.f, 255.f, 255.f);
 
-		if (mouseEvent.state == MouseButtonState::BUTTON_DOWN) {
-			rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
-			rectangle.transform->SetScale(20.f, 20.f);
-		} else {
-			rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, true);
-			rectangle.transform->SetScale(20.f, 20.f);
-		}
+		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
+		rectangle.transform->SetScale(20.f, 20.f);
+	});
 
+	_inputModule.AddMouseListener(MouseInput::BUTTON_RIGHT, [this](MouseButtonState state, int x, int y) {
+		auto& rectangle = testScene->AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
+		rectangle.transform->SetPosition(static_cast<float>(x), static_cast<float>(y));
+
+		glm::vec4 color = (state == MouseButtonState::BUTTON_DOWN) ? glm::vec4(0.f, 0.f, 255.f, 255.f) : glm::vec4(0.f, 0.f, 255.f, 255.f);
+
+		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
+		rectangle.transform->SetScale(20.f, 20.f);
+	});
+
+	_inputModule.AddMouseListener(MouseInput::BUTTON_MIDDLE, [this](MouseButtonState state, int x, int y) {
+		auto& rectangle = testScene->AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
+		rectangle.transform->SetPosition(static_cast<float>(x), static_cast<float>(y));
+
+		glm::vec4 color = (state == MouseButtonState::BUTTON_DOWN) ? glm::vec4(0.f, 255.f, 0.f, 255.f) : glm::vec4(0.f, 255.f, 0.f, 255.f);
+
+		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
+		rectangle.transform->SetScale(20.f, 20.f);
 	});
 
 

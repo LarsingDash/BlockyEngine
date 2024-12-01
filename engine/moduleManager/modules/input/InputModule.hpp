@@ -9,6 +9,7 @@
 #include "KeyEvent.hpp"
 #include "MouseEvent.hpp"
 #include "MouseInput.hpp"
+#include "components/Component.hpp"
 #include "glm/vec2.hpp"
 
 class InputModule {
@@ -16,15 +17,15 @@ class InputModule {
 		InputModule() = default;
 
 		void PollEvents();
-		void AddKeyListener(KeyInput key, const std::function<void(KeyState)>& listener);
-		void RemoveKeyListener(KeyInput key, const std::function<void(KeyState)>& listener);
-		void AddMouseListener(MouseInput button, const std::function<void(MouseButtonState, int, int)>& listener);
-		void RemoveMouseListener(MouseInput button, const std::function<void(MouseButtonState, int, int)>& listener);
+		void AddKeyListener(KeyInput key, Component& owner, const std::function<void(KeyState)>& listener);
+		void RemoveKeyListener(KeyInput key, Component& owner);
+		void AddMouseListener(MouseInput button, Component& owner, const std::function<void(MouseButtonState, int, int)>& listener);
+		void RemoveMouseListener(MouseInput button, Component& owner);
 		static glm::ivec2 GetCursorPosition();
 
 	private:
-		std::unordered_map<KeyInput, std::vector<std::function<void(KeyState)>>> _keyListeners;
-		std::unordered_map<MouseInput, std::vector<std::function<void(MouseButtonState, int, int)>>> _mouseListeners;
+		std::unordered_map<KeyInput, std::vector<std::pair<Component*, std::function<void(KeyState)>>>> _keyListeners;
+		std::unordered_map<MouseInput, std::vector<std::pair<Component*, std::function<void(MouseButtonState, int, int)>>>> _mouseListeners;
 		static KeyInput _getKeyInput(SDL_Keycode sdlKey);
 };
 

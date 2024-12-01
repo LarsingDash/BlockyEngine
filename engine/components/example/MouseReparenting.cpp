@@ -15,7 +15,7 @@ void MouseReparenting::Start() {
 	InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
 	
 	inputModule.AddMouseListener(
-			MouseInput::BUTTON_LEFT,
+			MouseInput::BUTTON_LEFT, *this,
 			[&gameObject = gameObject, &parentA = parentA](MouseButtonState state, int x, int y) {
 				if (state == MouseButtonState::BUTTON_DOWN) {
 					gameObject.Reparent(parentA);
@@ -24,7 +24,7 @@ void MouseReparenting::Start() {
 	);
 	
 	inputModule.AddMouseListener(
-			MouseInput::BUTTON_RIGHT,
+			MouseInput::BUTTON_RIGHT, *this,
 			[&gameObject = gameObject, &parentB = parentB](MouseButtonState state, int x, int y) {
 				if (state == MouseButtonState::BUTTON_DOWN) {
 					gameObject.Reparent(parentB);

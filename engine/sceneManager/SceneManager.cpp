@@ -28,13 +28,13 @@ SceneManager::SceneManager() :
 	
 	//ParentB
 	auto& parentB = testScene->AddChild("ParentB");
-	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 255, 0, 255}, true);
+	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 0, 255, 255}, true);
 	parentB.transform->SetPosition(525, 325);
 	parentB.transform->SetScale(350, 200);
 	parentB.transform->SetRotation(-125);
 	
 	//Animated Object
-	auto& animatedObject = parentB.AddChild("AnimatedObject");
+	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	auto& animatedSprite = animatedObject.AddComponent<AnimationRenderable>(
 			"animTag", "../assets/character_spritesheet.png",
 			"spriteTag", 32, 32

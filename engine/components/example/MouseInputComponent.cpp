@@ -8,13 +8,13 @@ MouseInputComponent::MouseInputComponent(GameObject& parent, const char* tag)
 		: Component(parent, tag) {}
 
 void MouseInputComponent::Start() {
-	_inputModule.AddMouseListener(MouseInput::BUTTON_LEFT, [this](MouseButtonState state, int x, int y) {
+	_inputModule.AddMouseListener(MouseInput::BUTTON_LEFT, *this, [this](MouseButtonState state, int x, int y) {
 		HandleMouseInput(state, x, y, glm::vec4(255.f, 0.f, 0.f, 255.f));
 	});
-	_inputModule.AddMouseListener(MouseInput::BUTTON_RIGHT, [this](MouseButtonState state, int x, int y) {
+	_inputModule.AddMouseListener(MouseInput::BUTTON_RIGHT, *this, [this](MouseButtonState state, int x, int y) {
 		HandleMouseInput(state, x, y, glm::vec4(0.f, 0.f, 255.f, 255.f));
 	});
-	_inputModule.AddMouseListener(MouseInput::BUTTON_MIDDLE, [this](MouseButtonState state, int x, int y) {
+	_inputModule.AddMouseListener(MouseInput::BUTTON_MIDDLE, *this, [this](MouseButtonState state, int x, int y) {
 		HandleMouseInput(state, x, y, glm::vec4(0.f, 255.f, 0.f, 255.f));
 	});
 }
@@ -23,15 +23,9 @@ void MouseInputComponent::Update(float delta) {
 }
 
 void MouseInputComponent::End() {
-	_inputModule.RemoveMouseListener(MouseInput::BUTTON_LEFT, [this](MouseButtonState state, int x, int y) {
-		HandleMouseInput(state, x, y, glm::vec4(255.f, 0.f, 0.f, 255.f));
-	});
-	_inputModule.RemoveMouseListener(MouseInput::BUTTON_RIGHT, [this](MouseButtonState state, int x, int y) {
-		HandleMouseInput(state, x, y, glm::vec4(0.f, 0.f, 255.f, 255.f));
-	});
-	_inputModule.RemoveMouseListener(MouseInput::BUTTON_MIDDLE, [this](MouseButtonState state, int x, int y) {
-		HandleMouseInput(state, x, y, glm::vec4(0.f, 255.f, 0.f, 255.f));
-	});
+	_inputModule.RemoveMouseListener(MouseInput::BUTTON_LEFT, *this);
+	_inputModule.RemoveMouseListener(MouseInput::BUTTON_RIGHT, *this);
+	_inputModule.RemoveMouseListener(MouseInput::BUTTON_MIDDLE, *this);
 }
 
 void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color) {

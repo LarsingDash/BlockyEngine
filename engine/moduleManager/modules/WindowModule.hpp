@@ -22,12 +22,10 @@ class WindowModule : public ModuleWrapper {
 		~WindowModule() override;
 
 		void Update(float delta) override;
-		void AddRenderable(Renderable& renderable);
-		void RemoveRenderable(Renderable& renderable);
 
+		RenderingModule& GetRenderingModule();
 		InputModule& GetInputModule();
 	private:
-		static void ProcessEvents();
 		void _render();
 
 		constexpr static int WINDOW_WIDTH = 800;
@@ -37,8 +35,6 @@ class WindowModule : public ModuleWrapper {
 		SDL_Renderer* renderer;
 		std::unique_ptr<RenderingModule> renderingModule;
 		std::unique_ptr<InputModule> inputModule;
-		std::vector<std::reference_wrapper<Renderable>> renderables;
-
 };
 
 #endif //BLOCKYENGINE_WINDOWMODULE_HPP

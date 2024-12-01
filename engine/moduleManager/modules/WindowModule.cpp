@@ -56,24 +56,9 @@ void WindowModule::Update(float delta) {
 	_render();
 	SDL_RenderPresent(renderer);
 }
-void WindowModule::AddRenderable(Renderable& renderable) {
-	renderables.emplace_back(renderable);
-}
-
-void WindowModule::RemoveRenderable(Renderable& renderable) {
-	auto it = std::find_if(renderables.begin(), renderables.end(),
-						   [&renderable](const std::reference_wrapper<Renderable>& other) {
-							   return &renderable == &other.get();
-						   });
-
-	if (it != renderables.end()) {
-		renderables.erase(it);
-	}
-}
-
 
 void WindowModule::_render() {
-	renderingModule->Render(renderables);
+	renderingModule->Render();
 }
 
 InputModule& WindowModule::GetInputModule() {
@@ -81,5 +66,11 @@ InputModule& WindowModule::GetInputModule() {
 		throw std::runtime_error("InputModule is not initialized.");
 	}
 	return *inputModule;
+}
+RenderingModule& WindowModule::GetRenderingModule() {
+	if (!renderingModule) {
+		throw std::runtime_error("RenderingModule is not initialized.");
+	}
+	return *renderingModule;
 }
 

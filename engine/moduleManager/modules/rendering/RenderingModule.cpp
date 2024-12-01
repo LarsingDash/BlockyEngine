@@ -2,6 +2,7 @@
 // Created by 11896 on 15/11/2024.
 //
 
+#include <algorithm>
 #include "RenderingModule.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -13,7 +14,7 @@ RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {
 
 RenderingModule::~RenderingModule() = default;
 
-void RenderingModule::Render(const std::vector<std::reference_wrapper<Renderable>>& renderables) {
+void RenderingModule::Render() {
 	for (Renderable& renderable : renderables) {
 		switch (renderable.GetRenderableType()) {
 			case RECTANGLE:
@@ -201,4 +202,19 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 			_renderer, texture, sourceRect ? &sdlSourceRect : nullptr, &destRect,
 			transform.GetWorldRotation(), nullptr, SDL_RendererFlip::SDL_FLIP_NONE
 	);
+}
+
+void RenderingModule::AddRenderable(Renderable& renderable) {
+	renderables.emplace_back(renderable);
+}
+
+void RenderingModule::RemoveRenderable(Renderable& renderable) {
+	auto it = std::find_if(renderables.begin(), renderables.end(),
+						   [&renderable](const std::reference_wrapper<Renderable>& other) {
+							   return &renderable == &other.get();
+						   });
+
+	if (it != renderables.end()) {
+		renderables.erase(it);
+	}
 }

@@ -11,13 +11,13 @@
 
 PhysicsBody::PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody,
                          const TypeProperties& typeProperties) : Component(gameObject, tag),
-                                                                 physicsShape(std::move(physicsBody)),
-                                                                 typeProperties(
+                                                                 _physicsShape(std::move(physicsBody)),
+                                                                 _typeProperties(
                                                                      typeProperties),
-                                                                 lastPos(
+                                                                 _lastPosition(
                                                                      gameObject.transform->
                                                                      GetWorldPosition()),
-                                                                 lastRotation(
+                                                                 _lastRotation(
                                                                      gameObject.transform->
                                                                      GetWorldRotation()) {}
 
@@ -26,17 +26,19 @@ void PhysicsBody::Start() {
 }
 
 void PhysicsBody::Update(float delta) {
-    lastPos = gameObject.transform->GetWorldPosition();
-    lastRotation = gameObject.transform->GetWorldRotation();
+    _lastPosition = gameObject.transform->GetWorldPosition();
+    _lastRotation = gameObject.transform->GetWorldRotation();
 };
 
 void PhysicsBody::End() {
     ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);
 };
 
-PhysicsShape PhysicsBody::GetShape() { return physicsShape->GetShape(); }
-PhysicsType PhysicsBody::GetType() { return typeProperties.physicsType; }
-//todo add rest and make private
+std::unique_ptr<Shape>* PhysicsBody::GetShapeReference() { return &_physicsShape; }
+PhysicsShape PhysicsBody::GetShape() { return _physicsShape->GetShape(); }
+TypeProperties PhysicsBody::GetTypeProperties() { return _typeProperties; }
+glm::vec2 PhysicsBody::GetLastPosition() { return _lastPosition; }
+float PhysicsBody::GetLastRotation() { return _lastRotation; }
 
 void PhysicsBody::CollisionCallback(PhysicsBody& other) {
     BLOCKY_ENGINE_DEBUG_STREAM(

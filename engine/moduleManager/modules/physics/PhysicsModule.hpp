@@ -17,14 +17,12 @@ struct b2BodyDef;
 class b2Body;
 class b2World;
 
-//todo: add rigidBody
 class PhysicsModule : public ModuleWrapper {
 public:
 	PhysicsModule();
 	~PhysicsModule() override = default;
 
 	void Update(float delta) override;
-	static bool IsSame(const PhysicsBody* collider, const b2Body* body);
 	void AddCollider(PhysicsBody& collider);
 	void RemoveCollider(PhysicsBody& collider);
 
@@ -35,6 +33,7 @@ private:
 	static b2Body* CreateBody(b2World& world, PhysicsBody& collider);
 	static void AddFixture(PhysicsBody& collider, b2Body* body);
 
+	static bool IsSame(const PhysicsBody* collider, const b2Body* body);
 	static b2Vec2 VecConvert(const glm::vec2& a);
 	static glm::vec2 VecConvert(const b2Vec2& a);
 	static b2Vec2 Position(const PhysicsBody& collider);

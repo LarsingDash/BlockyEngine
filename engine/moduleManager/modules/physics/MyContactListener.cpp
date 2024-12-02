@@ -38,15 +38,12 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
     }
 
     if (collider1 != nullptr && collider2 != nullptr) {
-        //todo: _physicsShape collision with _physicsShape/PhysicsBody?
-        if (collider1->typeProperties.isTrigger) {
+        if (collider1->GetTypeProperties().isTrigger) {
             collider1->CollisionCallback(*collider2);
-            // collider1->physicsShape->CollisionCallback(*collider2->physicsShape); //todo:remove?
         }
 
-        if (collider2->typeProperties.isTrigger) {
+        if (collider2->GetTypeProperties().isTrigger) {
             collider2->CollisionCallback(*collider1);
-            // collider2->physicsShape->CollisionCallback(*collider1->physicsShape);
         }
     }
 

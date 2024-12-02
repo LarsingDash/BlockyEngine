@@ -44,14 +44,19 @@ public:
 	void Start() override;
 	void Update(float delta) override;
 	void End() override;;
-	virtual PhysicsShape GetShape();
-	virtual PhysicsType GetType();
-	void CollisionCallback(PhysicsBody& other);
 
-	//todo: private
-	std::unique_ptr<Shape> physicsShape;
-	TypeProperties typeProperties;
-	glm::vec2 lastPos;
-	float lastRotation{};
+	virtual std::unique_ptr<Shape>* GetShapeReference();
+	virtual PhysicsShape GetShape();
+	virtual TypeProperties GetTypeProperties();
+	virtual glm::vec2 GetLastPosition();
+	virtual float GetLastRotation();
+
+	virtual void CollisionCallback(PhysicsBody& other);
+
+private:
+	std::unique_ptr<Shape> _physicsShape;
+	TypeProperties _typeProperties;
+	glm::vec2 _lastPosition;
+	float _lastRotation{};
 };
 #endif //PHYSICSBODY_HPP

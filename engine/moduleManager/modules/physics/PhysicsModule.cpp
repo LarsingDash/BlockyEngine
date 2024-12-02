@@ -68,24 +68,24 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [collider, body] : _colliderToBodyMap) {
 		b2Vec2 pos = body->GetPosition();
-		b2Vec2 d = {pos.x - collider->lastPos.x, pos.y - collider->lastPos.y};
+		b2Vec2 d = {pos.x - collider->GetLastPosition().x, pos.y - collider->GetLastPosition().y};
 
-		const bool isStartPosition = collider->lastPos.x == 0 && collider->lastPos.y == 0
-			&& collider->lastRotation == 0;
+		const bool isStartPosition = collider->GetLastPosition().x == 0 && collider->GetLastPosition().y == 0
+			&& collider->GetLastRotation() == 0;
 		const bool isBigMovement = abs(d.x) >= 50 || abs(d.y) >= 50;
 
-		//todo: better fix for is !startposition && !isBigMovement.
+		//todo: better detection for is !startposition
 		if (!isStartPosition && !isBigMovement) {
-			float deltaAngle = body->GetAngle() - collider->lastRotation;
+			float deltaAngle = body->GetAngle() - collider->GetLastRotation();
 			const auto scale = collider->gameObject.transform->GetWorldScale();
 
 			// todo: uitleg GetWorldScale is to small and generates runaway if to large
 			collider->gameObject.transform->Translate(d.x / scale.x / 2, d.y / scale.y / 2);
 			collider->gameObject.transform->Rotate(deltaAngle);
 
-			BLOCKY_ENGINE_DEBUG(collider->lastPos);
+			BLOCKY_ENGINE_DEBUG(collider->GetLastPosition());
 
-			collider->lastPos = glm::vec2{pos.x, pos.y};
+			collider->GetLastPosition() = glm::vec2{pos.x, pos.y};
 		}
 	}
 }
@@ -125,31 +125,32 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 	// if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
 	switch (collider.GetShape()) {
 		case BOX: {
-			const auto* const shape = dynamic_cast<Box*>(collider.physicsShape.get());
+			const auto* const shape = dynamic_cast<Box*>(collider.GetShapeReference()->get());
 			fixtureDef.shape = AddBoxShape(*shape).release();
 			break;
 		}
 		case CIRCLE: {
-			const auto* const shape = dynamic_cast<Circle*>(collider.physicsShape.get());
+			const auto* const shape = dynamic_cast<Circle*>(collider.GetShapeReference()->get());
 			fixtureDef.shape = AddCircleShape(*shape).release();
 			break;
 		}
 	}
-	switch (collider.typeProperties.physicsType) {
+
+	switch (collider.GetTypeProperties().physicsType) {
 		case COLLIDER: {
 			body->SetGravityScale(0.0f);
 			break;
 		}
 		case RIGIDBODY: {
-			if (!collider.typeProperties.gravityEnabled) {
+			if (!collider.GetTypeProperties().gravityEnabled) {
 				body->SetGravityScale(0.0f);
 			}
 
-			body->SetAngularDamping(collider.typeProperties.angularResistance);
-			body->SetLinearDamping(collider.typeProperties.linearResistance);
+			body->SetAngularDamping(collider.GetTypeProperties().angularResistance);
+			body->SetLinearDamping(collider.GetTypeProperties().linearResistance);
 
-			body->ApplyTorque(collider.typeProperties.rotationVelocity, true);
-			body->ApplyForceToCenter(VecConvert(collider.typeProperties.velocity), true);
+			body->ApplyTorque(collider.GetTypeProperties().rotationVelocity, true);
+			body->ApplyForceToCenter(VecConvert(collider.GetTypeProperties().velocity), true);
 			break;
 		}
 	}
@@ -160,7 +161,7 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 
 	body->CreateFixture(&fixtureDef);
 
-	if (!collider.typeProperties.isStatic) {
+	if (!collider.GetTypeProperties().isStatic) {
 		//todo:
 		// to have all non-static object apply the same force on another, set all bodies to mass 1
 		b2MassData mass = {0.f};

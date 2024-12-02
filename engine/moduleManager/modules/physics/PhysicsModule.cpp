@@ -139,6 +139,7 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 	switch (collider.GetTypeProperties().physicsType) {
 		case COLLIDER: {
 			body->SetGravityScale(0.0f);
+			fixtureDef.isSensor = true;
 			break;
 		}
 		case RIGIDBODY: {
@@ -155,18 +156,11 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 		}
 	}
 
-	// set all object to static, and later overwrite the mass if object is not static
-	constexpr float staticObject = 0.0f;
-	fixtureDef.density = staticObject;
-
 	body->CreateFixture(&fixtureDef);
 
-	if (!collider.GetTypeProperties().isStatic) {
-		//todo:
-		// to have all non-static object apply the same force on another, set all bodies to mass 1
-		b2MassData mass = {0.f};
-		body->SetMassData(&mass);
-	}
+	// To have all objects apply the same force on another, the density attribute is not set, and all bodies are set to the same mass
+	b2MassData b2_mass_data = {1.f};
+	body->SetMassData(&b2_mass_data);
 
 	delete fixtureDef.shape;
 }
@@ -176,7 +170,22 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& collider) {
 	auto angle = Angle(collider);
 
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
+
+	switch (collider.GetTypeProperties().physicsType) {
+		case COLLIDER: {
+			bodyDef.type = b2_kinematicBody;
+			break;
+		}
+		case RIGIDBODY: {
+			bodyDef.type = b2_dynamicBody;
+			break;
+		}
+	}
+
+	if (collider.GetTypeProperties().isStatic) {
+		bodyDef.type = b2_staticBody;
+	}
+
 	bodyDef.position.Set(x, y);
 	bodyDef.angle = angle;
 	b2Body* body = world.CreateBody(&bodyDef);

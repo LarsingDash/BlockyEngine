@@ -16,3 +16,6 @@ glm::ivec4 RectangleRenderable::GetColor() const {
 bool RectangleRenderable::IsFilled() const {
 	return _isFilled;
 }
+void RectangleRenderable::SetColor(const glm::vec4& color) {
+	this->_color = color;
+}

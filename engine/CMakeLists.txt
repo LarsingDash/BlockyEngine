@@ -5,7 +5,7 @@ include(cmake/fetch_lib.cmake) #The cmake module used for fetching libraries fro
 include(cmake/build_deps.cmake)
 
 # Options that have to be set by the user, using our engine
-option(blocky_build_as_shared "Builds the engine as a shared library" ON)
+option(blocky_build_as_shared "Builds the engine as a shared library" OFF)
 option(blocky_build_tests "Builds the testing folder along with the library" OFF)
 
 #This just looks cool...

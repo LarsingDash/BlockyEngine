@@ -6,7 +6,6 @@
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
-//todo: speedup simmulation
 PhysicsModule::PhysicsModule() {
 	b2Vec2 gravity(0.f, 9.8f);
 
@@ -162,23 +161,22 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 }
 
 b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
-	// auto [x,y] = Position(physicsBody);
-	// auto angle = Angle(physicsBody);
+	// position and angel is not set when creating body, because physicsBody.gameObject position & angle is still default at this moment
 	b2Body* body;
 
 	auto gameObject = _gameObjectToBodyMap.find(&physicsBody.gameObject);
 
-	// to have multiple PhysicsBodys on one game object use the same box2d body for the same game object.
+	// to have multiple PhysicsBodies on one game object use the same box2d body for the same game object.
 	if (gameObject != _gameObjectToBodyMap.end()) {
 		body = gameObject->second->b2body;
 	}
 	else {
 		b2BodyDef bodyDef;
 
-		//todo: not working now with multiple physiscTypes? todo: _gameObjectToBodyMap.find(&physicsBody.gameObject);
+		// when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
 		switch (physicsBody.GetTypeProperties().physicsType) {
 			case COLLIDER: {
-				bodyDef.type = b2_staticBody; //todo: cant be static?
+				bodyDef.type = b2_staticBody;
 				break;
 			}
 			case RIGIDBODY: {
@@ -192,8 +190,6 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
 			}
 		}
 
-		// bodyDef.position.Set(x, y);
-		// bodyDef.angle = angle;
 		body = world.CreateBody(&bodyDef);
 	}
 

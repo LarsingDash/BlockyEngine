@@ -59,6 +59,8 @@ public:
 	~PhysicsModule() override = default;
 
 	void Update(float delta) override;
+
+	// when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
 	void AddCollider(PhysicsBody& physicsBody);
 	void RemoveCollider(const PhysicsBody& physicsBody);
 

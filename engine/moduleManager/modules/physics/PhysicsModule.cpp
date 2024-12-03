@@ -6,7 +6,6 @@
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
-//todo: angle not working everywhere
 //todo: fix multiple rigid bodys on same gameobject, so that they can overlap
 //todo: speedup simmulation
 PhysicsModule::PhysicsModule() {
@@ -14,7 +13,7 @@ PhysicsModule::PhysicsModule() {
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
-	_contactListener = std::make_unique<MyContactListener>(&_colliderToBodyMap);
+	_contactListener = std::make_unique<MyContactListener>(&_gameObjectToBodyMap);
 
 	_box2dWorldObject->SetContactListener(_contactListener.get());
 }
@@ -30,82 +29,95 @@ void PhysicsModule::Update(float delta) {
 	WritingBox2DWorldToOutside();
 }
 
-bool PhysicsModule::IsSame(const PhysicsBody* const collider, const b2Body* const body) {
-	if (collider == nullptr || body == nullptr) { return false; }
+bool PhysicsModule::IsSame(const PhysicsBody* const physicsBody, const b2Body* const body) {
+	if (physicsBody == nullptr || body == nullptr) { return false; }
 
-	if (body->GetPosition() != Position(*collider)) { return false; }
+	if (body->GetPosition() != Position(*physicsBody)) { return false; }
 
-	if (body->GetAngle() != Angle(*collider)) { return false; }
+	if (body->GetAngle() != Angle(*physicsBody)) { return false; }
 
 	return true;
 }
 
 void PhysicsModule::WritingExternalInputToBox2DWorld() {
-	for (auto [collider, body] : _colliderToBodyMap) {
-		if (IsSame(collider, body)) { continue; }
-
-		BLOCKY_ENGINE_DEBUG_STREAM("diff: ")
-		// BLOCKY_ENGINE_DEBUG(VecConvert(Position(*collider)))
-		BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetWorldPosition()))
-		BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetWorldPosition()))
-		BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetLocalPosition()))
-		BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetLocalPosition()))
-		BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
-
-		body->SetTransform(Position(*collider), Angle(*collider));
-
-		// Destroy all existing fixtures so if there is a resize the resize can be applied
-		for (b2Fixture* fixture = body->GetFixtureList(); fixture;) {
-			b2Fixture* next = fixture->GetNext();
-			body->DestroyFixture(fixture);
-			fixture = next;
+	for (auto [gameObject, body] : _gameObjectToBodyMap) {
+		//todo: multie?
+		const auto physicsBody = gameObject->GetComponent<PhysicsBody>();
+		if (physicsBody == nullptr) {
+			continue; //todo: GetComponent
 		}
 
-		AddFixture(*collider, body);
+		if (IsSame(physicsBody, body)) { continue; }
 
-		if (!collider->InitDone()) {
-			collider->LastPosition(VecConvert(Position(*collider)));
-			collider->LastRotation(Angle(*collider));
+		// BLOCKY_ENGINE_DEBUG_STREAM("diff: ")
+		// // BLOCKY_ENGINE_DEBUG(VecConvert(Position(*collider)))
+		// BLOCKY_ENGINE_DEBUG((physicsBody->componentTransform->GetWorldPosition()))
+		// BLOCKY_ENGINE_DEBUG((physicsBody->gameObject.transform->GetWorldPosition()))
+		// BLOCKY_ENGINE_DEBUG((physicsBody->componentTransform->GetLocalPosition()))
+		// BLOCKY_ENGINE_DEBUG((physicsBody->gameObject.transform->GetLocalPosition()))
+		// BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
+
+		body->SetTransform(Position(*physicsBody), Angle(*physicsBody));
+
+		//todo:
+		// // Destroy all existing fixtures so if there is a resize the resize can be applied
+		// for (b2Fixture* fixture = body->GetFixtureList(); fixture;) {
+		// 	b2Fixture* next = fixture->GetNext();
+		// 	body->DestroyFixture(fixture);
+		// 	fixture = next;
+		// }
+		//
+		// AddFixture(*collider, body);
+
+		if (!physicsBody->InitDone()) {
+			physicsBody->LastPosition(VecConvert(Position(*physicsBody)));
+			physicsBody->LastRotation(Angle(*physicsBody));
 		}
 	}
 }
 
 void PhysicsModule::WritingBox2DWorldToOutside() {
-	for (auto [collider, body] : _colliderToBodyMap) {
-		b2Vec2 position = body->GetPosition();
-		b2Vec2 deltaPosition = {position.x - collider->LastPosition().x, position.y - collider->LastPosition().y};
+	for (auto [gameObject, body] : _gameObjectToBodyMap) {
+		//todo: multie?
+		const auto physicsBody = gameObject->GetComponent<PhysicsBody>();
+		if (physicsBody == nullptr) {
+			continue; //todo: GetComponent
+		}
 
-		const auto scale = collider->gameObject.transform->GetWorldScale();
+		const b2Vec2 position = body->GetPosition();
+		const b2Vec2 deltaPosition = {
+			position.x - physicsBody->LastPosition().x, position.y - physicsBody->LastPosition().y
+		};
 
-		float angle = body->GetAngle();
-		float deltaAngle = angle - collider->LastRotation();
+		const auto scale = physicsBody->gameObject.transform->GetWorldScale();
+
+		const float angle = body->GetAngle();
+		const float deltaAngle = angle - physicsBody->LastRotation();
 
 		// todo: uitleg GetWorldScale is to small and generates runaway if to large
-		collider->gameObject.transform->Translate(deltaPosition.x / scale.x / 2, deltaPosition.y / scale.y / 2);
-		collider->gameObject.transform->Rotate(deltaAngle / 2);
+		physicsBody->gameObject.transform->Translate(deltaPosition.x / scale.x / 2, deltaPosition.y / scale.y / 2);
+		physicsBody->gameObject.transform->Rotate(deltaAngle / 2);
 
-		std::cout << "GetWorldRotation: " << (collider->gameObject.transform->GetWorldRotation()) << std::endl;
-		std::cout << "GetLocalRotation: " << (collider->gameObject.transform->GetLocalRotation()) << std::endl;
-		std::cout << "deltaAngle: " << (deltaAngle) << std::endl;
-		std::cout << "angle: " << (angle) << std::endl;
-
-		collider->LastPosition(glm::vec2{position.x, position.y});
-		collider->LastRotation(angle);
+		physicsBody->LastPosition(glm::vec2{position.x, position.y});
+		physicsBody->LastRotation(angle);
 	}
 }
 
-void PhysicsModule::AddCollider(PhysicsBody& collider) {
-	BLOCKY_ENGINE_DEBUG_STREAM("AddCollider: "<<collider.tag)
-	b2Body* body = CreateBody(*_box2dWorldObject, collider);
+void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
+	BLOCKY_ENGINE_DEBUG_STREAM("AddCollider: "<<physicsBody.tag)
+	b2Body* body = CreateBody(*_box2dWorldObject, physicsBody);
 
-	_colliderToBodyMap[&collider] = body;
+	if (&physicsBody.gameObject == nullptr) {
+		return;
+	}
+	_gameObjectToBodyMap[&physicsBody.gameObject] = body;
 }
 
-void PhysicsModule::RemoveCollider(PhysicsBody& collider) {
-	auto it = _colliderToBodyMap.find(&collider);
-	if (it != _colliderToBodyMap.end()) {
+void PhysicsModule::RemoveCollider(const PhysicsBody& physicsBody) {
+	auto it = _gameObjectToBodyMap.find(&physicsBody.gameObject); //todo & to *
+	if (it != _gameObjectToBodyMap.end()) {
 		_box2dWorldObject->DestroyBody(it->second);
-		_colliderToBodyMap.erase(it);
+		_gameObjectToBodyMap.erase(it);
 	}
 }
 
@@ -154,8 +166,6 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 			body->SetAngularDamping(collider.GetTypeProperties().angularResistance);
 			body->SetLinearDamping(collider.GetTypeProperties().linearResistance);
 
-			std::cout << Angle(collider) << std::endl;
-
 			body->SetFixedRotation(false);
 			body->SetAngularVelocity(collider.GetTypeProperties().rotationVelocity);
 			body->ApplyForceToCenter(VecConvert(collider.GetTypeProperties().velocity), true);
@@ -172,32 +182,42 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 	delete fixtureDef.shape;
 }
 
-b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& collider) {
-	auto [x,y] = Position(collider);
-	auto angle = Angle(collider);
+b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
+	auto [x,y] = Position(physicsBody);
+	auto angle = Angle(physicsBody);
+	b2Body* body;
 
-	b2BodyDef bodyDef;
+	auto gameObject = _gameObjectToBodyMap.find(&physicsBody.gameObject);
 
-	switch (collider.GetTypeProperties().physicsType) {
-		case COLLIDER: {
-			bodyDef.type = b2_kinematicBody;
-			break;
+	// to have multiple PhysicsBodys on one game object use the same box2d body for the same game object.
+	if (gameObject != _gameObjectToBodyMap.end()) {
+		body = gameObject->second;
+	}
+	else {
+		b2BodyDef bodyDef;
+
+		//todo: not working now?
+		switch (physicsBody.GetTypeProperties().physicsType) {
+			case COLLIDER: {
+				bodyDef.type = b2_kinematicBody;
+				break;
+			}
+			case RIGIDBODY: {
+				bodyDef.type = b2_dynamicBody;
+				break;
+			}
 		}
-		case RIGIDBODY: {
-			bodyDef.type = b2_dynamicBody;
-			break;
+
+		if (physicsBody.GetTypeProperties().isStatic) {
+			bodyDef.type = b2_staticBody;
 		}
+
+		bodyDef.position.Set(x, y);
+		bodyDef.angle = angle;
+		body = world.CreateBody(&bodyDef);
 	}
 
-	if (collider.GetTypeProperties().isStatic) {
-		bodyDef.type = b2_staticBody;
-	}
-
-	bodyDef.position.Set(x, y);
-	bodyDef.angle = angle;
-	b2Body* body = world.CreateBody(&bodyDef);
-
-	AddFixture(collider, body);
+	AddFixture(physicsBody, body);
 
 	return body;
 }

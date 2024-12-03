@@ -10,8 +10,8 @@
 
 class MyContactListener : public b2ContactListener {
 public:
-    std::unordered_map<PhysicsBody*, b2Body*>* _colliderToBodyMap;
-    explicit MyContactListener(std::unordered_map<PhysicsBody*, b2Body*>* colliderToBodyMap);
+    std::unordered_map<GameObject*, b2Body*>* _gameObjectToBodyMap;
+    explicit MyContactListener(std::unordered_map<GameObject*, b2Body*>* gameObjectToBodyMap);
     ~MyContactListener() override = default;
     void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
 };

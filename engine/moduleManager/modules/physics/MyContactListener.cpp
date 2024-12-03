@@ -4,10 +4,11 @@
 
 #include "MyContactListener.hpp"
 
+#include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
-MyContactListener::MyContactListener(std::unordered_map<PhysicsBody*, b2Body*>* colliderToBodyMap) {
-    _colliderToBodyMap = colliderToBodyMap;
+MyContactListener::MyContactListener(std::unordered_map<GameObject*, b2Body*>* gameObjectToBodyMap) {
+    _gameObjectToBodyMap = gameObjectToBodyMap;
 }
 
 /// This is called after a contact is updated. This allows you to inspect a
@@ -24,27 +25,39 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
     auto body1 = contact->GetFixtureA()->GetBody();
     auto body2 = contact->GetFixtureB()->GetBody();
 
-    PhysicsBody* collider1 = nullptr;
-    PhysicsBody* collider2 = nullptr;
+    GameObject* gameObject1 = nullptr;
+    GameObject* gameObject2 = nullptr;
 
     // todo: 2 way map
-    for (auto [collider, body] : *_colliderToBodyMap) {
+    for (auto [gameObject, body] : *_gameObjectToBodyMap) {
         if (body1 == body) {
-            collider1 = collider;
+            gameObject1 = gameObject;
         }
         if (body2 == body) {
-            collider2 = collider;
+            gameObject2 = gameObject;
         }
     }
 
-    if (collider1 != nullptr && collider2 != nullptr) {
-        if (collider1->GetTypeProperties().isTrigger) {
-            collider1->CollisionCallback(*collider2);
-        }
+    if (gameObject1 == nullptr || gameObject2 == nullptr) {
+        std::cerr << "gameObject1 body does not exist, PreSolve" << std::endl;
+        return;
+    }
 
-        if (collider2->GetTypeProperties().isTrigger) {
-            collider2->CollisionCallback(*collider1);
-        }
+    //todo: multi PhysicsBody
+    auto* physicsBody1 = gameObject1->GetComponent<PhysicsBody>();
+    auto* physicsBody2 = gameObject2->GetComponent<PhysicsBody>();
+
+    if (physicsBody1 == nullptr || physicsBody2 == nullptr) {
+        std::cerr << "Physics body does not exist, PreSolve" << std::endl;
+        return;
+    }
+
+    if (physicsBody1->GetTypeProperties().isTrigger) {
+        physicsBody1->CollisionCallback(*physicsBody2);
+    }
+
+    if (physicsBody2->GetTypeProperties().isTrigger) {
+        physicsBody2->CollisionCallback(*physicsBody1);
     }
 
     if (body1->GetPosition().y < 51) {

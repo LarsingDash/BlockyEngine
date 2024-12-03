@@ -23,17 +23,17 @@ public:
 	~PhysicsModule() override = default;
 
 	void Update(float delta) override;
-	void AddCollider(PhysicsBody& collider);
-	void RemoveCollider(PhysicsBody& collider);
+	void AddCollider(PhysicsBody& physicsBody);
+	void RemoveCollider(const PhysicsBody& physicsBody);
 
 private:
 	void WritingExternalInputToBox2DWorld();
 	void WritingBox2DWorldToOutside();
 
-	static b2Body* CreateBody(b2World& world, PhysicsBody& collider);
-	static void AddFixture(PhysicsBody& collider, b2Body* body);
+	b2Body* CreateBody(b2World& world, PhysicsBody& physicsBody);
+	void AddFixture(PhysicsBody& physicsBody, b2Body* body);
 
-	static bool IsSame(const PhysicsBody* collider, const b2Body* body);
+	static bool IsSame(const PhysicsBody* physicsBody, const b2Body* body);
 	static b2Vec2 VecConvert(const glm::vec2& a);
 	static glm::vec2 VecConvert(const b2Vec2& a);
 	static b2Vec2 Position(const PhysicsBody& collider);
@@ -41,7 +41,7 @@ private:
 
 	std::unique_ptr<b2World> _box2dWorldObject;
 	std::unique_ptr<MyContactListener> _contactListener;
-	std::unordered_map<PhysicsBody*, b2Body*> _colliderToBodyMap;
+	std::unordered_map<GameObject*, b2Body*> _gameObjectToBodyMap;
 };
 
 #endif //PHYSICSMODULE_HPP

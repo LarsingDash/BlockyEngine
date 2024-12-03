@@ -2,6 +2,6 @@
         WindowModule.cpp
 )
 
-add_subdirectory(physics)
+#add_subdirectory(physics)
 add_subdirectory(rendering)
 add_subdirectory(input)

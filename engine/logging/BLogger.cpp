@@ -7,6 +7,7 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+// #include <glm/vec2.hpp>
 
 BLogger::BLogger(const std::string& filename) {
 	_logFile.open(filename, std::ios::out);
@@ -31,13 +32,14 @@ void BLogger::Log(const LogLevel level, const std::string& funcName, const std::
 	_writeLog(logMessage);
 }
 
-void BLogger::Log(LogLevel level, const std::string& funcName, const glm::vec2& message) {
-	Log(level, funcName, "(" + std::to_string(message.x) + ", " + std::to_string(message.y) + ")");
-}
-
-void BLogger::Log(LogLevel level, const std::string& funcName, const float& message) {
-	Log(level, funcName, "(" + std::to_string(message) + ")");
-}
+//
+// void BLogger::Log(LogLevel level, const std::string& funcName, const glm::vec2& message) {
+// 	Log(level, funcName, "(" + std::to_string(message.x) + ", " + std::to_string(message.y) + ")");
+// }
+//
+// void BLogger::Log(LogLevel level, const std::string& funcName, const float& message) {
+// 	Log(level, funcName, "(" + std::to_string(message) + ")");
+// }
 
 std::string BLogger::_levelToString(LogLevel level) {
 	switch (level) {

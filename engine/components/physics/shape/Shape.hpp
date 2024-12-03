@@ -4,7 +4,6 @@
 #ifndef SHAPE_HPP
 #define SHAPE_HPP
 
-//todo: delete?
 enum PhysicsShape {
 	BOX,
 	CIRCLE

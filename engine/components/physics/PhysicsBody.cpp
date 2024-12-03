@@ -36,11 +36,17 @@ void PhysicsBody::End() {
 
 std::unique_ptr<Shape>* PhysicsBody::GetShapeReference() { return &_physicsShape; }
 PhysicsShape PhysicsBody::GetShape() { return _physicsShape->GetShape(); }
-TypeProperties PhysicsBody::GetTypeProperties() { return _typeProperties; }
-glm::vec2 PhysicsBody::GetLastPosition() { return _lastPosition; }
-float PhysicsBody::GetLastRotation() { return _lastRotation; }
+TypeProperties PhysicsBody::GetTypeProperties() const { return _typeProperties; }
+glm::vec2 PhysicsBody::LastPosition() const { return _lastPosition; }
+float PhysicsBody::LastRotation() const { return _lastRotation; }
+bool PhysicsBody::InitDone() const { return _isInitialized; }
+
+void PhysicsBody::LastPosition(glm::vec2 position) { _lastPosition = position; }
+void PhysicsBody::LastRotation(float rotation) { _lastRotation = rotation; }
+void PhysicsBody::InitDone(bool initialized) { _isInitialized = initialized; }
 
 void PhysicsBody::CollisionCallback(PhysicsBody& other) {
+    //todo: implement collision callback interface
     BLOCKY_ENGINE_DEBUG_STREAM(
         "CollisionCallback()" << " tag: " << tag << " other.tag : " << other.tag);
 }

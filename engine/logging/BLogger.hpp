@@ -10,7 +10,8 @@
 #include <sstream>
 #include <glm/vec2.hpp>
 
-#define LOG_TO_CONSOLE 1
+// if logging is lagging the game don't set LOG_TO_CONSOLE 0, because it gives the biggest performers hit
+#define LOG_TO_CONSOLE 0
 #define LOG_TO_FILE 1
 
 // length for function/class name that is reserved
@@ -29,16 +30,14 @@ constexpr bool REMOVE_RETURN_TYPE = true;
 
 #define BLOCKY_ENGINE_DEBUG_STREAM(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, (std::stringstream() << msg).str());
 
-enum LogLevel
-{
+enum LogLevel {
     INFO,
     DEBUG,
     WARN,
     ERROR
 };
 
-class BLogger
-{
+class BLogger {
 public:
     explicit BLogger(const std::string& filename);
 
@@ -46,6 +45,7 @@ public:
 
     void Log(LogLevel level, const std::string& funcName = "", const std::string& message = "");
     void Log(LogLevel level, const std::string& funcName = "", const glm::vec2& message = {});
+    void Log(LogLevel level, const std::string& funcName = "", const float& message = {});
 
 private:
     std::ofstream _logFile; // File stream for the log file

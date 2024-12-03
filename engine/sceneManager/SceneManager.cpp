@@ -25,7 +25,7 @@ SceneManager::SceneManager() :
 	testScene->transform->SetPosition(x, y);
 	testScene->transform->Scale(w, h);
 
-	TypeProperties p(COLLIDER, true, false, {0, 0}, 1000, 0, 0, true); //todo: move in component
+	TypeProperties p(COLLIDER, true, false, {2, 0}, 100, 0, 0, true);
 
 	auto& leftParent = testScene->AddChild("Box_Collider_Red");
 	auto& rightParent = testScene->AddChild("RightParent");
@@ -33,6 +33,7 @@ SceneManager::SceneManager() :
 	p.isStatic = true;
 
 	leftParent.transform->Translate(4, 6);
+	leftParent.transform->Rotate(10);
 	leftParent.AddComponent<RectangleRenderable>("Box_Collider_Red_Rigid", glm::vec4{255, 0, 0, 255}, true);
 	auto& box1 = leftParent.AddComponent<BoxRigidBody>("Box_Collider_Red_Rigid", p.isTrigger, p.isStatic, p.velocity,
 	                                                   p.rotationVelocity, p.angularResistance, p.linearResistance,
@@ -46,6 +47,7 @@ SceneManager::SceneManager() :
 	p.isStatic = false;
 
 	child2.transform->Translate(4, 0);
+	child2.transform->Rotate(10);
 	child2.AddComponent<RectangleRenderable>("Box_Collider_Red_Rigid", glm::vec4{255, 0, 0, 255}, true);
 	auto& boxr1 = child2.AddComponent<BoxRigidBody>("Box_Collider_Red_Rigid", p.isTrigger, p.isStatic, p.velocity,
 	                                                p.rotationVelocity, p.angularResistance, p.linearResistance,
@@ -58,7 +60,7 @@ SceneManager::SceneManager() :
 	                                                      p.rotationVelocity, p.angularResistance, p.linearResistance,
 	                                                      p.gravityEnabled, r);
 
-	p = TypeProperties(RIGIDBODY, true, false, {0, 0}, 10000, 0, 0, false); //todo: move in component
+	p = TypeProperties(RIGIDBODY, true, false, {0, 0}, 10, 0.1, 0.1, false);
 
 	rightParent.transform->Translate(4, 4);
 	rightParent.AddComponent<RectangleRenderable>("Box_Collider_Green", glm::vec4{0, 255, 0, 255}, false);

@@ -7,8 +7,8 @@
 #include <logging/BLogger.hpp>
 
 //todo: angle not working everywhere
-//todo: some gamebojects can intersecte one another. nog naar kijken
 //todo: fix multiple rigid bodys on same gameobject, so that they can overlap
+//todo: speedup simmulation
 PhysicsModule::PhysicsModule() {
 	b2Vec2 gravity(0.f, 9.8f);
 
@@ -22,8 +22,8 @@ PhysicsModule::PhysicsModule() {
 void PhysicsModule::Update(float delta) {
 	WritingExternalInputToBox2DWorld();
 
-	constexpr int32 positionIterations = 2 * 1000;
-	constexpr int32 velocityIterations = 6 * 1000;
+	constexpr int32 positionIterations = 2;
+	constexpr int32 velocityIterations = 6;
 
 	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
 
@@ -44,13 +44,13 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 	for (auto [collider, body] : _colliderToBodyMap) {
 		if (IsSame(collider, body)) { continue; }
 
-		// BLOCKY_ENGINE_DEBUG_STREAM("diff: ")
-		// // BLOCKY_ENGINE_DEBUG(VecConvert(Position(*collider)))
-		// BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetWorldPosition()))
-		// BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetWorldPosition()))
-		// BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetLocalPosition()))
-		// BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetLocalPosition()))
-		// BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
+		BLOCKY_ENGINE_DEBUG_STREAM("diff: ")
+		// BLOCKY_ENGINE_DEBUG(VecConvert(Position(*collider)))
+		BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetWorldPosition()))
+		BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetWorldPosition()))
+		BLOCKY_ENGINE_DEBUG((collider->componentTransform->GetLocalPosition()))
+		BLOCKY_ENGINE_DEBUG((collider->gameObject.transform->GetLocalPosition()))
+		BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
 
 		body->SetTransform(Position(*collider), Angle(*collider));
 
@@ -62,31 +62,35 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 		}
 
 		AddFixture(*collider, body);
+
+		if (!collider->InitDone()) {
+			collider->LastPosition(VecConvert(Position(*collider)));
+			collider->LastRotation(Angle(*collider));
+		}
 	}
 }
 
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [collider, body] : _colliderToBodyMap) {
-		b2Vec2 pos = body->GetPosition();
-		b2Vec2 d = {pos.x - collider->GetLastPosition().x, pos.y - collider->GetLastPosition().y};
+		b2Vec2 position = body->GetPosition();
+		b2Vec2 deltaPosition = {position.x - collider->LastPosition().x, position.y - collider->LastPosition().y};
 
-		const bool isStartPosition = collider->GetLastPosition().x == 0 && collider->GetLastPosition().y == 0
-			&& collider->GetLastRotation() == 0;
-		const bool isBigMovement = abs(d.x) >= 50 || abs(d.y) >= 50;
+		const auto scale = collider->gameObject.transform->GetWorldScale();
 
-		//todo: better detection for is !startposition
-		if (!isStartPosition && !isBigMovement) {
-			float deltaAngle = body->GetAngle() - collider->GetLastRotation();
-			const auto scale = collider->gameObject.transform->GetWorldScale();
+		float angle = body->GetAngle();
+		float deltaAngle = angle - collider->LastRotation();
 
-			// todo: uitleg GetWorldScale is to small and generates runaway if to large
-			collider->gameObject.transform->Translate(d.x / scale.x / 2, d.y / scale.y / 2);
-			collider->gameObject.transform->Rotate(deltaAngle);
+		// todo: uitleg GetWorldScale is to small and generates runaway if to large
+		collider->gameObject.transform->Translate(deltaPosition.x / scale.x / 2, deltaPosition.y / scale.y / 2);
+		collider->gameObject.transform->Rotate(deltaAngle / 2);
 
-			BLOCKY_ENGINE_DEBUG(collider->GetLastPosition());
+		std::cout << "GetWorldRotation: " << (collider->gameObject.transform->GetWorldRotation()) << std::endl;
+		std::cout << "GetLocalRotation: " << (collider->gameObject.transform->GetLocalRotation()) << std::endl;
+		std::cout << "deltaAngle: " << (deltaAngle) << std::endl;
+		std::cout << "angle: " << (angle) << std::endl;
 
-			collider->GetLastPosition() = glm::vec2{pos.x, pos.y};
-		}
+		collider->LastPosition(glm::vec2{position.x, position.y});
+		collider->LastRotation(angle);
 	}
 }
 
@@ -150,7 +154,10 @@ void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
 			body->SetAngularDamping(collider.GetTypeProperties().angularResistance);
 			body->SetLinearDamping(collider.GetTypeProperties().linearResistance);
 
-			body->ApplyTorque(collider.GetTypeProperties().rotationVelocity, true);
+			std::cout << Angle(collider) << std::endl;
+
+			body->SetFixedRotation(false);
+			body->SetAngularVelocity(collider.GetTypeProperties().rotationVelocity);
 			body->ApplyForceToCenter(VecConvert(collider.GetTypeProperties().velocity), true);
 			break;
 		}

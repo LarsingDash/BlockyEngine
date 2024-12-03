@@ -9,7 +9,7 @@
 #include <iostream>
 
 BLogger::BLogger(const std::string& filename) {
-	_logFile.open(filename, std::ios::out); // Opens file in out mode
+	_logFile.open(filename, std::ios::out);
 	if (!_logFile.is_open()) {
 		std::cerr << "Error opening log file." << std::endl;
 	}
@@ -33,6 +33,10 @@ void BLogger::Log(const LogLevel level, const std::string& funcName, const std::
 
 void BLogger::Log(LogLevel level, const std::string& funcName, const glm::vec2& message) {
 	Log(level, funcName, "(" + std::to_string(message.x) + ", " + std::to_string(message.y) + ")");
+}
+
+void BLogger::Log(LogLevel level, const std::string& funcName, const float& message) {
+	Log(level, funcName, "(" + std::to_string(message) + ")");
 }
 
 std::string BLogger::_levelToString(LogLevel level) {

@@ -20,7 +20,7 @@ AnimationRenderable::AnimationRenderable(GameObject* gameObject, const char* tag
 	_loadFrames();
 }
 
-Component* AnimationRenderable::clone() {
+Component* AnimationRenderable::_cloneImpl(GameObject& parent) {
 	auto clone = new AnimationRenderable(*this);
 	return clone;
 }

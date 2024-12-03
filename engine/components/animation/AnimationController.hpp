@@ -23,7 +23,7 @@ class AnimationController : public Component {
 
 		AnimationController(GameObject* gameObject, const char* tag, AnimationRenderable& renderable);
 
-		Component* clone() override;
+		Component* _cloneImpl(GameObject& parent) override;
 
 		void Start() override;
 		void Update(float delta) override;

@@ -14,7 +14,7 @@ class AnimationRenderable : public SpriteRenderable {
 		AnimationRenderable(GameObject* gameObject, const char* tag,
 							std::string filePath, std::string spriteTag, int frameWidth, int frameHeight);
 
-		Component* clone() override;
+		Component* _cloneImpl(GameObject& parent) override;
 
 		[[nodiscard]] const glm::ivec4* GetSourceRect() const;
 		[[nodiscard]] const glm::ivec4& GetFrame(int index) const;

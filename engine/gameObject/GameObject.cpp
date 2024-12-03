@@ -22,7 +22,7 @@ GameObject::~GameObject() {
 	for (auto& type : _components) {
 		for (auto& component : type.second) {
 			//Call end before deleting
-			if (!_isActive) {
+			if (_isActive) {
 				component->End();
 			}
 		}
@@ -34,15 +34,15 @@ GameObject::~GameObject() {
 }
 
 GameObject::GameObject(const GameObject& other) :
-		tag(other.tag), parent(nullptr), transform(std::make_unique<GameObjectTransform>(*other.transform)),
+		tag(other.tag), parent(other.parent), transform(std::make_unique<GameObjectTransform>(*other.transform)),
 		_isActive(other._isActive), _isMarkedForDeletion(other._isMarkedForDeletion) {
 	transform->SetGameObject(*this);
-	
+
 	for (const auto& type : other._components) {
 		for (const auto& comp : type.second) {
 			_components[type.first].emplace_back(
-					std::unique_ptr<Component>(comp->clone())
-			)->Reparent(this);
+					std::unique_ptr<Component>(comp->Clone(*this))
+			);
 		}
 	}
 
@@ -55,12 +55,6 @@ GameObject::GameObject(const GameObject& other) :
 
 void GameObject::Update(    // NOLINT(*-no-recursion)
 		float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList) {
-	//Prevent from being updated if some other object marked this one for deletion
-	if (_isMarkedForDeletion) {
-		_reparent(nullptr);
-		return;
-	}
-
 	//Cascade update to components
 	for (auto& type : _components) {
 		for (auto& component : type.second) {
@@ -71,10 +65,7 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "ConstantConditionsOC"
 #pragma ide diagnostic ignored "UnreachableCode"
-			if (_isMarkedForDeletion) {
-				_reparent(nullptr);
-				return;
-			}
+			if (_isMarkedForDeletion) return;
 #pragma clang diagnostic pop
 		}
 	}
@@ -92,11 +83,24 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 
 	//Cascade update to child objects
 	for (auto& child : _children) {
-		child->Update(delta, recalculationList);
+		//Prevent from being updated if some other object marked this one for deletion
+		if (!child->_isMarkedForDeletion) {
+			child->Update(delta, recalculationList);
+			if (child->_isMarkedForDeletion) _deletionList.emplace_back(child.get());
+		}
+	}
+
+	if (!_deletionList.empty()) {
+		for (auto child : _deletionList) {
+			child->_reparent(nullptr);
+		}
+		_deletionList.clear();
 	}
 }
 
-void GameObject::SetActive(bool active) {    // NOLINT(*-no-recursion)
+void GameObject::SetActive(bool active, bool force) {    // NOLINT(*-no-recursion)
+	//Early return if nothing changed
+	if (_isActive != active && !force) return;
 	_isActive = active;
 
 	//Cascade End to components
@@ -119,6 +123,17 @@ void GameObject::SetActive(bool active) {    // NOLINT(*-no-recursion)
 	for (auto& child : _children) {
 		child->SetActive(_isActive);
 	}
+}
+
+GameObject& GameObject::AddChild(GameObject& prefab) {
+	//Instantiate new GameObject in this children list
+	GameObject& child = *_children.emplace_back(std::make_unique<GameObject>(prefab));
+
+	//Pass active mode onto child
+	child.SetActive(_isActive, true);
+
+	//Return newly created child
+	return child;
 }
 
 GameObject* GameObject::GetChild(const std::string& t) {
@@ -172,6 +187,11 @@ void GameObject::Reparent(GameObject& target) {
 			transform->RecalculateWorldMatrix();
 		}
 	}
+}
+
+void GameObject::SetParent(GameObject& target) {
+	parent = &target;
+	transform->SetParent(*target.transform);
 }
 
 void GameObject::Destroy() { _isMarkedForDeletion = true; }

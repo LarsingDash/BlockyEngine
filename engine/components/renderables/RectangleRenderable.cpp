@@ -9,7 +9,7 @@ RectangleRenderable::RectangleRenderable(GameObject* gameObject, const char* tag
 		Renderable(gameObject, tag, RenderableType::RECTANGLE),
 		_color(color), _isFilled(isFilled) {}
 
-Component* RectangleRenderable::clone() {
+Component* RectangleRenderable::_cloneImpl(GameObject& parent) {
 	auto clone = new RectangleRenderable(*this);
 	return clone;
 }

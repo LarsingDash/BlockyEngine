@@ -11,7 +11,7 @@ SpriteRenderable::SpriteRenderable(GameObject* gameObject, const char* tag, std:
 		Renderable(gameObject, tag, RenderableType::SPRITE),
 		_filePath(std::move(filePath)), _spriteTag(std::move(spriteTag)) {}
 
-Component* SpriteRenderable::clone() {
+Component* SpriteRenderable::_cloneImpl(GameObject& parent) {
 	auto clone = new SpriteRenderable(*this);
 	return clone;
 }

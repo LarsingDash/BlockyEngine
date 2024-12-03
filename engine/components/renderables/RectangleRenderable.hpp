@@ -14,7 +14,7 @@ class RectangleRenderable : public Renderable {
 							const glm::ivec4& color, bool isFilled = false);
 		~RectangleRenderable() override = default;
 
-		Component* clone() override;
+		Component* _cloneImpl(GameObject& parent) override;
 		
 		[[nodiscard]] glm::ivec4 GetColor() const;
 		[[nodiscard]] bool IsFilled() const;

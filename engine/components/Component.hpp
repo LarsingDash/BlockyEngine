@@ -22,8 +22,7 @@ class Component {
 		Component(Component&& other) noexcept = delete;
 		Component& operator=(Component&& other) noexcept = delete;
 		
-		virtual Component* clone() = 0;
-		void Reparent(GameObject* parent);
+		Component* Clone(GameObject& parent);
 
 		virtual void Start() = 0;
 		virtual void Update(float delta) = 0;
@@ -32,6 +31,10 @@ class Component {
 		std::string tag;
 		GameObject* gameObject;
 		std::unique_ptr<ComponentTransform> componentTransform;
+		
+	private:
+		virtual Component* _cloneImpl(GameObject& parent) = 0;
+		bool _hasTransform;
 };
 
 #endif //BLOCKYENGINE_COMPONENT_HPP

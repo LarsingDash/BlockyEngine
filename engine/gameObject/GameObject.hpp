@@ -31,7 +31,7 @@ class GameObject {
 		void Update(float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList);
 
 		//----- CHILD / PARENT
-		void SetActive(bool active);
+		void SetActive(bool active, bool force = false);
 		
 		template<typename... Args>
 		GameObject& AddChild(Args&& ... args) {
@@ -44,6 +44,7 @@ class GameObject {
 			//Return newly created child
 			return child;
 		}
+		GameObject& AddChild(GameObject& prefab);
 
 		GameObject* GetChild(const std::string& t);
 
@@ -53,6 +54,7 @@ class GameObject {
 		inline const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return _children; };
 
 		void Reparent(GameObject& target);
+		void SetParent(GameObject& target);
 		void Destroy();
 
 		//----- COMPONENTS
@@ -111,13 +113,12 @@ class GameObject {
 			return componentIt ? static_cast<T*>((**componentIt).get()) : nullptr;
 		}
 
-		inline const std::unordered_map<std::type_index, ComponentsList>& GetComponents() { return _components; };
+		inline const std::unordered_map<std::type_index, ComponentsList>& GetComponents() const { return _components; };
 
 		const std::string tag;
 		GameObject* parent;
 		std::unique_ptr<GameObjectTransform> transform;
 
-	private:
 		//----- USINGS
 		using GameObjectList = std::vector<std::unique_ptr<GameObject>>;
 
@@ -160,6 +161,7 @@ class GameObject {
 
 		std::unordered_map<std::type_index, ComponentsList> _components;
 		std::vector<std::unique_ptr<GameObject>> _children;
+		std::vector<GameObject*> _deletionList;
 
 		bool _isActive;
 		bool _isMarkedForDeletion;

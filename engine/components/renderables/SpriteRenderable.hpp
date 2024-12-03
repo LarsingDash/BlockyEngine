@@ -12,7 +12,7 @@ class SpriteRenderable : public Renderable {
 		SpriteRenderable(GameObject* gameObject, const char* tag, std::string filePath, std::string spriteTag);
 		~SpriteRenderable() override = default;
 
-		Component* clone() override;
+		Component* _cloneImpl(GameObject& parent) override;
 
 		[[nodiscard]] std::string GetFilePath() const;
 		[[nodiscard]] std::string GetSpriteTag() const;

@@ -28,9 +28,3 @@ void PhysicsBody::End() {
 std::unique_ptr<Shape>* PhysicsBody::GetShapeReference() { return &_physicsShape; }
 PhysicsShape PhysicsBody::GetShape() { return _physicsShape->GetShape(); }
 TypeProperties PhysicsBody::GetTypeProperties() const { return _typeProperties; }
-
-void PhysicsBody::CollisionCallback(PhysicsBody& other) {
-    //todo: implement collision callback interface
-    BLOCKY_ENGINE_DEBUG_STREAM(
-        "CollisionCallback()" << " tag: " << tag << " other.tag : " << other.tag);
-}

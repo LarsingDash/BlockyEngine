@@ -14,6 +14,7 @@
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/animation/AnimationController.hpp"
+#include "components/physics/collision/CollisionHandler.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 
 float x = 400, y = 100;
@@ -44,6 +45,10 @@ SceneManager::SceneManager() :
 	                                      p.gravityEnabled, w, h);
 	leftParent.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
 	leftParent.AddComponent<CircleCollider>("", p.isTrigger, p.isStatic, r);
+	leftParent.AddComponent<CollisionHandler>("", [](GameObject* obj1, GameObject* obj2) {
+		std::cout << "CollisionHandler1: " << obj1->tag << ", " << obj2->tag << std::endl;
+	});
+
 	auto& child1 = testScene->AddChild("");
 	child1.transform->Translate(2, 6);
 	child1.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
@@ -56,6 +61,10 @@ SceneManager::SceneManager() :
 	child2.AddComponent<BoxRigidBody>("", p.isTrigger, p.isStatic, p.velocity,
 	                                  p.rotationVelocity, p.angularResistance, p.linearResistance,
 	                                  p.gravityEnabled, w, h);
+	child2.AddComponent<CollisionHandler>("", [](GameObject* obj1, GameObject* obj2) {
+		std::cout << "CollisionHandler2: " << obj1->tag << ", " << obj2->tag << std::endl;
+	});
+
 	auto& child3 = testScene->AddChild("");
 	child3.transform->Translate(2, 0);
 	child3.AddComponent<EllipseRenderable>("", rigid + circle, p.isStatic);

@@ -49,8 +49,6 @@ public:
 	[[nodiscard]] virtual PhysicsShape GetShape();
 	[[nodiscard]] virtual TypeProperties GetTypeProperties() const;
 
-	virtual void CollisionCallback(PhysicsBody& other);
-
 private:
 	std::unique_ptr<Shape> _physicsShape;
 	TypeProperties _typeProperties;

@@ -8,6 +8,7 @@
 #include <logging/BLogger.hpp>
 
 #include "PhysicsModule.hpp"
+#include "components/physics/collision/CollisionHandler.hpp"
 
 MyContactListener::MyContactListener(std::unordered_map<GameObject*, Body*>* gameObjectToBodyMap) {
     _gameObjectToBodyMap = gameObjectToBodyMap;
@@ -30,7 +31,6 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
     GameObject* gameObject1 = nullptr;
     GameObject* gameObject2 = nullptr;
 
-    // todo: 2 way map
     for (auto [gameObject, body] : *_gameObjectToBodyMap) {
         if (body1 == body->b2body) {
             gameObject1 = gameObject;
@@ -45,24 +45,14 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
         return;
     }
 
-    //todo: multi PhysicsBody
-    auto* physicsBody1 = gameObject1->GetComponent<PhysicsBody>();
-    auto* physicsBody2 = gameObject2->GetComponent<PhysicsBody>();
+    //todo: check if for every game object if the colliding object isTrigger
 
-    if (physicsBody1 == nullptr || physicsBody2 == nullptr) {
-        std::cerr << "Physics body does not exist, PreSolve" << std::endl;
-        return;
+    const auto handler1 = gameObject1->GetComponent<CollisionHandler>();
+    if (handler1 != nullptr) {
+        handler1->HandleCollision(gameObject1, gameObject2);
     }
-
-    if (physicsBody1->GetTypeProperties().isTrigger) {
-        physicsBody1->CollisionCallback(*physicsBody2);
-    }
-
-    if (physicsBody2->GetTypeProperties().isTrigger) {
-        physicsBody2->CollisionCallback(*physicsBody1);
-    }
-
-    if (body1->GetPosition().y < 51) {
-        contact->SetEnabled(false);
+    const auto handler2 = gameObject2->GetComponent<CollisionHandler>();
+    if (handler2 != nullptr) {
+        handler2->HandleCollision(gameObject1, gameObject2);
     }
 }

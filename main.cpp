@@ -3,15 +3,22 @@
 #include "BlockyEngine.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/example/SpawnerComp.hpp"
+#include "components/example/RotationComp.hpp"
 
 int main() {
 	std::unique_ptr<BlockyEngine> blockyEngine = std::make_unique<BlockyEngine>();
 
 	auto cannon = std::make_unique<GameObject>("Cannon");
-	cannon->transform->SetPosition(30, 300);
+	cannon->transform->SetPosition(400, 300);
 	cannon->transform->SetScale(50, 50);
 	cannon->AddComponent<RectangleRenderable>("CannonR", glm::vec4(150, 75, 15, 155), true);
 	cannon->AddComponent<SpawnerComp>("Spawner");
+	cannon->AddComponent<RotationComp>("Spawner");
+
+	auto& barrel = cannon->AddChild("Barrel");
+	barrel.AddComponent<RectangleRenderable>("BarrelR", glm::vec4(125, 125, 250, 255), true);
+	barrel.transform->SetScale(2, 0.5f);
+	barrel.transform->SetPosition(0.5f, 0);
 
 	SceneManager& sceneManager = blockyEngine->GetSceneManager();
 	sceneManager.AddScene(std::move(cannon));

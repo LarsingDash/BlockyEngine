@@ -49,7 +49,8 @@ GameObject::GameObject(const GameObject& other) :
 	_children.reserve(other._children.size());
 	for (const auto& child : other._children) {
 		auto& created = _children.emplace_back(std::make_unique<GameObject>(*child));
-		created->_reparent(this);
+		created->parent = this;
+		created->transform->SetParent(*transform);
 	}
 }
 

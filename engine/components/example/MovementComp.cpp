@@ -19,7 +19,7 @@ Component* MovementComp::_cloneImpl(GameObject& parent) {
 void MovementComp::Start() {}
 
 void MovementComp::Update(float delta) {
-	gameObject->transform->Translate(delta * 25.f, 0.f);
+	gameObject->transform->Translate(delta * 15.f, 0.f);
 
 	if (gameObject->transform->GetLocalPosition().x > 12.5f) {
 		gameObject->Destroy();

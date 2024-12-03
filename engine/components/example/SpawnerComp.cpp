@@ -6,6 +6,7 @@
 
 #include "gameObject/GameObject.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
+#include "components/renderables/RectangleRenderable.hpp"
 #include "components/example/MovementComp.hpp"
 
 #include <memory>
@@ -30,7 +31,7 @@ Component* SpawnerComp::_cloneImpl(GameObject& parent) {
 
 void SpawnerComp::Start() {}
 
-constexpr float interval = 0.5f;
+constexpr float interval = 0.3f;
 void SpawnerComp::Update(float delta) {
 	counter += delta;
 	if (counter >= interval) {

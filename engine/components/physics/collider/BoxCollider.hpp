@@ -8,7 +8,7 @@
 
 class BoxCollider : public PhysicsBody {
 public:
-	BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height, float width);
+	BoxCollider(GameObject& gameObject, const char* tag, float height, float width);
 };
 
 #endif //BOXCOLLIDER_HPP

@@ -6,10 +6,9 @@
 
 #include <components/physics/shape/Box.hpp>
 
-BoxCollider::BoxCollider(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, float height,
+BoxCollider::BoxCollider(GameObject& gameObject, const char* tag, float height,
                          float width) : PhysicsBody(gameObject, tag,
                                                     std::make_unique<Box>(height, width),
-                                                    TypeProperties(COLLIDER, isTrigger, isStatic, {}, {},
+                                                    TypeProperties(COLLIDER, {}, {}, {},
                                                                    {}, {},
                                                                    {})) {}
-

@@ -46,9 +46,6 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 			body->_gameObjectIsInitialized = true;
 		}
 
-		BLOCKY_ENGINE_DEBUG_STREAM("GetWorldPosition: \t" << gameObject->transform->GetWorldPosition().x);
-		BLOCKY_ENGINE_DEBUG_STREAM("GetPosition(): \t" << body->GetPosition().x)
-
 		body->b2body->SetTransform(Position(*gameObject), Angle(*gameObject));
 	}
 }
@@ -68,18 +65,12 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 		gameObject->transform->Translate(deltaPosition.x / scale.x, deltaPosition.y / scale.y);
 		gameObject->transform->Rotate(deltaAngle);
 
-		BLOCKY_ENGINE_DEBUG_STREAM("GetPosition(): \t" << body->GetPosition().x)
-		BLOCKY_ENGINE_DEBUG_STREAM("deltaPosition: \t" << deltaPosition.x)
-		BLOCKY_ENGINE_DEBUG_STREAM("GetWorldPosition: \t" << gameObject->transform->GetWorldPosition().x)
-
 		body->LastPosition({position.x, position.y});
 		body->LastRotation(angle);
 	}
 }
 
 void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
-	BLOCKY_ENGINE_DEBUG_STREAM("AddCollider: " << physicsBody.tag)
-
 	if (&physicsBody.gameObject == nullptr) {
 		std::cerr << "physicsBody.gameObject == nullptr" << std::endl;
 		return;

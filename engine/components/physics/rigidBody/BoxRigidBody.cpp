@@ -6,12 +6,12 @@
 
 #include <components/physics/shape/Box.hpp>
 
-BoxRigidBody::BoxRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, glm::vec2 velocity,
+BoxRigidBody::BoxRigidBody(GameObject& gameObject, const char* tag, bool isStatic, glm::vec2 velocity,
                            float rotationVelocity, float angularResistance, float linearResistance, bool gravityEnabled,
                            float height,
                            float width) : PhysicsBody(gameObject, tag,
                                                       std::make_unique<Box>(height, width),
-                                                      TypeProperties(RIGIDBODY, isTrigger, isStatic, velocity,
+                                                      TypeProperties(RIGIDBODY,  isStatic, velocity,
                                                                      rotationVelocity,
                                                                      angularResistance, linearResistance,
                                                                      gravityEnabled)) {}

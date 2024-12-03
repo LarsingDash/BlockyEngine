@@ -9,7 +9,7 @@
 
 class CircleRigidBody : public PhysicsBody {
 public:
-	CircleRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic,
+	CircleRigidBody(GameObject& gameObject, const char* tag, bool isStatic,
 	                glm::vec2 velocity,
 	                float rotationVelocity, float angularResistance, float linearResistance,
 	                bool gravityEnabled,

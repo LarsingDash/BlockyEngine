@@ -9,7 +9,7 @@
 
 class BoxRigidBody : public PhysicsBody {
 public:
-	BoxRigidBody(GameObject& gameObject, const char* tag, bool isTrigger, bool isStatic, glm::vec2 velocity,
+	BoxRigidBody(GameObject& gameObject, const char* tag, bool isStatic, glm::vec2 velocity,
 	             float rotationVelocity, float angularResistance,
 	             float linearResistance, bool gravityEnabled, float height, float width);
 };

@@ -30,22 +30,24 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
 
     GameObject* gameObject1 = nullptr;
     GameObject* gameObject2 = nullptr;
+    Body* _body1 = nullptr;
+    Body* _body2 = nullptr;
 
     for (auto [gameObject, body] : *_gameObjectToBodyMap) {
         if (body1 == body->b2body) {
             gameObject1 = gameObject;
+            _body1 = body;
         }
         if (body2 == body->b2body) {
             gameObject2 = gameObject;
+            _body2 = body;
         }
     }
 
-    if (gameObject1 == nullptr || gameObject2 == nullptr) {
-        std::cerr << "gameObject1 body does not exist, PreSolve" << std::endl;
+    if (gameObject1 == nullptr || gameObject2 == nullptr || _body1 == nullptr || _body2 == nullptr) {
+        BLOCKY_ENGINE_ERROR("gameObject does not exist, PreSolve");
         return;
     }
-
-    //todo: check if for every game object if the colliding object isTrigger
 
     const auto handler1 = gameObject1->GetComponent<CollisionHandler>();
     if (handler1 != nullptr) {

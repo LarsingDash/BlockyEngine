@@ -44,7 +44,8 @@ endif ()
 ########################################################################################################################
 
 # Set the target
-if (block_build_as_shared)
+if (blocky_build_as_shared)
+    message(STATUS "BUILDING ${ENGINE_TARGET} AS A SHARED LIB")
     add_library(${ENGINE_TARGET} SHARED BlockyEngine.cpp)
 else ()
     add_library(${ENGINE_TARGET} STATIC BlockyEngine.cpp)
@@ -62,7 +63,6 @@ add_subdirectory(logging)
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         glm
         SDL2::SDL2
-        #        SDL2::SDL2main
         sdl_gfx
 )
 
@@ -72,7 +72,8 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
         ${DEPS_DIR}
 )
 
-if (${MINGW})
+# Copies dll to build directory
+if (MINGW)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll")
     else ()

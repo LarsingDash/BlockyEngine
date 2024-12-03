@@ -8,10 +8,12 @@
 #include <box2d/b2_world_callbacks.h>
 #include "components/physics/PhysicsBody.hpp"
 
+struct Body;
+
 class MyContactListener : public b2ContactListener {
 public:
-    std::unordered_map<GameObject*, b2Body*>* _gameObjectToBodyMap;
-    explicit MyContactListener(std::unordered_map<GameObject*, b2Body*>* gameObjectToBodyMap);
+    std::unordered_map<GameObject*, Body*>* _gameObjectToBodyMap;
+    explicit MyContactListener(std::unordered_map<GameObject*, Body*>* gameObjectToBodyMap);
     ~MyContactListener() override = default;
     void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
 };

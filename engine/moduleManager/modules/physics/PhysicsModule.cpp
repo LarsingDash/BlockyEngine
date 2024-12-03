@@ -29,25 +29,24 @@ void PhysicsModule::Update(float delta) {
 	WritingBox2DWorldToOutside();
 }
 
-bool PhysicsModule::IsSame(const PhysicsBody* const physicsBody, const b2Body* const body) {
-	if (physicsBody == nullptr || body == nullptr) { return false; }
+bool PhysicsModule::IsSame(const GameObject* const gameObject, const Body* const body) {
+	if (gameObject == nullptr || body == nullptr) { return false; }
 
-	if (body->GetPosition() != Position(*physicsBody)) { return false; }
+	if (body->GetPosition() != Position(*gameObject)) { return false; }
 
-	if (body->GetAngle() != Angle(*physicsBody)) { return false; }
+	if (body->GetAngle() != Angle(*gameObject)) { return false; }
 
 	return true;
 }
 
 void PhysicsModule::WritingExternalInputToBox2DWorld() {
 	for (auto [gameObject, body] : _gameObjectToBodyMap) {
-		//todo: multie?
-		const auto physicsBody = gameObject->GetComponent<PhysicsBody>();
-		if (physicsBody == nullptr) {
-			continue; //todo: GetComponent
+		if (IsSame(gameObject, body)) { continue; }
+		if (!body->_gameObjectIsInitialized) {
+			body->LastPosition(Position(*gameObject));
+			body->LastRotation(Angle(*gameObject));
+			body->_gameObjectIsInitialized = true;
 		}
-
-		if (IsSame(physicsBody, body)) { continue; }
 
 		// BLOCKY_ENGINE_DEBUG_STREAM("diff: ")
 		// // BLOCKY_ENGINE_DEBUG(VecConvert(Position(*collider)))
@@ -57,7 +56,7 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 		// BLOCKY_ENGINE_DEBUG((physicsBody->gameObject.transform->GetLocalPosition()))
 		// BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
 
-		body->SetTransform(Position(*physicsBody), Angle(*physicsBody));
+		body->b2body->SetTransform(Position(*gameObject), Angle(*gameObject));
 
 		//todo:
 		// // Destroy all existing fixtures so if there is a resize the resize can be applied
@@ -68,55 +67,49 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 		// }
 		//
 		// AddFixture(*collider, body);
-
-		if (!physicsBody->InitDone()) {
-			physicsBody->LastPosition(VecConvert(Position(*physicsBody)));
-			physicsBody->LastRotation(Angle(*physicsBody));
-		}
 	}
 }
 
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [gameObject, body] : _gameObjectToBodyMap) {
-		//todo: multie?
-		const auto physicsBody = gameObject->GetComponent<PhysicsBody>();
-		if (physicsBody == nullptr) {
-			continue; //todo: GetComponent
-		}
-
 		const b2Vec2 position = body->GetPosition();
 		const b2Vec2 deltaPosition = {
-			position.x - physicsBody->LastPosition().x, position.y - physicsBody->LastPosition().y
+			position.x - body->LastPosition().x, position.y - body->LastPosition().y
 		};
 
-		const auto scale = physicsBody->gameObject.transform->GetWorldScale();
+		const auto scale = gameObject->transform->GetWorldScale();
 
 		const float angle = body->GetAngle();
-		const float deltaAngle = angle - physicsBody->LastRotation();
+		const float deltaAngle = angle - body->LastRotation();
 
 		// todo: uitleg GetWorldScale is to small and generates runaway if to large
-		physicsBody->gameObject.transform->Translate(deltaPosition.x / scale.x / 2, deltaPosition.y / scale.y / 2);
-		physicsBody->gameObject.transform->Rotate(deltaAngle / 2);
+		gameObject->transform->Translate(deltaPosition.x / scale.x, deltaPosition.y / scale.y);
+		gameObject->transform->Rotate(deltaAngle);
 
-		physicsBody->LastPosition(glm::vec2{position.x, position.y});
-		physicsBody->LastRotation(angle);
+		body->LastPosition({position.x, position.y});
+		body->LastRotation(angle);
 	}
 }
 
 void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
-	BLOCKY_ENGINE_DEBUG_STREAM("AddCollider: "<<physicsBody.tag)
-	b2Body* body = CreateBody(*_box2dWorldObject, physicsBody);
+	BLOCKY_ENGINE_DEBUG_STREAM("AddCollider: " << physicsBody.tag)
 
 	if (&physicsBody.gameObject == nullptr) {
+		std::cerr << "physicsBody.gameObject == nullptr" << std::endl;
 		return;
 	}
-	_gameObjectToBodyMap[&physicsBody.gameObject] = body;
+
+	auto body = std::make_unique<Body>();
+	body->b2body = CreateBody(*_box2dWorldObject, physicsBody);
+
+	_gameObjectToBodyMap[&physicsBody.gameObject] = body.get();
+	_bodies.emplace_back(std::move(body));
 }
 
 void PhysicsModule::RemoveCollider(const PhysicsBody& physicsBody) {
 	auto it = _gameObjectToBodyMap.find(&physicsBody.gameObject); //todo & to *
 	if (it != _gameObjectToBodyMap.end()) {
-		_box2dWorldObject->DestroyBody(it->second);
+		_box2dWorldObject->DestroyBody(it->second->b2body);
 		_gameObjectToBodyMap.erase(it);
 	}
 }
@@ -135,40 +128,39 @@ std::unique_ptr<b2Shape> AddCircleShape(const Circle& collider) {
 	return dynamicCircle;
 }
 
-void PhysicsModule::AddFixture(PhysicsBody& collider, b2Body* body) {
+void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 	b2FixtureDef fixtureDef;
 
 	// if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
-	switch (collider.GetShape()) {
+	switch (physicsBody.GetShape()) {
 		case BOX: {
-			const auto* const shape = dynamic_cast<Box*>(collider.GetShapeReference()->get());
+			const auto* const shape = dynamic_cast<Box*>(physicsBody.GetShapeReference()->get());
 			fixtureDef.shape = AddBoxShape(*shape).release();
 			break;
 		}
 		case CIRCLE: {
-			const auto* const shape = dynamic_cast<Circle*>(collider.GetShapeReference()->get());
+			const auto* const shape = dynamic_cast<Circle*>(physicsBody.GetShapeReference()->get());
 			fixtureDef.shape = AddCircleShape(*shape).release();
 			break;
 		}
 	}
 
-	switch (collider.GetTypeProperties().physicsType) {
+	switch (physicsBody.GetTypeProperties().physicsType) {
 		case COLLIDER: {
-			body->SetGravityScale(0.0f);
 			fixtureDef.isSensor = true;
 			break;
 		}
 		case RIGIDBODY: {
-			if (!collider.GetTypeProperties().gravityEnabled) {
+			if (!physicsBody.GetTypeProperties().gravityEnabled) {
 				body->SetGravityScale(0.0f);
 			}
 
-			body->SetAngularDamping(collider.GetTypeProperties().angularResistance);
-			body->SetLinearDamping(collider.GetTypeProperties().linearResistance);
+			body->SetAngularDamping(physicsBody.GetTypeProperties().angularResistance);
+			body->SetLinearDamping(physicsBody.GetTypeProperties().linearResistance);
 
 			body->SetFixedRotation(false);
-			body->SetAngularVelocity(collider.GetTypeProperties().rotationVelocity);
-			body->ApplyForceToCenter(VecConvert(collider.GetTypeProperties().velocity), true);
+			body->SetAngularVelocity(physicsBody.GetTypeProperties().rotationVelocity);
+			body->ApplyForceToCenter(VecConvert(physicsBody.GetTypeProperties().velocity), true);
 			break;
 		}
 	}
@@ -191,7 +183,7 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
 
 	// to have multiple PhysicsBodys on one game object use the same box2d body for the same game object.
 	if (gameObject != _gameObjectToBodyMap.end()) {
-		body = gameObject->second;
+		body = gameObject->second->b2body;
 	}
 	else {
 		b2BodyDef bodyDef;
@@ -199,7 +191,8 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
 		//todo: not working now?
 		switch (physicsBody.GetTypeProperties().physicsType) {
 			case COLLIDER: {
-				bodyDef.type = b2_kinematicBody;
+				// bodyDef.type = b2_kinematicBody;
+				bodyDef.type = b2_staticBody;
 				break;
 			}
 			case RIGIDBODY: {
@@ -230,11 +223,19 @@ glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a) {
 	return {a.x, a.y};
 }
 
-b2Vec2 PhysicsModule::Position(const PhysicsBody& collider) {
-	return VecConvert(collider.componentTransform->GetWorldPosition());
+b2Vec2 PhysicsModule::Position(const PhysicsBody& physicsBody) {
+	return VecConvert(physicsBody.componentTransform->GetWorldPosition());
 }
 
-float PhysicsModule::Angle(const PhysicsBody& collider) {
-	return collider.componentTransform->GetWorldRotation();
+b2Vec2 PhysicsModule::Position(const GameObject& gameObject) {
+	return VecConvert(gameObject.transform->GetWorldPosition());
+}
+
+float PhysicsModule::Angle(const PhysicsBody& physicsBody) {
+	return physicsBody.componentTransform->GetWorldRotation();
+}
+
+float PhysicsModule::Angle(const GameObject& gameObject) {
+	return gameObject.transform->GetWorldRotation();
 }
 

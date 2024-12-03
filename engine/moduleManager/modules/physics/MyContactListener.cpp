@@ -7,7 +7,9 @@
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
-MyContactListener::MyContactListener(std::unordered_map<GameObject*, b2Body*>* gameObjectToBodyMap) {
+#include "PhysicsModule.hpp"
+
+MyContactListener::MyContactListener(std::unordered_map<GameObject*, Body*>* gameObjectToBodyMap) {
     _gameObjectToBodyMap = gameObjectToBodyMap;
 }
 
@@ -30,10 +32,10 @@ void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifo
 
     // todo: 2 way map
     for (auto [gameObject, body] : *_gameObjectToBodyMap) {
-        if (body1 == body) {
+        if (body1 == body->b2body) {
             gameObject1 = gameObject;
         }
-        if (body2 == body) {
+        if (body2 == body->b2body) {
             gameObject2 = gameObject;
         }
     }

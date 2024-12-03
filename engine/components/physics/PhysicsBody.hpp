@@ -49,21 +49,10 @@ public:
 	[[nodiscard]] virtual PhysicsShape GetShape();
 	[[nodiscard]] virtual TypeProperties GetTypeProperties() const;
 
-	[[nodiscard]] virtual glm::vec2 LastPosition() const;
-	[[nodiscard]] virtual float LastRotation() const;
-	[[nodiscard]] virtual bool InitDone() const;
-
-	virtual void LastPosition(glm::vec2);
-	virtual void LastRotation(float);
-	virtual void InitDone(bool);
-
 	virtual void CollisionCallback(PhysicsBody& other);
 
 private:
 	std::unique_ptr<Shape> _physicsShape;
 	TypeProperties _typeProperties;
-	glm::vec2 _lastPosition;
-	float _lastRotation{};
-	bool _isInitialized{};
 };
 #endif //PHYSICSBODY_HPP

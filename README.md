@@ -1,4 +1,4 @@
-﻿# Blocky Engine
+﻿e# Blocky Engine
 
 The Blocky Engine is a modular C++ game engine which can be used for 2D game development. Blocky Engine can be used
 without
@@ -168,6 +168,13 @@ system environment variables).
 Or if that's too difficult simply copy and paste the DLL/SO into the cmake-build directory.
 
 ### SDL2_gfx
+
+### SDL2_gfx Offshoot
+
+For this project there is also a stripped down version of SDL_gfx
+[here](https://github.com/Dogukan-lab/sdl_gfx_offshoot/releases/tag/v1.0.0), there, will be no need
+to set up the cmake (seen below).
+---
 
 The Rendering Module, currently embedded in Blocky Engine, not only uses SDL2 for rendering, but also the SDL2_gfx
 extension library for certain specific functionality. This is a source-code library, of which all files can be

@@ -66,6 +66,13 @@ target_link_libraries(${ENGINE_TARGET} PRIVATE
         sdl_gfx
 )
 
+# Set the -fPIC for creating it alongside Shared Objects
+if (LINUX)
+    set_target_properties(
+            sdl_gfx PROPERTIES POSITION_INDEPENDENT_CODE ON
+    )
+endif ()
+
 target_include_directories(${ENGINE_TARGET} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${SDL2_INCLUDE_DIRS}

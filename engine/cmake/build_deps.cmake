@@ -75,6 +75,7 @@ endfunction()
 # Temporarily just copy the SDL2 dll to the build folder
 
 function(copy_dll_to_build dll dll_location)
+
     message(STATUS "CMAKE BIN DIR: ${CMAKE_BINARY_DIR}")
     message(STATUS "DLL TO COPY: ${dll} LOCATION: ${dll_location}")
     if (EXISTS dll)

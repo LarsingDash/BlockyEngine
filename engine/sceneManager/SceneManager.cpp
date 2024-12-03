@@ -31,7 +31,7 @@ SceneManager::SceneManager() :
 	auto& leftParent = testScene->AddChild("Box_Collider_Red");
 	auto& rightParent = testScene->AddChild("RightParent");
 
-	p.isStatic = false;
+	p.isStatic = true;
 	auto rigid = glm::vec4{255, 0, 0, 255};
 	auto box = glm::vec4{0, 0, 0, 0};
 	auto collider = glm::vec4{0, 255, 0, 255};
@@ -53,7 +53,9 @@ SceneManager::SceneManager() :
 	child1.transform->Translate(2, 6);
 	child1.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
 	child1.AddComponent<CircleCollider>("", r);
+
 	p.isStatic = false;
+
 	auto& child2 = testScene->AddChild("");
 	child2.transform->Translate(0, 0);
 	child2.transform->Rotate(10);

@@ -72,7 +72,7 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 
 void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
 	if (&physicsBody.gameObject == nullptr) {
-		std::cerr << "physicsBody.gameObject == nullptr" << std::endl;
+		BLOCKY_ENGINE_ERROR("AddCollider but: physicsBody.gameObject == nullptr");
 		return;
 	}
 

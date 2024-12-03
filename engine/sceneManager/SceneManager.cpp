@@ -25,12 +25,12 @@ SceneManager::SceneManager() :
 	testScene->transform->SetPosition(x, y);
 	testScene->transform->Scale(w, h);
 
-	TypeProperties p(COLLIDER, true, false, {20, 0}, 100, 0, 0, true);
+	TypeProperties p(COLLIDER, true, false, {2, 0}, 100, 0, 0, true);
 
 	auto& leftParent = testScene->AddChild("Box_Collider_Red");
 	auto& rightParent = testScene->AddChild("RightParent");
 
-	p.isStatic = true;
+	p.isStatic = false;
 	auto rigid = glm::vec4{255, 0, 0, 255};
 	auto box = glm::vec4{0, 0, 0, 0};
 	auto collider = glm::vec4{0, 255, 0, 255};
@@ -44,13 +44,11 @@ SceneManager::SceneManager() :
 	                                      p.gravityEnabled, w, h);
 	leftParent.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
 	leftParent.AddComponent<CircleCollider>("", p.isTrigger, p.isStatic, r);
-
 	auto& child1 = testScene->AddChild("");
 	child1.transform->Translate(2, 6);
 	child1.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
 	child1.AddComponent<CircleCollider>("", p.isTrigger, p.isStatic, r);
 	p.isStatic = false;
-
 	auto& child2 = testScene->AddChild("");
 	child2.transform->Translate(0, 0);
 	child2.transform->Rotate(10);
@@ -65,15 +63,12 @@ SceneManager::SceneManager() :
 	                                     p.velocity,
 	                                     p.rotationVelocity, p.angularResistance, p.linearResistance,
 	                                     p.gravityEnabled, r);
-
-	p = TypeProperties(RIGIDBODY, true, false, {0, 0}, 10, 0.1, 0.1, p.isStatic);
-
+	p = TypeProperties(RIGIDBODY, true, false, {0, 0}, 10, 0.1, 0.1, false);
 	rightParent.transform->Translate(0, 4);
 	rightParent.AddComponent<RectangleRenderable>("", collider + box, p.isStatic);
 	rightParent.AddComponent<BoxCollider>("", p.isTrigger, p.isStatic, w, h);
 	rightParent.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
 	rightParent.AddComponent<CircleCollider>("", p.isTrigger, p.isStatic, r);
-
 	auto& child11 = testScene->AddChild("");
 	child11.transform->Translate(2, 4);
 	child11.AddComponent<EllipseRenderable>("", rigid + circle, p.isStatic);
@@ -86,7 +81,6 @@ SceneManager::SceneManager() :
 	                                   p.velocity,
 	                                   p.rotationVelocity, p.angularResistance, p.linearResistance,
 	                                   p.gravityEnabled, w, h);
-
 	auto& child12 = testScene->AddChild("");
 	child12.transform->Translate(0, 2);
 	child12.AddComponent<RectangleRenderable>("", rigid + box, p.isStatic);

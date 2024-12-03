@@ -6,7 +6,6 @@
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
-//todo: fix multiple rigid bodys on same gameobject, so that they can overlap
 //todo: speedup simmulation
 PhysicsModule::PhysicsModule() {
 	b2Vec2 gravity(0.f, 9.8f);
@@ -48,25 +47,10 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 			body->_gameObjectIsInitialized = true;
 		}
 
-		// BLOCKY_ENGINE_DEBUG_STREAM("diff: ")
-		// // BLOCKY_ENGINE_DEBUG(VecConvert(Position(*collider)))
-		// BLOCKY_ENGINE_DEBUG((physicsBody->componentTransform->GetWorldPosition()))
-		// BLOCKY_ENGINE_DEBUG((physicsBody->gameObject.transform->GetWorldPosition()))
-		// BLOCKY_ENGINE_DEBUG((physicsBody->componentTransform->GetLocalPosition()))
-		// BLOCKY_ENGINE_DEBUG((physicsBody->gameObject.transform->GetLocalPosition()))
-		// BLOCKY_ENGINE_DEBUG(VecConvert(body->GetPosition()))
+		BLOCKY_ENGINE_DEBUG_STREAM("GetWorldPosition: \t" << gameObject->transform->GetWorldPosition().x);
+		BLOCKY_ENGINE_DEBUG_STREAM("GetPosition(): \t" << body->GetPosition().x)
 
 		body->b2body->SetTransform(Position(*gameObject), Angle(*gameObject));
-
-		//todo:
-		// // Destroy all existing fixtures so if there is a resize the resize can be applied
-		// for (b2Fixture* fixture = body->GetFixtureList(); fixture;) {
-		// 	b2Fixture* next = fixture->GetNext();
-		// 	body->DestroyFixture(fixture);
-		// 	fixture = next;
-		// }
-		//
-		// AddFixture(*collider, body);
 	}
 }
 
@@ -80,11 +64,14 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 		const auto scale = gameObject->transform->GetWorldScale();
 
 		const float angle = body->GetAngle();
-		const float deltaAngle = angle - body->LastRotation();
+		const float deltaAngle = body->LastRotation() - angle;
 
-		// todo: uitleg GetWorldScale is to small and generates runaway if to large
 		gameObject->transform->Translate(deltaPosition.x / scale.x, deltaPosition.y / scale.y);
 		gameObject->transform->Rotate(deltaAngle);
+
+		BLOCKY_ENGINE_DEBUG_STREAM("GetPosition(): \t" << body->GetPosition().x)
+		BLOCKY_ENGINE_DEBUG_STREAM("deltaPosition: \t" << deltaPosition.x)
+		BLOCKY_ENGINE_DEBUG_STREAM("GetWorldPosition: \t" << gameObject->transform->GetWorldPosition().x)
 
 		body->LastPosition({position.x, position.y});
 		body->LastRotation(angle);
@@ -107,7 +94,7 @@ void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
 }
 
 void PhysicsModule::RemoveCollider(const PhysicsBody& physicsBody) {
-	auto it = _gameObjectToBodyMap.find(&physicsBody.gameObject); //todo & to *
+	auto it = _gameObjectToBodyMap.find(&physicsBody.gameObject);
 	if (it != _gameObjectToBodyMap.end()) {
 		_box2dWorldObject->DestroyBody(it->second->b2body);
 		_gameObjectToBodyMap.erase(it);
@@ -160,7 +147,7 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 
 			body->SetFixedRotation(false);
 			body->SetAngularVelocity(physicsBody.GetTypeProperties().rotationVelocity);
-			body->ApplyForceToCenter(VecConvert(physicsBody.GetTypeProperties().velocity), true);
+			body->SetLinearVelocity(VecConvert(physicsBody.GetTypeProperties().velocity));
 			break;
 		}
 	}
@@ -175,8 +162,8 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 }
 
 b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
-	auto [x,y] = Position(physicsBody);
-	auto angle = Angle(physicsBody);
+	// auto [x,y] = Position(physicsBody);
+	// auto angle = Angle(physicsBody);
 	b2Body* body;
 
 	auto gameObject = _gameObjectToBodyMap.find(&physicsBody.gameObject);
@@ -188,25 +175,25 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
 	else {
 		b2BodyDef bodyDef;
 
-		//todo: not working now?
+		//todo: not working now with multiple physiscTypes? todo: _gameObjectToBodyMap.find(&physicsBody.gameObject);
 		switch (physicsBody.GetTypeProperties().physicsType) {
 			case COLLIDER: {
-				// bodyDef.type = b2_kinematicBody;
-				bodyDef.type = b2_staticBody;
+				bodyDef.type = b2_staticBody; //todo: cant be static?
 				break;
 			}
 			case RIGIDBODY: {
-				bodyDef.type = b2_dynamicBody;
+				if (physicsBody.GetTypeProperties().isStatic) {
+					bodyDef.type = b2_kinematicBody;
+				}
+				else {
+					bodyDef.type = b2_dynamicBody;
+				}
 				break;
 			}
 		}
 
-		if (physicsBody.GetTypeProperties().isStatic) {
-			bodyDef.type = b2_staticBody;
-		}
-
-		bodyDef.position.Set(x, y);
-		bodyDef.angle = angle;
+		// bodyDef.position.Set(x, y);
+		// bodyDef.angle = angle;
 		body = world.CreateBody(&bodyDef);
 	}
 

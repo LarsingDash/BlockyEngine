@@ -19,11 +19,13 @@ setup_platform_specifics()
 setup_dependencies()
 
 if (${MINGW})
+    message(STATUS "BUILDING MINGW SDL2")
     set(SDL2_DIR "${DEPS_DIR}/SDL2/cmake")
     message("SDL DIR: ${SDL2_DIR}")
+    find_package(SDL2 CONFIG REQUIRED)
+
     message("SDL2 INCLUDE DIRS: ${SDL2_INCLUDE_DIRS}")
     message("SDL2 LIBRARY DIRS: ${SDL2_LIBRARIES}")
-    find_package(SDL2 CONFIG REQUIRED)
 endif ()
 
 add_subdirectory("${DEPS_DIR}/SDL2_gfx")
@@ -60,6 +62,7 @@ add_subdirectory(logging)
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         glm
         SDL2::SDL2
+        #        SDL2::SDL2main
         sdl_gfx
 )
 

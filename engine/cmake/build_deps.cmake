@@ -23,7 +23,7 @@ function(setup_platform_specifics)
         set(SDL2_MINGW
                 SDL2 https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.zip
         )
-        list(APPEND ${BLOCKY_DEPS} ${SDL2_MINGW})
+        list(APPEND BLOCKY_DEPS ${SDL2_MINGW})
         message(STATUS "${BLOCKY_DEPS}")
     elseif (${LINUX})
         message(STATUS "${BLOCKY_DEPS}")
@@ -70,9 +70,6 @@ function(setup_dependencies)
         message(STATUS "Dependencies already within the engine/dependencies folder")
     endif ()
 endfunction()
-
-########################################################################################################################
-# IMPORTANT MINGW Toolchain dependent, should not be used for Linux as well!
 
 ########################################################################################################################
 # Temporarily just copy the SDL2 dll to the build folder

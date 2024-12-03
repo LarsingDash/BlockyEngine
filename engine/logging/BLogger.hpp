@@ -6,6 +6,7 @@
 #define LOG_HPP
 
 #include <fstream>
+#include <glm/vec2.hpp>
 
 // if logging is lagging the game don't set LOG_TO_CONSOLE 0, because it gives the biggest performers hit
 #define LOG_TO_CONSOLE 1
@@ -28,30 +29,32 @@ constexpr bool REMOVE_RETURN_TYPE = true;
 #define BLOCKY_ENGINE_DEBUG_STREAM(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, (std::stringstream() << msg).str());
 
 enum LogLevel {
-    INFO,
-    DEBUG,
-    WARN,
-    ERROR
+	INFO,
+	DEBUG,
+	WARN,
+	ERROR
 };
 
 class BLogger {
-	public:
-		explicit BLogger(const std::string& filename);
+public:
+	explicit BLogger(const std::string& filename);
 
-		~BLogger();
+	~BLogger();
 
-		void Log(LogLevel level, const std::string& funcName = "", const std::string& message = "");
+	void Log(LogLevel level, const std::string& funcName = "", const std::string& message = "");
+	void Log(LogLevel level, const std::string& funcName, const glm::vec2& message);
+	void Log(LogLevel level, const std::string& funcName, const float& message);
 
-	private:
-		std::ofstream _logFile; // File stream for the log file
+private:
+	std::ofstream _logFile; // File stream for the log file
 
-		static std::string _levelToString(LogLevel level);
+	static std::string _levelToString(LogLevel level);
 
-		static std::string _funcSignToString(std::string funcName);
+	static std::string _funcSignToString(std::string funcName);
 
-		static std::stringstream _makeTimeStamp();
+	static std::stringstream _makeTimeStamp();
 
-		void _writeLog(const std::stringstream& logMessage);
+	void _writeLog(const std::stringstream& logMessage);
 };
 
 // Definition of global variable 'BLogger bLogger' in a header file should have an 'inline' specifier.

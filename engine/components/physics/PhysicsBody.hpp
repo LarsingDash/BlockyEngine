@@ -13,8 +13,7 @@ enum PhysicsType {
 	RIGIDBODY
 };
 
-class TypeProperties {
-public:
+struct TypeProperties {
 	TypeProperties(PhysicsType physicsType, bool isStatic, glm::vec2 velocity, float rotationVelocity,
 	               float angularResistance, float linearResistance, bool gravityEnabled): physicsType(physicsType),
 		isStatic(isStatic), velocity(velocity),

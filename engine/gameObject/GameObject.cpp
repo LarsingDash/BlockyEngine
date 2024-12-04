@@ -7,7 +7,7 @@
 #include "logging/BLogger.hpp"
 
 GameObject::GameObject(std::string tag, GameObject* parent) :
-		tag(std::move(tag)), parent(parent), _isMarkedForDeletion(false), _isActive(true) {
+		tag(std::move(tag)), parent(parent), _isMarkedForDeletion(false), _isActive(true), _deletionList() {
 	transform = std::make_unique<GameObjectTransform>(*this);
 }
 
@@ -35,7 +35,7 @@ GameObject::~GameObject() {
 
 GameObject::GameObject(const GameObject& other) :
 		tag(other.tag), parent(other.parent), transform(std::make_unique<GameObjectTransform>(*other.transform)),
-		_isActive(other._isActive), _isMarkedForDeletion(other._isMarkedForDeletion) {
+		_isActive(other._isActive), _isMarkedForDeletion(other._isMarkedForDeletion), _deletionList(other._deletionList) {
 	transform->SetGameObject(*this);
 
 	for (const auto& type : other._components) {
@@ -83,11 +83,18 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 		}
 
 	//Cascade update to child objects
-	for (auto& child : _children) {
+	for (size_t i = 0; i < _children.size(); ++i) { // NOLINT(*-loop-convert)
+		auto& child = _children[i];
 		//Prevent from being updated if some other object marked this one for deletion
 		if (!child->_isMarkedForDeletion) {
 			child->Update(delta, recalculationList);
-			if (child->_isMarkedForDeletion) _deletionList.emplace_back(child.get());
+			
+			//Get child again from the _children vector, in case a sibling has been added that exceeded the capacity
+			//(This would've moved the current 'child' to a different location)
+			auto& updatedChild = _children[i];
+			if (updatedChild->_isMarkedForDeletion) {
+				_deletionList.emplace_back(updatedChild.get());
+			}
 		}
 	}
 

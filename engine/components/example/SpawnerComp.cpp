@@ -36,7 +36,14 @@ void SpawnerComp::Update(float delta) {
 	counter += delta;
 	if (counter >= interval) {
 		counter -= interval;
-		gameObject->AddChild(*projectilePrefab);
+//		auto& projectile = gameObject->AddChild(*projectilePrefab);
+//		projectile.Reparent(*gameObject->parent);
+		auto& projectile = gameObject->parent->AddChild(*projectilePrefab);
+
+//		auto& pos = gameObject->transform->GetWorldPosition();
+//		auto& scale = gameObject->transform->GetWorldScale();
+//		projectile.transform->SetPosition(pos.x, pos.y);
+//		projectile.transform->SetScale(scale.x, scale.y);
 	}
 }
 

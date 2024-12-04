@@ -5,7 +5,7 @@
 #ifndef BLOCKYENGINE_RECTANGLERENDERABLE_HPP
 #define BLOCKYENGINE_RECTANGLERENDERABLE_HPP
 
-#include <glm/glm.hpp>
+#include <glm/vec4.hpp>
 #include "Renderable.hpp"
 
 class RectangleRenderable : public Renderable {

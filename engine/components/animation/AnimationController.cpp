@@ -1,19 +1,24 @@
 //
 // Created by 11896 on 19/11/2024.
 //
+
 #include "AnimationController.hpp"
 
+#include "gameObject/GameObject.hpp"
+#include "components/renderables/AnimationRenderable.hpp"
 #include "logging/BLogger.hpp"
 
-AnimationController::AnimationController(GameObject* gameObject, const char* tag, AnimationRenderable& renderable)
-		: Component(gameObject, tag), _renderable(renderable) {}
+AnimationController::AnimationController(GameObject* gameObject, const char* tag)
+		: Component(gameObject, tag), _renderable(nullptr) {}
 
 Component* AnimationController::_cloneImpl(GameObject& parent) {
 	auto clone = new AnimationController(*this);
 	return clone;
 }
 
-void AnimationController::Start() {}
+void AnimationController::Start() {
+	_renderable = gameObject->GetComponent<AnimationRenderable>();
+}
 
 void AnimationController::Update(float delta) {
 	//Skips update if animation is not active
@@ -75,5 +80,5 @@ void AnimationController::StopAnimation() {
 }
 
 void AnimationController::_updateSourceRect() {
-	_renderable.SetCurrentFrame(_currentFrame);
+	if (_renderable) _renderable->SetCurrentFrame(_currentFrame);
 }

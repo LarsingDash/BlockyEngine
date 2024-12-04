@@ -2,12 +2,14 @@
 // Created by 11896 on 15/11/2024.
 //
 
-#include <algorithm>
 #include "RenderingModule.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
+#include <algorithm>
 
-#include "stb_image/stb_image.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image/stb_image.h>
+#include <SDL2_gfx/SDL2_gfxPrimitives.h>
+
 #include "components/renderables/AnimationRenderable.hpp"
 #include "logging/BLogger.hpp"
 

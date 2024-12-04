@@ -4,11 +4,23 @@
 
 #include "KeyboardInputComponent.hpp"
 
-KeyboardInputComponent::KeyboardInputComponent(GameObject& parent, const char* tag, GameObject& animatedObject)
-		: Component(parent, tag), _animatedObject(animatedObject) {}
+#include <utility>
+
+#include "gameObject/GameObject.hpp"
+#include "moduleManager/ModuleManager.hpp"
+#include "moduleManager/modules/WindowModule.hpp"
+
+KeyboardInputComponent::KeyboardInputComponent(GameObject* parent, const char* tag)
+		: Component(parent, tag),
+		  _inputModule(ModuleManager::getInstance().getModule<WindowModule>().GetInputModule()){}
+
+Component* KeyboardInputComponent::_cloneImpl(GameObject& parent) {
+	auto clone = new KeyboardInputComponent(*this);
+	return clone;
+}
 
 void KeyboardInputComponent::Start() {
-	_animationController = _animatedObject.GetComponent<AnimationController>();
+	_animationController = gameObject->GetComponent<AnimationController>();
 
 	_inputModule.AddKeyListener(KeyInput::KEY_Q, *this, [this](KeyState state) {
 		if (state == KeyState::KEY_DOWN) {

@@ -9,15 +9,25 @@
 
 class MouseReparenting : public Component {
 	public:
-		MouseReparenting(GameObject& parent, const char* tag, GameObject& parentA, GameObject& parentB);
+		MouseReparenting(GameObject* parent,
+						 const char* tag,
+						 std::string target,
+						 std::string parentA,
+						 std::string parentB);
 
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-		
+
+		Component* _cloneImpl(GameObject& parent) override;
+
 	private:
-		GameObject& parentA;
-		GameObject& parentB;
+		std::string targetTag;
+		std::string parentATag;
+		std::string parentBTag;
+		GameObject* target;
+		GameObject* parentA;
+		GameObject* parentB;
 };
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_EXAMPLE_MOUSEREPARENTING_HPP_

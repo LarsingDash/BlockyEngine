@@ -13,6 +13,7 @@
 SpawnerComp::SpawnerComp(GameObject* gameObject, const char* tag) :
 		Component(gameObject, tag, false), projectilePrefab(nullptr), container(nullptr) {
 	projectilePrefab = std::make_unique<GameObject>("ProjectilePrefab");
+	projectilePrefab->SetActive(false);
 	projectilePrefab->AddComponent<EllipseRenderable>("ProjEl", glm::vec4{255, 255, 0, 255}, true);
 	projectilePrefab->AddComponent<MovementComp>("Movement");
 	projectilePrefab->AddChild("Dot")

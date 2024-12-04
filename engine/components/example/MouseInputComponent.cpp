@@ -4,8 +4,18 @@
 
 #include "MouseInputComponent.hpp"
 
-MouseInputComponent::MouseInputComponent(GameObject& parent, const char* tag)
-		: Component(parent, tag) {}
+#include "gameObject/GameObject.hpp"
+#include "moduleManager/ModuleManager.hpp"
+#include "moduleManager/modules/WindowModule.hpp"
+
+MouseInputComponent::MouseInputComponent(GameObject* parent, const char* tag)
+		: Component(parent, tag), 
+		_inputModule(ModuleManager::getInstance().getModule<WindowModule>().GetInputModule()) {}
+
+Component* MouseInputComponent::_cloneImpl(GameObject& parent) {
+	auto clone = new MouseInputComponent(*this);
+	return clone;
+}
 
 void MouseInputComponent::Start() {
 	_inputModule.AddMouseListener(MouseInput::BUTTON_LEFT, *this, [this](MouseButtonState state, int x, int y) {
@@ -29,7 +39,7 @@ void MouseInputComponent::End() {
 }
 
 void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color) {
-	auto& rectangle = gameObject.AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
+	auto& rectangle = gameObject->AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
 	rectangle.transform->SetPosition(static_cast<float>(x), static_cast<float>(y));
 
 	if (state == MouseButtonState::BUTTON_DOWN) {

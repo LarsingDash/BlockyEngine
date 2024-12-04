@@ -6,7 +6,6 @@
 #define BLOCKYENGINE_GAMEOBJECT_HPP
 
 #include <algorithm>
-#include <string>
 #include <vector>
 #include <unordered_map>
 #include <memory>
@@ -46,7 +45,7 @@ class GameObject {
 		}
 		GameObject& AddChild(GameObject& prefab);
 
-		GameObject* GetChild(const std::string& t);
+		GameObject* GetChild(const std::string& t, bool recursive = false);
 
 		bool RemoveChild(GameObject& child);
 		bool RemoveChild(const std::string& t);
@@ -69,7 +68,7 @@ class GameObject {
 			//Create component and call Start() on it
 			auto typeIt = _components.find(type);
 			std::unique_ptr<T> component = std::make_unique<T>(this, componentTag, std::forward<Args>(args)...);
-			if (!_isActive) {
+			if (_isActive) {
 				component->Start(); 
 			}
 

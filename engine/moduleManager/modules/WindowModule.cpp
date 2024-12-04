@@ -4,6 +4,8 @@
 
 #include "WindowModule.hpp"
 
+#include <SDL.h>
+
 #include "logging/BLogger.hpp"
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"

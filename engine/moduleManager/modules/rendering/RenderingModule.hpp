@@ -5,18 +5,12 @@
 #ifndef BLOCKYENGINE_RENDERINGMODULE_HPP
 #define BLOCKYENGINE_RENDERINGMODULE_HPP
 
-#include <vector>
 #include <unordered_map>
 
-#include "components/renderables/Renderable.hpp"
-#include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
-#include "components/renderables/SpriteRenderable.hpp"
-#include "SDL_render.h"
-#include "SDL2_gfx/SDL2_gfxPrimitives.h"
-#include "SDL2_gfx/SDL2_rotozoom.h"
 #include "components/renderables/AnimationRenderable.hpp"
+#include <SDL_render.h>
 
 class RenderingModule {
 	public:

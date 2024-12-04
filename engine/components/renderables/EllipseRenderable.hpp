@@ -5,7 +5,7 @@
 #ifndef BLOCKYENGINE_ELLIPSERENDERABLE_HPP
 #define BLOCKYENGINE_ELLIPSERENDERABLE_HPP
 
-#include <glm/glm.hpp>
+#include <glm/vec4.hpp>
 #include "Renderable.hpp"
 
 class EllipseRenderable : public Renderable {

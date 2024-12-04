@@ -108,7 +108,7 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 
 void GameObject::SetActive(bool active, bool force) {    // NOLINT(*-no-recursion)
 	//Early return if nothing changed
-	if (_isActive != active && !force) return;
+	if (_isActive == active && !force) return;
 	_isActive = active;
 
 	//Cascade End to components
@@ -129,7 +129,7 @@ void GameObject::SetActive(bool active, bool force) {    // NOLINT(*-no-recursio
 	}
 
 	for (auto& child : _children) {
-		child->SetActive(_isActive);
+		child->SetActive(_isActive, force);
 	}
 }
 
@@ -144,13 +144,21 @@ GameObject& GameObject::AddChild(GameObject& prefab) {
 	return child;
 }
 
-GameObject* GameObject::GetChild(const std::string& t) {
+GameObject* GameObject::GetChild(const std::string& t, bool recursive) {    // NOLINT(*-no-recursion)
 	auto it = std::find_if(_children.begin(), _children.end(),
 						   [&](std::unique_ptr<GameObject>& cur) {
 							   return (t == cur->tag);
 						   });
 
-	return (it != _children.end()) ? (*it).get() : nullptr;
+	if (it != _children.end()) return (*it).get();
+	else if (recursive) {
+		for (auto& child : _children) {
+			GameObject* result = child->GetChild(t, recursive);
+			if (result) return result;
+		}
+	} 
+	
+	return nullptr;
 }
 
 bool GameObject::RemoveChild(GameObject& child) {

@@ -23,6 +23,7 @@ class SpawnerComp : public Component {
 		
 		float counter{0};
 		std::unique_ptr<GameObject> projectilePrefab;
+		GameObject* container;
 };
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_PREFABS_SPAWNERCOMP_HPP_

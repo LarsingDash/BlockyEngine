@@ -9,6 +9,9 @@ int main() {
 	std::unique_ptr<BlockyEngine> blockyEngine = std::make_unique<BlockyEngine>();
 	
 	auto root = std::make_unique<GameObject>("root");
+	auto& container = root->AddChild("ProjectileContainer");
+	container.transform->SetPosition(400, 300);
+	container.transform->SetScale(35, 35);
 	
 	auto& cannon = root->AddChild("Cannon");
 	cannon.transform->SetPosition(400, 300);

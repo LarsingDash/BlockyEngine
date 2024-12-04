@@ -17,6 +17,12 @@ class MovementComp : public Component {
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
+		
+		void SetDirectionByAngle(float angle);
+		
+	private:
+		glm::vec2 _direction;
+		float _speed;
 };
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_PREFABS_MOVEMENTCOMP_HPP_

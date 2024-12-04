@@ -1,4 +1,4 @@
-﻿e# Blocky Engine
+﻿# Blocky Engine
 
 The Blocky Engine is a modular C++ game engine which can be used for 2D game development. Blocky Engine can be used
 without

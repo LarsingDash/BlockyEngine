@@ -24,21 +24,11 @@ set(BOX2D_VERSION "2.4.1")
 set(BLOCKY_DEPS
         googletest https://github.com/google/googletest/releases/download/v${GTEST_VERSION}/googletest-${GTEST_VERSION}.tar.gz
         SDL2 https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.zip
+        box2d https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz
         SDL2_gfx https://github.com/Dogukan-lab/sdl_gfx_offshoot/releases/download/v1.0.0/SDL_gfx.tar.gz
         glm https://github.com/g-truc/glm/releases/download/1.0.1/glm-1.0.1-light.zip
         stb_image https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
 )
-
-# fetch thisway since also used by vcpkg https://github.com/microsoft/vcpkg/blob/a6cb7292c476233c5d10d9255478d41a424e0b79/ports/box2d/portfile.cmake
-include(FetchContent)
-FetchContent_Declare(
-        box2d
-        GIT_REPOSITORY https://github.com/erincatto/Box2D.git
-        GIT_TAG v${BOX2D_VERSION}
-)
-set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "Disable Box2D Unit Tests")
-set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "Disable Box2D Testbed")
-FetchContent_MakeAvailable(box2d)
 
 ########################################################################################################################
 
@@ -74,16 +64,24 @@ foreach (INDEX RANGE 0 ${LIST_RANGE})
 endforeach ()
 
 ########################################################################################################################
+# Box2D options
+set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL INTERNAL "")
+set(BOX2D_BUILD_TESTBED OFF CACHE BOOL INTERNAL "")
+
+########################################################################################################################
 
 # IMPORTANT MINGW Toolchain dependent, should not be used for Linux as well!
+set(BOX2D_INCLUDE_DIRS "${DEPS_DIR}/box2d/include")
 set(SDL2_DIR "${DEPS_DIR}/SDL2/cmake")
 message("SDL DIR: ${SDL2_DIR}")
+message("BOX2D DIR: ${BOX2D_INCLUDE_DIRS}")
 find_package(SDL2 CONFIG REQUIRED)
 
 message("SDL2 INCLUDE DIRS: ${SDL2_INCLUDE_DIRS}")
 message("SDL2 LIBRARY DIRS: ${SDL2_LIBRARIES}")
 
 add_subdirectory("${DEPS_DIR}/SDL2_gfx")
+add_subdirectory("${DEPS_DIR}/box2d")
 add_subdirectory("${DEPS_DIR}/glm")
 
 ########################################################################################################################
@@ -124,6 +122,7 @@ target_link_libraries(${ENGINE_TARGET} PRIVATE
 target_include_directories(${ENGINE_TARGET} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${SDL2_INCLUDE_DIRS}
+        ${BOX2D_INCLUDE_DIRS}
         ${DEPS_DIR}
 )
 

@@ -14,6 +14,7 @@
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "moduleManager/modules/rendering/RenderingModule.hpp"
+#include "moduleManager/modules/input/InputModule.hpp"
 
 class WindowModule : public ModuleWrapper {
 	public:
@@ -21,12 +22,11 @@ class WindowModule : public ModuleWrapper {
 		~WindowModule() override;
 
 		void Update(float delta) override;
-		void AddRenderable(Renderable& renderable);
-		void RemoveRenderable(Renderable& renderable);
 
+		RenderingModule& GetRenderingModule();
+		InputModule& GetInputModule();
 	private:
-		static void ProcessEvents();
-		void Render();
+		void _render();
 
 		constexpr static int WINDOW_WIDTH = 800;
 		constexpr static int WINDOW_HEIGHT = 600;
@@ -34,7 +34,7 @@ class WindowModule : public ModuleWrapper {
 		SDL_Window* window;
 		SDL_Renderer* renderer;
 		std::unique_ptr<RenderingModule> renderingModule;
-		std::vector<std::reference_wrapper<Renderable>> renderables;
+		std::unique_ptr<InputModule> inputModule;
 };
 
 #endif //BLOCKYENGINE_WINDOWMODULE_HPP

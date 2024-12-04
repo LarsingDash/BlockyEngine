@@ -6,7 +6,7 @@
 #include "components/example/RotationComp.hpp"
 
 int main() {
-	std::unique_ptr<BlockyEngine> blockyEngine = std::make_unique<BlockyEngine>();
+	BlockyEngine blockyEngine;
 	
 	auto root = std::make_unique<GameObject>("root");
 	auto& container = root->AddChild("ProjectileContainer");
@@ -25,9 +25,9 @@ int main() {
 	barrel.transform->SetScale(2, 0.5f);
 	barrel.transform->SetPosition(0.5f, 0);
 
-	SceneManager& sceneManager = blockyEngine->GetSceneManager();
+	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 	sceneManager.AddScene(std::move(root));
 	sceneManager.SwitchScene("root");
 
-	blockyEngine->Run();
+	blockyEngine.Run();
 }

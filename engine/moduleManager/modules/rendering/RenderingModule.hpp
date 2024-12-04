@@ -14,7 +14,6 @@
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 #include "SDL_render.h"
-#include "SDL.h"
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "SDL2_gfx/SDL2_rotozoom.h"
 #include "components/renderables/AnimationRenderable.hpp"
@@ -23,10 +22,14 @@ class RenderingModule {
 	public:
 		explicit RenderingModule(SDL_Renderer* renderer);
 		~RenderingModule();
-		void Render(const std::vector<std::reference_wrapper<Renderable>>& renderables);
+
+		void Render();
+		void AddRenderable(Renderable& renderable);
+		void RemoveRenderable(Renderable& renderable);
 
 	private:
 		SDL_Renderer* _renderer;
+		std::vector<std::reference_wrapper<Renderable>> renderables;
 		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> _textureCache;
 
 		void _renderRectangle(RectangleRenderable& renderable);

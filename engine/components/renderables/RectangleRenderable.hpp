@@ -18,6 +18,7 @@ class RectangleRenderable : public Renderable {
 		
 		[[nodiscard]] glm::ivec4 GetColor() const;
 		[[nodiscard]] bool IsFilled() const;
+		void SetColor(const glm::vec4& color);
 
 	private:
 		glm::ivec4 _color;

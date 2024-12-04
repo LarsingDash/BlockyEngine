@@ -6,11 +6,11 @@
 
 #include <chrono>
 
-#include "../../engine/logging/BLogger.hpp"
+#include "logging/BLogger.hpp"
 #include <string>
 #include <thread>
 
-void TestBLoggerFunc(const std::string &testStr = "") {
+void TestBLoggerFunc(const std::string& testStr = "") {
 	BLOCKY_ENGINE_DEBUG("Debugging information, in TestBLoggerFunc(const std::string& testStr = "")" + testStr)
 }
 
@@ -22,9 +22,10 @@ class BloggerClass {
 		}
 
 	private:
-		static void _funcBloggerClass(const std::string &testStr = "") {
+		static void _funcBloggerClass(const std::string& testStr = "") {
 			BLOCKY_ENGINE_DEBUG(
-				"Debugging information, in BloggerClass::_funcBloggerClass(const std::string& testStr = "")"+ testStr)
+					"Debugging information, in BloggerClass::_funcBloggerClass(const std::string& testStr = "")"
+							+ testStr)
 		}
 };
 
@@ -36,7 +37,7 @@ void BLoggerTest::Test() {
 
 		std::this_thread::sleep_for(std::chrono::microseconds(300));
 
-		for (int j = 0; j < 100000000; j++) { if (i == j) { j = i; } }
+		for (int j = 0; j < 100000000; j++) { if (i == j) { j = i; }}
 	}
 
 	BLOCKY_ENGINE_ERROR("An error occurred.");

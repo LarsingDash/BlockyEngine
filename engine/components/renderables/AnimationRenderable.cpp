@@ -1,8 +1,8 @@
 #include "AnimationRenderable.hpp"
 
-#include <stdexcept>
-#include <stb_image.h>
 #include <sstream>
+
+#include <stb_image/stb_image.h>
 
 #include "logging/BLogger.hpp"
 

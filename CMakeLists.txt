@@ -6,4 +6,7 @@ add_subdirectory(engine)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-target_link_libraries(${PROJECT_NAME} Blocky::Engine)
+find_package(box2d CONFIG REQUIRED) #todo:
+target_link_libraries(${PROJECT_NAME} Blocky::Engine;box2d::box2d)
+
+#target_link_libraries(${PROJECT_NAME} Blocky::Engine)

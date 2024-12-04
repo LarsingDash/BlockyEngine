@@ -7,7 +7,7 @@
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 #include <moduleManager/ModuleManager.hpp>
-#include <moduleManager/modules/physics/PhysicsModule.hpp>
+#include "moduleManager/modules/physics/PhysicsModule.hpp"
 
 PhysicsBody::PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody,
                          const TypeProperties& typeProperties) : Component(gameObject, tag),

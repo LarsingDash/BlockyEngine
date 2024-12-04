@@ -3,54 +3,114 @@
 //
 
 #include "SceneManager.hpp"
+
+#include <components/physics/collider/BoxCollider.hpp>
+#include <components/physics/collider/CircleCollider.hpp>
+#include <components/physics/rigidBody/BoxRigidBody.hpp>
+#include <components/physics/rigidBody/CircleRigidBody.hpp>
+
+#include "components/renderables/Renderable.hpp"
+#include "components/renderables/RectangleRenderable.hpp"
+#include "components/renderables/EllipseRenderable.hpp"
+#include "components/renderables/SpriteRenderable.hpp"
 #include "components/animation/AnimationController.hpp"
+#include "components/physics/collision/CollisionHandler.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "components/example/MouseInputComponent.hpp"
 #include "components/example/KeyboardInputComponent.hpp"
 #include "components/example/MouseReparenting.hpp"
 
+float x = 400, y = 100;
+float w = 50, h = 50, r = 25;
+
 SceneManager::SceneManager() :
 	testScene(std::make_unique<GameObject>("root")),
 	recalculationList() {
 	recalculationList.reserve(25);
+	testScene->transform->SetPosition(x, y);
+	testScene->transform->Scale(w, h);
 
-	//Basic mouse input
-	auto& mouseInputComponent = testScene->AddChild("MouseInputComponent");
-	mouseInputComponent.AddComponent<MouseInputComponent>("mouseInputComponent");
+	TypeProperties p(COLLIDER, false, {2, 0}, 100, 0, 0, true);
 
-	//ParentA
-	auto& parentA = testScene->AddChild("ParentA");
-	parentA.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, true);
-	parentA.transform->SetPosition(200, 300);
-	parentA.transform->SetScale(150, 300);
-	parentA.transform->SetRotation(20);
-	//ParentB
-	auto& parentB = testScene->AddChild("ParentB");
-	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 0, 255, 255}, true);
-	parentB.transform->SetPosition(525, 325);
-	parentB.transform->SetScale(350, 200);
-	parentB.transform->SetRotation(-125);
-	//Animated Object
-	auto& animatedObject = parentA.AddChild("AnimatedObject");
-	auto& animatedSprite = animatedObject.AddComponent<AnimationRenderable>(
-		"animTag", "../assets/character_spritesheet.png",
-		"spriteTag", 32, 32
-	);
+	auto& leftParent = testScene->AddChild("Box_Collider_Red");
+	auto& rightParent = testScene->AddChild("RightParent");
 
-	//Animator
-	auto& animationController = animatedObject.AddComponent<AnimationController>("animControllerTag", animatedSprite);
-	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
-	animationController.AddAnimation("run", 12, 19, 0.1f, true);
-	animationController.AddAnimation("jump", 27, 35, 0.1f, false);
-	animatedObject.GetComponent<AnimationController>()->PlayAnimation("idle");
+	p.isStatic = true;
+	auto rigid = glm::vec4{255, 0, 0, 255};
+	auto box = glm::vec4{0, 0, 0, 0};
+	auto collider = glm::vec4{0, 255, 0, 255};
+	auto circle = glm::vec4{0, 0, 0, 0};
 
-	//Keyboard input
-	auto& keyboardInputComponent = testScene->AddChild("KeyboardInputComponent");
-	keyboardInputComponent.AddComponent<KeyboardInputComponent>("keyboardInputComponent", animatedObject);
+	leftParent.transform->Translate(0, 6);
+	leftParent.transform->Rotate(10);
+	leftParent.AddComponent<RectangleRenderable>("", rigid + box, p.isStatic);
+	leftParent.AddComponent<BoxRigidBody>("", p.isStatic, p.velocity,
+	                                      p.rotationVelocity, p.angularResistance, p.linearResistance,
+	                                      p.gravityEnabled, w, h);
+	leftParent.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
+	leftParent.AddComponent<CircleCollider>("", r);
+	leftParent.AddComponent<CollisionHandler>("", [](GameObject* obj1, GameObject* obj2) {
+		std::cout << "CollisionHandler1: " << obj1->tag << ", " << obj2->tag << std::endl;
+	});
 
-	//Reparenting mouse input
-	animatedObject.AddComponent<MouseReparenting>("Reparenting", parentA, parentB);
+	auto& child1 = testScene->AddChild("");
+	child1.transform->Translate(2, 6);
+	child1.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
+	child1.AddComponent<CircleCollider>("", r);
+
+	p.isStatic = false;
+
+	auto& child2 = testScene->AddChild("");
+	child2.transform->Translate(0, 0);
+	child2.transform->Rotate(10);
+	child2.AddComponent<RectangleRenderable>("", rigid + box, p.isStatic);
+	child2.AddComponent<BoxRigidBody>("", p.isStatic, p.velocity,
+	                                  p.rotationVelocity, p.angularResistance, p.linearResistance,
+	                                  p.gravityEnabled, w, h);
+	child2.AddComponent<CollisionHandler>("", [](GameObject* obj1, GameObject* obj2) {
+		std::cout << "CollisionHandler2: " << obj1->tag << ", " << obj2->tag << std::endl;
+	});
+
+	auto& child3 = testScene->AddChild("");
+	child3.transform->Translate(2, 0);
+	child3.AddComponent<EllipseRenderable>("", rigid + circle, p.isStatic);
+	child3.AddComponent<CircleRigidBody>("", p.isStatic,
+	                                     p.velocity,
+	                                     p.rotationVelocity, p.angularResistance, p.linearResistance,
+	                                     p.gravityEnabled, r);
+	p = TypeProperties(RIGIDBODY, false, {0, 0}, 10, 0.1, 0.1, false);
+	rightParent.transform->Translate(0, 4);
+	rightParent.AddComponent<RectangleRenderable>("", collider + box, p.isStatic);
+	rightParent.AddComponent<BoxCollider>("", w, h);
+	rightParent.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
+	rightParent.AddComponent<CircleCollider>("", r);
+	auto& child11 = testScene->AddChild("");
+	child11.transform->Translate(2, 4);
+	child11.AddComponent<EllipseRenderable>("", rigid + circle, p.isStatic);
+	child11.AddComponent<CircleRigidBody>("", p.isStatic,
+	                                      p.velocity,
+	                                      p.rotationVelocity, p.angularResistance, p.linearResistance,
+	                                      p.gravityEnabled, r);
+	child11.AddComponent<RectangleRenderable>("", rigid + box, p.isStatic);
+	child11.AddComponent<BoxRigidBody>("", p.isStatic,
+	                                   p.velocity,
+	                                   p.rotationVelocity, p.angularResistance, p.linearResistance,
+	                                   p.gravityEnabled, w, h);
+	auto& child12 = testScene->AddChild("");
+	child12.transform->Translate(0, 2);
+	child12.AddComponent<RectangleRenderable>("", rigid + box, p.isStatic);
+	child12.AddComponent<BoxRigidBody>("", p.isStatic, p.velocity,
+	                                   p.rotationVelocity, p.angularResistance, p.linearResistance,
+	                                   p.gravityEnabled, w, h);
+
+	auto& child13 = testScene->AddChild("");
+	child13.transform->Translate(2, 2);
+	child13.AddComponent<EllipseRenderable>("", rigid + circle, p.isStatic);
+	child13.AddComponent<CircleRigidBody>("", p.isStatic,
+	                                      p.velocity,
+	                                      p.rotationVelocity, p.angularResistance, p.linearResistance,
+	                                      p.gravityEnabled, r);
 }
 
 void SceneManager::Update(float delta) {

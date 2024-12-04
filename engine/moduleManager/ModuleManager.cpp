@@ -5,6 +5,7 @@
 #include "ModuleManager.hpp"
 
 #include "modules/WindowModule.hpp"
+#include "modules/audio/AudioModule.hpp"
 
 ModuleManager& ModuleManager::getInstance() {
 	static ModuleManager instance;
@@ -13,6 +14,7 @@ ModuleManager& ModuleManager::getInstance() {
 
 ModuleManager::ModuleManager() : modules{} {
 	modules[typeid(WindowModule)] = (std::make_unique<WindowModule>());
+	modules[typeid(AudioModule)] = (std::make_unique<AudioModule>());
 }
 
 void ModuleManager::Update(float delta) {

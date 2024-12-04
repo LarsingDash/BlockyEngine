@@ -14,6 +14,7 @@ public:
 	                float rotationVelocity, float angularResistance, float linearResistance,
 	                bool gravityEnabled,
 	                float radius);
+	CircleRigidBody(GameObject& gameObject, const char* tag, const TypeProperties& properties, float radius);
 };
 
 #endif //CIRCLERIGIDBODY_HPP

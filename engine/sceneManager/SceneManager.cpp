@@ -45,9 +45,7 @@ SceneManager::SceneManager() :
 	leftParent.transform->Translate(0, 6);
 	leftParent.transform->Rotate(10);
 	leftParent.AddComponent<RectangleRenderable>("", rigid + box, p.isStatic);
-	leftParent.AddComponent<BoxRigidBody>("", p.isStatic, p.velocity,
-	                                      p.rotationVelocity, p.angularResistance, p.linearResistance,
-	                                      p.gravityEnabled, w, h);
+	leftParent.AddComponent<BoxRigidBody>("", p, w, h);
 	leftParent.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
 	leftParent.AddComponent<CircleCollider>("", r);
 	leftParent.AddComponent<CollisionHandler>("", [](GameObject* obj1, GameObject* obj2) {
@@ -65,9 +63,7 @@ SceneManager::SceneManager() :
 	child2.transform->Translate(0, 0);
 	child2.transform->Rotate(10);
 	child2.AddComponent<RectangleRenderable>("", rigid + box, p.isStatic);
-	child2.AddComponent<BoxRigidBody>("", p.isStatic, p.velocity,
-	                                  p.rotationVelocity, p.angularResistance, p.linearResistance,
-	                                  p.gravityEnabled, w, h);
+	child2.AddComponent<BoxRigidBody>("", p, w, h);
 	child2.AddComponent<CollisionHandler>("", [](GameObject* obj1, GameObject* obj2) {
 		std::cout << "CollisionHandler2: " << obj1->tag << ", " << obj2->tag << std::endl;
 	});
@@ -75,42 +71,32 @@ SceneManager::SceneManager() :
 	auto& child3 = testScene->AddChild("");
 	child3.transform->Translate(2, 0);
 	child3.AddComponent<EllipseRenderable>("", rigid + circle, p.isStatic);
-	child3.AddComponent<CircleRigidBody>("", p.isStatic,
-	                                     p.velocity,
-	                                     p.rotationVelocity, p.angularResistance, p.linearResistance,
-	                                     p.gravityEnabled, r);
+	child3.AddComponent<CircleRigidBody>("", p, r);
+
 	p = TypeProperties(RIGIDBODY, false, {0, 0}, 10, 0.1, 0.1, false);
+
 	rightParent.transform->Translate(0, 4);
 	rightParent.AddComponent<RectangleRenderable>("", collider + box, p.isStatic);
 	rightParent.AddComponent<BoxCollider>("", w, h);
 	rightParent.AddComponent<EllipseRenderable>("", collider + circle, p.isStatic);
 	rightParent.AddComponent<CircleCollider>("", r);
+
 	auto& child11 = testScene->AddChild("");
 	child11.transform->Translate(2, 4);
 	child11.AddComponent<EllipseRenderable>("", rigid + circle, p.isStatic);
-	child11.AddComponent<CircleRigidBody>("", p.isStatic,
-	                                      p.velocity,
-	                                      p.rotationVelocity, p.angularResistance, p.linearResistance,
-	                                      p.gravityEnabled, r);
+	child11.AddComponent<CircleRigidBody>("", p, r);
 	child11.AddComponent<RectangleRenderable>("", rigid + box, p.isStatic);
-	child11.AddComponent<BoxRigidBody>("", p.isStatic,
-	                                   p.velocity,
-	                                   p.rotationVelocity, p.angularResistance, p.linearResistance,
-	                                   p.gravityEnabled, w, h);
+	child11.AddComponent<BoxRigidBody>("", p, w, h);
+
 	auto& child12 = testScene->AddChild("");
 	child12.transform->Translate(0, 2);
 	child12.AddComponent<RectangleRenderable>("", rigid + box, p.isStatic);
-	child12.AddComponent<BoxRigidBody>("", p.isStatic, p.velocity,
-	                                   p.rotationVelocity, p.angularResistance, p.linearResistance,
-	                                   p.gravityEnabled, w, h);
+	child12.AddComponent<BoxRigidBody>("", p, w, h);
 
 	auto& child13 = testScene->AddChild("");
 	child13.transform->Translate(2, 2);
 	child13.AddComponent<EllipseRenderable>("", rigid + circle, p.isStatic);
-	child13.AddComponent<CircleRigidBody>("", p.isStatic,
-	                                      p.velocity,
-	                                      p.rotationVelocity, p.angularResistance, p.linearResistance,
-	                                      p.gravityEnabled, r);
+	child13.AddComponent<CircleRigidBody>("", p, r);
 }
 
 void SceneManager::Update(float delta) {

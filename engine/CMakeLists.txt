@@ -76,6 +76,8 @@ message("SDL2 LIBRARY DIRS: ${SDL2_LIBRARIES}")
 add_subdirectory("${DEPS_DIR}/SDL2_gfx")
 add_subdirectory("${DEPS_DIR}/glm")
 
+find_package(box2d)
+
 ########################################################################################################################
 
 if (blocky_build_tests)
@@ -108,6 +110,7 @@ target_link_libraries(${ENGINE_TARGET} PRIVATE
         glm
         SDL2::SDL2
         sdl_gfx
+        box2d::box2d
 )
 
 target_include_directories(${ENGINE_TARGET} PUBLIC

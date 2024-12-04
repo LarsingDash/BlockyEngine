@@ -13,7 +13,16 @@ CircleRigidBody::CircleRigidBody(GameObject& gameObject, const char* tag, bool i
                                  float radius) : PhysicsBody(gameObject, tag,
                                                              std::make_unique<Circle>(radius),
                                                              TypeProperties(
-	                                                             RIGIDBODY,  isStatic, velocity,
+	                                                             RIGIDBODY, isStatic, velocity,
 	                                                             rotationVelocity,
 	                                                             angularResistance, linearResistance,
 	                                                             gravityEnabled)) {}
+
+CircleRigidBody::CircleRigidBody(GameObject& gameObject, const char* tag, const TypeProperties& properties,
+                                 float radius) : PhysicsBody(gameObject, tag,
+                                                             std::make_unique<Circle>(radius), TypeProperties(
+	                                                             RIGIDBODY, properties.isStatic, properties.velocity,
+	                                                             properties.rotationVelocity,
+	                                                             properties.angularResistance,
+	                                                             properties.linearResistance,
+	                                                             properties.gravityEnabled)) {}

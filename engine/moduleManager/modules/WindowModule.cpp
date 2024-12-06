@@ -13,6 +13,11 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) 
 		std::cerr << "Couldn't init video: " << SDL_GetError() << std::endl;
 		return;
 	}
+	
+	if (TTF_Init() != 0) {
+		SDL_Log("Unable to initialize SDL_ttf: %s", TTF_GetError());
+		return;
+	}
 
 	//Create window
 	_window = SDL_CreateWindow("SDLTest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,

@@ -21,8 +21,11 @@ setup_dependencies()
 if (${MINGW})
     message(STATUS "BUILDING MINGW SDL2")
     set(SDL2_DIR "${DEPS_DIR}/SDL2/cmake")
+    set(SDL2_mixer_DIR "${DEPS_DIR}/SDL2_mixer/cmake")
     message("SDL DIR: ${SDL2_DIR}")
+    message("SDL2_mixer DIR: ${SDL2_mixer_DIR}")
     find_package(SDL2 CONFIG REQUIRED)
+    find_package(SDL2_mixer CONFIG REQUIRED)
 
     message("SDL2 INCLUDE DIRS: ${SDL2_INCLUDE_DIRS}")
     message("SDL2 LIBRARY DIRS: ${SDL2_LIBRARIES}")
@@ -63,6 +66,7 @@ add_subdirectory(logging)
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         glm
         SDL2::SDL2
+        SDL2_mixer::SDL2_mixer
         sdl_gfx
 )
 
@@ -83,7 +87,9 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
 if (MINGW)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll")
+        copy_dll_to_build(SDL2_mixer_DLL "${SDL2_mixer_DIR}/../x86_64-w64-mingw32/bin/SDL2_mixer.dll")
     else ()
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../i686-w64-mingw32/bin/SDL2.dll")
+        copy_dll_to_build(SDL2_mixer_DLL "${SDL2_mixer_DIR}/../i686-w64-mingw32/bin/SDL2_mixer.dll")
     endif ()
 endif ()

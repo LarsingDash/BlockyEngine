@@ -225,9 +225,26 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 		SDL_FreeSurface(textSurface);
 		return;
 	}
+
 	const auto& position = renderable.componentTransform->GetWorldPosition();
-	SDL_Rect destRect = {static_cast<int>(position.x), static_cast<int>(position.y), textSurface->w, textSurface->h};
-	SDL_RenderCopy(_renderer, texture, nullptr, &destRect);
+	const auto& rotation = renderable.componentTransform->GetWorldRotation();
+
+	SDL_FRect destRect = {
+			static_cast<float>(position.x),
+			static_cast<float>(position.y),
+			static_cast<float>(textSurface->w),
+			static_cast<float>(textSurface->h)
+	};
+
+	SDL_RenderCopyExF(
+			_renderer,
+			texture,
+			nullptr,
+			&destRect,
+			rotation, 
+			nullptr,
+			SDL_FLIP_NONE
+	);
 
 	SDL_DestroyTexture(texture);
 	SDL_FreeSurface(textSurface);

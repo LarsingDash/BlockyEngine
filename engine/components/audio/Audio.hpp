@@ -8,6 +8,7 @@
 #include <string>
 #include <components/Component.hpp>
 #include <utility>
+#include <SDL2_mixer/x86_64-w64-mingw32/include/SDL2/SDL_mixer.h>
 
 class AudioModule;
 
@@ -16,13 +17,15 @@ struct AudioFragment {
 	                                                                  isLooping(isLooping) {}
 
 	std::string path;
+	Mix_Chunk* audioChunk{};
+	int playingChannel{};
 	uint8_t volume;
 	bool isLooping;
 };
 
 class Audio : public Component {
 public:
-	Audio(GameObject& gameObject, const char* tag, AudioFragment fragment);
+	Audio(GameObject& gameObject, const char* tag, const AudioFragment& fragment);
 	Audio(GameObject& gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping);
 	~Audio() override = default;
 
@@ -32,8 +35,8 @@ public:
 
 private:
 	friend AudioModule;
-	void Play();
-	void Stop();
+	int Play(int loops = 0);
+	int Stop() const; // NOLINT(*-use-nodiscard)
 
 	AudioFragment _fragment;
 };

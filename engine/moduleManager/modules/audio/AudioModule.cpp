@@ -23,7 +23,7 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 	}
 }
 
-void AudioModule::PlayAudio(const std::string& tag) {
+void AudioModule::PlayAudio(const std::string& tag) const {
 	for (auto& audio : _audioList) {
 		if (tag == audio.get().tag) {
 			audio.get().Play();
@@ -32,7 +32,7 @@ void AudioModule::PlayAudio(const std::string& tag) {
 	}
 }
 
-void AudioModule::StopAudio(const std::string& tag) {
+void AudioModule::StopAudio(const std::string& tag) const {
 	for (auto& audio : _audioList) {
 		if (tag == audio.get().tag) {
 			audio.get().Stop();

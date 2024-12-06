@@ -36,12 +36,11 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 
 	if (state == MouseButtonState::BUTTON_DOWN) {
 		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
+		ModuleManager::getInstance().getModule<AudioModule>().PlayAudio("bubble-pop");
 	}
 	else {
-		rectangle.AddComponent<Audio>("Audio", "assets/audioFiles/car-horn.mp3", 255, false);
 		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, true);
-		ModuleManager::getInstance().getModule<AudioModule>().PlayAudio("Audio");
-		ModuleManager::getInstance().getModule<AudioModule>().PlayAudio("ParentAAudio");
+		ModuleManager::getInstance().getModule<AudioModule>().PlayAudio("squish-pop");
 
 		// rectangle.GetComponent<Audio>()->Play(); //PlayAudio("ParentAAudio");
 	}

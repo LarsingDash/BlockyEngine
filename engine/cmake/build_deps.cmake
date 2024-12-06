@@ -8,6 +8,7 @@ set(GTEST_VERSION "1.15.2")
 set(SDL_VERSION "2.30.9")
 set(GLM_VERSION "1.0.1")
 set(BOX2D_VERSION "3.0.0")
+set(SDL_MIXER_VERSION "2.8.0")
 
 set(BLOCKY_DEPS
         googletest https://github.com/google/googletest/releases/download/v${GTEST_VERSION}/googletest-${GTEST_VERSION}.tar.gz
@@ -23,12 +24,18 @@ function(setup_platform_specifics)
         set(SDL2_DEP
                 SDL2 https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.zip
         )
+        set(SDL2_mixer_DEP
+                SDL2_mixer https://github.com/libsdl-org/SDL_mixer/releases/download/release-${SDL_MIXER_VERSION}/SDL2_mixer-devel-${SDL_MIXER_VERSION}-mingw.zip
+        )
         message(STATUS "APPENDING LINK: ${SDL2_DEP}")
+        message(STATUS "APPENDING LINK: ${SDL2_mixer_DEP}")
         list(APPEND BLOCKY_DEPS ${SDL2_DEP})
+        list(APPEND BLOCKY_DEPS ${SDL2_mixer_DEP})
         message(STATUS "${BLOCKY_DEPS}")
     elseif (${LINUX})
         message(STATUS "${BLOCKY_DEPS}")
         find_package(SDL2 CONFIG REQUIRED)
+        find_package(SDL2_mixer CONFIG REQUIRED)
     endif ()
 
     set(BLOCKY_DEPS "${BLOCKY_DEPS}" PARENT_SCOPE)

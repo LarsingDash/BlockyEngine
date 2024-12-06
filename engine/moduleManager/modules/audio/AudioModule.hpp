@@ -20,8 +20,8 @@ public:
 	void AddAudio(Audio& audio);
 	void RemoveAudio(const Audio& audio);
 
-	void PlayAudio(const std::string& tag);
-	void StopAudio(const std::string& tag);
+	void PlayAudio(const std::string& tag) const;
+	void StopAudio(const std::string& tag) const;
 
 private:
 	std::vector<std::reference_wrapper<Audio>> _audioList;

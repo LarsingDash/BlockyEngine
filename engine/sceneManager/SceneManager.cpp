@@ -9,9 +9,12 @@
 #include "components/animation/AnimationController.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 // #include "moduleManager/ModuleManager.hpp"
+#include <moduleManager/modules/audio/AudioModule.hpp>
+
 #include "components/example/MouseInputComponent.hpp"
 #include "components/example/KeyboardInputComponent.hpp"
 #include "components/example/MouseReparenting.hpp"
+#include "logging/BLogger.hpp"
 
 SceneManager::SceneManager() :
 	testScene(std::make_unique<GameObject>("root")),
@@ -28,8 +31,11 @@ SceneManager::SceneManager() :
 	parentA.transform->SetPosition(200, 300);
 	parentA.transform->SetScale(150, 300);
 	parentA.transform->SetRotation(20);
-	// auto p = AudioFragment("assets/audioFiles/car-horn.mp3", 255, false);
-	parentA.AddComponent<Audio>("ParentAAudio", "assets/audioFiles/car-horn.mp3", 255, false);
+	parentA.AddComponent<Audio>("car-horn", "../assets/audioFiles/car-horn.mp3", 255, false);
+	parentA.AddComponent<Audio>("count-down", "../assets/audioFiles/count-down.mp3", 255, false);
+	parentA.AddComponent<Audio>("bubble-pop", "../assets/audioFiles/bubble-pop.mp3", 255, false);
+	parentA.AddComponent<Audio>("squish-pop", "../assets/audioFiles/squish-pop.mp3", 255, false);
+	ModuleManager::getInstance().getModule<AudioModule>().PlayAudio("car-horn");
 
 	//ParentB
 	auto& parentB = testScene->AddChild("ParentB");

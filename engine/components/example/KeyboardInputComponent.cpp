@@ -4,8 +4,6 @@
 
 #include "KeyboardInputComponent.hpp"
 
-#include <utility>
-
 #include "gameObject/GameObject.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"

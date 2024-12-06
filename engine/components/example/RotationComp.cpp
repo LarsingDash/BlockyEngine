@@ -7,7 +7,7 @@
 #include "gameObject/GameObject.hpp"
 
 RotationComp::RotationComp(GameObject* gameObject, const char* tag) :
-		Component(gameObject, tag, false) {}
+		Component(gameObject, tag) {}
 
 RotationComp::~RotationComp() = default;
 

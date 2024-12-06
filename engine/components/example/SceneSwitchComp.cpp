@@ -9,7 +9,7 @@
 #include "moduleManager/modules/WindowModule.hpp"
 
 SceneSwitchComp::SceneSwitchComp(GameObject* gameObject, const char* tag, const char* target) :
-		Component(gameObject, tag, false), _target(target) {}
+		Component(gameObject, tag), _target(target) {}
 
 SceneSwitchComp::~SceneSwitchComp() = default;
 

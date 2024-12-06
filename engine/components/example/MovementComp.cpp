@@ -8,7 +8,7 @@
 #include "glm/trigonometric.hpp"
 
 MovementComp::MovementComp(GameObject* gameObject, const char* tag) :
-		Component(gameObject, tag, false), _direction(1, 0), _speed(15.f) {}
+		Component(gameObject, tag), _direction(1, 0), _speed(15.f) {}
 
 MovementComp::~MovementComp() = default;
 

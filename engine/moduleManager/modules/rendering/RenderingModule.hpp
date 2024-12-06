@@ -18,7 +18,7 @@
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "SDL2_gfx/SDL2_rotozoom.h"
 #include "components/renderables/AnimationRenderable.hpp"
-
+#include "components/renderables/TextRenderable.hpp"
 class RenderingModule {
 	public:
 		explicit RenderingModule(SDL_Renderer* renderer);
@@ -38,6 +38,7 @@ class RenderingModule {
 		void _renderSprite(SpriteRenderable& renderable);
 		void _renderAnimatedSprite(AnimationRenderable& renderable);
 		void _renderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect);
+		void _renderText(TextRenderable& renderable);
 		SDL_Texture* _loadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
 

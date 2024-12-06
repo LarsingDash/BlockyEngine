@@ -7,6 +7,7 @@
 #include "components/example/MouseReparenting.hpp"
 #include "components/example/MouseInputComponent.hpp"
 #include "components/example/KeyboardInputComponent.hpp"
+#include "components/example/SceneSwitchComp.hpp"
 
 void buildPrefabScene(SceneManager& scenes) {
 	auto root = std::make_unique<GameObject>("Prefabs");
@@ -27,6 +28,9 @@ void buildPrefabScene(SceneManager& scenes) {
 	barrel.AddComponent<RectangleRenderable>("BarrelR", glm::vec4(125, 125, 250, 255), true);
 	barrel.transform->SetScale(2, 0.5f);
 	barrel.transform->SetPosition(0.5f, 0);
+
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "InputReparenting");
 
 	scenes.AddScene(std::move(root));
 }
@@ -73,6 +77,9 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	//Reparenting mouse input
 	root->AddComponent<MouseReparenting>("Reparenting", "AnimatedObject", "ParentA", "ParentB");
 
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "Prefabs");
+	
 	scenes.AddScene(std::move(root));
 }
 
@@ -83,7 +90,7 @@ int main() {
 	buildPrefabScene(sceneManager);
 	buildInputReparentingScene(sceneManager);
 
-	sceneManager.SwitchScene("Prefabs");
+//	sceneManager.SwitchScene("Prefabs");
 	sceneManager.SwitchScene("InputReparenting");
 
 	blockyEngine.Run();

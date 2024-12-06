@@ -8,8 +8,8 @@
 
 bool BlockyEngine::isRunning{false};
 
-BlockyEngine::BlockyEngine() : moduleManager{ModuleManager::getInstance()},
-							   sceneManager{std::make_unique<SceneManager>()} {}
+BlockyEngine::BlockyEngine() : moduleManager(ModuleManager::getInstance()),
+							   sceneManager(SceneManager::CreateInstance()) {}
 
 SceneManager& BlockyEngine::GetSceneManager() const {return *sceneManager;}
 

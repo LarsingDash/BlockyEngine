@@ -5,4 +5,5 @@
         MouseInputComponent.cpp
         KeyboardInputComponent.cpp
         MouseReparenting.cpp
+        SceneSwitchComp.cpp
 )

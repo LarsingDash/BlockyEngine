@@ -18,10 +18,31 @@ class MouseInputComponent : public Component {
 		void Update(float delta) override;
 		void End() override;
 
+		void PaletteGUI();
+
 	private:
 		void HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color);
 
 		InputModule& _inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
+		ImGuiRenderingModule& _imguiModule = ModuleManager::getInstance().getModule<WindowModule>().GetGuiRenderingModule();
+
+		int currentPalette = 0;
+		glm::vec4 colorPalettes[3][3] = {
+				{ glm::vec4(255.f, 0.f, 0.f, 255.f),
+				  glm::vec4(0.f, 0.f, 255.f, 255.f),
+				  glm::vec4(0.f, 255.f, 0.f, 255.f)
+				},
+
+				{ glm::vec4(128.f, 50.f, 0.f, 255.f),
+				  glm::vec4(50.f, 128.f, 0.f, 255.f),
+				  glm::vec4(0.f, 50.f, 128.f, 255.f)
+				},
+
+				{ glm::vec4(255.f, 255.f, 0.f, 255.f),
+				  glm::vec4(0.f, 255.f, 255.f, 255.f),
+				  glm::vec4(255.f, 0.f, 255.f, 255.f)
+				}
+		};
 };
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_CUSTOM_MOUSEINPUTCOMPONENT_HPP_

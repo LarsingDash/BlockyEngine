@@ -2,7 +2,7 @@
 // Created by 11896 on 06/12/2024.
 //
 
-#include "ImGUIRenderingModule.hpp"
+#include "ImGuiRenderingModule.hpp"
 #include "imgui_impl_sdlrenderer2.h"
 
 #include <iostream>
@@ -23,7 +23,6 @@ void ImGuiRenderingModule::Init() {
 	ImGuiIO& io = ImGui::GetIO();
 	io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
 
-
 	ImGui_ImplSDL2_InitForSDLRenderer(_window, _renderer);
 	ImGui_ImplSDLRenderer2_Init(_renderer);
 }
@@ -32,9 +31,18 @@ void ImGuiRenderingModule::Render() {
 	ImGui_ImplSDLRenderer2_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("IMGUI WINDOW");
-	ImGui::Text("Test");
-	ImGui::End();
+	for (auto& [tag, uiComponent] : _uiComponents) {
+		uiComponent();
+	}
 
 	ImGui::Render();
+	ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), _renderer);
+}
+
+void ImGuiRenderingModule::AddComponent(const std::string& tag, std::function<void()> uiComponent) {
+	_uiComponents[tag] = uiComponent;
+}
+
+void ImGuiRenderingModule::RemoveComponent(const std::string& tag) {
+	_uiComponents.erase(tag);
 }

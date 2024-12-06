@@ -15,7 +15,7 @@
 #include "components/renderables/EllipseRenderable.hpp"
 #include "moduleManager/modules/rendering/RenderingModule.hpp"
 #include "moduleManager/modules/input/InputModule.hpp"
-#include "moduleManager/modules/rendering/ImGUIRenderingModule.hpp"
+#include "moduleManager/modules/rendering/ImGuiRenderingModule.hpp"
 
 class WindowModule : public ModuleWrapper {
 	public:

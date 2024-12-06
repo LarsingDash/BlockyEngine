@@ -10,6 +10,7 @@
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <functional>
+#include <string>
 
 class ImGuiRenderingModule : public ModuleWrapper {
 	public:
@@ -20,14 +21,15 @@ class ImGuiRenderingModule : public ModuleWrapper {
 		void Render();
 		void Update(float delta) override {}
 
-		void AddComponent(std::function<void()> uiComponent) {}
+		void AddComponent(const std::string& tag, std::function<void()> uiComponent);
+		void RemoveComponent(const std::string& tag);
 
 	private:
 		SDL_Window* _window;
 		SDL_Renderer* _renderer;
 		SDL_GLContext _context;
 
-		std::vector<std::function<void()>> _uiComponents;
+		std::unordered_map<std::string, std::function<void()>> _uiComponents;
 };
 
 #endif //BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_RENDERING_IMGUIRENDERINGMODULE_HPP_

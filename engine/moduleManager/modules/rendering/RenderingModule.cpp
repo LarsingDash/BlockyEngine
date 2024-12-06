@@ -225,8 +225,8 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 		SDL_FreeSurface(textSurface);
 		return;
 	}
-
-	SDL_Rect destRect = {0, 0, textSurface->w, textSurface->h};
+	const auto& position = renderable.componentTransform->GetWorldPosition();
+	SDL_Rect destRect = {static_cast<int>(position.x), static_cast<int>(position.y), textSurface->w, textSurface->h};
 	SDL_RenderCopy(_renderer, texture, nullptr, &destRect);
 
 	SDL_DestroyTexture(texture);

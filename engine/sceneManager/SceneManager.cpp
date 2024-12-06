@@ -4,6 +4,8 @@
 
 #include "SceneManager.hpp"
 
+#include "logging/BLogger.hpp"
+
 SceneManager* SceneManager::_instance{nullptr};
 
 SceneManager::SceneManager() : _recalculationList() {}
@@ -16,6 +18,18 @@ SceneManager* SceneManager::CreateInstance() {
 
 void SceneManager::AddScene(std::unique_ptr<GameObject>&& scene) {
 	_scenes.emplace_back(std::move(scene));
+}
+
+void SceneManager::RemoveScene(const std::string& target) {
+	//Find the targeted scene
+	auto it = std::find_if(_scenes.begin(), _scenes.end(),
+						   [&target]
+								   (const std::unique_ptr<GameObject>& scene) {
+							   return scene->tag == target;
+						   });
+
+	//Erase scene if found
+	if (it != _scenes.end()) _scenes.erase(it);
 }
 
 void SceneManager::SwitchScene(const std::string& tag) { _switchTarget = tag; }
@@ -35,6 +49,11 @@ void SceneManager::_switchScene() {
 		
 		//Activate separately from copy constructor to allow for prefab creation without them activating instantly
 		_activeScene->SetActive(true);
+	} else {
+		std::string err("Scene {");
+		err += _switchTarget;
+		err += "} could not be found";
+		BLOCKY_ENGINE_ERROR(err)
 	}
 	
 	_switchTarget.clear();

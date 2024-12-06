@@ -23,7 +23,9 @@ class SceneManager {
 		inline static SceneManager* GetInstance() { return _instance; }
 
 		void AddScene(std::unique_ptr<GameObject>&& scene);
+		void RemoveScene(const std::string& target);
 		void SwitchScene(const std::string& tag);
+		
 		void Update(float delta);
 
 	private:

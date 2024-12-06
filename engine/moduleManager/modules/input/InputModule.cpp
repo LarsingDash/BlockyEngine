@@ -8,6 +8,7 @@ void InputModule::PollEvents() {
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
+		ImGui_ImplSDL2_ProcessEvent(&event);
 		switch (event.type) {
 			default: break;
 

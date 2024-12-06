@@ -39,7 +39,9 @@ SceneManager::SceneManager() :
 			"animTag", "../assets/character_spritesheet.png",
 			"spriteTag", 32, 32
 	);
+	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
 
+	auto& text = animatedObject.AddComponent<TextRenderable>("Text", "Test Text", glm::vec4{0, 255, 0, 255}, font);
 	//Animator
 	auto& animationController = animatedObject.AddComponent<AnimationController>("animControllerTag", animatedSprite);
 	animationController.AddAnimation("idle", 0, 11, 0.15f, true);

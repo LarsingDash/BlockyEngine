@@ -11,12 +11,13 @@ class RotationComp : public Component {
 	public:
 		RotationComp(GameObject* gameObject, const char* tag);
 		~RotationComp() override;
-
-		Component* _cloneImpl(GameObject& parent) override;
-
+		
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
+		
+	private:
+		Component* _clone(const GameObject& parent) override;
 };
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_EXAMPLE_ROTATIONCOMP_HPP_

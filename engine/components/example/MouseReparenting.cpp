@@ -18,7 +18,7 @@ MouseReparenting::MouseReparenting(GameObject* parent,
 		Component(parent, tag), target(nullptr), parentA(nullptr), parentB(nullptr),
 		targetTag(std::move(target)), parentATag(std::move(parentA)), parentBTag(std::move(parentB)) {}
 
-Component* MouseReparenting::_cloneImpl(GameObject& parent) {
+Component* MouseReparenting::_clone(const GameObject& parent) {
 	auto clone = new MouseReparenting(*this);
 	return clone;
 }

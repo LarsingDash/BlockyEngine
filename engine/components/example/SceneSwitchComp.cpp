@@ -13,7 +13,7 @@ SceneSwitchComp::SceneSwitchComp(GameObject* gameObject, const char* tag, const 
 
 SceneSwitchComp::~SceneSwitchComp() = default;
 
-Component* SceneSwitchComp::_cloneImpl(GameObject& parent) {
+Component* SceneSwitchComp::_clone(const GameObject& parent) {
 	auto clone = new SceneSwitchComp(*this);
 	return clone;
 }

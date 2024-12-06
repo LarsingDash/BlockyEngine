@@ -11,7 +11,7 @@ RotationComp::RotationComp(GameObject* gameObject, const char* tag) :
 
 RotationComp::~RotationComp() = default;
 
-Component* RotationComp::_cloneImpl(GameObject& parent) {
+Component* RotationComp::_clone(const GameObject& parent) {
 	auto clone = new RotationComp(*this);
 	return clone;
 }

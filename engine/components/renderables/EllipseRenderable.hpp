@@ -12,13 +12,13 @@ class EllipseRenderable : public Renderable {
 	public:
 		EllipseRenderable(GameObject* gameObject, const char* tag, const glm::ivec4& color, bool isFilled = false);
 		~EllipseRenderable() override = default;
-
-		Component* _cloneImpl(GameObject& parent) override;
-
+		
 		[[nodiscard]] glm::ivec4 GetColor() const;
 		[[nodiscard]] bool IsFilled() const;
 
 	private:
+		Component* _clone(const GameObject& parent) override;
+		
 		glm::ivec4 _color;
 		bool _isFilled;
 };

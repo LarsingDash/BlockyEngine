@@ -14,14 +14,14 @@ class AnimationRenderable : public SpriteRenderable {
 	public:
 		AnimationRenderable(GameObject* gameObject, const char* tag,
 							std::string filePath, std::string spriteTag, int frameWidth, int frameHeight);
-
-		Component* _cloneImpl(GameObject& parent) override;
-
+		
 		[[nodiscard]] const glm::ivec4* GetSourceRect() const;
 		[[nodiscard]] const glm::ivec4& GetFrame(int index) const;
 		void SetCurrentFrame(int frameIndex);
 
 	private:
+		Component* _clone(const GameObject& parent) override;
+		
 		void _loadFrames();
 		int _frameWidth{}, _frameHeight{};
 		int _sheetWidth{}, _sheetHeight{};

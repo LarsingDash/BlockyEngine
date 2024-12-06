@@ -12,7 +12,7 @@ MouseInputComponent::MouseInputComponent(GameObject* parent, const char* tag)
 		: Component(parent, tag), 
 		_inputModule(ModuleManager::getInstance().getModule<WindowModule>().GetInputModule()) {}
 
-Component* MouseInputComponent::_cloneImpl(GameObject& parent) {
+Component* MouseInputComponent::_clone(const GameObject& parent) {
 	auto clone = new MouseInputComponent(*this);
 	return clone;
 }

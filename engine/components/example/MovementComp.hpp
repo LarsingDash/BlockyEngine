@@ -12,8 +12,6 @@ class MovementComp : public Component {
 		MovementComp(GameObject* gameObject, const char* tag);
 		~MovementComp() override;
 		
-		Component* _cloneImpl(GameObject& parent) override;
-
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
@@ -21,6 +19,8 @@ class MovementComp : public Component {
 		void SetDirectionByAngle(float angle);
 		
 	private:
+		Component* _clone(const GameObject& parent) override;
+		
 		glm::vec2 _direction;
 		float _speed;
 };

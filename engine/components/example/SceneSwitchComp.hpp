@@ -12,13 +12,13 @@ class SceneSwitchComp : public Component {
 		SceneSwitchComp(GameObject* gameObject, const char* tag, const char* target);
 		~SceneSwitchComp() override;
 
-		Component* _cloneImpl(GameObject& parent) override;
-
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-		
+
 	private:
+		Component* _clone(const GameObject& parent) override;
+
 		std::string _target;
 };
 

@@ -19,7 +19,7 @@ class SpawnerComp : public Component {
 		void End() override;
 		
 	private:
-		Component* _cloneImpl(GameObject& parent) override;
+		Component* _clone(const GameObject& parent) override;
 		
 		float counter{0};
 		std::unique_ptr<GameObject> projectilePrefab;

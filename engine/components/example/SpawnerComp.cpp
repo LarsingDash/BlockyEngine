@@ -27,7 +27,7 @@ SpawnerComp::SpawnerComp(const SpawnerComp& other) :
 		Component(other), container(nullptr),
 		projectilePrefab(std::make_unique<GameObject>(*other.projectilePrefab)) {}
 
-Component* SpawnerComp::_cloneImpl(GameObject& parent) {
+Component* SpawnerComp::_clone(const GameObject& parent) {
 	auto clone = new SpawnerComp(*this);
 	return clone;
 }

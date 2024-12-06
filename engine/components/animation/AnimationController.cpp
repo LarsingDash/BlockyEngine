@@ -11,7 +11,7 @@
 AnimationController::AnimationController(GameObject* gameObject, const char* tag)
 		: Component(gameObject, tag), _renderable(nullptr) {}
 
-Component* AnimationController::_cloneImpl(GameObject& parent) {
+Component* AnimationController::_clone(const GameObject& parent) {
 	auto clone = new AnimationController(*this);
 	return clone;
 }

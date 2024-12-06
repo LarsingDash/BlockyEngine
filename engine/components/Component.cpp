@@ -18,8 +18,8 @@ Component::Component(const Component& other) :
 						   : nullptr) {}
 
 
-Component* Component::Clone(GameObject& parent) {
-	Component* clone = _cloneImpl(parent);
+Component* Component::CloneInternal(GameObject& parent) {
+	Component* clone = _clone(parent);
 
 	clone->gameObject = &parent;
 	if (_hasTransform) {

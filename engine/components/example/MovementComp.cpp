@@ -12,7 +12,7 @@ MovementComp::MovementComp(GameObject* gameObject, const char* tag) :
 
 MovementComp::~MovementComp() = default;
 
-Component* MovementComp::_cloneImpl(GameObject& parent) {
+Component* MovementComp::_clone(const GameObject& parent) {
 	auto clone = new MovementComp(*this);
 	return clone;
 }

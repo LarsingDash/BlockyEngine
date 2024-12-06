@@ -19,9 +19,7 @@ class AnimationController : public Component {
 		};
 
 		AnimationController(GameObject* gameObject, const char* tag);
-
-		Component* _cloneImpl(GameObject& parent) override;
-
+		
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
@@ -31,6 +29,8 @@ class AnimationController : public Component {
 		void StopAnimation();
 
 	private:
+		Component* _clone(const GameObject& parent) override;
+		
 		AnimationRenderable* _renderable;
 		float _frameTimer = 0.0f;
 		int _currentFrame = 0;

@@ -10,10 +10,10 @@ class MouseInputComponent : public Component {
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-
-		Component* _cloneImpl(GameObject& parent) override;
-
+		
 	private:
+		Component* _clone(const GameObject& parent) override;
+		
 		void HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color);
 
 		InputModule& _inputModule;

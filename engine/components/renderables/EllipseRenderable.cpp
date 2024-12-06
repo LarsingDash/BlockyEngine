@@ -7,7 +7,7 @@
 EllipseRenderable::EllipseRenderable(GameObject* gameObject, const char* tag, const glm::ivec4& color, bool isFilled)
 		: Renderable(gameObject, tag, RenderableType::ELLIPSE), _color(color), _isFilled(isFilled) {}
 
-Component* EllipseRenderable::_cloneImpl(GameObject& parent) {
+Component* EllipseRenderable::_clone(const GameObject& parent) {
 	auto clone = new EllipseRenderable(*this);
 	return clone;
 }

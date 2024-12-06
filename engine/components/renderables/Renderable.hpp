@@ -25,8 +25,9 @@ class Renderable : public Component {
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-		RenderableType GetRenderableType();
 
+		RenderableType GetRenderableType();
+		
 	protected:
 		RenderableType _renderableType;
 };

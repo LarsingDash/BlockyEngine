@@ -14,7 +14,7 @@ KeyboardInputComponent::KeyboardInputComponent(GameObject* parent, const char* t
 		: Component(parent, tag),
 		  _inputModule(ModuleManager::getInstance().getModule<WindowModule>().GetInputModule()){}
 
-Component* KeyboardInputComponent::_cloneImpl(GameObject& parent) {
+Component* KeyboardInputComponent::_clone(const GameObject& parent) {
 	auto clone = new KeyboardInputComponent(*this);
 	return clone;
 }

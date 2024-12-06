@@ -41,7 +41,7 @@ GameObject::GameObject(const GameObject& other) :
 	for (const auto& type : other._components) {
 		for (const auto& comp : type.second) {
 			_components[type.first].emplace_back(
-					std::unique_ptr<Component>(comp->Clone(*this))
+					std::unique_ptr<Component>(comp->CloneInternal(*this))
 			);
 		}
 	}

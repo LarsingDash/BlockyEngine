@@ -18,10 +18,10 @@ class MouseReparenting : public Component {
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-
-		Component* _cloneImpl(GameObject& parent) override;
-
+		
 	private:
+		Component* _clone(const GameObject& parent) override;
+
 		std::string targetTag;
 		std::string parentATag;
 		std::string parentBTag;

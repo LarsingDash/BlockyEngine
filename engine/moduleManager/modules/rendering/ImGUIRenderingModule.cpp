@@ -3,10 +3,9 @@
 //
 
 #include "ImGUIRenderingModule.hpp"
-
+#include "imgui_impl_sdlrenderer2.h"
 
 #include <iostream>
-#include <SDL_opengl.h>
 
 ImGuiRenderingModule::ImGuiRenderingModule(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext context)
 		: _window(window), _renderer(renderer), _context(context) {
@@ -19,20 +18,12 @@ void ImGuiRenderingModule::Init() {
 
 	ImGui::StyleColorsDark();
 
-	if (!ImGui_ImplSDL2_InitForOpenGL(_window, _context)) {
-		std::cerr << "Failed to initialize ImGui SDL2 backend" << std::endl;
-		return;
-	}
-
-	if (!ImGui_ImplOpenGL3_Init("#version 130")) {  // GLSL 130 for OpenGL
-		std::cerr << "Failed to initialize ImGui OpenGL backend" << std::endl;
-		return;
-	}
+	ImGui_ImplSDL2_InitForSDLRenderer(_window, _renderer);
+	ImGui_ImplSDLRenderer2_Init(_renderer);
 }
 
 void ImGuiRenderingModule::Render() {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplSDL2_NewFrame();
+	ImGui_ImplSDLRenderer2_NewFrame();
 	ImGui::NewFrame();
 
 	ImGui::Begin("IMGUI WINDOW");
@@ -40,9 +31,4 @@ void ImGuiRenderingModule::Render() {
 	ImGui::End();
 
 	ImGui::Render();
-	glViewport(0, 0, (GLsizei)ImGui::GetIO().DisplaySize.x, (GLsizei)ImGui::GetIO().DisplaySize.y);
-	glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

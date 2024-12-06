@@ -73,12 +73,22 @@ if (LINUX)
     )
 endif ()
 
-
+set(IMGUI_PATH ${DEPS_DIR}/imgui)
+set(IMGUI_SOURCES
+        ${IMGUI_PATH}/imgui.cpp
+        ${IMGUI_PATH}/imgui_draw.cpp
+        ${IMGUI_PATH}/imgui_tables.cpp
+        ${IMGUI_PATH}/imgui_widgets.cpp
+        ${IMGUI_PATH}/backends/imgui_impl_sdl2.cpp
+        ${IMGUI_PATH}/backends/imgui_impl_sdlrenderer2.cpp
+)
+target_sources(${ENGINE_TARGET} PRIVATE ${IMGUI_SOURCES})
 target_include_directories(${ENGINE_TARGET} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${SDL2_INCLUDE_DIRS}
         ${DEPS_DIR}
-        ${DEPS_DIR}/imgui
+        ${IMGUI_PATH}
+        ${IMGUI_PATH}/backends
 )
 
 # Copies dll to build directory

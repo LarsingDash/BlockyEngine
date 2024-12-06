@@ -9,19 +9,18 @@
 #include <SDL.h>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
-#include <imgui_impl_opengl3.h>
 #include <functional>
 
 class ImGuiRenderingModule : public ModuleWrapper {
 	public:
 		ImGuiRenderingModule(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext context);
-		~ImGuiRenderingModule();
+		~ImGuiRenderingModule() override = default;
 
 		void Init();
 		void Render();
-		void Update(float delta);
+		void Update(float delta) override {}
 
-		void AddComponent(std::function<void()> uiComponent);
+		void AddComponent(std::function<void()> uiComponent) {}
 
 	private:
 		SDL_Window* _window;

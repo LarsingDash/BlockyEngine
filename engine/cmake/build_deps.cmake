@@ -8,6 +8,7 @@ set(GTEST_VERSION "1.15.2")
 set(SDL_VERSION "2.30.9")
 set(GLM_VERSION "1.0.1")
 set(BOX2D_VERSION "3.0.0")
+set(IMGUI_VERSION "1.91.5")
 
 set(BLOCKY_DEPS
         googletest https://github.com/google/googletest/releases/download/v${GTEST_VERSION}/googletest-${GTEST_VERSION}.tar.gz
@@ -15,6 +16,7 @@ set(BLOCKY_DEPS
         glm https://github.com/g-truc/glm/releases/download/1.0.1/glm-1.0.1-light.zip
         box2d https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz
         stb_image https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
+        imgui https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz
 )
 
 function(setup_platform_specifics)

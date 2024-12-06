@@ -38,5 +38,5 @@ void MouseReparenting::Update(float delta) {}
 void MouseReparenting::End() {
 	InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
 
-//	inputModule.RemoveMouseListener()
+//	_inputModule.RemoveMouseListener()
 }

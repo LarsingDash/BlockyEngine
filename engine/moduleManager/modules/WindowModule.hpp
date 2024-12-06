@@ -15,6 +15,7 @@
 #include "components/renderables/EllipseRenderable.hpp"
 #include "moduleManager/modules/rendering/RenderingModule.hpp"
 #include "moduleManager/modules/input/InputModule.hpp"
+#include "moduleManager/modules/rendering/ImGUIRenderingModule.hpp"
 
 class WindowModule : public ModuleWrapper {
 	public:
@@ -25,16 +26,21 @@ class WindowModule : public ModuleWrapper {
 
 		RenderingModule& GetRenderingModule();
 		InputModule& GetInputModule();
+		ImGuiRenderingModule& GetGuiRenderingModule();
+
 	private:
 		void _render();
 
 		constexpr static int WINDOW_WIDTH = 800;
 		constexpr static int WINDOW_HEIGHT = 600;
 
-		SDL_Window* window;
-		SDL_Renderer* renderer;
-		std::unique_ptr<RenderingModule> renderingModule;
-		std::unique_ptr<InputModule> inputModule;
+		SDL_Window* _window;
+		SDL_Renderer* _renderer;
+		SDL_GLContext _context;
+
+		std::unique_ptr<RenderingModule> _renderingModule;
+		std::unique_ptr<InputModule> _inputModule;
+		std::unique_ptr<ImGuiRenderingModule> _guiRenderingModule;
 };
 
 #endif //BLOCKYENGINE_WINDOWMODULE_HPP

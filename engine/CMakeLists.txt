@@ -73,10 +73,12 @@ if (LINUX)
     )
 endif ()
 
+
 target_include_directories(${ENGINE_TARGET} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${SDL2_INCLUDE_DIRS}
         ${DEPS_DIR}
+        ${DEPS_DIR}/imgui
 )
 
 # Copies dll to build directory

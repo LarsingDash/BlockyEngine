@@ -17,6 +17,12 @@ void ImGuiRenderingModule::Init() {
 	ImGui::CreateContext();
 
 	ImGui::StyleColorsDark();
+	int width, height;
+	SDL_GetWindowSize(_window, &width, &height);
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.DisplaySize = ImVec2(static_cast<float>(width), static_cast<float>(height));
+
 
 	ImGui_ImplSDL2_InitForSDLRenderer(_window, _renderer);
 	ImGui_ImplSDLRenderer2_Init(_renderer);

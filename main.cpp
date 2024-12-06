@@ -12,7 +12,7 @@
 void buildPrefabScene(SceneManager& scenes) {
 	auto root = std::make_unique<GameObject>("Prefabs");
 	root->SetActive(false);
-	
+
 	auto& container = root->AddChild("ProjectileContainer");
 	container.transform->SetPosition(400, 300);
 	container.transform->SetScale(35, 35);
@@ -20,12 +20,12 @@ void buildPrefabScene(SceneManager& scenes) {
 	auto& cannon = root->AddChild("Cannon");
 	cannon.transform->SetPosition(400, 300);
 	cannon.transform->SetScale(50, 50);
-	cannon.AddComponent<RectangleRenderable>("CannonR", glm::vec4(150, 75, 15, 155), true);
+	cannon.AddComponent<RectangleRenderable>("CannonR", glm::vec4(150, 75, 15, 155), 0, true);
 	cannon.AddComponent<SpawnerComp>("Spawner");
 	cannon.AddComponent<RotationComp>("Spawner");
 
 	auto& barrel = cannon.AddChild("Barrel");
-	barrel.AddComponent<RectangleRenderable>("BarrelR", glm::vec4(125, 125, 250, 255), true);
+	barrel.AddComponent<RectangleRenderable>("BarrelR", glm::vec4(125, 125, 250, 255), 3, true);
 	barrel.transform->SetScale(2, 0.5f);
 	barrel.transform->SetPosition(0.5f, 0);
 
@@ -45,14 +45,14 @@ void buildInputReparentingScene(SceneManager& scenes) {
 
 	//ParentA
 	auto& parentA = root->AddChild("ParentA");
-	parentA.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, false);
+	parentA.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, -1, true);
 	parentA.transform->SetPosition(200, 300);
 	parentA.transform->SetScale(150, 300);
 	parentA.transform->SetRotation(20);
 
 	//ParentB
 	auto& parentB = root->AddChild("ParentB");
-	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 0, 255, 255}, false);
+	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 0, 255, 255}, -1, true);
 	parentB.transform->SetPosition(525, 325);
 	parentB.transform->SetScale(350, 200);
 	parentB.transform->SetRotation(-125);
@@ -79,7 +79,7 @@ void buildInputReparentingScene(SceneManager& scenes) {
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "Prefabs");
-	
+
 	scenes.AddScene(std::move(root));
 }
 
@@ -94,6 +94,6 @@ int main() {
 	sceneManager.SwitchScene("InputReparenting");
 
 	blockyEngine.Run();
-	
+
 	return 0;
 }

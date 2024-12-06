@@ -9,7 +9,9 @@
 
 class SpriteRenderable : public Renderable {
 	public:
-		SpriteRenderable(GameObject* gameObject, const char* tag, std::string filePath, std::string spriteTag);
+		SpriteRenderable(GameObject* gameObject, const char* tag,
+						 std::string filePath, std::string spriteTag,
+						 RenderableType type = RenderableType::SPRITE, int layer = 0);
 		~SpriteRenderable() override = default;
 		
 		[[nodiscard]] std::string GetFilePath() const;

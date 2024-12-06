@@ -7,8 +7,8 @@
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
 
-Renderable::Renderable(GameObject* gameObject, const char* tag, RenderableType renderableType) :
-		Component(gameObject, tag, true), _renderableType(renderableType) {}
+Renderable::Renderable(GameObject* gameObject, const char* tag, RenderableType renderableType, int layer) :
+		Component(gameObject, tag, true), _renderableType(renderableType), _layer(layer) {}
 
 Renderable::~Renderable() = default;
 
@@ -25,8 +25,4 @@ void Renderable::End() {
 			.getModule<WindowModule>()
 			.GetRenderingModule()
 			.RemoveRenderable(*this);
-}
-
-RenderableType Renderable::GetRenderableType() {
-	return _renderableType;
 }

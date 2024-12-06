@@ -18,20 +18,22 @@ RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {
 RenderingModule::~RenderingModule() = default;
 
 void RenderingModule::Render() {
-	for (Renderable& renderable : renderables) {
-		switch (renderable.GetRenderableType()) {
-			case RECTANGLE:
-				_renderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
-				break;
-			case ELLIPSE:
-				_renderEllipse(reinterpret_cast<EllipseRenderable&>(renderable));
-				break;
-			case SPRITE:
-				_renderSprite(reinterpret_cast<SpriteRenderable&>(renderable));
-				break;
-			case ANIMATED:
-				_renderAnimatedSprite(reinterpret_cast<AnimationRenderable&>(renderable));
-				break;
+	for (const auto& [layer, list] : _renderables) {
+		for (Renderable& renderable : list) {
+			switch (renderable.GetRenderableType()) {
+				case RECTANGLE:
+					_renderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
+					break;
+				case ELLIPSE:
+					_renderEllipse(reinterpret_cast<EllipseRenderable&>(renderable));
+					break;
+				case SPRITE:
+					_renderSprite(reinterpret_cast<SpriteRenderable&>(renderable));
+					break;
+				case ANIMATED:
+					_renderAnimatedSprite(reinterpret_cast<AnimationRenderable&>(renderable));
+					break;
+			}
 		}
 	}
 }
@@ -113,6 +115,7 @@ void RenderingModule::_renderSprite(SpriteRenderable& renderable) {
 	}
 	_renderTexture(texture, *renderable.componentTransform, nullptr);
 }
+
 void RenderingModule::_renderAnimatedSprite(AnimationRenderable& renderable) {
 	int width, height;
 	SDL_Texture* texture = _loadTexture(renderable, width, height);
@@ -214,16 +217,26 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 }
 
 void RenderingModule::AddRenderable(Renderable& renderable) {
-	renderables.emplace_back(renderable);
+	_renderables[renderable.GetLayer()].emplace_back(renderable);
 }
 
 void RenderingModule::RemoveRenderable(Renderable& renderable) {
-	auto it = std::find_if(renderables.begin(), renderables.end(),
-						   [&renderable](const std::reference_wrapper<Renderable>& other) {
-							   return &renderable == &other.get();
-						   });
+	try {
+		auto& layer = _renderables.at(renderable.GetLayer());
+		auto renderableIt = std::find_if(layer.begin(), layer.end(),
+										 [&renderable](const std::reference_wrapper<Renderable>& other) {
+											 return &renderable == &other.get();
+										 });
 
-	if (it != renderables.end()) {
-		renderables.erase(it);
+		if (renderableIt != layer.end()) {
+			layer.erase(renderableIt);
+		}
+	} catch (const std::out_of_range& e) {
+		std::string err("Removal of renderable {");
+		err += renderable.tag;
+		err += "} was requested on layer ";
+		err += std::to_string(renderable.GetLayer());
+		err += ", but that layer was not found.";
+		BLOCKY_ENGINE_ERROR(err)
 	}
 }

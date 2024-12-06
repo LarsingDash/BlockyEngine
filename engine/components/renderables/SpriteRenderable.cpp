@@ -6,9 +6,10 @@
 
 #include <utility>
 
-SpriteRenderable::SpriteRenderable(GameObject* gameObject, const char* tag, std::string filePath,
-								   std::string spriteTag) :
-		Renderable(gameObject, tag, RenderableType::SPRITE),
+SpriteRenderable::SpriteRenderable(GameObject* gameObject, const char* tag,
+								   std::string filePath, std::string spriteTag,
+								   RenderableType type, int layer) :
+		Renderable(gameObject, tag, type, layer),
 		_filePath(std::move(filePath)), _spriteTag(std::move(spriteTag)) {}
 
 Component* SpriteRenderable::_clone(const GameObject& parent) {

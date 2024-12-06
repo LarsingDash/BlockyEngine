@@ -17,7 +17,7 @@ enum RenderableType {
 
 class Renderable : public Component {
 	public:
-		Renderable(GameObject* gameObject, const char* tag, RenderableType renderableType);
+		Renderable(GameObject* gameObject, const char* tag, RenderableType renderableType, int layer = 0);
 		~Renderable() override;
 
 		Renderable(const Renderable& other) = default;
@@ -26,10 +26,13 @@ class Renderable : public Component {
 		void Update(float delta) override;
 		void End() override;
 
-		RenderableType GetRenderableType();
+		[[nodiscard]] inline RenderableType GetRenderableType() const { return _renderableType; };
+		[[nodiscard]] inline int GetLayer() const { return _layer; }
+		inline void SetLayer(int layer) { _layer = layer; }
 		
-	protected:
+	private:
 		RenderableType _renderableType;
+		int _layer;
 };
 
 #endif //BLOCKYENGINE_RENDERABLE_HPP

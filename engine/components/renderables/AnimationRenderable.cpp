@@ -7,9 +7,10 @@
 #include "logging/BLogger.hpp"
 
 AnimationRenderable::AnimationRenderable(GameObject* gameObject, const char* tag,
-										 std::string filePath, std::string spriteTag, int frameWidth, int frameHeight)
-		: SpriteRenderable(gameObject, tag, std::move(filePath), std::move(spriteTag)) {
-	_renderableType = RenderableType::ANIMATED;
+										 std::string filePath, std::string spriteTag,
+										 int frameWidth, int frameHeight, int layer)
+		: SpriteRenderable(gameObject, tag, std::move(filePath), std::move(spriteTag),
+						   RenderableType::ANIMATED, layer) {
 
 	_frameWidth = frameWidth;
 	_frameHeight = frameHeight;
@@ -64,7 +65,6 @@ void AnimationRenderable::_loadFrames() {
 	msg << filePath;
 	BLOCKY_ENGINE_DEBUG(msg.str())
 }
-
 
 //Returns the source rect (current frame)
 const glm::ivec4* AnimationRenderable::GetSourceRect() const {

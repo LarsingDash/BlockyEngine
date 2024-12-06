@@ -43,9 +43,9 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 	rectangle.transform->SetPosition(static_cast<float>(x), static_cast<float>(y));
 
 	if (state == MouseButtonState::BUTTON_DOWN) {
-		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
+		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, std::numeric_limits<int>::max(), true);
 	} else {
-		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, true);
+		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, std::numeric_limits<int>::max(), true);
 	}
 	rectangle.transform->SetScale(20.f, 20.f);
 }

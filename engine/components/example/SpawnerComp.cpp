@@ -14,11 +14,13 @@ SpawnerComp::SpawnerComp(GameObject* gameObject, const char* tag) :
 		Component(gameObject, tag), projectilePrefab(nullptr), container(nullptr) {
 	projectilePrefab = std::make_unique<GameObject>("ProjectilePrefab");
 	projectilePrefab->SetActive(false);
-	projectilePrefab->AddComponent<EllipseRenderable>("ProjEl", glm::vec4{255, 255, 0, 255}, true);
+	projectilePrefab->AddComponent<EllipseRenderable>
+					("ProjEl", glm::vec4{255, 255, 0, 255}, 1, true)
+			.gameObject->transform->SetScale(.75f, .75f);
 	projectilePrefab->AddComponent<MovementComp>("Movement");
 	projectilePrefab->AddChild("Dot")
-			.AddComponent<EllipseRenderable>("DotEl", glm::vec4{150, 0, 0, 255}, true)
-			.gameObject->transform->SetScale(.75f, .75f);
+			.AddComponent<EllipseRenderable>("DotEl", glm::vec4{150, 0, 0, 255}, 2, true)
+			.gameObject->transform->SetScale(.55f, .55f);
 }
 
 SpawnerComp::~SpawnerComp() = default;

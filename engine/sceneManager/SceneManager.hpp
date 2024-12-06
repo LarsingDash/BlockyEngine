@@ -20,7 +20,7 @@ class SceneManager {
 		SceneManager& operator=(SceneManager&& other) noexcept = default;
 
 		static SceneManager* CreateInstance();
-		inline static SceneManager* GetInstance() { return _instance; }
+		inline static SceneManager& GetInstance() { return *_instance; }
 
 		void AddScene(std::unique_ptr<GameObject>&& scene);
 		void RemoveScene(const std::string& target);

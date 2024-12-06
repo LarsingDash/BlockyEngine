@@ -24,7 +24,7 @@ Component* MouseReparenting::_clone(const GameObject& parent) {
 }
 
 void MouseReparenting::Start() {
-	InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
+	InputModule& inputModule = ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule();
 
 	target = gameObject->GetChild(targetTag, true);
 	parentA = gameObject->GetChild(parentATag, true);
@@ -52,7 +52,7 @@ void MouseReparenting::Start() {
 void MouseReparenting::Update(float delta) {}
 
 void MouseReparenting::End() {
-	InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
+	InputModule& inputModule = ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule();
 
 	inputModule.RemoveMouseListener(MouseInput::BUTTON_LEFT, *this);
 	inputModule.RemoveMouseListener(MouseInput::BUTTON_RIGHT, *this);

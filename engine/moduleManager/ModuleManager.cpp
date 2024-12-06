@@ -6,8 +6,11 @@
 
 #include "modules/WindowModule.hpp"
 
-ModuleManager& ModuleManager::getInstance() {
-	static ModuleManager instance;
+ModuleManager* ModuleManager::_instance{nullptr};
+
+ModuleManager* ModuleManager::CreateInstance() {
+	auto instance = new ModuleManager();
+	_instance = instance;
 	return instance;
 }
 

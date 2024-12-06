@@ -27,8 +27,8 @@ class BlockyEngine {
 		static bool isRunning;
 
 	private:
+		std::unique_ptr<ModuleManager> moduleManager;
 		std::unique_ptr<SceneManager> sceneManager;
-		ModuleManager& moduleManager;
 };
 
 #endif //BLOCKYENGINE_BLOCKYENGINE_HPP

@@ -19,25 +19,25 @@ Component* SceneSwitchComp::_clone(const GameObject& parent) {
 }
 
 void SceneSwitchComp::Start() {
-	InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
+	InputModule& inputModule = ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule();
 	
 	inputModule.AddKeyListener(
 			KeyInput::KEY_S, *this, [&target = _target](KeyState state) {
 				if (state == KeyState::KEY_DOWN)
-					SceneManager::GetInstance()->SwitchScene(target);
+					SceneManager::GetInstance().SwitchScene(target);
 			});
 	
 	inputModule.AddKeyListener(
 			KeyInput::KEY_R, *this, [&target = _target](KeyState state) {
 				if (state == KeyState::KEY_DOWN)
-					SceneManager::GetInstance()->RemoveScene(target);
+					SceneManager::GetInstance().RemoveScene(target);
 			});
 }
 
 void SceneSwitchComp::Update(float delta) {}
 
 void SceneSwitchComp::End() {
-	InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
+	InputModule& inputModule = ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule();
 	
 	inputModule.RemoveKeyListener(KeyInput::KEY_S, *this);
 	inputModule.RemoveKeyListener(KeyInput::KEY_R, *this);

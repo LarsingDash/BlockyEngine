@@ -104,7 +104,7 @@ ExampleComponent::ExampleComponent(GameObject* gameObject, const char* tag, int 
 
 void ExampleComponent::Start() {
     //Interaction with other GameObjects, Components or Modules, not this Component's data. For example:
-    //InputModule& inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
+    //InputModule& inputModule = ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule();
 }
 
 void ExampleComponent::Update(float delta) {

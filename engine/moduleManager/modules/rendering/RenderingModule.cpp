@@ -8,8 +8,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image/stb_image.h"
-#include "components/renderables/AnimationRenderable.hpp"
-#include "SDL_ttf.h"
 
 RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {}
 
@@ -241,7 +239,7 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 			texture,
 			nullptr,
 			&destRect,
-			rotation, 
+			rotation,
 			nullptr,
 			SDL_FLIP_NONE
 	);

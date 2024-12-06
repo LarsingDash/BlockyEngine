@@ -14,11 +14,15 @@
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
+#include "components/renderables/AnimationRenderable.hpp"
+#include "components/renderables/TextRenderable.hpp"
+
 #include "SDL_render.h"
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
 #include "SDL2_gfx/SDL2_rotozoom.h"
-#include "components/renderables/AnimationRenderable.hpp"
-#include "components/renderables/TextRenderable.hpp"
+#include "SDL_ttf.h"
+
+
 class RenderingModule {
 	public:
 		explicit RenderingModule(SDL_Renderer* renderer);

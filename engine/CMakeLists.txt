@@ -18,12 +18,6 @@ mark_as_advanced(
 setup_platform_specifics()
 setup_dependencies()
 
-set(sdl2_ttf_DIR "${DEPS_DIR}/SDL_ttf/cmake")
-find_package(sdl2_ttf CONFIG REQUIRED)
-
-message("SDL2 INCLUDE DIRS: ${SDL_ttf_INCLUDE_DIRS}")
-message("SDL2 LIBRARY DIRS: ${SDL_ttf_LIBRARIES}")
-
 if (${MINGW})
     message(STATUS "BUILDING MINGW SDL2")
     set(SDL2_DIR "${DEPS_DIR}/SDL2/cmake")
@@ -66,11 +60,12 @@ add_subdirectory(components)
 add_subdirectory(gameObject)
 add_subdirectory(logging)
 
+set(SDL_TTF_DIR "${DEPS_DIR}/SDL_ttf/x86_64-w64-mingw32")
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         glm
         SDL2::SDL2
         sdl_gfx
-        SDL_ttf
+        ${SDL_TTF_DIR}/lib/libSDL2_ttf.dll.a
 )
 
 # Set the -fPIC for creating it alongside Shared Objects
@@ -90,8 +85,6 @@ set(IMGUI_SOURCES
         ${IMGUI_PATH}/backends/imgui_impl_sdlrenderer2.cpp
 )
 
-set(SDL_TTF_DIR "${DEPS_DIR}/SDL_ttf/x86_64-w64-mingw32")
-
 target_sources(${ENGINE_TARGET} PRIVATE ${IMGUI_SOURCES})
 target_include_directories(${ENGINE_TARGET} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -106,7 +99,9 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
 if (MINGW)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll")
+        copy_dll_to_build(SDL2_TTF_DLL "${SDL_TTF_DIR}/../x86_64-w64-mingw32/bin/SDL2_ttf.dll")
     else ()
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../i686-w64-mingw32/bin/SDL2.dll")
+        copy_dll_to_build(SDL2_TTF_DLL "${SDL_TTF_DIR}/../i686-w64-mingw32/bin/SDL2_ttf.dll")
     endif ()
 endif ()

@@ -7,7 +7,7 @@ set(DEPS_DOWNLOADED FALSE CACHE BOOL INTERNAL "")
 set(GTEST_VERSION "1.15.2")
 set(SDL_VERSION "2.30.9")
 set(GLM_VERSION "1.0.1")
-set(BOX2D_VERSION "3.0.0")
+set(BOX2D_VERSION "2.4.1")
 
 set(BLOCKY_DEPS
         googletest https://github.com/google/googletest/releases/download/v${GTEST_VERSION}/googletest-${GTEST_VERSION}.tar.gz

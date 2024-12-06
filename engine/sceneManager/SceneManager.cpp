@@ -3,6 +3,13 @@
 //
 
 #include "SceneManager.hpp"
+
+#include <components/physics/collider/BoxCollider.hpp>
+#include <components/physics/collider/CircleCollider.hpp>
+#include <components/physics/collision/CollisionHandler.hpp>
+#include <components/physics/rigidBody/BoxRigidBody.hpp>
+#include <components/physics/rigidBody/CircleRigidBody.hpp>
+
 #include "components/animation/AnimationController.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 #include "moduleManager/ModuleManager.hpp"
@@ -11,33 +18,37 @@
 #include "components/example/MouseReparenting.hpp"
 
 SceneManager::SceneManager() :
-		testScene(std::make_unique<GameObject>("root")),
-		recalculationList(){
+	testScene(std::make_unique<GameObject>("root")),
+	recalculationList() {
 	recalculationList.reserve(25);
 
 	//Basic mouse input
 	auto& mouseInputComponent = testScene->AddChild("MouseInputComponent");
 	mouseInputComponent.AddComponent<MouseInputComponent>("mouseInputComponent");
 
+	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
+
 	//ParentA
 	auto& parentA = testScene->AddChild("ParentA");
 	parentA.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, true);
-	parentA.transform->SetPosition(200, 300);	
+	parentA.transform->SetPosition(200, 300);
 	parentA.transform->SetScale(150, 300);
-	parentA.transform->SetRotation(20);
-	
+	parentA.transform->SetRotation(10);
+	parentA.AddComponent<BoxRigidBody>("ParentARRB", physicsProperties);
+
 	//ParentB
 	auto& parentB = testScene->AddChild("ParentB");
 	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 0, 255, 255}, true);
-	parentB.transform->SetPosition(525, 325);
+	parentB.transform->SetPosition(575, 325);
 	parentB.transform->SetScale(350, 200);
-	parentB.transform->SetRotation(-125);
-	
+	parentB.transform->SetRotation(-115);
+	parentB.AddComponent<BoxRigidBody>("ParentBRRB", physicsProperties);
+
 	//Animated Object
 	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	auto& animatedSprite = animatedObject.AddComponent<AnimationRenderable>(
-			"animTag", "../assets/character_spritesheet.png",
-			"spriteTag", 32, 32
+		"animTag", "../assets/character_spritesheet.png",
+		"spriteTag", 32, 32
 	);
 
 	//Animator
@@ -50,7 +61,7 @@ SceneManager::SceneManager() :
 	//Keyboard input
 	auto& keyboardInputComponent = testScene->AddChild("KeyboardInputComponent");
 	keyboardInputComponent.AddComponent<KeyboardInputComponent>("keyboardInputComponent", animatedObject);
-	
+
 	//Reparenting mouse input
 	animatedObject.AddComponent<MouseReparenting>("Reparenting", parentA, parentB);
 }

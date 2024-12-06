@@ -6,6 +6,7 @@
 #define LOG_HPP
 
 #include <fstream>
+#include <sstream>
 #include <glm/vec2.hpp>
 
 // if logging is lagging the game don't set LOG_TO_CONSOLE 0, because it gives the biggest performers hit

@@ -76,6 +76,8 @@ private:
 	static glm::vec2 VecConvert(const b2Vec2& a);
 	static b2Vec2 Position(const PhysicsBody& physicsBody);
 	static b2Vec2 Position(const GameObject& gameObject);
+	static float ToDegree(float radian);
+	static float ToRadian(float degree);
 	static float Angle(const PhysicsBody& physicsBody);
 	static float Angle(const GameObject& gameObject);
 

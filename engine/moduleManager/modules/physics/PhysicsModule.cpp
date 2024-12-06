@@ -1,4 +1,6 @@
 #include "PhysicsModule.hpp"
+
+#include <iostream>
 #include <Box2D/Box2D.h>
 #include <components/physics/shape/Box.hpp>
 #include <components/physics/shape/Circle.hpp>
@@ -19,8 +21,8 @@ PhysicsModule::PhysicsModule() {
 void PhysicsModule::Update(float delta) {
 	WritingExternalInputToBox2DWorld();
 
-	constexpr int32 positionIterations = 2;
-	constexpr int32 velocityIterations = 6;
+	constexpr int32 positionIterations = 2 * 100;
+	constexpr int32 velocityIterations = 6 * 100;
 
 	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
 
@@ -32,7 +34,7 @@ bool PhysicsModule::IsSame(const GameObject* const gameObject, const Body* const
 
 	if (body->GetPosition() != Position(*gameObject)) { return false; }
 
-	if (body->GetAngle() != Angle(*gameObject)) { return false; }
+	if (body->GetAngle() != ToRadian(Angle(*gameObject))) { return false; }
 
 	return true;
 }
@@ -42,11 +44,11 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 		if (IsSame(gameObject, body)) { continue; }
 		if (!body->_gameObjectIsInitialized) {
 			body->LastPosition(Position(*gameObject));
-			body->LastRotation(Angle(*gameObject));
+			body->LastRotation(ToRadian(Angle(*gameObject)));
 			body->_gameObjectIsInitialized = true;
 		}
 
-		body->b2body->SetTransform(Position(*gameObject), Angle(*gameObject));
+		body->b2body->SetTransform(Position(*gameObject), ToRadian(Angle(*gameObject)));
 	}
 }
 
@@ -57,13 +59,11 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 			position.x - body->LastPosition().x, position.y - body->LastPosition().y
 		};
 
-		const auto scale = gameObject->transform->GetWorldScale();
-
 		const float angle = body->GetAngle();
 		const float deltaAngle = body->LastRotation() - angle;
 
-		gameObject->transform->Translate(deltaPosition.x / scale.x, deltaPosition.y / scale.y);
-		gameObject->transform->Rotate(deltaAngle);
+		gameObject->transform->Translate(deltaPosition.x, deltaPosition.y);
+		gameObject->transform->Rotate(ToDegree(deltaAngle));
 
 		body->LastPosition({position.x, position.y});
 		body->LastRotation(angle);
@@ -131,12 +131,14 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 			if (!physicsBody.GetTypeProperties().gravityEnabled) {
 				body->SetGravityScale(0.0f);
 			}
+			else {
+				body->SetGravityScale(1000.0f);
+			}
 
 			body->SetAngularDamping(physicsBody.GetTypeProperties().angularResistance);
 			body->SetLinearDamping(physicsBody.GetTypeProperties().linearResistance);
 
-			body->SetFixedRotation(false);
-			body->SetAngularVelocity(physicsBody.GetTypeProperties().rotationVelocity);
+			body->SetAngularVelocity(ToRadian(physicsBody.GetTypeProperties().rotationVelocity));
 			body->SetLinearVelocity(VecConvert(physicsBody.GetTypeProperties().velocity));
 			break;
 		}
@@ -203,6 +205,14 @@ b2Vec2 PhysicsModule::Position(const PhysicsBody& physicsBody) {
 
 b2Vec2 PhysicsModule::Position(const GameObject& gameObject) {
 	return VecConvert(gameObject.transform->GetWorldPosition());
+}
+
+float PhysicsModule::ToDegree(float radian) {
+	return (radian * (180.0f / static_cast<float>(M_PI)));
+}
+
+float PhysicsModule::ToRadian(float degree) {
+	return (degree * (static_cast<float>(M_PI) / 180.0f));
 }
 
 float PhysicsModule::Angle(const PhysicsBody& physicsBody) {

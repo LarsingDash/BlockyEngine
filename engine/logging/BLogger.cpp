@@ -141,11 +141,11 @@ std::stringstream BLogger::_makeTimeStamp() {
 }
 
 void BLogger::_writeLog(const std::stringstream& logMessage) {
-	if (LOG_TO_CONSOLE) {
+	if constexpr (LOG_TO_CONSOLE) {
 		std::cout << logMessage.str();
 	}
 
-	if (LOG_TO_FILE) {
+	if constexpr (LOG_TO_FILE) {
 		// Output to log file
 		if (_logFile.is_open()) {
 			_logFile << logMessage.str();

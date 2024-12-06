@@ -4,17 +4,10 @@
 
 #include "Audio.hpp"
 
-#include <iostream>
 #include <moduleManager/ModuleManager.hpp>
-#include <utility>
 #include <logging/BLogger.hpp>
-
 #include "moduleManager/modules/audio/AudioModule.hpp"
-
 #include <SDL.h>
-//todo: #include <SDL_mixer.h>
-// #include <SDL2_mixer/x86_64-w64-mingw32/include/SDL2/SDL_mixer.h>
-#include <SDL2_mixer/i686-w64-mingw32/include/SDL2/SDL_mixer.h>
 
 constexpr int NO_CHANNEL_SPECIFIED = -1;
 

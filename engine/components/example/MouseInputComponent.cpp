@@ -4,8 +4,11 @@
 
 #include "MouseInputComponent.hpp"
 
+#include <components/audio/Audio.hpp>
+#include <moduleManager/modules/audio/AudioModule.hpp>
+
 MouseInputComponent::MouseInputComponent(GameObject& parent, const char* tag)
-		: Component(parent, tag) {}
+	: Component(parent, tag) {}
 
 void MouseInputComponent::Start() {
 	_inputModule.AddMouseListener(MouseInput::BUTTON_LEFT, *this, [this](MouseButtonState state, int x, int y) {
@@ -19,8 +22,7 @@ void MouseInputComponent::Start() {
 	});
 }
 
-void MouseInputComponent::Update(float delta) {
-}
+void MouseInputComponent::Update(float delta) {}
 
 void MouseInputComponent::End() {
 	_inputModule.RemoveMouseListener(MouseInput::BUTTON_LEFT, *this);
@@ -34,8 +36,14 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 
 	if (state == MouseButtonState::BUTTON_DOWN) {
 		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
-	} else {
+	}
+	else {
+		rectangle.AddComponent<Audio>("Audio", "assets/audioFiles/car-horn.mp3", 255, false);
 		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, true);
+		ModuleManager::getInstance().getModule<AudioModule>().PlayAudio("Audio");
+		ModuleManager::getInstance().getModule<AudioModule>().PlayAudio("ParentAAudio");
+
+		// rectangle.GetComponent<Audio>()->Play(); //PlayAudio("ParentAAudio");
 	}
 	rectangle.transform->SetScale(20.f, 20.f);
 }

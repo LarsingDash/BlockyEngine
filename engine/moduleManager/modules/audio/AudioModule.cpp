@@ -25,22 +25,18 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 
 void AudioModule::PlayAudio(const std::string& tag) {
 	for (auto& audio : _audioList) {
-		for (auto& [_tag, fragment] : audio.get()._audioPaths) {
-			if (_tag == tag) {
-				audio.get().Play(tag);
-				return;
-			}
+		if (tag == audio.get().tag) {
+			audio.get().Play();
+			return;
 		}
 	}
 }
 
 void AudioModule::StopAudio(const std::string& tag) {
 	for (auto& audio : _audioList) {
-		for (auto& [_tag, fragment] : audio.get()._audioPaths) {
-			if (_tag == tag) {
-				audio.get().Stop(tag);
-				return;
-			}
+		if (tag == audio.get().tag) {
+			audio.get().Stop();
+			return;
 		}
 	}
 }

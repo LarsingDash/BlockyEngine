@@ -6,17 +6,27 @@
 
 #include <iostream>
 #include <moduleManager/ModuleManager.hpp>
+#include <utility>
+#include <logging/BLogger.hpp>
 
 #include "moduleManager/modules/audio/AudioModule.hpp"
 
-Audio::Audio(GameObject& gameObject, const char* tag): Component(gameObject, tag) {}
+Audio::Audio(GameObject& gameObject, const char* tag, AudioFragment fragment) : Component(gameObject, tag),
+	_fragment(std::move(fragment)) {}
 
-void Audio::Play(const std::string& tag) {
-	std::cout << "Play: " << tag << "\n";
+Audio::Audio(GameObject& gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping):
+	Component(gameObject, tag), _fragment(std::move(path), volume, isLooping) {}
+
+//todo:
+// Audio::Audio(GameObject& gameObject, const char* tag, std::string fileLocation): Component(gameObject, tag),
+// 	_fileLocation(std::move(fileLocation)) {}
+
+void Audio::Play() {
+	BLOCKY_ENGINE_DEBUG("Play: " + tag + " " + _fragment.path);
 }
 
-void Audio::Stop(const std::string& tag) {
-	std::cout << "Stop: " << tag << "\n";
+void Audio::Stop() {
+	BLOCKY_ENGINE_DEBUG("Stop: " + tag + " " + _fragment.path);
 }
 
 void Audio::Start() {

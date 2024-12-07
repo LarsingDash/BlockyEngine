@@ -13,6 +13,8 @@ class TimeUtil {
 		void reset();
 		float getElapsedTime() const;
 		float calculateDeltaTime();
+		int getFPS() const;
+
 
 	private:
 		using Clock = std::chrono::high_resolution_clock;
@@ -20,6 +22,7 @@ class TimeUtil {
 
 		TimePoint startTime;
 		TimePoint lastFrameTime;
+		float lastDeltaTime;
 };
 
 #endif //BLOCKYENGINE_ENGINE_UTILITIES_TIMEUTIL_HPP_

@@ -4,7 +4,6 @@
 
 #include "ImGuiRenderingModule.hpp"
 #include "imgui_impl_sdlrenderer2.h"
-
 #include <iostream>
 #include <utility>
 
@@ -45,5 +44,6 @@ void ImGuiRenderingModule::AddComponent(const std::string& tag, std::function<vo
 }
 
 void ImGuiRenderingModule::RemoveComponent(const std::string& tag) {
+	std::cout << "Removing component: " << tag << std::endl;
 	_uiComponents.erase(tag);
 }

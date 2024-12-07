@@ -4,6 +4,9 @@
 
 #include <algorithm>
 #include "RenderingModule.hpp"
+#include "SDL_render.h"
+#include "SDL2_gfx/SDL2_gfxPrimitives.h"
+#include "SDL_ttf.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"

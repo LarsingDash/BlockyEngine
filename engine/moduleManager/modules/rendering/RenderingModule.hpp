@@ -17,10 +17,7 @@
 #include "components/renderables/AnimationRenderable.hpp"
 #include "components/renderables/TextRenderable.hpp"
 
-#include "SDL_render.h"
-#include "SDL2_gfx/SDL2_gfxPrimitives.h"
-#include "SDL2_gfx/SDL2_rotozoom.h"
-#include "SDL_ttf.h"
+
 
 
 class RenderingModule {

@@ -29,6 +29,7 @@ void MouseInputComponent::End() {
 	_inputModule.RemoveMouseListener(MouseInput::BUTTON_LEFT, *this);
 	_inputModule.RemoveMouseListener(MouseInput::BUTTON_RIGHT, *this);
 	_inputModule.RemoveMouseListener(MouseInput::BUTTON_MIDDLE, *this);
+	_imguiModule.RemoveComponent("pallete");
 }
 
 void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color) {

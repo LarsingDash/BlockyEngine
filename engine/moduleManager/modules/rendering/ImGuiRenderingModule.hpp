@@ -6,11 +6,11 @@
 #define BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_RENDERING_IMGUIRENDERINGMODULE_HPP_
 
 #include "moduleManager/ModuleWrapper.hpp"
-#include <SDL.h>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <functional>
 #include <string>
+#include <SDL_video.h>
 
 class ImGuiRenderingModule : public ModuleWrapper {
 	public:

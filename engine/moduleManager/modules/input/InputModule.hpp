@@ -6,7 +6,6 @@
 #define BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_INPUT_INPUTMODULE_HPP_
 
 #include <functional>
-#include "imgui_impl_sdl2.h"
 #include "KeyEvent.hpp"
 #include "MouseEvent.hpp"
 #include "MouseInput.hpp"

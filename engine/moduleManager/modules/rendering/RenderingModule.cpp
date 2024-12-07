@@ -6,7 +6,6 @@
 #include "RenderingModule.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-
 #include "stb_image/stb_image.h"
 
 RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {}
@@ -206,11 +205,13 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 	);
 }
 void RenderingModule::_renderText(TextRenderable& renderable) {
-	SDL_Color sdlColor = {static_cast<Uint8>(renderable.GetColor().r),
-						  static_cast<Uint8>(renderable.GetColor().g),
-						  static_cast<Uint8>(renderable.GetColor().b),
-						  static_cast<Uint8>(renderable.GetColor().a)};
-
+	const auto& color = renderable.GetColor();
+	SDL_Color sdlColor = {
+			static_cast<Uint8>(color.r),
+			static_cast<Uint8>(color.g),
+			static_cast<Uint8>(color.b),
+			static_cast<Uint8>(color.a)
+	};
 	SDL_Surface* textSurface = TTF_RenderText_Blended(renderable.GetFont(), renderable.GetText().c_str(), sdlColor);
 	if (!textSurface) {
 		std::cerr << "Failed to create text surface: " << TTF_GetError() << std::endl;

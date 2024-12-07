@@ -7,16 +7,17 @@
 
 #include "Renderable.hpp"
 #include "SDL_ttf.h"
+#include <utility>
 
 class TextRenderable : public Renderable {
 	public:
-		TextRenderable(GameObject& gameObject, const char* tag, const std::string& text, const glm::ivec4& color, TTF_Font* font);
+		TextRenderable(GameObject& gameObject, const char* tag, std::string  text, const glm::ivec4& color, TTF_Font* font);
 		~TextRenderable() override;
 
 		void SetText(const std::string& newText);
-		const std::string& GetText() const;
-		const glm::ivec4& GetColor() const;
-		TTF_Font* GetFont() const;
+		[[nodiscard]] const std::string& GetText() const;
+		[[nodiscard]] const glm::ivec4& GetColor() const;
+		[[nodiscard]] TTF_Font* GetFont() const;
 
 	private:
 		std::string _text;

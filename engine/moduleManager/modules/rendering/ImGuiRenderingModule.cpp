@@ -6,6 +6,7 @@
 #include "imgui_impl_sdlrenderer2.h"
 
 #include <iostream>
+#include <utility>
 
 ImGuiRenderingModule::ImGuiRenderingModule(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext context)
 		: _window(window), _renderer(renderer), _context(context) {
@@ -40,7 +41,7 @@ void ImGuiRenderingModule::Render() {
 }
 
 void ImGuiRenderingModule::AddComponent(const std::string& tag, std::function<void()> uiComponent) {
-	_uiComponents[tag] = uiComponent;
+	_uiComponents[tag] = std::move(uiComponent);
 }
 
 void ImGuiRenderingModule::RemoveComponent(const std::string& tag) {

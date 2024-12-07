@@ -8,6 +8,7 @@
 #include <memory>
 #include "moduleManager/ModuleManager.hpp"
 #include "sceneManager/SceneManager.hpp"
+#include "utilities/TimeUtil.hpp"
 
 class BlockyEngine {
 	public:
@@ -26,6 +27,7 @@ class BlockyEngine {
 
 	private:
 		std::unique_ptr<SceneManager> sceneManager;
+		std::unique_ptr<TimeUtil> timeUtil;
 		ModuleManager& moduleManager;
 };
 

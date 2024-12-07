@@ -59,6 +59,7 @@ add_subdirectory(sceneManager)
 add_subdirectory(components)
 add_subdirectory(gameObject)
 add_subdirectory(logging)
+add_subdirectory(utilities)
 
 set(SDL_TTF_DIR "${DEPS_DIR}/SDL_ttf/x86_64-w64-mingw32")
 target_link_libraries(${ENGINE_TARGET} PRIVATE

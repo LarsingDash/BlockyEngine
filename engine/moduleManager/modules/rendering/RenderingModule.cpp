@@ -10,13 +10,20 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
+#include "utilities/TimeUtil.hpp"
+#include "gameObject/GameObject.hpp"
 
-RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {}
+RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer){
+	_font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
+	if (!_font) {
+		std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+	}
+}
 
 RenderingModule::~RenderingModule() = default;
 
 void RenderingModule::Render() {
-	for (Renderable& renderable : renderables) {
+	for (Renderable& renderable : _renderables) {
 		switch (renderable.GetRenderableType()) {
 			case RECTANGLE:
 				_renderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
@@ -34,6 +41,9 @@ void RenderingModule::Render() {
 				_renderText(reinterpret_cast<TextRenderable&>(renderable));
 				break;
 		}
+	}
+	if (TimeUtil::GetInstance().IsFpsCounterEnabled()) {
+		_renderFps();
 	}
 }
 
@@ -215,55 +225,76 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 			static_cast<Uint8>(color.b),
 			static_cast<Uint8>(color.a)
 	};
-	SDL_Surface* textSurface = TTF_RenderText_Blended(renderable.GetFont(), renderable.GetText().c_str(), sdlColor);
-	if (!textSurface) {
+
+	const auto& position = renderable.componentTransform->GetWorldPosition();
+	std::string text = renderable.GetText();
+
+	_renderTextHelper(text, sdlColor, {position.x, position.y});
+}
+
+void RenderingModule::_renderFps() {
+	int fps = TimeUtil::GetInstance().GetFPS();
+
+	SDL_Color color;
+	if (fps >= 60) {
+		color = {0, 255, 0, 255}; 
+	} else if (fps >= 30) {
+		color = {255, 255, 0, 255};
+	} else {
+		color = {255, 0, 0, 255};
+	}
+
+	std::string fpsText = "FPS: " + std::to_string(fps);
+
+	int windowWidth, windowHeight;
+	SDL_GetRendererOutputSize(_renderer, &windowWidth, &windowHeight);
+
+	int textWidth, textHeight;
+	TTF_SizeText(_font, fpsText.c_str(), &textWidth, &textHeight);
+	SDL_FPoint position = {static_cast<float>(windowWidth - textWidth - 10), 10};
+
+	_renderTextHelper(fpsText, color, position);
+}
+void RenderingModule::_renderTextHelper(const std::string& text, const SDL_Color& color, const SDL_FPoint& position) {
+	SDL_Surface* surface = TTF_RenderText_Blended(_font, text.c_str(), color);
+	if (!surface) {
 		std::cerr << "Failed to create text surface: " << TTF_GetError() << std::endl;
 		return;
 	}
 
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
+	SDL_FreeSurface(surface);
+
 	if (!texture) {
 		std::cerr << "Failed to create text texture: " << SDL_GetError() << std::endl;
-		SDL_FreeSurface(textSurface);
 		return;
 	}
 
-	const auto& position = renderable.componentTransform->GetWorldPosition();
-	const auto& rotation = renderable.componentTransform->GetWorldRotation();
-
-	SDL_FRect destRect = {
-			static_cast<float>(position.x),
-			static_cast<float>(position.y),
-			static_cast<float>(textSurface->w),
-			static_cast<float>(textSurface->h)
+	int textWidth, textHeight;
+	SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
+	SDL_Rect dstRect = {
+			static_cast<int>(position.x),
+			static_cast<int>(position.y),
+			textWidth,
+			textHeight
 	};
 
-	SDL_RenderCopyExF(
-			_renderer,
-			texture,
-			nullptr,
-			&destRect,
-			rotation,
-			nullptr,
-			SDL_FLIP_NONE
-	);
-
+	SDL_RenderCopy(_renderer, texture, nullptr, &dstRect);
 	SDL_DestroyTexture(texture);
-	SDL_FreeSurface(textSurface);
 }
 
 void RenderingModule::AddRenderable(Renderable& renderable) {
-	renderables.emplace_back(renderable);
+	_renderables.emplace_back(renderable);
 }
 
 void RenderingModule::RemoveRenderable(Renderable& renderable) {
-	auto it = std::find_if(renderables.begin(), renderables.end(),
+	auto it = std::find_if(_renderables.begin(), _renderables.end(),
 						   [&renderable](const std::reference_wrapper<Renderable>& other) {
 							   return &renderable == &other.get();
 						   });
 
-	if (it != renderables.end()) {
-		renderables.erase(it);
+	if (it != _renderables.end()) {
+		_renderables.erase(it);
 	}
 }
 

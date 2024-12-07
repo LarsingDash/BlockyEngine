@@ -31,9 +31,9 @@ class ModuleManager {
 		ModuleManager(ModuleManager&& other) noexcept = delete;
 		ModuleManager& operator=(ModuleManager&& other) noexcept = delete;
 
-		/// Internally used by BlockyEngine to cascade the update cycle to all Modules.
-		/// Called every frame, immediately after the active scene is updated
-		/// \param delta Difference in time since last Update call 
+		/// Called internally from the BlockyEngine's cycle, never use manually.
+		/// This method cascade the update cycle to all Modules. It is called every frame, immediately after the active scene is updated
+		/// \param delta Difference in time since the last Update call 
 		void Update(float delta);
 
 		/// Attempts to get the module, based on the given template parameter

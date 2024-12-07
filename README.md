@@ -36,6 +36,7 @@ int main() {
 	
 	//Add and configure a component
 	auto& component = child.AddComponent<ExampleComponent>("ExampleComponent", 10);
+	component.componentTransform->SetPosition(2.5f, 0.f);
 	component.SetExampleValue(100);
 	
 	//Step 3
@@ -47,6 +48,10 @@ int main() {
 	blockyEngine.Run();
 }
 ```
+Notes:
+- Creating prefabs or scenes (technically the same thing, often just larger) should be the only time when a GameObject is instantiated by directly using the constructor. When building within a prefab (or scene), `AddChild()` should always be used for either a new GameObject, or one from instantiating a prefab.
+- After creating a prefab, it should always immediately be set to inactive before add any Components, this can be done using `prefabRoot->SetActive(false)`. This needs to be done to prevent Components from triggering `Start()`, and thus registering themselves to various Modules
+- For easier compatibility with the `SceneManager`, it is recommended to create a prefab using `std::make_unique<GameObject>("ExampleRootName")`. Then use `std::move(exampleRoot)` when adding the scene to the Manager using `.AddScene()`.
 
 ### Data Types
 
@@ -94,7 +99,7 @@ Notes:
 - The constructor of Component requires a GameObject& aside from the tag. This reference will be set in GameObject's AddComponent<...>() method. Therefor, only a tag and any custom values need to be passed through this method.
 - An `ExampleComponent()`, `Start()`, `Update(float delta)`, `End()` and `_clone(const GameObject& parent)` are all required for this custom component "ExampleComponent" to be allowed to be used as `.AddComponent<ExampleComponent>()`. An `~ExampleComponent()` can optionally be used if this custom component has a need for it, the same goes for `ExampleComponent(const ExampleComponent& other)`. Copy-assignment, move-constructor en move-assignment should not be implemented in components.
 - `_clone(...)` is used in prefab instantiation, after which `Start()` will be called if the prefab should be active. Keep in mind that any references to other GameObjects or Components that ExampleComponent might have will still point to the versions from the prefab. Therefor, it is recommended to design the game in a way where these references can be consistently re-established in `Start()`. For any member variables that are not compatible with an "= default" copy-constructor, the copy-constructor should be implemented manually.
-- Custom methods, like `SetExampleValue(int value)` as shown in the example for a `main` setup, can of course be (publicly or privately) added to a custom Component. It is not shown in this example
+- Custom methods, like `SetExampleValue(int value)` as shown in the example for a `main` setup, can of course be (publicly or privately) added to a custom Component.
 
 ```c++
 #include <gameObject/GameObject.hpp>

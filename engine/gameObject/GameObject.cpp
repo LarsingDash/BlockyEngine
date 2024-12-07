@@ -15,9 +15,6 @@ GameObject::~GameObject() {
 	//Mark this for deletion so its children don't try to erase themselves from this children list (on children.clear())
 	_isMarkedForDeletion = true;
 
-	//Reparent this to null, removing it from its parents children list
-	_reparent(nullptr);
-
 	//Delete all components
 	for (auto& type : _components) {
 		for (auto& component : type.second) {
@@ -34,8 +31,8 @@ GameObject::~GameObject() {
 }
 
 GameObject::GameObject(const GameObject& other) :
-		tag(other.tag), parent(other.parent), transform(std::make_unique<GameObjectTransform>(*other.transform)),
-		_isActive(other._isActive), _isMarkedForDeletion(other._isMarkedForDeletion), _deletionList(other._deletionList) {
+		tag(other.tag), parent(other.parent), transform(std::make_unique<GameObjectTransform>(*other.transform)), _isActive(other._isActive),
+		_isMarkedForDeletion(other._isMarkedForDeletion), _deletionList(other._deletionList) {
 	transform->SetGameObject(*this);
 
 	for (const auto& type : other._components) {
@@ -56,6 +53,9 @@ GameObject::GameObject(const GameObject& other) :
 
 void GameObject::Update(    // NOLINT(*-no-recursion)
 		float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList) {
+	//Cancel update cycle if it was marked before by something else
+	if (_isMarkedForDeletion) return;
+	
 	//Cascade update to components
 	for (auto& type : _components) {
 		for (auto& component : type.second) {
@@ -89,11 +89,20 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 		if (!child->_isMarkedForDeletion) {
 			child->Update(delta, recalculationList);
 			
-			//Get child again from the _children vector, in case a sibling has been added that exceeded the capacity
-			//(This would've moved the current 'child' to a different location)
-			auto& updatedChild = _children[i];
-			if (updatedChild->_isMarkedForDeletion) {
-				_deletionList.emplace_back(updatedChild.get());
+			//Check if child marked this object for deletion, otherwise check if child is marked (since deleting this will delete child anyway_
+			//Suppressing warnings because CLion can't understand that children can set their parent's _isMarkedForDeletion
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "ConstantConditionsOC"
+#pragma ide diagnostic ignored "UnreachableCode"
+			if (_isMarkedForDeletion) return;
+#pragma clang diagnostic pop
+			else {
+				//Get child again from the _children vector, in case a sibling has been added that exceeded the capacity
+				//(This would've moved the current 'child' to a different location)
+				auto& updatedChild = _children[i];
+				if (updatedChild->_isMarkedForDeletion) {
+					_deletionList.emplace_back(updatedChild.get());
+				}
 			}
 		}
 	}
@@ -131,6 +140,19 @@ void GameObject::SetActive(bool active, bool force) {    // NOLINT(*-no-recursio
 	for (auto& child : _children) {
 		child->SetActive(_isActive, force);
 	}
+}
+
+GameObject& GameObject::AddChild(std::string_view childTag) {
+	//Instantiate new GameObject in this children list
+	GameObject& child = *_children.emplace_back(
+			std::make_unique<GameObject>(std::forward<std::string>(childTag.data()), this)
+	);
+
+	//Pass active mode onto child
+	child.SetActive(_isActive, true);
+
+	//Return newly created child
+	return child;
 }
 
 GameObject& GameObject::AddChild(GameObject& prefab) {

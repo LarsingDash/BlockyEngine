@@ -31,18 +31,8 @@ class GameObject {
 
 		//----- CHILD / PARENT
 		void SetActive(bool active, bool force = false);
-		
-		template<typename... Args>
-		GameObject& AddChild(Args&& ... args) {
-			//Instantiate new GameObject in this children list
-			GameObject& child = *_children.emplace_back(std::make_unique<GameObject>(std::forward<Args>(args)..., this));
-			
-			//Pass active mode onto child
-			child.SetActive(_isActive);
 
-			//Return newly created child
-			return child;
-		}
+		GameObject& AddChild(std::string_view childTag);
 		GameObject& AddChild(GameObject& prefab);
 
 		GameObject* GetChild(const std::string& t, bool recursive = false);
@@ -69,7 +59,7 @@ class GameObject {
 			auto typeIt = _components.find(type);
 			std::unique_ptr<T> component = std::make_unique<T>(this, componentTag, std::forward<Args>(args)...);
 			if (_isActive) {
-				component->Start(); 
+				component->Start();
 			}
 
 			//Find component list, create it if there was none
@@ -128,8 +118,8 @@ class GameObject {
 		//----- COMPONENTS
 		template<typename T>
 		inline void _componentValidityCheck() {
-			//Assert that T inherits Component
-			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
+			//Assert that T derives Component
+			static_assert(std::is_base_of<Component, T>::value, "T must derive from Component");
 		}
 
 		//Finds an iterator to the component with the templated tag and given tag

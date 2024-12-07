@@ -3,6 +3,14 @@
 //
 #include "TimeUtil.hpp"
 
+TimeUtil* TimeUtil::_instance{nullptr};
+
+TimeUtil* TimeUtil::CreateInstance() {
+	auto instance = new TimeUtil();
+	_instance = instance;
+	return instance;
+}
+
 TimeUtil::TimeUtil()
 		: startTime{Clock::now()},
 		  lastFrameTime{Clock::now()},
@@ -14,18 +22,19 @@ void TimeUtil::reset() {
 	lastDeltaTime = 0.0f;
 }
 
+float TimeUtil::calculateDeltaTime() {
+	auto now = Clock::now();
+	lastDeltaTime = std::chrono::duration<float>(now - lastFrameTime).count();
+	lastFrameTime = now;
+	return lastDeltaTime;
+}
+
 float TimeUtil::getElapsedTime() const {
 	auto now = Clock::now();
 	return std::chrono::duration<float>(now - startTime).count();
 }
 
-float TimeUtil::calculateDeltaTime() {
-	auto now = Clock::now();
-	lastDeltaTime = std::chrono::duration<float>(now - lastFrameTime).count(); // Update lastDeltaTime
-	lastFrameTime = now;
-	return lastDeltaTime;
-}
-
 int TimeUtil::getFPS() const {
 	return (lastDeltaTime > 0.0f) ? static_cast<int>(1.0f / lastDeltaTime) : 0;
 }
+

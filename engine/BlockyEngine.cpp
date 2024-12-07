@@ -8,25 +8,28 @@
 
 bool BlockyEngine::isRunning{false};
 
-BlockyEngine::BlockyEngine() : moduleManager{ModuleManager::getInstance()},
-							   sceneManager{std::make_unique<SceneManager>()} {}
+BlockyEngine::BlockyEngine() : moduleManager{ModuleManager::getInstance()}, sceneManager{std::make_unique<SceneManager>()}, timeUtil(TimeUtil::CreateInstance()) {}
 
 void BlockyEngine::Run() {
-	TimeUtil timeUtils;
+	int frames = 0;
+	float accumulatedDelta = 0;
 
 	BlockyEngine::isRunning = true;
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
 	while (BlockyEngine::isRunning) {
-		// Calculate delta time
-		float delta = timeUtils.calculateDeltaTime();
+		// Calculate delta time.
+		float delta = timeUtil->calculateDeltaTime();
 
-		// Update cycle
+		// Update cycle.
 		sceneManager->Update(delta);
 		moduleManager.Update(delta);
 
-		// Get and print FPS
-		std::cout << "FPS: " << timeUtils.getFPS() << std::endl;
+		// FPS logic.
+		++frames;
+		accumulatedDelta += delta;
+		if (accumulatedDelta >= 1.0f) {
+			std::cout << "FPS: " << timeUtil->getFPS() << std::endl;
+			frames = 0;
+			accumulatedDelta = 0;
+		}
 	}
-#pragma clang diagnostic pop
 }

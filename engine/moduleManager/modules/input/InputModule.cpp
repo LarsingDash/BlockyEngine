@@ -2,12 +2,14 @@
 #include <SDL_events.h>
 #include <iostream>
 #include "BlockyEngine.hpp"
+#include "imgui_impl_sdl2.h"
 
 // Polls events for input and window states
 void InputModule::PollEvents() {
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
+		ImGui_ImplSDL2_ProcessEvent(&event);
 		switch (event.type) {
 			default: break;
 

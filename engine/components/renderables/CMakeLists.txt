@@ -4,4 +4,5 @@
         RectangleRenderable.cpp
         SpriteRenderable.cpp
         AnimationRenderable.cpp
+        TextRenderable.cpp
 )

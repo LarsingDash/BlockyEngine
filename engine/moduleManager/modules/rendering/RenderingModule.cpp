@@ -225,48 +225,33 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 			static_cast<Uint8>(color.b),
 			static_cast<Uint8>(color.a)
 	};
-	SDL_Surface* textSurface = TTF_RenderText_Blended(renderable.GetFont(), renderable.GetText().c_str(), sdlColor);
-	if (!textSurface) {
-		std::cerr << "Failed to create text surface: " << TTF_GetError() << std::endl;
-		return;
-	}
-
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
-	if (!texture) {
-		std::cerr << "Failed to create text texture: " << SDL_GetError() << std::endl;
-		SDL_FreeSurface(textSurface);
-		return;
-	}
 
 	const auto& position = renderable.componentTransform->GetWorldPosition();
-	const auto& rotation = renderable.componentTransform->GetWorldRotation();
+	std::string text = renderable.GetText();
 
-	SDL_FRect destRect = {
-			static_cast<float>(position.x),
-			static_cast<float>(position.y),
-			static_cast<float>(textSurface->w),
-			static_cast<float>(textSurface->h)
-	};
-
-	SDL_RenderCopyExF(
-			_renderer,
-			texture,
-			nullptr,
-			&destRect,
-			rotation,
-			nullptr,
-			SDL_FLIP_NONE
-	);
-
-	SDL_DestroyTexture(texture);
-	SDL_FreeSurface(textSurface);
+	_renderTextHelper(text, sdlColor, {position.x, position.y});
 }
+
 void RenderingModule::_renderFps() {
 	int fps = TimeUtil::GetInstance().getFPS();
-	std::string fpsText = ("FPS: " + std::to_string(fps));
 
-	SDL_Color white = {255, 255, 255, 255};
-	SDL_Surface* surface = TTF_RenderText_Blended(_font, fpsText.c_str(), white);
+	SDL_Color color;
+	if (fps >= 60) {
+		color = {0, 255, 0, 255};
+	} else if (fps >= 30) {
+		color = {255, 255, 0, 255};
+	} else {
+		color = {255, 0, 0, 255};
+	}
+
+	std::string fpsText = "FPS: " + std::to_string(fps);
+
+	SDL_FPoint position = {800 - 200, 10};
+	_renderTextHelper(fpsText, color, position);
+}
+
+void RenderingModule::_renderTextHelper(const std::string& text, const SDL_Color& color, const SDL_FPoint& position) {
+	SDL_Surface* surface = TTF_RenderText_Blended(_font, text.c_str(), color);
 	if (!surface) {
 		std::cerr << "Failed to create text surface: " << TTF_GetError() << std::endl;
 		return;
@@ -283,8 +268,8 @@ void RenderingModule::_renderFps() {
 	int textWidth, textHeight;
 	SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
 	SDL_Rect dstRect = {
-			800 - textWidth - 10,
-			10,
+			static_cast<int>(position.x),
+			static_cast<int>(position.y),
 			textWidth,
 			textHeight
 	};
@@ -292,6 +277,7 @@ void RenderingModule::_renderFps() {
 	SDL_RenderCopy(_renderer, texture, nullptr, &dstRect);
 	SDL_DestroyTexture(texture);
 }
+
 void RenderingModule::AddRenderable(Renderable& renderable) {
 	_renderables.emplace_back(renderable);
 }

@@ -1,6 +1,7 @@
 //
 // Created by 11896 on 07/12/2024.
 //
+#include <iostream>
 #include "TimeUtil.hpp"
 
 TimeUtil* TimeUtil::_instance{nullptr};
@@ -38,3 +39,11 @@ int TimeUtil::getFPS() const {
 	return (lastDeltaTime > 0.0f) ? static_cast<int>(1.0f / lastDeltaTime) : 0;
 }
 
+void TimeUtil::toggleFpsCounter() {
+	std::cout << "Toggling fps counter to " << showFps << std::endl;
+	showFps = !showFps;
+}
+
+bool TimeUtil::isFpsCounterEnabled() const {
+	return showFps;
+}

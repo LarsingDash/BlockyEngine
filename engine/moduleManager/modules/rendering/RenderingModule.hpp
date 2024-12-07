@@ -16,9 +16,7 @@
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 #include "components/renderables/TextRenderable.hpp"
-
-
-
+#include "utilities/TimeUtil.hpp"
 
 class RenderingModule {
 	public:
@@ -26,13 +24,15 @@ class RenderingModule {
 		~RenderingModule();
 
 		void Render();
+		void _renderFps();
 		void AddRenderable(Renderable& renderable);
 		void RemoveRenderable(Renderable& renderable);
 
 	private:
 		SDL_Renderer* _renderer;
-		std::vector<std::reference_wrapper<Renderable>> renderables;
+		std::vector<std::reference_wrapper<Renderable>> _renderables;
 		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> _textureCache;
+		TTF_Font* _font;
 
 		void _renderRectangle(RectangleRenderable& renderable);
 		void _renderEllipse(EllipseRenderable& renderable);

@@ -10,13 +10,20 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
+#include "utilities/TimeUtil.hpp"
+#include "gameObject/GameObject.hpp"
 
-RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {}
+RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer){
+	_font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
+	if (!_font) {
+		std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+	}
+}
 
 RenderingModule::~RenderingModule() = default;
 
 void RenderingModule::Render() {
-	for (Renderable& renderable : renderables) {
+	for (Renderable& renderable : _renderables) {
 		switch (renderable.GetRenderableType()) {
 			case RECTANGLE:
 				_renderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
@@ -34,6 +41,9 @@ void RenderingModule::Render() {
 				_renderText(reinterpret_cast<TextRenderable&>(renderable));
 				break;
 		}
+	}
+	if (TimeUtil::GetInstance().isFpsCounterEnabled()) {
+		_renderFps();
 	}
 }
 
@@ -251,19 +261,49 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 	SDL_DestroyTexture(texture);
 	SDL_FreeSurface(textSurface);
 }
+void RenderingModule::_renderFps() {
+	int fps = TimeUtil::GetInstance().getFPS();
+	std::string fpsText = ("FPS: " + std::to_string(fps));
 
+	SDL_Color white = {255, 255, 255, 255};
+	SDL_Surface* surface = TTF_RenderText_Blended(_font, fpsText.c_str(), white);
+	if (!surface) {
+		std::cerr << "Failed to create text surface: " << TTF_GetError() << std::endl;
+		return;
+	}
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
+	SDL_FreeSurface(surface);
+
+	if (!texture) {
+		std::cerr << "Failed to create text texture: " << SDL_GetError() << std::endl;
+		return;
+	}
+
+	int textWidth, textHeight;
+	SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
+	SDL_Rect dstRect = {
+			800 - textWidth - 10,
+			10,
+			textWidth,
+			textHeight
+	};
+
+	SDL_RenderCopy(_renderer, texture, nullptr, &dstRect);
+	SDL_DestroyTexture(texture);
+}
 void RenderingModule::AddRenderable(Renderable& renderable) {
-	renderables.emplace_back(renderable);
+	_renderables.emplace_back(renderable);
 }
 
 void RenderingModule::RemoveRenderable(Renderable& renderable) {
-	auto it = std::find_if(renderables.begin(), renderables.end(),
+	auto it = std::find_if(_renderables.begin(), _renderables.end(),
 						   [&renderable](const std::reference_wrapper<Renderable>& other) {
 							   return &renderable == &other.get();
 						   });
 
-	if (it != renderables.end()) {
-		renderables.erase(it);
+	if (it != _renderables.end()) {
+		_renderables.erase(it);
 	}
 }
 

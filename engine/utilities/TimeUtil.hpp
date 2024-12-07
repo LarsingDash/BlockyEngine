@@ -23,6 +23,8 @@ class TimeUtil {
 		float calculateDeltaTime();
 		float getElapsedTime() const;
 		int getFPS() const;
+		void toggleFpsCounter();
+		bool isFpsCounterEnabled() const;
 
 	private:
 		TimeUtil();
@@ -35,6 +37,7 @@ class TimeUtil {
 		TimePoint startTime;
 		TimePoint lastFrameTime;
 		float lastDeltaTime;
+		bool showFps;
 };
 
 #endif //BLOCKYENGINE_ENGINE_UTILITIES_TIMEUTIL_HPP_

@@ -12,7 +12,6 @@ void InputModule::PollEvents() {
 		ImGui_ImplSDL2_ProcessEvent(&event);
 		switch (event.type) {
 			default: break;
-
 			case SDL_KEYUP:
 			case SDL_KEYDOWN: {
 				KeyState state = (event.type == SDL_KEYDOWN) ? KeyState::KEY_DOWN : KeyState::KEY_UP;
@@ -29,8 +28,10 @@ void InputModule::PollEvents() {
 					}
 				}
 			}
+				if (event.key.keysym.sym == SDLK_F1 && event.type == SDL_KEYDOWN) {
+					TimeUtil::GetInstance().toggleFpsCounter();
+				}
 				break;
-
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP: {
 				MouseButtonState mouseState = (event.type == SDL_MOUSEBUTTONDOWN) ? MouseButtonState::BUTTON_DOWN : MouseButtonState::BUTTON_UP;

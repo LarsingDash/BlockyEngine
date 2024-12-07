@@ -13,37 +13,37 @@ TimeUtil* TimeUtil::CreateInstance() {
 }
 
 TimeUtil::TimeUtil()
-		: startTime{Clock::now()},
-		  lastFrameTime{Clock::now()},
-		  lastDeltaTime{0.0f} {}
+		: _startTime{Clock::now()},
+		  _lastFrameTime{Clock::now()},
+		  _lastDeltaTime{0.0f} {}
 
-void TimeUtil::reset() {
-	startTime = Clock::now();
-	lastFrameTime = Clock::now();
-	lastDeltaTime = 0.0f;
+void TimeUtil::_reset() {
+	_startTime = Clock::now();
+	_lastFrameTime = Clock::now();
+	_lastDeltaTime = 0.0f;
 }
 
-float TimeUtil::calculateDeltaTime() {
+float TimeUtil::CalculateDeltaTime() {
 	auto now = Clock::now();
-	lastDeltaTime = std::chrono::duration<float>(now - lastFrameTime).count();
-	lastFrameTime = now;
-	return lastDeltaTime;
+	_lastDeltaTime = std::chrono::duration<float>(now - _lastFrameTime).count();
+	_lastFrameTime = now;
+	return _lastDeltaTime;
 }
 
-float TimeUtil::getElapsedTime() const {
+float TimeUtil::GetElapsedTime() const {
 	auto now = Clock::now();
-	return std::chrono::duration<float>(now - startTime).count();
+	return std::chrono::duration<float>(now - _startTime).count();
 }
 
-int TimeUtil::getFPS() const {
-	return (lastDeltaTime > 0.0f) ? static_cast<int>(1.0f / lastDeltaTime) : 0;
+int TimeUtil::GetFPS() const {
+	return (_lastDeltaTime > 0.0f) ? static_cast<int>(1.0f / _lastDeltaTime) : 0;
 }
 
-void TimeUtil::toggleFpsCounter() {
-	std::cout << "Toggling fps counter to " << showFps << std::endl;
-	showFps = !showFps;
+void TimeUtil::ToggleFpsCounter() {
+	std::cout << "Toggling fps counter to " << _showFps << std::endl;
+	_showFps = !_showFps;
 }
 
-bool TimeUtil::isFpsCounterEnabled() const {
-	return showFps;
+bool TimeUtil::IsFpsCounterEnabled() const {
+	return _showFps;
 }

@@ -29,7 +29,7 @@ void InputModule::PollEvents() {
 				}
 			}
 				if (event.key.keysym.sym == SDLK_F1 && event.type == SDL_KEYDOWN) {
-					TimeUtil::GetInstance().toggleFpsCounter();
+					TimeUtil::GetInstance().ToggleFpsCounter();
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:

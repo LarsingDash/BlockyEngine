@@ -42,7 +42,7 @@ void RenderingModule::Render() {
 				break;
 		}
 	}
-	if (TimeUtil::GetInstance().isFpsCounterEnabled()) {
+	if (TimeUtil::GetInstance().IsFpsCounterEnabled()) {
 		_renderFps();
 	}
 }
@@ -233,11 +233,11 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 }
 
 void RenderingModule::_renderFps() {
-	int fps = TimeUtil::GetInstance().getFPS();
+	int fps = TimeUtil::GetInstance().GetFPS();
 
 	SDL_Color color;
 	if (fps >= 60) {
-		color = {0, 255, 0, 255};
+		color = {0, 255, 0, 255}; 
 	} else if (fps >= 30) {
 		color = {255, 255, 0, 255};
 	} else {
@@ -246,10 +246,15 @@ void RenderingModule::_renderFps() {
 
 	std::string fpsText = "FPS: " + std::to_string(fps);
 
-	SDL_FPoint position = {800 - 200, 10};
+	int windowWidth, windowHeight;
+	SDL_GetRendererOutputSize(_renderer, &windowWidth, &windowHeight);
+
+	int textWidth, textHeight;
+	TTF_SizeText(_font, fpsText.c_str(), &textWidth, &textHeight);
+	SDL_FPoint position = {static_cast<float>(windowWidth - textWidth - 10), 10};
+
 	_renderTextHelper(fpsText, color, position);
 }
-
 void RenderingModule::_renderTextHelper(const std::string& text, const SDL_Color& color, const SDL_FPoint& position) {
 	SDL_Surface* surface = TTF_RenderText_Blended(_font, text.c_str(), color);
 	if (!surface) {

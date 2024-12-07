@@ -19,25 +19,26 @@ class TimeUtil {
 		TimeUtil(TimeUtil&& other) noexcept = delete;
 		TimeUtil& operator=(TimeUtil&& other) noexcept = delete;
 
-		void reset();
-		float calculateDeltaTime();
-		float getElapsedTime() const;
-		int getFPS() const;
-		void toggleFpsCounter();
-		bool isFpsCounterEnabled() const;
 
+		float GetElapsedTime() const;
+		int GetFPS() const;
+		void ToggleFpsCounter();
+		bool IsFpsCounterEnabled() const;
+
+		float CalculateDeltaTime();
 	private:
 		TimeUtil();
-
 		static TimeUtil* _instance;
+
+		void _reset();
 
 		using Clock = std::chrono::high_resolution_clock;
 		using TimePoint = std::chrono::time_point<Clock>;
 
-		TimePoint startTime;
-		TimePoint lastFrameTime;
-		float lastDeltaTime;
-		bool showFps;
+		TimePoint _startTime;
+		TimePoint _lastFrameTime;
+		float _lastDeltaTime;
+		bool _showFps = false;
 };
 
 #endif //BLOCKYENGINE_ENGINE_UTILITIES_TIMEUTIL_HPP_

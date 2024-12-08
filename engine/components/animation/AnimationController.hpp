@@ -5,13 +5,9 @@
 #ifndef BLOCKYENGINE_ENGINE_COMPONENTS_ANIMATION_ANIMATIONCONTROLLER_HPP_
 #define BLOCKYENGINE_ENGINE_COMPONENTS_ANIMATION_ANIMATIONCONTROLLER_HPP_
 
-#include <string>
-#include <string>
 #include <unordered_map>
 #include <stdexcept>
-#include <iostream>
 #include "components/renderables/AnimationRenderable.hpp"
-
 
 class AnimationController : public Component {
 	public:
@@ -22,8 +18,8 @@ class AnimationController : public Component {
 			float frameDuration;
 		};
 
-		AnimationController(GameObject& gameObject, const char* tag, AnimationRenderable& renderable);
-
+		AnimationController(GameObject* gameObject, const char* tag);
+		
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
@@ -33,7 +29,9 @@ class AnimationController : public Component {
 		void StopAnimation();
 
 	private:
-		AnimationRenderable& _renderable;
+		Component* _clone(const GameObject& parent) override;
+		
+		AnimationRenderable* _renderable;
 		float _frameTimer = 0.0f;
 		int _currentFrame = 0;
 		bool _isAnimating = false;

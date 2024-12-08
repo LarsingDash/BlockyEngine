@@ -8,7 +8,6 @@
 
 GameObjectTransform::GameObjectTransform(GameObject& gameObject) : Transform(gameObject) {
 	if (gameObject.parent) _parent = gameObject.parent->transform.get();
-	_recalculateWorldMatrix();
 }
 
 void GameObjectTransform::RecalculateWorldMatrix() {    // NOLINT(*-no-recursion)
@@ -16,14 +15,14 @@ void GameObjectTransform::RecalculateWorldMatrix() {    // NOLINT(*-no-recursion
 	_recalculateWorldMatrix();
 	
 	//Update components
-	for (const auto& [key, list] : gameObject.GetComponents()) {
+	for (const auto& [key, list] : gameObject->GetComponents()) {
 		for (const auto& component : list) {
 			if (component->componentTransform) component->componentTransform->RecalculateWorldMatrix();
 		}
 	}
 
 	//Update children
-	for (const auto& child : gameObject.GetChildren()) {
+	for (const auto& child : gameObject->GetChildren()) {
 		child->transform->RecalculateWorldMatrix();
 	}
 }

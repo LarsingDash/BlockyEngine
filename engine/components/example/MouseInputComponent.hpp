@@ -12,19 +12,21 @@
 
 class MouseInputComponent : public Component {
 	public:
-		MouseInputComponent(GameObject& parent, const char* tag);
+		MouseInputComponent(GameObject* parent, const char* tag);
 
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-
+		
 		void PaletteGUI();
 
 	private:
+		Component* _clone(const GameObject& parent) override;
+		
 		void HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color);
 
-		InputModule& _inputModule = ModuleManager::getInstance().getModule<WindowModule>().GetInputModule();
-		ImGuiRenderingModule& _imguiModule = ModuleManager::getInstance().getModule<WindowModule>().GetGuiRenderingModule();
+		InputModule& _inputModule;
+		ImGuiRenderingModule& _imguiModule;
 
 		int currentPalette = 0;
 		glm::vec4 colorPalettes[3][3] = {

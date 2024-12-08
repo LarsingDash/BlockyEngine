@@ -1,6 +1,6 @@
 ﻿# Blocky Engine
 
-The Blocky Engine is a modular C++ game engine which can be used for 2D game development. Blocky Engine can be used
+Blocky Engine is a modular C++ game engine which can be used for 2D game development. Blocky Engine can be used
 without
 requiring knowledge about
 rendering APIs, audio, physics or networking, as it abstracts all that behind the given modules. It only openly uses GLM
@@ -8,94 +8,135 @@ for transformations, meaning that the game developer does interact with the GLM 
 
 ## Use
 
-After installation (see below) the Blocky Engine can be used by creating an instance of a BlockyEngine in your code.
-After that `Run()` can be
-called on this instance to let the Blocky Engine take over the flow of the program.
+After installation (see below) Blocky Engine can be used following these steps:
+1. Create an instance of a BlockyEngine.
+2. Create a scene.
+3. Add the scene to the SceneManager from BlockyEngine instance, also select is as the starting scene.
+4. Finally, `Run()` can be
+called on the BlockyEngine instance to let Blocky Engine take over the flow of the program.
 
 ```cpp
 #include <BlockyEngine.hpp>
+#include "CustomComponents/ExampleComponent"
 
-int main(void) {
-    BlockyEngine engine;
-    engine.Run();
+int main() {
+	//Step 1
+	BlockyEngine blockyEngine;
+	
+	//Step 2
+	//Create a root for the scene
+	auto exampleRoot = std::make_unique<GameObject>("ExampleScene");
+	exampleRoot->SetActive(false);	//Do not forget to set the scene as inactive
+
+	//Add and configure a child object
+	auto& child = exampleRoot->AddChild("ExampleChild");
+	child.transform->SetPosition(300.f, 300.f);
+	child.transform->SetRotation(45.f);
+	child.transform->SetScale(25.f, 50.f);
+	
+	//Add and configure a component
+	auto& component = child.AddComponent<ExampleComponent>("ExampleComponent", 10);
+	component.componentTransform->SetPosition(2.5f, 0.f);
+	component.SetExampleValue(100);
+	
+	//Step 3
+	SceneManager& sceneManager = blockyEngine.GetSceneManager();
+	sceneManager.AddScene(std::move(exampleRoot));
+	sceneManager.SwitchScene("ExampleScene");
+
+	//Step 4
+	blockyEngine.Run();
 }
 ```
-
-This engine uses the game development philosophy of Unity, in which, it uses the Game Object, Component, Transform and
-Game Object children as data types.
-
-Temporarily, a scene can be made by adding GameObjects to the `testScene` in the constructor in `SceneManager.cpp`.
-Custom Components can be made by creating a class that inherits from `Component`, implementing a constructor,
-destructor, `void Start()`, `void Update(float delta)` and `void End()`. Note that the constructor and destructor are
-intended to be used for the component's own data, whereas Start and End should be used for interaction with Blocky
-Engine's various modules.
+Notes:
+- Creating prefabs or scenes (technically the same thing, often just larger) should be the only time when a GameObject is instantiated by directly using the constructor. When building within a prefab (or scene), `AddChild()` should always be used for either a new GameObject, or one from instantiating a prefab.
+- After creating a prefab, it should always immediately be set to inactive before add any Components, this can be done using `prefabRoot->SetActive(false)`. This needs to be done to prevent Components from triggering `Start()`, and thus registering themselves to various Modules
+- For easier compatibility with the `SceneManager`, it is recommended to create a prefab using `std::make_unique<GameObject>("ExampleRootName")`. Then use `std::move(exampleRoot)` when adding the scene to the Manager using `.AddScene()`.
 
 ### Data Types
 
-The engine provides different components alongside itself to make use of the engine. It provides the following:
+This engine uses the game development philosophy of Unity, in which, it uses the GameObjects, Transforms and Components as primary data types. The engine provides these types alongside itself:
 
-- Component base: This can be used to write your own components! By inheriting from this base,
-  you can create different components that the engine will use.
-- Transform: This is used to move your Game Object around through its position, rotate it through the rotation, and
-  scale it to make, for instance, a gigantic rectangle.
-- Game Object: The core datatype that the user of this engine will mostly be interfacing with when creating scenes and
-  the like. It
-  has support for: Multiple Components of the same type and parent-children relations.
-- Renderables: To make a Game Object visible within your scene you will have to draw it, the engine provides simple
-  shapes to draw a Game Object. It also supports textures to render to the scene.
-- Animation Controller: By attaching the `AnimationController` class to the Game Object you can also animate it through
-  a sprite sheet.
+- GameObject: The core datatype that the user of this engine will mostly be interfacing with when creating scenes and
+  the like. It has support for: Multiple Components of the same type, parent-children relations and prefab instantiation.
+- Transform: This is used to transform a GameObject or Component. It supports getting and setting on local-space (meaning relative to it's parent), and getting on world-space (meaning absolute). `Transform` itself is abstract and is not directly used, but does facilitate all core logic for its inheritors:
+  - GameObject Transform: Used by GameObjects to stay relative to their parenting GameObject.
+  - Component Transform: Used by Components to stay relative to the GameObjects that owns this Component.
+- Component: `Component` itself is abstract and cannot be directly added to a GameObject. Instead, it is the base for al components that define the logic of the game. These components can be custom-made (see chapter below) or provided by Blocky Engine:
+  - Renderable: This is the base class for anything that will be drawn to the screen (apart from UI). `Renderable` itself is not directly usable, since it's abstract, use instead: `RectangleRenderable`, `EllipseRenderable`, `SpriteRenderable` or `AnimationRenderable`. The AnimationRenderable is inherited from SpriteRenderable and can be controlled by an `AnimationController`. 
+  - Animation Controller: An `AnimationController` must be used in combination with an `AnimationRenderable` to animate. The tag of this renderable must be given to the controller for it to connect automatically, they also need to be components of the same GameObject. Different animations can then be added to the controller and triggered from other components.
 
 ### Custom Components
 
-To make a custom component the following can be done:
+Components drive the behavior of a game. However, Blocky Engine only provides the standard components as listed above (and some examples). For GameObjects to start behaving uniquely, custom components must be made. This can be done by inheriting from `Component`. Displayed below is a template of how a custom component should be made, with some extra notes:
 
 ```c++
-#ifndef EXAMPLECOMP_H
-#define EXAMPLECOMP_H
+#ifndef EXAMPLECOMPONENT_H
+#define EXAMPLECOMPONENT_H
 
 #include <components/Component.hpp>
-#include <iostream>
-#include <gameObject/GameObject.hpp>
 
-class ExampleComp : public Component {
-public:
-    ExampleComp(GameObject &gameObject, const char *tag, bool hasTransform)
-        : Component(gameObject, tag, hasTransform) {
-        _someBool = false;
-    }
+class ExampleComponent : public Component {
+    public:
+        ExampleComponent(GameObject* gameObject, const char* tag, int startingValue);
+        ~ExampleComponent() = default; //Optional
 
-    ~ExampleComp() override;
-
-    void Start() override {
-        std::cout << "Initializing ExampleComp!" << "\n";
-        std::cout << gameObject.tag <<std::endl;
-        _someBool = true;
-    }
-
-    void Update(float delta) override {
-        if(_someBool)
-            std::cout << "Printing because _somebool is active!" << std::endl;
-    }
-
-    void End() override {
-        std::cout << "Ending ExampleComp!" << "\n";
-        std::cout << gameObject.tag <<std::endl;
-        _someBool = false;
-    }
-
-private:
-    bool _someBool;
+        void Start() override;
+        void Update(float delta) override;
+        void End() override;
+		
+        void SetExampleValue(int value);
+	
+    private:
+        Component* _clone(const GameObject& parent) override;
+        
+        int _exampleValue;
 };
-#endif //EXAMPLECOMP_H
+#endif //EXAMPLECOMPONENT_H
 ```
 
-This can be added to the Game Object and will then enact the behaviour within this Component. A Component in our case
-can also be considered a script of sorts to enact behaviour within your game.
+Notes:
+- The constructor of Component requires a GameObject& aside from the tag. This reference will be set in GameObject's AddComponent<...>() method. Therefor, only a tag and any custom values need to be passed through this method.
+- An `ExampleComponent()`, `Start()`, `Update(float delta)`, `End()` and `_clone(const GameObject& parent)` are all required for this custom component "ExampleComponent" to be allowed to be used as `.AddComponent<ExampleComponent>()`. An `~ExampleComponent()` can optionally be used if this custom component has a need for it, the same goes for `ExampleComponent(const ExampleComponent& other)`. Copy-assignment, move-constructor en move-assignment should not be implemented in components.
+- `_clone(...)` is used in prefab instantiation, after which `Start()` will be called if the prefab should be active. Keep in mind that any references to other GameObjects or Components that ExampleComponent might have will still point to the versions from the prefab. Therefor, it is recommended to design the game in a way where these references can be consistently re-established in `Start()`. For any member variables that are not compatible with an "= default" copy-constructor, the copy-constructor should be implemented manually.
+- Custom methods, like `SetExampleValue(int value)` as shown in the example for a `main` setup, can of course be (publicly or privately) added to a custom Component.
+
+```c++
+#include <gameObject/GameObject.hpp>
+
+ExampleComponent::ExampleComponent(GameObject* gameObject, const char* tag, int startingValue) :
+    Component(gameObject, tag, false), _exampleValue(startingValue) {}
+
+void ExampleComponent::Start() {
+    //Interaction with other GameObjects, Components or Modules, not this Component's data. For example:
+    //InputModule& inputModule = ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule();
+}
+
+void ExampleComponent::Update(float delta) {
+    //This logic is updated every frame
+}
+
+void ExampleComponent::End() {
+    //Unsubscribe from anything that has been subscribed to in Start()
+}
+
+void ExampleComponent::SetExampleValue(int value) { _exampleValue = value; }
+
+Component* ExampleComponent::_clone(const GameObject& parent) {
+    auto clone = new ExampleComponent(*this);
+    return clone;
+}
+```
+
+Notes:
+- The `constructor` and `destructor` are intended to be used for the component's own data, whereas `Start()` and `End()` should be used for interacting with (other) GameObjects, or components or Blocky Engine's various modules.
+- The constructor has an optional boolean (by default false) that decides if this Component type has an extra `ComponentTransform`. This is mainly used for when components on the same GameObject need to be able to be separated. This option is explicitly specified as false in the example code for extra clarity.
+- `_clone()` will be the same for almost all components, however it is simply required for prefabs to work. Since scenes can also be considered to be big prefabs, this method is required for every component. It is called from the parenting GameObject of the prefab when it's cloning itself and all of its components. The point is to simply create an identical copy to give to the newly created instance of the prefab.
+- The #include for `GameObject` at the top of this source file is optional if a component doesn't interact with any GameObject logic (which is rare, hence why it's included in this template). Since `Component` only forward-declares GameObject, this include is required for any further use. **_Never_** include `GameObject` (or anything that includes it) in a component's header, as that will cause a circular include chain, only in the source file.
 
 ## Custom Modules
 
-Currently, the Blocky Engine only contains the Window Module (internally containing the Rendering Module) with a tight
+Currently, Blocky Engine only contains the Window Module (internally containing the Rendering Module) with a tight
 coupling. Custom Modules are therefore not yet supported. In the future, these modules will be linked through
 libraries (.dll/.so), found through a config file. Custom implementations of these modules could be made by following
 the same module interface, and
@@ -103,14 +144,14 @@ included by changing the filepath in this config file.
 
 ## Configuration
 
-The Blocky Engine has simple configuration, it will download its dependencies automatically into its 'dependencies'
+Blocky Engine has simple configuration, it will download its dependencies automatically into its 'dependencies'
 folder. To set up the engine through the cmake:
 
 ```cmake
 cmake_minimum_required(VERSION 3.27)
-project(CustomProj)
+project(CustomProject)
 
-# The options that are provided with the Blocky Engine are always off.
+# The options that are provided with Blocky Engine are always off.
 
 # Since this will be downloaded into your project, but this can be any directory. 
 # It is discouraged to make this a hardcoded path, so use the cmake vars for this.
@@ -124,7 +165,7 @@ target_link_libraries(${PROJECT_NAME} Blocky::Engine)
 
 ### Options
 
-The Blocky Engine also supports multiple options, such as: building with tests and building as a static or shared
+Blocky Engine also supports multiple options, such as: building with tests and building as a static or shared
 library.
 
 To set these options, in your projects cmake set the following:
@@ -139,7 +180,7 @@ reset these options (which is not necessary). You can also add a description, bu
 
 ## Installation
 
-To run the Blocky Engine, download this project from GitHub and have CLion installed (or any other IDE that supports
+To run Blocky Engine, download this project from GitHub and have CLion installed (or any other IDE that supports
 CMake). Open the project using a MinGW toolchain configuration. When cloning the engine it should, on its own, be
 able
 to download the dependencies it needs. If it is not able to download everything, then see below to configure it.
@@ -157,7 +198,7 @@ at [the official GitHub](https://github.com/libsdl-org/SDL/releases/tag/release-
 `SDL2-devel-2.30.9-mingw.zip`. From this zip file, extract the `bin`, `include` and
 `lib` folders from `x86_64-w64-mingw32` into `engine/dependencies/SDL2/`.
 In the case of Linux it's required that you have the SDL-development libraries downloaded on your system/distro. If the
-dependencies are not installed, the Blocky Engine will try to install the dependencies itself, which in the case of
+dependencies are not installed, Blocky Engine will try to install the dependencies itself, which in the case of
 Linux is not encouraged. Obscure libraries such as SDL_gfx, will be handled by the engine.
 The `PATH` environment variable needs to be
 pointing to
@@ -205,7 +246,7 @@ meaning we can use the variables provided by the SDL2 config.
 
 ### glm
 
-The Blocky Engine uses GLM for all mathematics. The GLM library can be downloaded
+Blocky Engine uses GLM for all mathematics. The GLM library can be downloaded
 from [the official GitHub](https://github.com/g-truc/glm/releases/tag/1.0.1) listed as `glm-1.0.1-light.zip`. The
 contents of this zip file should be extracted to `engine/dependencies/glm/`.
 

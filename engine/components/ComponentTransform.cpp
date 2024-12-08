@@ -6,10 +6,9 @@
 
 #include "ComponentTransform.hpp"
 
-ComponentTransform::ComponentTransform(GameObject& gameObject, Component& component) :
+ComponentTransform::ComponentTransform(GameObject& gameObject, Component* component) :
 		Transform(gameObject), component(component) {
 	_parent = gameObject.transform.get();
-	_recalculateWorldMatrix();
 }
 
 void ComponentTransform::RecalculateWorldMatrix() {

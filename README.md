@@ -85,10 +85,10 @@ class ExampleComponent : public Component {
         void Update(float delta) override;
         void End() override;
 		
-		void SetExampleValue(int value);
+        void SetExampleValue(int value);
 	
     private:
-        Component* _clone(GameObject& parent) override;
+        Component* _clone(const GameObject& parent) override;
         
         int _exampleValue;
 };
@@ -121,6 +121,11 @@ void ExampleComponent::End() {
 }
 
 void ExampleComponent::SetExampleValue(int value) { _exampleValue = value; }
+
+Component* ExampleComponent::_clone(const GameObject& parent) {
+    auto clone = new ExampleComponent(*this);
+    return clone;
+}
 ```
 
 Notes:

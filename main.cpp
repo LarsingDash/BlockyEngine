@@ -83,7 +83,7 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	scenes.AddScene(std::move(root));
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	BlockyEngine blockyEngine;
 	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 

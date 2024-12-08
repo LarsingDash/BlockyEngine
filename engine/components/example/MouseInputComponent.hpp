@@ -26,7 +26,7 @@ class MouseInputComponent : public Component {
 		void HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color);
 
 		InputModule& _inputModule;
-		ImGuiRenderingModule& _imguiModule = ModuleManager::getInstance().getModule<WindowModule>().GetGuiRenderingModule();
+		ImGuiRenderingModule& _imguiModule;
 
 		int currentPalette = 0;
 		glm::vec4 colorPalettes[3][3] = {

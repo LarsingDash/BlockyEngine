@@ -64,6 +64,7 @@ set(SDL_TTF_DIR "${DEPS_DIR}/SDL_ttf/x86_64-w64-mingw32")
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         glm
         SDL2::SDL2
+        SDL2::SDL2main
         sdl_gfx
         ${SDL_TTF_DIR}/lib/libSDL2_ttf.dll.a
 )

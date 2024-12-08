@@ -8,9 +8,13 @@
 #include <map>
 #include <unordered_map>
 
+#include "components/renderables/Renderable.hpp"
+#include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
+#include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
+#include "components/renderables/TextRenderable.hpp"
 #include <SDL_render.h>
 
 class RenderingModule {
@@ -32,6 +36,7 @@ class RenderingModule {
 		void _renderSprite(SpriteRenderable& renderable);
 		void _renderAnimatedSprite(AnimationRenderable& renderable);
 		void _renderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect);
+		void _renderText(TextRenderable& renderable);
 		SDL_Texture* _loadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
 

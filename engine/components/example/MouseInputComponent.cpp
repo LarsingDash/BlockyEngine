@@ -19,15 +19,18 @@ Component* MouseInputComponent::_clone(const GameObject& parent) {
 
 void MouseInputComponent::Start() {
 	_inputModule.AddMouseListener(MouseInput::BUTTON_LEFT, *this, [this](MouseButtonState state, int x, int y) {
-		HandleMouseInput(state, x, y, glm::vec4(255.f, 0.f, 0.f, 255.f));
+		HandleMouseInput(state, x, y, colorPalettes[currentPalette][0]);
 	});
 	_inputModule.AddMouseListener(MouseInput::BUTTON_RIGHT, *this, [this](MouseButtonState state, int x, int y) {
-		HandleMouseInput(state, x, y, glm::vec4(0.f, 0.f, 255.f, 255.f));
+		HandleMouseInput(state, x, y, colorPalettes[currentPalette][1]);
 	});
 	_inputModule.AddMouseListener(MouseInput::BUTTON_MIDDLE, *this, [this](MouseButtonState state, int x, int y) {
-		HandleMouseInput(state, x, y, glm::vec4(0.f, 255.f, 0.f, 255.f));
+		HandleMouseInput(state, x, y, colorPalettes[currentPalette][2]);
 	});
-}
+
+	_imguiModule.AddComponent("pallete", [this]() {
+		PaletteGUI();
+	});}
 
 void MouseInputComponent::Update(float delta) {
 }
@@ -36,6 +39,7 @@ void MouseInputComponent::End() {
 	_inputModule.RemoveMouseListener(MouseInput::BUTTON_LEFT, *this);
 	_inputModule.RemoveMouseListener(MouseInput::BUTTON_RIGHT, *this);
 	_inputModule.RemoveMouseListener(MouseInput::BUTTON_MIDDLE, *this);
+	_imguiModule.RemoveComponent("pallete");
 }
 
 void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color) {
@@ -48,4 +52,20 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, std::numeric_limits<int>::max(), true);
 	}
 	rectangle.transform->SetScale(20.f, 20.f);
+}
+
+void MouseInputComponent::PaletteGUI() {
+	ImGui::SetNextWindowSize(ImVec2(200, 100));
+	ImGui::Begin("Color Palette Selector");
+	if (ImGui::RadioButton("Palette 1", currentPalette == 0)) {
+		currentPalette = 0;
+	}
+	if (ImGui::RadioButton("Palette 2", currentPalette == 1)) {
+		currentPalette = 1;
+	}
+	if (ImGui::RadioButton("Palette 3", currentPalette == 2)) {
+		currentPalette = 2;
+	}
+
+	ImGui::End();
 }

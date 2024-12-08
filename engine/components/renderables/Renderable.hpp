@@ -12,7 +12,8 @@ enum RenderableType {
 	RECTANGLE,
 	ELLIPSE,
 	SPRITE,
-	ANIMATED
+	ANIMATED,
+	TEXT
 };
 
 class Renderable : public Component {

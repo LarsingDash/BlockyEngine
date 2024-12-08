@@ -3,6 +3,9 @@
 //
 
 #include "RenderingModule.hpp"
+#include "SDL_render.h"
+#include "SDL2_gfx/SDL2_gfxPrimitives.h"
+#include "SDL_ttf.h"
 
 #include <algorithm>
 
@@ -32,6 +35,9 @@ void RenderingModule::Render() {
 					break;
 				case ANIMATED:
 					_renderAnimatedSprite(reinterpret_cast<AnimationRenderable&>(renderable));
+					break;
+				case TEXT:
+					_renderText(reinterpret_cast<TextRenderable&>(renderable));
 					break;
 			}
 		}
@@ -214,6 +220,54 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 			_renderer, texture, sourceRect ? &sdlSourceRect : nullptr, &destRect,
 			transform.GetWorldRotation(), nullptr, SDL_RendererFlip::SDL_FLIP_NONE
 	);
+}
+void RenderingModule::_renderText(TextRenderable& renderable) {
+	const auto& color = renderable.GetColor();
+	SDL_Color sdlColor = {
+			static_cast<Uint8>(color.r),
+			static_cast<Uint8>(color.g),
+			static_cast<Uint8>(color.b),
+			static_cast<Uint8>(color.a)
+	};
+	SDL_Surface* textSurface = TTF_RenderText_Blended(renderable.GetFont(), renderable.GetText().c_str(), sdlColor);
+	if (!textSurface) {
+		std::string err("Failed to create text surface: ");
+		err += TTF_GetError();
+		BLOCKY_ENGINE_ERROR(err);
+		return;
+	}
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+	if (!texture) {
+		std::string err("Failed to create text texture: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err);
+		SDL_FreeSurface(textSurface);
+		return;
+	}
+
+	const auto& position = renderable.componentTransform->GetWorldPosition();
+	const auto& rotation = renderable.componentTransform->GetWorldRotation();
+
+	SDL_FRect destRect = {
+			static_cast<float>(position.x),
+			static_cast<float>(position.y),
+			static_cast<float>(textSurface->w),
+			static_cast<float>(textSurface->h)
+	};
+
+	SDL_RenderCopyExF(
+			_renderer,
+			texture,
+			nullptr,
+			&destRect,
+			rotation,
+			nullptr,
+			SDL_FLIP_NONE
+	);
+
+	SDL_DestroyTexture(texture);
+	SDL_FreeSurface(textSurface);
 }
 
 void RenderingModule::AddRenderable(Renderable& renderable) {

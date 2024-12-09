@@ -4,8 +4,8 @@
 
 #include "TextRenderable.hpp"
 
-TextRenderable::TextRenderable(GameObject& gameObject, const char* tag, std::string  text, const glm::ivec4& color, TTF_Font* font) :
-		Renderable(gameObject, tag, RenderableType::TEXT),
+TextRenderable::TextRenderable(GameObject* gameObject, const char* tag, std::string  text, const glm::ivec4& color, TTF_Font* font, int layer) :
+		Renderable(gameObject, tag, RenderableType::TEXT, layer),
 		_text(std::move(text)), _color(color), _font(font) {}
 
 TextRenderable::~TextRenderable() = default;

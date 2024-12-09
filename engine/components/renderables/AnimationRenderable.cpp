@@ -1,10 +1,16 @@
 #include "AnimationRenderable.hpp"
-#include "stb_image/stb_image.h"
 
-AnimationRenderable::AnimationRenderable(GameObject& gameObject, const char* tag,
-										 std::string filePath, std::string spriteTag, int frameWidth, int frameHeight)
-		: SpriteRenderable(gameObject, tag, std::move(filePath), std::move(spriteTag)) {
-	_renderableType = RenderableType::ANIMATED;
+#include <sstream>
+
+#include <stb_image/stb_image.h>
+
+#include "logging/BLogger.hpp"
+
+AnimationRenderable::AnimationRenderable(GameObject* gameObject, const char* tag,
+										 std::string filePath, std::string spriteTag,
+										 int frameWidth, int frameHeight, int layer)
+		: SpriteRenderable(gameObject, tag, std::move(filePath), std::move(spriteTag),
+						   RenderableType::ANIMATED, layer) {
 
 	_frameWidth = frameWidth;
 	_frameHeight = frameHeight;
@@ -15,6 +21,11 @@ AnimationRenderable::AnimationRenderable(GameObject& gameObject, const char* tag
 	_loadFrames();
 }
 
+Component* AnimationRenderable::_clone(const GameObject& parent) {
+	auto clone = new AnimationRenderable(*this);
+	return clone;
+}
+
 //Gets the image, checks pixels parameters and divides the spritesheet into _frames adding them to a vector
 void AnimationRenderable::_loadFrames() {
 	int channels;
@@ -22,7 +33,9 @@ void AnimationRenderable::_loadFrames() {
 	const std::string& filePath = GetFilePath();
 	unsigned char* imageData = stbi_load(filePath.c_str(), &_sheetWidth, &_sheetHeight, &channels, 0);
 	if (!imageData) {
-		std::cerr << "Failed to load texture sheet: " << filePath << std::endl;
+		std::string err("Failed to load texture sheet: ");
+		err += filePath;
+		BLOCKY_ENGINE_ERROR(err)
 		return;
 	}
 
@@ -45,9 +58,13 @@ void AnimationRenderable::_loadFrames() {
 	//Free image data
 	stbi_image_free(imageData);
 
-	std::cout << "Loaded " << _frames.size() << " _frames from texture sheet: " << filePath << std::endl;
+	std::stringstream msg{};
+	msg << "Loaded ";
+	msg << std::string();
+	msg << " _frames from texture sheet: ";
+	msg << filePath;
+	BLOCKY_ENGINE_DEBUG(msg.str())
 }
-
 
 //Returns the source rect (current frame)
 const glm::ivec4* AnimationRenderable::GetSourceRect() const {

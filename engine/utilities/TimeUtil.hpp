@@ -20,10 +20,13 @@ class TimeUtil {
 		TimeUtil& operator=(TimeUtil&& other) noexcept = delete;
 
 		[[nodiscard]] float GetElapsedTime() const;
+		[[nodiscard]] float GetScaledDeltaTime() const;
+		[[nodiscard]] float GetGameSpeed() const;
 		[[nodiscard]] int GetFPS() const;
 		[[nodiscard]] bool IsFpsCounterEnabled() const;
 		float CalculateDeltaTime();
 		void ToggleFpsCounter();
+		void SetGameSpeed(float speed);
 
 	private:
 		TimeUtil();
@@ -36,7 +39,9 @@ class TimeUtil {
 
 		TimePoint _startTime;
 		TimePoint _lastFrameTime;
-		float _lastDeltaTime;
+		float _rawDeltaTime;
+		float _scaledDeltaTime;
+		float _gameSpeed = 1.0f;
 		bool _showFps = false;
 };
 

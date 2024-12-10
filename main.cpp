@@ -3,6 +3,7 @@
 
 #include "BlockyEngine.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
+#include "components/renderables/TextRenderable.hpp"
 #include "components/example/SpawnerComp.hpp"
 #include "components/example/RotationComp.hpp"
 #include "components/example/MouseReparenting.hpp"
@@ -73,6 +74,10 @@ void buildInputReparentingScene(SceneManager& scenes) {
 			"spriteTag", 32, 32
 	);
 
+	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
+	auto& text = animatedObject.AddComponent<TextRenderable>("PlayerText", "Player", glm::vec4{255}, font, 1);
+	text.componentTransform->SetPosition(0.f, -0.5f);
+
 	//Animator
 	auto& animationController = animatedObject.AddComponent<AnimationController>("animControllerTag");
 	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
@@ -120,8 +125,8 @@ int main(int argc, char* argv[]) {
 	buildCameraScene(sceneManager);
 
 //	sceneManager.SwitchScene("Prefabs");
-//	sceneManager.SwitchScene("InputReparenting");
-	sceneManager.SwitchScene("Camera");
+	sceneManager.SwitchScene("InputReparenting");
+//	sceneManager.SwitchScene("Camera");
 
 	blockyEngine.Run();
 

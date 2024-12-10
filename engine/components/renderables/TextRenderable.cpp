@@ -25,3 +25,8 @@ const glm::ivec4& TextRenderable::GetColor() const {
 TTF_Font* TextRenderable::GetFont() const {
 	return _font;
 }
+
+Component* TextRenderable::_clone(const GameObject& parent) {
+	auto clone = new TextRenderable(*this);
+	return clone;
+}

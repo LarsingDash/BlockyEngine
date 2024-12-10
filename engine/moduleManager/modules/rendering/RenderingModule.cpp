@@ -245,7 +245,10 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 	const auto& position = renderable.componentTransform->GetWorldPosition();
 	const std::string& text = renderable.GetText();
 
-	_renderTextHelper(text, sdlColor, {position.x, position.y});
+	_renderTextHelper(
+			text, sdlColor, {position.x, position.y},
+			renderable.componentTransform->GetWorldRotation()
+	);
 }
 
 void RenderingModule::_renderFps() {
@@ -253,7 +256,7 @@ void RenderingModule::_renderFps() {
 
 	SDL_Color color;
 	if (fps >= 60) {
-		color = {0, 255, 0, 255}; 
+		color = {0, 255, 0, 255};
 	} else if (fps >= 30) {
 		color = {255, 255, 0, 255};
 	} else {
@@ -269,10 +272,14 @@ void RenderingModule::_renderFps() {
 	TTF_SizeText(_font, fpsText.c_str(), &textWidth, &textHeight);
 	SDL_FPoint position = {static_cast<float>(windowWidth - textWidth - 10), 10};
 
-	_renderTextHelper(fpsText, color, position);
+	_renderTextHelper(fpsText, color, position, 0, false);
 }
 
-void RenderingModule::_renderTextHelper(const std::string& text, const SDL_Color& color, const SDL_FPoint& position) {
+void RenderingModule::_renderTextHelper(const std::string& text,
+										const SDL_Color& color,
+										const SDL_FPoint& position,
+										float angle,
+										bool moveWithCamera) {
 	SDL_Surface* surface = TTF_RenderText_Blended(_font, text.c_str(), color);
 	if (!surface) {
 		std::string err("Failed to create text surface: ");
@@ -290,20 +297,34 @@ void RenderingModule::_renderTextHelper(const std::string& text, const SDL_Color
 		BLOCKY_ENGINE_ERROR(err)
 		return;
 	}
-	
+
 	int textWidth, textHeight;
 	SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
-	SDL_Rect dstRect = {
-			static_cast<int>(position.x - _camera->GetPosition().x),
-			static_cast<int>(position.y - _camera->GetPosition().y),
-			textWidth - static_cast<int>(_camera->GetScale().x),
-			textHeight - static_cast<int>(_camera->GetScale().y)
-	};
+	SDL_Rect dstRect;
+	if (moveWithCamera)
+		dstRect = {
+				static_cast<int>(position.x - _camera->GetPosition().x),
+				static_cast<int>(position.y - _camera->GetPosition().y),
+				textWidth - static_cast<int>(_camera->GetScale().x),
+				textHeight - static_cast<int>(_camera->GetScale().y)
+		};
+	else {
+		dstRect = {
+				static_cast<int>(position.x),
+				static_cast<int>(position.y),
+				textWidth,
+				textHeight
+		};
+	}
 
-	SDL_RenderCopy(_renderer, 
-				   texture, 
-				   nullptr,
-				   &dstRect);
+	SDL_RenderCopyEx(_renderer,
+					  texture,
+					  nullptr,
+					  &dstRect,
+					  angle,
+					  nullptr,
+					  SDL_RendererFlip::SDL_FLIP_NONE
+	);
 	SDL_DestroyTexture(texture);
 }
 

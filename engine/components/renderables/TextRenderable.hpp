@@ -19,6 +19,8 @@ class TextRenderable : public Renderable {
 		[[nodiscard]] const glm::ivec4& GetColor() const;
 		[[nodiscard]] TTF_Font* GetFont() const;
 
+		Component* _clone(const GameObject& parent) override;
+
 	private:
 		std::string _text;
 		glm::ivec4 _color;

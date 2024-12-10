@@ -2,15 +2,16 @@
 #include <SDL_events.h>
 #include <iostream>
 #include "BlockyEngine.hpp"
+#include "imgui_impl_sdl2.h"
 
 // Polls events for input and window states
 void InputModule::PollEvents() {
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
+		ImGui_ImplSDL2_ProcessEvent(&event);
 		switch (event.type) {
 			default: break;
-
 			case SDL_KEYUP:
 			case SDL_KEYDOWN: {
 				KeyState state = (event.type == SDL_KEYDOWN) ? KeyState::KEY_DOWN : KeyState::KEY_UP;
@@ -27,8 +28,10 @@ void InputModule::PollEvents() {
 					}
 				}
 			}
+				if (event.key.keysym.sym == SDLK_F1 && event.type == SDL_KEYDOWN) {
+					TimeUtil::GetInstance().ToggleFpsCounter();
+				}
 				break;
-
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP: {
 				MouseButtonState mouseState = (event.type == SDL_MOUSEBUTTONDOWN) ? MouseButtonState::BUTTON_DOWN : MouseButtonState::BUTTON_UP;
@@ -57,13 +60,13 @@ void InputModule::PollEvents() {
 
 // Adds key listener for a specific key
 void InputModule::AddKeyListener(KeyInput key, Component& owner, const std::function<void(KeyState)>& listener) {
-	std::cout << "Adding key listener for key: " << static_cast<int>(key) << std::endl;
+//	std::cout << "Adding key listener for key: " << static_cast<int>(key) << std::endl;
 	_keyListeners[key].emplace_back(&owner, listener);
 }
 
 // Removes key listener for a specific key
 void InputModule::RemoveKeyListener(KeyInput key, Component& owner) {
-	std::cout << "Removing key listener for key: " << static_cast<int>(key) << std::endl;
+//	std::cout << "Removing key listener for key: " << static_cast<int>(key) << std::endl;
 	
 	auto& listeners = _keyListeners[key];
 	auto it = std::find_if(listeners.begin(), listeners.end(),
@@ -77,13 +80,13 @@ void InputModule::RemoveKeyListener(KeyInput key, Component& owner) {
 
 // Adds mouse listener for a specific button
 void InputModule::AddMouseListener(MouseInput button, Component& owner, const std::function<void(MouseButtonState, int, int)>& listener) {
-	std::cout << "Adding mouse listener for button: " << static_cast<int>(button) << std::endl;
+//	std::cout << "Adding mouse listener for button: " << static_cast<int>(button) << std::endl;
 	_mouseListeners[button].emplace_back(&owner, listener);
 }
 
 // Removes mouse listener for a specific button
 void InputModule::RemoveMouseListener(MouseInput button, Component& owner) {
-	std::cout << "Removing mouse listener for button: " << static_cast<int>(button) << std::endl;
+//	std::cout << "Removing mouse listener for button: " << static_cast<int>(button) << std::endl;
 
 	auto& listeners = _mouseListeners[button];
 	auto it = std::find_if(listeners.begin(), listeners.end(),

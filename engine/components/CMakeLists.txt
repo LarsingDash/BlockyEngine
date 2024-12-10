@@ -4,6 +4,7 @@
 )
 
 add_subdirectory(audio)
-add_subdirectory(renderables)
+add_subdirectory(physics)
 add_subdirectory(animation)
 add_subdirectory(example)
+add_subdirectory(renderables)

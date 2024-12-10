@@ -27,12 +27,11 @@ class TimeUtil {
 		float CalculateDeltaTime();
 		void ToggleFpsCounter();
 		void SetGameSpeed(float speed);
+		void Reset();
 
 	private:
 		TimeUtil();
 		static TimeUtil* _instance;
-
-		void _reset();
 
 		using Clock = std::chrono::high_resolution_clock;
 		using TimePoint = std::chrono::time_point<Clock>;

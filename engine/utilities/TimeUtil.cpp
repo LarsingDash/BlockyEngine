@@ -19,7 +19,7 @@ TimeUtil::TimeUtil()
 		  _scaledDeltaTime{0.0f},
 		  _gameSpeed{1.0f} {}
 
-void TimeUtil::_reset() {
+void TimeUtil::Reset() {
 	_startTime = Clock::now();
 	_lastFrameTime = Clock::now();
 	_rawDeltaTime = 0.0f;

@@ -15,6 +15,7 @@
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 #include "components/renderables/TextRenderable.hpp"
+#include "utilities/TimeUtil.hpp"
 #include <SDL_render.h>
 
 class RenderingModule {
@@ -30,6 +31,7 @@ class RenderingModule {
 		SDL_Renderer* _renderer;
 		std::map<int, std::vector<std::reference_wrapper<Renderable>>> _renderables;
 		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> _textureCache;
+		TTF_Font* _font;
 
 		void _renderRectangle(RectangleRenderable& renderable);
 		void _renderEllipse(EllipseRenderable& renderable);
@@ -37,6 +39,8 @@ class RenderingModule {
 		void _renderAnimatedSprite(AnimationRenderable& renderable);
 		void _renderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect);
 		void _renderText(TextRenderable& renderable);
+		void _renderTextHelper(const std::string& text, const SDL_Color& color, const SDL_FPoint& position);
+		void _renderFps();
 		SDL_Texture* _loadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
 

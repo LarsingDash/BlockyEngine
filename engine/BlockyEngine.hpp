@@ -8,6 +8,7 @@
 #include <memory>
 #include "moduleManager/ModuleManager.hpp"
 #include "sceneManager/SceneManager.hpp"
+#include "utilities/TimeUtil.hpp"
 
 /// An instance of Blocky Engine, only one should ever need to be created
 class BlockyEngine {
@@ -33,8 +34,9 @@ class BlockyEngine {
 		static bool isRunning;
 
 	private:
-		std::unique_ptr<ModuleManager> moduleManager;
-		std::unique_ptr<SceneManager> sceneManager;
+		std::unique_ptr<ModuleManager> _moduleManager;
+		std::unique_ptr<SceneManager> _sceneManager;
+		std::unique_ptr<TimeUtil> _timeUtil;
 };
 
 #endif //BLOCKYENGINE_BLOCKYENGINE_HPP

@@ -28,8 +28,16 @@ if (${MINGW})
     message("SDL2 LIBRARY DIRS: ${SDL2_LIBRARIES}")
 endif ()
 
+set(BOX2D_INCLUDE_DIRS "${DEPS_DIR}/box2d/include")
+
+# Box2D Options
+set(BOX2D_BUILD_UNIT_TEST OFF CACHE BOOL INTERNAL "")
+set(BOX2D_BUILD_TESTBED OFF CACHE BOOL INTERNAL "")
+###
+
 add_subdirectory("${DEPS_DIR}/SDL2_gfx")
 add_subdirectory("${DEPS_DIR}/glm")
+add_subdirectory("${DEPS_DIR}/box2d")
 
 if (blocky_build_tests)
     message(STATUS "Building the blocky engine tests")
@@ -65,8 +73,10 @@ set(SDL_TTF_DIR "${DEPS_DIR}/SDL_ttf/x86_64-w64-mingw32")
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         glm
         SDL2::SDL2
+        SDL2::SDL2main
         sdl_gfx
         ${SDL_TTF_DIR}/lib/libSDL2_ttf.dll.a
+        box2d
 )
 
 # Set the -fPIC for creating it alongside Shared Objects
@@ -90,6 +100,7 @@ target_sources(${ENGINE_TARGET} PRIVATE ${IMGUI_SOURCES})
 target_include_directories(${ENGINE_TARGET} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${SDL2_INCLUDE_DIRS}
+        ${BOX2D_INCLUDE_DIRS}
         ${DEPS_DIR}
         ${IMGUI_PATH}
         ${IMGUI_PATH}/backends

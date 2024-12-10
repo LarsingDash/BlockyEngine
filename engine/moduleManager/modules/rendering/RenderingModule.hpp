@@ -5,8 +5,7 @@
 #ifndef BLOCKYENGINE_RENDERINGMODULE_HPP
 #define BLOCKYENGINE_RENDERINGMODULE_HPP
 
-#include <iostream>
-#include <vector>
+#include <map>
 #include <unordered_map>
 
 #include "components/renderables/Renderable.hpp"
@@ -17,6 +16,7 @@
 #include "components/renderables/AnimationRenderable.hpp"
 #include "components/renderables/TextRenderable.hpp"
 #include "utilities/TimeUtil.hpp"
+#include <SDL_render.h>
 
 class RenderingModule {
 	public:
@@ -29,7 +29,7 @@ class RenderingModule {
 
 	private:
 		SDL_Renderer* _renderer;
-		std::vector<std::reference_wrapper<Renderable>> _renderables;
+		std::map<int, std::vector<std::reference_wrapper<Renderable>>> _renderables;
 		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> _textureCache;
 		TTF_Font* _font;
 

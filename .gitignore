@@ -36,3 +36,4 @@
 .idea
 /cmake-build-*
 engine/dependencies/*
+/libs/box2d/build/_deps

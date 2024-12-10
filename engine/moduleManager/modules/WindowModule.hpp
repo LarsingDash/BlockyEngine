@@ -9,10 +9,6 @@
 #include <vector>
 
 #include "moduleManager/ModuleWrapper.hpp"
-#include "components/renderables/Renderable.hpp"
-#include "components/renderables/RectangleRenderable.hpp"
-#include "components/renderables/SpriteRenderable.hpp"
-#include "components/renderables/EllipseRenderable.hpp"
 #include "moduleManager/modules/rendering/RenderingModule.hpp"
 #include "moduleManager/modules/input/InputModule.hpp"
 #include "moduleManager/modules/rendering/ImGuiRenderingModule.hpp"

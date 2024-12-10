@@ -4,8 +4,22 @@
 
 #include "MouseInputComponent.hpp"
 
-MouseInputComponent::MouseInputComponent(GameObject& parent, const char* tag)
-		: Component(parent, tag) {}
+#include <imgui/imgui.h>
+#include <components/physics/collider/CircleCollider.hpp>
+#include <components/physics/rigidBody/BoxRigidBody.hpp>
+#include "gameObject/GameObject.hpp"
+#include "moduleManager/ModuleManager.hpp"
+#include "moduleManager/modules/WindowModule.hpp"
+
+MouseInputComponent::MouseInputComponent(GameObject* parent, const char* tag)
+	: Component(parent, tag),
+	  _inputModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule()),
+	  _imguiModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetGuiRenderingModule()) {}
+
+Component* MouseInputComponent::_clone(const GameObject& parent) {
+	auto clone = new MouseInputComponent(*this);
+	return clone;
+}
 
 void MouseInputComponent::Start() {
 	_inputModule.AddMouseListener(MouseInput::BUTTON_LEFT, *this, [this](MouseButtonState state, int x, int y) {
@@ -20,10 +34,10 @@ void MouseInputComponent::Start() {
 
 	_imguiModule.AddComponent("pallete", [this]() {
 		PaletteGUI();
-	});}
-
-void MouseInputComponent::Update(float delta) {
+	});
 }
+
+void MouseInputComponent::Update(float delta) {}
 
 void MouseInputComponent::End() {
 	_inputModule.RemoveMouseListener(MouseInput::BUTTON_LEFT, *this);
@@ -33,15 +47,21 @@ void MouseInputComponent::End() {
 }
 
 void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color) {
-	auto& rectangle = gameObject.AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
+	auto& rectangle = gameObject->AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
 	rectangle.transform->SetPosition(static_cast<float>(x), static_cast<float>(y));
 
+	TypeProperties physicsProperties(RIGIDBODY, false, {0, 0}, 36, 0, 0, true);
+
+	rectangle.transform->Scale(20.f, 20.f);
+
 	if (state == MouseButtonState::BUTTON_DOWN) {
-		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
-	} else {
-		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, true);
+		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, std::numeric_limits<int>::max(), true);
+		rectangle.AddComponent<BoxRigidBody>("BoxRigidBody", physicsProperties);
 	}
-	rectangle.transform->SetScale(20.f, 20.f);
+	else {
+		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, std::numeric_limits<int>::max(), true);
+		rectangle.AddComponent<CircleCollider>("CircleRigidBody");
+	}
 }
 
 void MouseInputComponent::PaletteGUI() {

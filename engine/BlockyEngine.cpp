@@ -7,7 +7,12 @@
 
 bool BlockyEngine::isRunning{false};
 
-BlockyEngine::BlockyEngine() : moduleManager{ModuleManager::getInstance()}, sceneManager{std::make_unique<SceneManager>()}, timeUtil(TimeUtil::CreateInstance()) {}
+BlockyEngine::BlockyEngine() :
+		_moduleManager(ModuleManager::CreateInstance()),
+		_sceneManager(SceneManager::CreateInstance()),
+		_timeUtil(TimeUtil::CreateInstance()) {}
+
+SceneManager& BlockyEngine::GetSceneManager() const { return *sceneManager; }
 
 void BlockyEngine::Run() {
 	BlockyEngine::isRunning = true;
@@ -15,11 +20,11 @@ void BlockyEngine::Run() {
 #pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
 	while (BlockyEngine::isRunning) {
 		// Calculate delta time.
-		float delta = timeUtil->CalculateDeltaTime();
+		float delta = _timeUtil->CalculateDeltaTime();
 
 		// Update cycle.
-		sceneManager->Update(delta);
-		moduleManager.Update(delta);
+		_sceneManager->Update(delta);
+		_moduleManager->Update(delta);
 	}
 #pragma clang diagnostic pop
 }

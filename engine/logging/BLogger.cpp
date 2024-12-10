@@ -7,28 +7,37 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <glm/vec2.hpp>
 
-BLogger::BLogger(const std::string &filename) {
-	_logFile.open(filename, std::ios::app); // Opens file in append mode
+BLogger::BLogger(const std::string& filename) {
+	_logFile.open(filename, std::ios::out);
 	if (!_logFile.is_open()) {
 		std::cerr << "Error opening log file." << std::endl;
-	} else {
-		Log(INFO, "Logging started.");
+	}
+	else {
+		BLOCKY_ENGINE_INFO("Logging started.")
 	}
 }
 
 BLogger::~BLogger() { _logFile.close(); }
 
-
-void BLogger::Log(const LogLevel level, const std::string &funcName, const std::string &message) {
+void BLogger::Log(const LogLevel level, const std::string& funcName, const std::string& message) {
 	auto logMessage = _makeTimeStamp();
 
 	logMessage << "   "
-			<< _levelToString(level) << "   "
-			<< _funcSignToString(funcName) << "   "
-			<< message << std::endl;
+		<< _levelToString(level) << "   "
+		<< _funcSignToString(funcName) << "   "
+		<< message << std::endl;
 
 	_writeLog(logMessage);
+}
+
+void BLogger::Log(LogLevel level, const std::string& funcName, const glm::vec2& message) {
+	Log(level, funcName, "(" + std::to_string(message.x) + ", " + std::to_string(message.y) + ")");
+}
+
+void BLogger::Log(LogLevel level, const std::string& funcName, const float& message) {
+	Log(level, funcName, "(" + std::to_string(message) + ")");
 }
 
 std::string BLogger::_levelToString(LogLevel level) {
@@ -64,7 +73,8 @@ std::string BLogger::_funcSignToString(std::string funcName) {
 				if (pos1 != std::string::npos) {
 					funcName = funcName.substr(0, pos1);
 				}
-			} else {
+			}
+			else {
 				// temp remove args
 				std::string tempFuncName;
 				pos2 = funcName.rfind('(');
@@ -93,7 +103,8 @@ std::string BLogger::_funcSignToString(std::string funcName) {
 
 				// after temp remove args remove class from funcName
 				pos1 = tempFuncName.rfind(' ');
-			} else {
+			}
+			else {
 				pos1 = funcName.rfind(' ');
 			}
 			if (pos1 != std::string::npos) {
@@ -119,22 +130,22 @@ std::stringstream BLogger::_makeTimeStamp() {
 	// Convert to time_t
 	time_t tt = std::chrono::system_clock::to_time_t(now);
 	// Get local time
-	std::tm *tm = std::localtime(&tt);
+	std::tm* tm = std::localtime(&tt);
 
 	std::stringstream ss;
 	ss << std::setfill('0') << std::setw(2) << tm->tm_hour << ":"
-			<< std::setw(2) << tm->tm_min << ":"
-			<< std::setw(2) << tm->tm_sec << "."
-			<< std::setw(3) << milliseconds;
+		<< std::setw(2) << tm->tm_min << ":"
+		<< std::setw(2) << tm->tm_sec << "."
+		<< std::setw(3) << milliseconds;
 	return ss;
 }
 
-void BLogger::_writeLog(const std::stringstream &logMessage) {
-	if (LOG_TO_CONSOLE) {
+void BLogger::_writeLog(const std::stringstream& logMessage) {
+	if constexpr (LOG_TO_CONSOLE) {
 		std::cout << logMessage.str();
 	}
 
-	if (LOG_TO_FILE) {
+	if constexpr (LOG_TO_FILE) {
 		// Output to log file
 		if (_logFile.is_open()) {
 			_logFile << logMessage.str();

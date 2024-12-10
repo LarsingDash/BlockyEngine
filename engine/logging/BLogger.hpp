@@ -6,7 +6,10 @@
 #define LOG_HPP
 
 #include <fstream>
+#include <sstream>
+#include <glm/vec2.hpp>
 
+// if logging is lagging the game don't set LOG_TO_CONSOLE 0, because it gives the biggest performers hit
 #define LOG_TO_CONSOLE 1
 #define LOG_TO_FILE 1
 
@@ -24,6 +27,8 @@ constexpr bool REMOVE_RETURN_TYPE = true;
 #define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, msg);
 #define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, msg);
 
+#define BLOCKY_ENGINE_DEBUG_STREAM(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, (std::stringstream() << msg).str());
+
 enum LogLevel {
 	INFO,
 	DEBUG,
@@ -32,23 +37,25 @@ enum LogLevel {
 };
 
 class BLogger {
-	public:
-		explicit BLogger(const std::string& filename);
+public:
+	explicit BLogger(const std::string& filename);
 
-		~BLogger();
+	~BLogger();
 
-		void Log(LogLevel level, const std::string& funcName = "", const std::string& message = "");
+	void Log(LogLevel level, const std::string& funcName = "", const std::string& message = "");
+	void Log(LogLevel level, const std::string& funcName, const glm::vec2& message);
+	void Log(LogLevel level, const std::string& funcName, const float& message);
 
-	private:
-		std::ofstream _logFile; // File stream for the log file
+private:
+	std::ofstream _logFile; // File stream for the log file
 
-		static std::string _levelToString(LogLevel level);
+	static std::string _levelToString(LogLevel level);
 
-		static std::string _funcSignToString(std::string funcName);
+	static std::string _funcSignToString(std::string funcName);
 
-		static std::stringstream _makeTimeStamp();
+	static std::stringstream _makeTimeStamp();
 
-		void _writeLog(const std::stringstream& logMessage);
+	void _writeLog(const std::stringstream& logMessage);
 };
 
 // Definition of global variable 'BLogger bLogger' in a header file should have an 'inline' specifier.
@@ -57,6 +64,6 @@ class BLogger {
 // https://www.reddit.com/r/cpp_questions/comments/1ewgc22/how_do_inline_static_variables_work/
 // This bLogger object is created so that the BLOCKY_ENGINE_ macros can be called without first
 //  calling the constructor or having multiple BLogger objects.
-inline static BLogger bLogger("logfile.txt");
+inline BLogger bLogger("logfile.txt");
 
 #endif //LOG_HPP

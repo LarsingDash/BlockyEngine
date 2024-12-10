@@ -12,7 +12,7 @@ BlockyEngine::BlockyEngine() :
 		_sceneManager(SceneManager::CreateInstance()),
 		_timeUtil(TimeUtil::CreateInstance()) {}
 
-SceneManager& BlockyEngine::GetSceneManager() const { return *sceneManager; }
+SceneManager& BlockyEngine::GetSceneManager() const { return *_sceneManager; }
 
 void BlockyEngine::Run() {
 	BlockyEngine::isRunning = true;

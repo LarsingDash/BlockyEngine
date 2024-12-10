@@ -20,23 +20,27 @@ class TimeUtil {
 		TimeUtil& operator=(TimeUtil&& other) noexcept = delete;
 
 		[[nodiscard]] float GetElapsedTime() const;
+		[[nodiscard]] float GetScaledDeltaTime() const;
+		[[nodiscard]] float GetGameSpeed() const;
 		[[nodiscard]] int GetFPS() const;
 		[[nodiscard]] bool IsFpsCounterEnabled() const;
 		float CalculateDeltaTime();
 		void ToggleFpsCounter();
+		void SetGameSpeed(float speed);
+		void Reset();
 
 	private:
 		TimeUtil();
 		static TimeUtil* _instance;
-
-		void _reset();
 
 		using Clock = std::chrono::high_resolution_clock;
 		using TimePoint = std::chrono::time_point<Clock>;
 
 		TimePoint _startTime;
 		TimePoint _lastFrameTime;
-		float _lastDeltaTime;
+		float _rawDeltaTime;
+		float _scaledDeltaTime;
+		float _gameSpeed = 1.0f;
 		bool _showFps = false;
 };
 

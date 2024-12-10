@@ -15,19 +15,28 @@ TimeUtil* TimeUtil::CreateInstance() {
 TimeUtil::TimeUtil()
 		: _startTime{Clock::now()},
 		  _lastFrameTime{Clock::now()},
-		  _lastDeltaTime{0.0f} {}
+		  _rawDeltaTime{0.0f},
+		  _scaledDeltaTime{0.0f},
+		  _gameSpeed{1.0f} {}
 
-void TimeUtil::_reset() {
+void TimeUtil::Reset() {
 	_startTime = Clock::now();
 	_lastFrameTime = Clock::now();
-	_lastDeltaTime = 0.0f;
+	_rawDeltaTime = 0.0f;
+	_scaledDeltaTime = 0.0f;
 }
 
 float TimeUtil::CalculateDeltaTime() {
 	auto now = Clock::now();
-	_lastDeltaTime = std::chrono::duration<float>(now - _lastFrameTime).count();
+	_rawDeltaTime = std::chrono::duration<float>(now - _lastFrameTime).count();
 	_lastFrameTime = now;
-	return _lastDeltaTime;
+
+	_scaledDeltaTime = _rawDeltaTime * _gameSpeed;
+	return _scaledDeltaTime;
+}
+
+float TimeUtil::GetScaledDeltaTime() const {
+	return _scaledDeltaTime;
 }
 
 float TimeUtil::GetElapsedTime() const {
@@ -36,7 +45,7 @@ float TimeUtil::GetElapsedTime() const {
 }
 
 int TimeUtil::GetFPS() const {
-	return (_lastDeltaTime > 0.0f) ? static_cast<int>(1.0f / _lastDeltaTime) : 0;
+	return (_rawDeltaTime > 0.0f) ? static_cast<int>(1.0f / _rawDeltaTime) : 0;
 }
 
 void TimeUtil::ToggleFpsCounter() {
@@ -47,3 +56,17 @@ void TimeUtil::ToggleFpsCounter() {
 bool TimeUtil::IsFpsCounterEnabled() const {
 	return _showFps;
 }
+
+void TimeUtil::SetGameSpeed(float speed) {
+	if (speed > 0.0f) {
+		_gameSpeed = speed;
+		std::cout << "Game speed set to " << _gameSpeed << "x" << std::endl;
+	} else {
+		std::cerr << "Invalid game speed. Speed must be greater than 0." << std::endl;
+	}
+}
+
+float TimeUtil::GetGameSpeed() const {
+	return _gameSpeed;
+}
+

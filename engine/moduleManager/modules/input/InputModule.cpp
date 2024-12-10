@@ -31,6 +31,15 @@ void InputModule::PollEvents() {
 				if (event.key.keysym.sym == SDLK_F1 && event.type == SDL_KEYDOWN) {
 					TimeUtil::GetInstance().ToggleFpsCounter();
 				}
+				if (event.key.keysym.sym == SDLK_F2 && event.type == SDL_KEYDOWN) {
+					TimeUtil::GetInstance().SetGameSpeed(0.5);
+				}
+				if (event.key.keysym.sym == SDLK_F3 && event.type == SDL_KEYDOWN) {
+					TimeUtil::GetInstance().SetGameSpeed(1);
+				}
+				if (event.key.keysym.sym == SDLK_F4 && event.type == SDL_KEYDOWN) {
+					TimeUtil::GetInstance().SetGameSpeed(2);
+				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP: {

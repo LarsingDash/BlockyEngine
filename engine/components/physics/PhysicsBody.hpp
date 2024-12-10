@@ -33,20 +33,24 @@ struct TypeProperties {
 
 class PhysicsBody : public Component {
 public:
-	PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody,
+	PhysicsBody(GameObject* gameObject, const char* tag, std::shared_ptr<Shape> physicsBody,
 	            const TypeProperties& typeProperties);
 	~PhysicsBody() override = default;
 
+	PhysicsBody(const PhysicsBody& other) = default;
+
 	void Start() override;
 	void Update(float delta) override;
-	void End() override;;
+	void End() override;
 
-	[[nodiscard]] virtual std::unique_ptr<Shape>* GetShapeReference();
+	[[nodiscard]] virtual std::shared_ptr<Shape>* GetShapeReference();
 	[[nodiscard]] virtual PhysicsShape GetShape();
 	[[nodiscard]] virtual TypeProperties GetTypeProperties() const;
 
 private:
-	std::unique_ptr<Shape> _physicsShape;
+	Component* _clone(const GameObject& parent) override;
+
+	std::shared_ptr<Shape> _physicsShape;
 	TypeProperties _typeProperties;
 };
 #endif //PHYSICSBODY_HPP

@@ -6,8 +6,8 @@
 
 #include <utility>
 
-CollisionHandler::CollisionHandler(GameObject& gameObject, const char* tag,
+CollisionHandler::CollisionHandler(GameObject* gameObject, const char* tag,
                                    std::function<void(GameObject*, GameObject*)> customCollisionHandler) :
-	Component(gameObject, tag), _customCollisionHandler(std::move(customCollisionHandler)) {}
+	Component(gameObject, tag, false), _customCollisionHandler(std::move(customCollisionHandler)) {}
 
 void CollisionHandler::HandleCollision(GameObject* obj1, GameObject* obj2) { _customCollisionHandler(obj1, obj2); }

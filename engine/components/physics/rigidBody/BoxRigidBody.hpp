@@ -9,15 +9,15 @@
 
 class BoxRigidBody : public PhysicsBody {
 public:
-	BoxRigidBody(GameObject& gameObject, const char* tag, bool isStatic, glm::vec2 velocity,
+	BoxRigidBody(GameObject* gameObject, const char* tag, bool isStatic, glm::vec2 velocity,
 	             float rotationVelocity, float angularResistance,
 	             float linearResistance, bool gravityEnabled);
-	BoxRigidBody(GameObject& gameObject, const char* tag, const TypeProperties& properties);
+	BoxRigidBody(GameObject* gameObject, const char* tag, const TypeProperties& properties);
 
-	BoxRigidBody(GameObject& gameObject, const char* tag, bool isStatic, glm::vec2 velocity,
+	BoxRigidBody(GameObject* gameObject, const char* tag, bool isStatic, glm::vec2 velocity,
 	             float rotationVelocity, float angularResistance,
 	             float linearResistance, bool gravityEnabled, float height, float width);
-	BoxRigidBody(GameObject& gameObject, const char* tag, const TypeProperties& properties, float height, float width);
+	BoxRigidBody(GameObject* gameObject, const char* tag, const TypeProperties& properties, float height, float width);
 };
 
 #endif //BOXRIGIDBODY_HPP

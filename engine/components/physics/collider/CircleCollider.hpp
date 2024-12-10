@@ -8,7 +8,7 @@
 
 class CircleCollider : public PhysicsBody {
 public:
-	CircleCollider(GameObject& gameObject, const char* tag);
-	CircleCollider(GameObject& gameObject, const char* tag, float radius);
+	CircleCollider(GameObject* gameObject, const char* tag);
+	CircleCollider(GameObject* gameObject, const char* tag, float radius);
 };
 #endif //CIRCLECOLLIDER_HPP

@@ -10,7 +10,7 @@
 
 class CollisionHandler : public Component {
 public:
-	CollisionHandler(GameObject& gameObject, const char* tag,
+	CollisionHandler(GameObject* gameObject, const char* tag,
 	                 std::function<void(GameObject*, GameObject*)> customCollisionHandler);
 	~CollisionHandler() override = default;
 

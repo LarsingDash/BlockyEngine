@@ -7,6 +7,7 @@
 #include <components/renderables/EllipseRenderable.hpp>
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
+#include <moduleManager/modules/WindowModule.hpp>
 
 PhysicsModule::PhysicsModule() {
 	b2Vec2 gravity(0.f, 9.8f);
@@ -22,7 +23,7 @@ void PhysicsModule::Update(float delta) {
 	WritingExternalInputToBox2DWorld();
 
 	constexpr int32 positionIterations = 2 * 100;
-	constexpr int32 velocityIterations = 6 * 100;
+	constexpr int32 velocityIterations = 6; // high velocityIterations > 50 result in bigger performers hit.
 
 	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
 
@@ -79,12 +80,12 @@ void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
 	auto body = std::make_unique<Body>();
 	body->b2body = CreateBody(*_box2dWorldObject, physicsBody);
 
-	_gameObjectToBodyMap[&physicsBody.gameObject] = body.get();
+	_gameObjectToBodyMap[physicsBody.gameObject] = body.get();
 	_bodies.emplace_back(std::move(body));
 }
 
 void PhysicsModule::RemoveCollider(const PhysicsBody& physicsBody) {
-	auto it = _gameObjectToBodyMap.find(&physicsBody.gameObject);
+	auto it = _gameObjectToBodyMap.find(physicsBody.gameObject);
 	if (it != _gameObjectToBodyMap.end()) {
 		_box2dWorldObject->DestroyBody(it->second->b2body);
 		_gameObjectToBodyMap.erase(it);
@@ -157,7 +158,7 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
 	// position and angel is not set when creating body, because physicsBody.gameObject position & angle is still default at this moment
 	b2Body* body;
 
-	auto gameObject = _gameObjectToBodyMap.find(&physicsBody.gameObject);
+	auto gameObject = _gameObjectToBodyMap.find(physicsBody.gameObject);
 
 	// to have multiple PhysicsBodies on one game object use the same box2d body for the same game object.
 	if (gameObject != _gameObjectToBodyMap.end()) {

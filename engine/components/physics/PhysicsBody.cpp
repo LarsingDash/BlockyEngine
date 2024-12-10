@@ -7,24 +7,30 @@
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 #include <moduleManager/ModuleManager.hpp>
+#include <utility>
 #include "moduleManager/modules/physics/PhysicsModule.hpp"
 
-PhysicsBody::PhysicsBody(GameObject& gameObject, const char* tag, std::unique_ptr<Shape> physicsBody,
-                         const TypeProperties& typeProperties) : Component(gameObject, tag),
-                                                                 _physicsShape(std::move(physicsBody)),
+PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_ptr<Shape> physicsBody,
+                         const TypeProperties& typeProperties) : Component(gameObject, tag, true),
+                                                                 _physicsShape((std::move(physicsBody))),
                                                                  _typeProperties(
                                                                      typeProperties) {}
 
 void PhysicsBody::Start() {
-    ModuleManager::getInstance().getModule<PhysicsModule>().AddCollider(*this);
+    ModuleManager::GetInstance().GetModule<PhysicsModule>().AddCollider(*this);
 }
 
 void PhysicsBody::Update(float delta) {};
 
 void PhysicsBody::End() {
-    ModuleManager::getInstance().getModule<PhysicsModule>().RemoveCollider(*this);
+    ModuleManager::GetInstance().GetModule<PhysicsModule>().RemoveCollider(*this);
 };
 
-std::unique_ptr<Shape>* PhysicsBody::GetShapeReference() { return &_physicsShape; }
+std::shared_ptr<Shape>* PhysicsBody::GetShapeReference() { return &_physicsShape; }
 PhysicsShape PhysicsBody::GetShape() { return _physicsShape->GetShape(); }
 TypeProperties PhysicsBody::GetTypeProperties() const { return _typeProperties; }
+
+Component* PhysicsBody::_clone(const GameObject& parent) {
+    auto clone = new PhysicsBody(*this);
+    return clone;
+}

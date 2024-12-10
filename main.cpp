@@ -1,4 +1,5 @@
 #include <memory>
+#include <components/physics/rigidBody/BoxRigidBody.hpp>
 
 #include "BlockyEngine.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
@@ -49,6 +50,8 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	parentA.transform->SetPosition(200, 300);
 	parentA.transform->SetScale(150, 300);
 	parentA.transform->SetRotation(20);
+	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
+	parentA.AddComponent<BoxRigidBody>("ParentARB", physicsProperties);
 
 	//ParentB
 	auto& parentB = root->AddChild("ParentB");
@@ -56,12 +59,13 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	parentB.transform->SetPosition(525, 325);
 	parentB.transform->SetScale(350, 200);
 	parentB.transform->SetRotation(-125);
+	parentB.AddComponent<BoxRigidBody>("ParentBRB", physicsProperties);
 
 	//Animated Object
 	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	animatedObject.AddComponent<AnimationRenderable>(
-			"animTag", "../assets/character_spritesheet.png",
-			"spriteTag", 32, 32
+		"animTag", "../assets/character_spritesheet.png",
+		"spriteTag", 32, 32
 	);
 
 	//Animator
@@ -90,7 +94,7 @@ int main(int argc, char* argv[]) {
 	buildPrefabScene(sceneManager);
 	buildInputReparentingScene(sceneManager);
 
-//	sceneManager.SwitchScene("Prefabs");
+	//	sceneManager.SwitchScene("Prefabs");
 	sceneManager.SwitchScene("InputReparenting");
 
 	blockyEngine.Run();

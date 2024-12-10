@@ -9,7 +9,7 @@
 
 class Circle : public Shape {
 public:
-    Circle(float radius);
+    explicit Circle(float radius);
     ~Circle() override = default;
 
     PhysicsShape GetShape() override;

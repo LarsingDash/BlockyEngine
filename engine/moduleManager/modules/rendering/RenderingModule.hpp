@@ -40,7 +40,7 @@ class RenderingModule {
 		void _renderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect);
 		void _renderText(TextRenderable& renderable);
 		void _renderTextHelper(const std::string& text, const SDL_Color& color, const SDL_FPoint& position);
-		void _renderFps();
+		void _renderGameInfo();
 		SDL_Texture* _loadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
 

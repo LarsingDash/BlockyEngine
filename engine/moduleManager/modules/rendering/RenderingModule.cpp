@@ -3,6 +3,8 @@
 //
 
 #include <algorithm>
+#include <iomanip>
+#include <sstream>
 #include "RenderingModule.hpp"
 #include "SDL_render.h"
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
@@ -43,7 +45,7 @@ void RenderingModule::Render() {
 		}
 	}
 	if (TimeUtil::GetInstance().IsFpsCounterEnabled()) {
-		_renderFps();
+		_renderGameInfo();
 	}
 }
 
@@ -232,12 +234,13 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 	_renderTextHelper(text, sdlColor, {position.x, position.y});
 }
 
-void RenderingModule::_renderFps() {
+void RenderingModule::_renderGameInfo() {
+	// Render FPS
 	int fps = TimeUtil::GetInstance().GetFPS();
 
 	SDL_Color color;
 	if (fps >= 60) {
-		color = {0, 255, 0, 255}; 
+		color = {0, 255, 0, 255};
 	} else if (fps >= 30) {
 		color = {255, 255, 0, 255};
 	} else {
@@ -251,9 +254,20 @@ void RenderingModule::_renderFps() {
 
 	int textWidth, textHeight;
 	TTF_SizeText(_font, fpsText.c_str(), &textWidth, &textHeight);
-	SDL_FPoint position = {static_cast<float>(windowWidth - textWidth - 10), 10};
+	SDL_FPoint fpsPosition = {static_cast<float>(windowWidth - textWidth - 10), 10};
 
-	_renderTextHelper(fpsText, color, position);
+	_renderTextHelper(fpsText, color, fpsPosition);
+
+	float gameSpeed = TimeUtil::GetInstance().GetGameSpeed();
+
+	std::ostringstream stream;
+	stream << std::fixed << std::setprecision(3) << gameSpeed;
+	std::string gameSpeedText = "Speed: " + stream.str() + "x";
+
+	TTF_SizeText(_font, gameSpeedText.c_str(), &textWidth, &textHeight);
+	SDL_FPoint speedPosition = {static_cast<float>(windowWidth - textWidth - 10), static_cast<float>(10 + textHeight + 5)};
+
+	_renderTextHelper(gameSpeedText, {255, 255, 255, 255}, speedPosition);
 }
 void RenderingModule::_renderTextHelper(const std::string& text, const SDL_Color& color, const SDL_FPoint& position) {
 	SDL_Surface* surface = TTF_RenderText_Blended(_font, text.c_str(), color);

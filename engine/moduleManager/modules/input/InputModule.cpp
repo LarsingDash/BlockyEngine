@@ -28,17 +28,17 @@ void InputModule::PollEvents() {
 					}
 				}
 			}
-				if (event.key.keysym.sym == SDLK_F1 && event.type == SDL_KEYDOWN) {
+				if (event.key.keysym.sym == SDLK_END && event.type == SDL_KEYDOWN) {
 					TimeUtil::GetInstance().ToggleFpsCounter();
 				}
-				if (event.key.keysym.sym == SDLK_F2 && event.type == SDL_KEYDOWN) {
-					TimeUtil::GetInstance().SetGameSpeed(0.5);
+				if (event.key.keysym.sym == SDLK_PAGEUP && event.type == SDL_KEYDOWN) {
+					TimeUtil::GetInstance().IncreaseGameSpeed();
 				}
-				if (event.key.keysym.sym == SDLK_F3 && event.type == SDL_KEYDOWN) {
-					TimeUtil::GetInstance().SetGameSpeed(1);
+				if (event.key.keysym.sym == SDLK_HOME && event.type == SDL_KEYDOWN) {
+					TimeUtil::GetInstance().ResetGameSpeed();
 				}
-				if (event.key.keysym.sym == SDLK_F4 && event.type == SDL_KEYDOWN) {
-					TimeUtil::GetInstance().SetGameSpeed(2);
+				if (event.key.keysym.sym == SDLK_PAGEDOWN && event.type == SDL_KEYDOWN) {
+					TimeUtil::GetInstance().DecreaseGameSpeed();
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:

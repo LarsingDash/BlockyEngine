@@ -70,3 +70,26 @@ float TimeUtil::GetGameSpeed() const {
 	return _gameSpeed;
 }
 
+void TimeUtil::IncreaseGameSpeed() {
+	if (BASE_GAME_SPEED_INDEX < static_cast<int>(GAME_SPEEDS.size()) - 1) {
+		BASE_GAME_SPEED_INDEX++;
+		_gameSpeed = GAME_SPEEDS[BASE_GAME_SPEED_INDEX];
+		std::cout << "Game speed increased to: " << _gameSpeed << "x" << std::endl;
+	}
+}
+
+void TimeUtil::DecreaseGameSpeed() {
+	if (BASE_GAME_SPEED_INDEX > 0) {
+		BASE_GAME_SPEED_INDEX--;
+		_gameSpeed = GAME_SPEEDS[BASE_GAME_SPEED_INDEX];
+		std::cout << "Game speed decreased to: " << _gameSpeed << "x" << std::endl;
+	}
+}
+
+void TimeUtil::ResetGameSpeed() {
+	BASE_GAME_SPEED_INDEX = 3;
+	_gameSpeed = GAME_SPEEDS[BASE_GAME_SPEED_INDEX];
+	std::cout << "Game speed reset to default: " << _gameSpeed << "x" << std::endl;
+}
+
+

@@ -275,7 +275,6 @@ void RenderingModule::_renderTextHelper(const std::string& text, const SDL_Color
 		std::cerr << "Failed to create text surface: " << TTF_GetError() << std::endl;
 		return;
 	}
-
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
 	SDL_FreeSurface(surface);
 

@@ -28,22 +28,29 @@ void InputModule::PollEvents() {
 					}
 				}
 			}
-				if (event.key.keysym.sym == SDLK_END && event.type == SDL_KEYDOWN) {
-					TimeUtil::GetInstance().ToggleFpsCounter();
-				}
-				if (event.key.keysym.sym == SDLK_PAGEUP && event.type == SDL_KEYDOWN) {
-					TimeUtil::GetInstance().IncreaseGameSpeed();
-				}
-				if (event.key.keysym.sym == SDLK_HOME && event.type == SDL_KEYDOWN) {
-					TimeUtil::GetInstance().ResetGameSpeed();
-				}
-				if (event.key.keysym.sym == SDLK_PAGEDOWN && event.type == SDL_KEYDOWN) {
-					TimeUtil::GetInstance().DecreaseGameSpeed();
+				if (event.type == SDL_KEYDOWN) {
+					switch (event.key.keysym.sym) {
+						case SDLK_END:
+							TimeUtil::GetInstance().ToggleFpsCounter();
+							break;
+						case SDLK_PAGEUP:
+							TimeUtil::GetInstance().IncreaseGameSpeed();
+							break;
+						case SDLK_HOME:
+							TimeUtil::GetInstance().ResetGameSpeed();
+							break;
+						case SDLK_PAGEDOWN:
+							TimeUtil::GetInstance().DecreaseGameSpeed();
+							break;
+						default:
+							break;
+					}
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP: {
-				MouseButtonState mouseState = (event.type == SDL_MOUSEBUTTONDOWN) ? MouseButtonState::BUTTON_DOWN : MouseButtonState::BUTTON_UP;
+				MouseButtonState mouseState = (event.type == SDL_MOUSEBUTTONDOWN) ? MouseButtonState::BUTTON_DOWN
+																				  : MouseButtonState::BUTTON_UP;
 				auto button = SDLMouseButtonToCustomMouseButton(event.button.button);
 				int x = event.button.x;
 				int y = event.button.y;
@@ -62,7 +69,8 @@ void InputModule::PollEvents() {
 			}
 				break;
 
-			case SDL_QUIT: BlockyEngine::isRunning = false; break;
+			case SDL_QUIT: BlockyEngine::isRunning = false;
+				break;
 		}
 	}
 }
@@ -76,7 +84,7 @@ void InputModule::AddKeyListener(KeyInput key, Component& owner, const std::func
 // Removes key listener for a specific key
 void InputModule::RemoveKeyListener(KeyInput key, Component& owner) {
 	std::cout << "Removing key listener for key: " << static_cast<int>(key) << std::endl;
-	
+
 	auto& listeners = _keyListeners[key];
 	auto it = std::find_if(listeners.begin(), listeners.end(),
 						   [&owner](const std::pair<Component*, std::function<void(KeyState)>>& listener) {
@@ -88,7 +96,9 @@ void InputModule::RemoveKeyListener(KeyInput key, Component& owner) {
 }
 
 // Adds mouse listener for a specific button
-void InputModule::AddMouseListener(MouseInput button, Component& owner, const std::function<void(MouseButtonState, int, int)>& listener) {
+void InputModule::AddMouseListener(MouseInput button,
+								   Component& owner,
+								   const std::function<void(MouseButtonState, int, int)>& listener) {
 	std::cout << "Adding mouse listener for button: " << static_cast<int>(button) << std::endl;
 	_mouseListeners[button].emplace_back(&owner, listener);
 }
@@ -99,7 +109,8 @@ void InputModule::RemoveMouseListener(MouseInput button, Component& owner) {
 
 	auto& listeners = _mouseListeners[button];
 	auto it = std::find_if(listeners.begin(), listeners.end(),
-						   [&owner](const std::pair<Component*, std::function<void(MouseButtonState, int, int)>>& listener) {
+						   [&owner](const std::pair<Component*,
+													std::function<void(MouseButtonState, int, int)>>& listener) {
 							   return listener.first == &owner;
 						   });
 	if (it != listeners.end()) {

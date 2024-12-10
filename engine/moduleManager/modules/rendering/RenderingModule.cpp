@@ -42,6 +42,8 @@ void RenderingModule::Render() {
 				break;
 		}
 	}
+
+	std::cout << _renderables.size() << std::endl;
 	if (TimeUtil::GetInstance().IsFpsCounterEnabled()) {
 		_renderFps();
 	}

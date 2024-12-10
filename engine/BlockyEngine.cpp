@@ -4,7 +4,6 @@
 
 #include "BlockyEngine.hpp"
 #include "utilities/TimeUtil.hpp"
-#include <iostream>
 
 bool BlockyEngine::isRunning{false};
 
@@ -12,6 +11,8 @@ BlockyEngine::BlockyEngine() : moduleManager{ModuleManager::getInstance()}, scen
 
 void BlockyEngine::Run() {
 	BlockyEngine::isRunning = true;
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
 	while (BlockyEngine::isRunning) {
 		// Calculate delta time.
 		float delta = timeUtil->CalculateDeltaTime();
@@ -20,4 +21,5 @@ void BlockyEngine::Run() {
 		sceneManager->Update(delta);
 		moduleManager.Update(delta);
 	}
+#pragma clang diagnostic pop
 }

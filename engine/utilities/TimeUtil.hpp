@@ -19,13 +19,12 @@ class TimeUtil {
 		TimeUtil(TimeUtil&& other) noexcept = delete;
 		TimeUtil& operator=(TimeUtil&& other) noexcept = delete;
 
-
-		float GetElapsedTime() const;
-		int GetFPS() const;
-		void ToggleFpsCounter();
-		bool IsFpsCounterEnabled() const;
-
+		[[nodiscard]] float GetElapsedTime() const;
+		[[nodiscard]] int GetFPS() const;
+		[[nodiscard]] bool IsFpsCounterEnabled() const;
 		float CalculateDeltaTime();
+		void ToggleFpsCounter();
+
 	private:
 		TimeUtil();
 		static TimeUtil* _instance;

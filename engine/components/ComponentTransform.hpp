@@ -11,10 +11,10 @@ class Component;
 
 class ComponentTransform : public Transform {
 	public:
-		explicit ComponentTransform(GameObject& gameObject, Component& component);
+		explicit ComponentTransform(GameObject& gameObject, Component* component);
 		void RecalculateWorldMatrix() override;
 		
-		Component& component;
+		Component* component;
 };
 
 #endif //BLOCKYENGINE_COMPONENTTRANSFORM_HPP

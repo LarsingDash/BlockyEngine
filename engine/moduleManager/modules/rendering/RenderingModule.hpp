@@ -5,8 +5,7 @@
 #ifndef BLOCKYENGINE_RENDERINGMODULE_HPP
 #define BLOCKYENGINE_RENDERINGMODULE_HPP
 
-#include <iostream>
-#include <vector>
+#include <map>
 #include <unordered_map>
 
 #include "components/renderables/Renderable.hpp"
@@ -14,10 +13,9 @@
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
-#include "SDL_render.h"
-#include "SDL2_gfx/SDL2_gfxPrimitives.h"
-#include "SDL2_gfx/SDL2_rotozoom.h"
 #include "components/renderables/AnimationRenderable.hpp"
+#include "components/renderables/TextRenderable.hpp"
+#include <SDL_render.h>
 
 class RenderingModule {
 	public:
@@ -30,7 +28,7 @@ class RenderingModule {
 
 	private:
 		SDL_Renderer* _renderer;
-		std::vector<std::reference_wrapper<Renderable>> renderables;
+		std::map<int, std::vector<std::reference_wrapper<Renderable>>> _renderables;
 		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> _textureCache;
 
 		void _renderRectangle(RectangleRenderable& renderable);
@@ -38,6 +36,7 @@ class RenderingModule {
 		void _renderSprite(SpriteRenderable& renderable);
 		void _renderAnimatedSprite(AnimationRenderable& renderable);
 		void _renderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect);
+		void _renderText(TextRenderable& renderable);
 		SDL_Texture* _loadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
 

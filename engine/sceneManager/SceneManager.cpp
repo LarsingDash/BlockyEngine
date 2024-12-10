@@ -4,76 +4,72 @@
 
 #include "SceneManager.hpp"
 
-#include <components/physics/collider/BoxCollider.hpp>
-#include <components/physics/collider/CircleCollider.hpp>
-#include <components/physics/collision/CollisionHandler.hpp>
-#include <components/physics/rigidBody/BoxRigidBody.hpp>
-#include <components/physics/rigidBody/CircleRigidBody.hpp>
+#include "logging/BLogger.hpp"
 
-#include "components/animation/AnimationController.hpp"
-#include "components/renderables/AnimationRenderable.hpp"
-#include "moduleManager/ModuleManager.hpp"
-#include "components/example/MouseInputComponent.hpp"
-#include "components/example/KeyboardInputComponent.hpp"
-#include "components/example/MouseReparenting.hpp"
+SceneManager* SceneManager::_instance{nullptr};
 
-SceneManager::SceneManager() :
-	testScene(std::make_unique<GameObject>("root")),
-	recalculationList() {
-	recalculationList.reserve(25);
+SceneManager::SceneManager() : _recalculationList() {}
 
-	//Basic mouse input
-	auto& mouseInputComponent = testScene->AddChild("MouseInputComponent");
-	mouseInputComponent.AddComponent<MouseInputComponent>("mouseInputComponent");
+SceneManager* SceneManager::CreateInstance() {
+	auto instance = new SceneManager();
+	_instance = instance;
+	return instance;
+}
 
-	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
+void SceneManager::AddScene(std::unique_ptr<GameObject>&& scene) {
+	_scenes.emplace_back(std::move(scene));
+}
 
-	//ParentA
-	auto& parentA = testScene->AddChild("ParentA");
-	parentA.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, true);
-	parentA.transform->SetPosition(200, 300);
-	parentA.transform->SetScale(150, 300);
-	parentA.transform->SetRotation(10);
-	parentA.AddComponent<BoxRigidBody>("ParentARRB", physicsProperties);
+void SceneManager::RemoveScene(const std::string& target) {
+	//Find the targeted scene
+	auto it = std::find_if(_scenes.begin(), _scenes.end(),
+						   [&target]
+								   (const std::unique_ptr<GameObject>& scene) {
+							   return scene->tag == target;
+						   });
 
-	//ParentB
-	auto& parentB = testScene->AddChild("ParentB");
-	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 0, 255, 255}, true);
-	parentB.transform->SetPosition(575, 325);
-	parentB.transform->SetScale(350, 200);
-	parentB.transform->SetRotation(-115);
-	parentB.AddComponent<BoxRigidBody>("ParentBRRB", physicsProperties);
+	//Erase scene if found
+	if (it != _scenes.end()) _scenes.erase(it);
+}
 
-	//Animated Object
-	auto& animatedObject = parentA.AddChild("AnimatedObject");
-	auto& animatedSprite = animatedObject.AddComponent<AnimationRenderable>(
-		"animTag", "../assets/character_spritesheet.png",
-		"spriteTag", 32, 32
-	);
+void SceneManager::SwitchScene(const std::string& tag) { _switchTarget = tag; }
 
-	//Animator
-	auto& animationController = animatedObject.AddComponent<AnimationController>("animControllerTag", animatedSprite);
-	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
-	animationController.AddAnimation("run", 12, 19, 0.1f, true);
-	animationController.AddAnimation("jump", 27, 35, 0.1f, false);
-	animatedObject.GetComponent<AnimationController>()->PlayAnimation("idle");
+void SceneManager::_switchScene() {
+	//Find the targeted scene
+	auto it = std::find_if(_scenes.begin(), _scenes.end(),
+						   [&tag = _switchTarget]
+								   (const std::unique_ptr<GameObject>& scene) {
+							   return scene->tag == tag;
+						   });
 
-	//Keyboard input
-	auto& keyboardInputComponent = testScene->AddChild("KeyboardInputComponent");
-	keyboardInputComponent.AddComponent<KeyboardInputComponent>("keyboardInputComponent", animatedObject);
-
-	//Reparenting mouse input
-	animatedObject.AddComponent<MouseReparenting>("Reparenting", parentA, parentB);
+	//Switch to scene if found
+	if (it != _scenes.end()) {
+		//Overriding _activeScene will first unload the whole previous scene, then instantiate the new like a prefab
+		_activeScene = std::make_unique<GameObject>(**it);
+		
+		//Activate separately from copy constructor to allow for prefab creation without them activating instantly
+		_activeScene->SetActive(true);
+	} else {
+		std::string err("Scene {");
+		err += _switchTarget;
+		err += "} could not be found";
+		BLOCKY_ENGINE_ERROR(err)
+	}
+	
+	_switchTarget.clear();
 }
 
 void SceneManager::Update(float delta) {
+	//Check if scene should be switched before starting next cycle
+	if (!_switchTarget.empty()) _switchScene();
+	
 	//Update active scene starting from the root
-	testScene->Update(delta, recalculationList);
+	if (_activeScene) _activeScene->Update(delta, _recalculationList);
 
 	//Go through all transforms that marked themselves to be recalculated
-	for (auto& trans : recalculationList) {
+	for (auto& trans : _recalculationList) {
 		auto& cur = trans.get();
 		if (cur.isMarkedForRecalculation) cur.RecalculateWorldMatrix();
 	}
-	recalculationList.clear();
+	_recalculationList.clear();
 }

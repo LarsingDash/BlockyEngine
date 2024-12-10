@@ -3,7 +3,6 @@
 //
 
 #include "MouseInput.hpp"
-#include "SDL_mouse.h"
 
 MouseInput SDLMouseButtonToCustomMouseButton(Uint8 sdlButton) {
 	switch (sdlButton) {

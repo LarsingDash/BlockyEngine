@@ -4,70 +4,95 @@
 
 #include "WindowModule.hpp"
 
-#include <iostream>
+#include <SDL.h>
+
+#include "logging/BLogger.hpp"
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 
-WindowModule::WindowModule() : renderingModule(nullptr), inputModule(nullptr) {
+WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-		std::cerr << "Couldn't init video: " << SDL_GetError() << std::endl;
+		std::string err("Couldn't init video: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
+
+		return;
+	}
+	
+	if (TTF_Init() != 0) {
+		SDL_Log("Unable to initialize SDL_ttf: %s", TTF_GetError());
 		return;
 	}
 
 	//Create window
-	window = SDL_CreateWindow("SDLTest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-							  WindowModule::WINDOW_WIDTH, WindowModule::WINDOW_HEIGHT,
-							  SDL_WINDOW_SHOWN);
-	if (!window) {
-		std::cerr << "Couldn't create window: " << SDL_GetError() << std::endl;
+	_window = SDL_CreateWindow("SDLTest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+							   WindowModule::WINDOW_WIDTH, WindowModule::WINDOW_HEIGHT,
+							   SDL_WINDOW_SHOWN);
+	if (!_window) {
+		std::string err("Couldn't create window: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
+
 		SDL_Quit();
 		return;
 	}
 
 	//Renderer
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (!renderer) {
-		std::cerr << "Couldn't create _renderer: " << SDL_GetError() << std::endl;
+	_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if (!_renderer) {
+		std::string err("Couldn't create _renderer: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
 		SDL_Quit();
-		SDL_DestroyWindow(window);
+		SDL_DestroyWindow(_window);
 		return;
 	}
-	renderingModule = std::make_unique<RenderingModule>(renderer);
-	inputModule = std::make_unique<InputModule>();
-
+	
+	_renderingModule = std::make_unique<RenderingModule>(_renderer);
+	_inputModule = std::make_unique<InputModule>();
+	_guiRenderingModule = std::make_unique<ImGuiRenderingModule>(_window, _renderer, _context);
 }
 
 WindowModule::~WindowModule() {
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
+	SDL_DestroyRenderer(_renderer);
+	SDL_DestroyWindow(_window);
 
 	SDL_Quit();
 }
 
 void WindowModule::Update(float delta) {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
+	SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+	SDL_RenderClear(_renderer);
 
-	inputModule->PollEvents();
+	_inputModule->PollEvents();
 
 	_render();
-	SDL_RenderPresent(renderer);
+	_guiRenderingModule->Render();
+
+	SDL_RenderPresent(_renderer);
 }
 
 void WindowModule::_render() {
-	renderingModule->Render();
+	_renderingModule->Render();
 }
 
 InputModule& WindowModule::GetInputModule() {
-	if (!inputModule) {
+	if (!_inputModule) {
 		throw std::runtime_error("InputModule is not initialized.");
 	}
-	return *inputModule;
-}
-RenderingModule& WindowModule::GetRenderingModule() {
-	if (!renderingModule) {
-		throw std::runtime_error("RenderingModule is not initialized.");
-	}
-	return *renderingModule;
+	return *_inputModule;
 }
 
+RenderingModule& WindowModule::GetRenderingModule() {
+	if (!_renderingModule) {
+		throw std::runtime_error("RenderingModule is not initialized.");
+	}
+	return *_renderingModule;
+}
+
+ImGuiRenderingModule& WindowModule::GetGuiRenderingModule() {
+	if (!_guiRenderingModule) {
+		throw std::runtime_error("GUI RenderingModule is not initialized.");
+	}
+	return *_guiRenderingModule;
+}

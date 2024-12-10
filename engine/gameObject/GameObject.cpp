@@ -7,7 +7,7 @@
 #include "logging/BLogger.hpp"
 
 GameObject::GameObject(std::string tag, GameObject* parent) :
-		tag(std::move(tag)), parent(parent), _isMarkedForDeletion(false) {
+		tag(std::move(tag)), parent(parent), _isMarkedForDeletion(false), _isActive(true), _deletionList() {
 	transform = std::make_unique<GameObjectTransform>(*this);
 }
 
@@ -15,14 +15,13 @@ GameObject::~GameObject() {
 	//Mark this for deletion so its children don't try to erase themselves from this children list (on children.clear())
 	_isMarkedForDeletion = true;
 
-	//Reparent this to null, removing it from its parents children list
-	_reparent(nullptr);
-
 	//Delete all components
 	for (auto& type : _components) {
 		for (auto& component : type.second) {
 			//Call end before deleting
-			component->End();
+			if (_isActive) {
+				component->End();
+			}
 		}
 	}
 	_components.clear();
@@ -31,14 +30,32 @@ GameObject::~GameObject() {
 	_children.clear();
 }
 
-void GameObject::Update(    // NOLINT(*-no-recursion)
-		float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList) {
-	//Prevent from being updated if some other object marked this one for deletion
-	if (_isMarkedForDeletion) {
-		_reparent(nullptr);
-		return;
+GameObject::GameObject(const GameObject& other) :
+		tag(other.tag), parent(other.parent), transform(std::make_unique<GameObjectTransform>(*other.transform)), _isActive(other._isActive),
+		_isMarkedForDeletion(other._isMarkedForDeletion), _deletionList(other._deletionList) {
+	transform->SetGameObject(*this);
+
+	for (const auto& type : other._components) {
+		for (const auto& comp : type.second) {
+			_components[type.first].emplace_back(
+					std::unique_ptr<Component>(comp->CloneInternal(*this))
+			);
+		}
 	}
 
+	_children.reserve(other._children.size());
+	for (const auto& child : other._children) {
+		auto& created = _children.emplace_back(std::make_unique<GameObject>(*child));
+		created->parent = this;
+		created->transform->SetParent(*transform);
+	}
+}
+
+void GameObject::Update(    // NOLINT(*-no-recursion)
+		float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList) {
+	//Cancel update cycle if it was marked before by something else
+	if (_isMarkedForDeletion) return;
+	
 	//Cascade update to components
 	for (auto& type : _components) {
 		for (auto& component : type.second) {
@@ -49,10 +66,7 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "ConstantConditionsOC"
 #pragma ide diagnostic ignored "UnreachableCode"
-			if (_isMarkedForDeletion) {
-				_reparent(nullptr);
-				return;
-			}
+			if (_isMarkedForDeletion) return;
 #pragma clang diagnostic pop
 		}
 	}
@@ -69,18 +83,104 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 		}
 
 	//Cascade update to child objects
-	for (auto& child : _children) {
-		child->Update(delta, recalculationList);
+	for (size_t i = 0; i < _children.size(); ++i) { // NOLINT(*-loop-convert)
+		auto& child = _children[i];
+		//Prevent from being updated if some other object marked this one for deletion
+		if (!child->_isMarkedForDeletion) {
+			child->Update(delta, recalculationList);
+			
+			//Check if child marked this object for deletion, otherwise check if child is marked (since deleting this will delete child anyway_
+			//Suppressing warnings because CLion can't understand that children can set their parent's _isMarkedForDeletion
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "ConstantConditionsOC"
+#pragma ide diagnostic ignored "UnreachableCode"
+			if (_isMarkedForDeletion) return;
+#pragma clang diagnostic pop
+			else {
+				//Get child again from the _children vector, in case a sibling has been added that exceeded the capacity
+				//(This would've moved the current 'child' to a different location)
+				auto& updatedChild = _children[i];
+				if (updatedChild->_isMarkedForDeletion) {
+					_deletionList.emplace_back(updatedChild.get());
+				}
+			}
+		}
+	}
+
+	if (!_deletionList.empty()) {
+		for (auto child : _deletionList) {
+			child->_reparent(nullptr);
+		}
+		_deletionList.clear();
 	}
 }
 
-GameObject* GameObject::GetChild(const std::string& t) {
+void GameObject::SetActive(bool active, bool force) {    // NOLINT(*-no-recursion)
+	//Early return if nothing changed
+	if (_isActive == active && !force) return;
+	_isActive = active;
+
+	//Cascade End to components
+	if (_isActive) {
+		transform->RecalculateWorldMatrix();
+
+		for (auto& type : _components) {
+			for (auto& component : type.second) {
+				component->Start();
+			}
+		}
+	} else {
+		for (auto& type : _components) {
+			for (auto& component : type.second) {
+				component->End();
+			}
+		}
+	}
+
+	for (auto& child : _children) {
+		child->SetActive(_isActive, force);
+	}
+}
+
+GameObject& GameObject::AddChild(std::string_view childTag) {
+	//Instantiate new GameObject in this children list
+	GameObject& child = *_children.emplace_back(
+			std::make_unique<GameObject>(std::forward<std::string>(childTag.data()), this)
+	);
+
+	//Pass active mode onto child
+	child.SetActive(_isActive, true);
+
+	//Return newly created child
+	return child;
+}
+
+GameObject& GameObject::AddChild(GameObject& prefab) {
+	//Instantiate new GameObject in this children list
+	GameObject& child = *_children.emplace_back(std::make_unique<GameObject>(prefab));
+
+	//Pass active mode onto child
+	child.SetActive(_isActive, true);
+
+	//Return newly created child
+	return child;
+}
+
+GameObject* GameObject::GetChild(const std::string& t, bool recursive) {    // NOLINT(*-no-recursion)
 	auto it = std::find_if(_children.begin(), _children.end(),
 						   [&](std::unique_ptr<GameObject>& cur) {
 							   return (t == cur->tag);
 						   });
 
-	return (it != _children.end()) ? (*it).get() : nullptr;
+	if (it != _children.end()) return (*it).get();
+	else if (recursive) {
+		for (auto& child : _children) {
+			GameObject* result = child->GetChild(t, recursive);
+			if (result) return result;
+		}
+	} 
+	
+	return nullptr;
 }
 
 bool GameObject::RemoveChild(GameObject& child) {
@@ -127,6 +227,11 @@ void GameObject::Reparent(GameObject& target) {
 	}
 }
 
+void GameObject::SetParent(GameObject& target) {
+	parent = &target;
+	transform->SetParent(*target.transform);
+}
+
 void GameObject::Destroy() { _isMarkedForDeletion = true; }
 
 void GameObject::_reparent(GameObject* target) {
@@ -157,7 +262,7 @@ void GameObject::_reparent(GameObject* target) {
 			//Rebind parent pointer on self and transform unless destroyed
 			if (target) {
 				parent = target;
-				transform->SetParent(*target->transform);
+				transform->SetParent(*(target->transform));
 			}
 		} catch (const std::exception& e) {
 			std::string err = "Exception occurred while reparenting: ";

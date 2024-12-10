@@ -14,6 +14,7 @@
 MouseInputComponent::MouseInputComponent(GameObject* parent, const char* tag)
 	: Component(parent, tag),
 	  _inputModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule()),
+	  _camera(ModuleManager::GetInstance().GetModule<WindowModule>().GetRenderingModule().GetCamera()),
 	  _imguiModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetGuiRenderingModule()) {}
 
 Component* MouseInputComponent::_clone(const GameObject& parent) {
@@ -48,7 +49,8 @@ void MouseInputComponent::End() {
 
 void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color) {
 	auto& rectangle = gameObject->AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
-	rectangle.transform->SetPosition(static_cast<float>(x), static_cast<float>(y));
+	auto& cameraPos = _camera.GetPosition();
+	rectangle.transform->SetPosition(static_cast<float>(x) + cameraPos.x, static_cast<float>(y) + cameraPos.y);
 
 	TypeProperties physicsProperties(RIGIDBODY, false, {0, 0}, 36, 0, 0, true);
 

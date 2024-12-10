@@ -7,6 +7,7 @@
 #include "components/renderables/EllipseRenderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "moduleManager/modules/input/InputModule.hpp"
+#include "moduleManager/modules/rendering/RenderingModule.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
 
@@ -26,6 +27,7 @@ class MouseInputComponent : public Component {
 		void HandleMouseInput(MouseButtonState state, int x, int y, const glm::vec4& color);
 
 		InputModule& _inputModule;
+		Camera& _camera;
 		ImGuiRenderingModule& _imguiModule;
 
 		int currentPalette = 0;

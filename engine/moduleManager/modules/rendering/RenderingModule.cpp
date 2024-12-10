@@ -16,7 +16,8 @@
 #include "components/renderables/AnimationRenderable.hpp"
 #include "logging/BLogger.hpp"
 
-RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {}
+RenderingModule::RenderingModule(SDL_Renderer* renderer) :
+		_renderer(renderer), _camera(std::make_unique<Camera>()) {}
 
 RenderingModule::~RenderingModule() = default;
 
@@ -54,8 +55,8 @@ void RenderingModule::_renderRectangle(RectangleRenderable& renderable) {
 	float sinTheta = sin(rad);
 
 	//Pre-getting dimensions
-	const auto& position = transform.GetWorldPosition();
-	const auto& scale = transform.GetWorldScale();
+	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
+	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
 	float x = position.x;
 	float y = position.y;
 	float w = scale.x / 2.f;
@@ -96,8 +97,8 @@ void RenderingModule::_renderEllipse(EllipseRenderable& renderable) {
 	glm::ivec4 color = renderable.GetColor();
 
 	ComponentTransform& transform = *renderable.componentTransform;
-	const auto& position = transform.GetWorldPosition();
-	const auto& scale = transform.GetWorldScale();
+	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
+	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
 
 	auto centerX = static_cast<Sint16>(position.x);
 	auto centerY = static_cast<Sint16>(position.y);
@@ -197,8 +198,8 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 		return;
 	}
 
-	const auto& position = transform.GetWorldPosition();
-	const auto& scale = transform.GetWorldScale();
+	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
+	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
 	SDL_FRect destRect = {
 			position.x - scale.x / 2.0f,
 			position.y - scale.y / 2.0f,
@@ -246,7 +247,7 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 		return;
 	}
 
-	const auto& position = renderable.componentTransform->GetWorldPosition();
+	const auto& position = renderable.componentTransform->GetWorldPosition() - _camera->GetPosition();
 	const auto& rotation = renderable.componentTransform->GetWorldRotation();
 
 	SDL_FRect destRect = {

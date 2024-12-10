@@ -15,6 +15,8 @@
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 #include "components/renderables/TextRenderable.hpp"
+#include "moduleManager/modules/rendering/Camera.hpp"
+
 #include <SDL_render.h>
 
 class RenderingModule {
@@ -25,9 +27,12 @@ class RenderingModule {
 		void Render();
 		void AddRenderable(Renderable& renderable);
 		void RemoveRenderable(Renderable& renderable);
+		
+		inline Camera& GetCamera() const { return *_camera; }
 
 	private:
 		SDL_Renderer* _renderer;
+		std::unique_ptr<Camera> _camera;
 		std::map<int, std::vector<std::reference_wrapper<Renderable>>> _renderables;
 		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> _textureCache;
 

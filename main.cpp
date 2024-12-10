@@ -3,16 +3,20 @@
 
 #include "BlockyEngine.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
+#include "components/renderables/TextRenderable.hpp"
 #include "components/example/SpawnerComp.hpp"
 #include "components/example/RotationComp.hpp"
 #include "components/example/MouseReparenting.hpp"
 #include "components/example/MouseInputComponent.hpp"
 #include "components/example/KeyboardInputComponent.hpp"
 #include "components/example/SceneSwitchComp.hpp"
+#include "components/example/MouseCameraController.hpp"
 
 void buildPrefabScene(SceneManager& scenes) {
 	auto root = std::make_unique<GameObject>("Prefabs");
 	root->SetActive(false);
+
+	root->AddComponent<MouseCameraController>("CameraController");
 
 	auto& container = root->AddChild("ProjectileContainer");
 	container.transform->SetPosition(400, 300);
@@ -40,6 +44,8 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	auto root = std::make_unique<GameObject>("InputReparenting");
 	root->SetActive(false);
 
+	root->AddComponent<MouseCameraController>("CameraController");
+
 	//Basic mouse input
 	auto& mouseInputComponent = root->AddChild("MouseInput");
 	mouseInputComponent.AddComponent<MouseInputComponent>("MouseInputComponent");
@@ -64,9 +70,13 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	//Animated Object
 	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	animatedObject.AddComponent<AnimationRenderable>(
-		"animTag", "../assets/character_spritesheet.png",
-		"spriteTag", 32, 32
+			"animTag", "../assets/character_spritesheet.png",
+			"spriteTag", 32, 32
 	);
+
+	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
+	auto& text = animatedObject.AddComponent<TextRenderable>("PlayerText", "Player", glm::vec4{255}, font, 1);
+	text.componentTransform->SetPosition(0.f, -0.5f);
 
 	//Animator
 	auto& animationController = animatedObject.AddComponent<AnimationController>("animControllerTag");
@@ -82,6 +92,25 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	root->AddComponent<MouseReparenting>("Reparenting", "AnimatedObject", "ParentA", "ParentB");
 
 	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "Camera");
+
+	scenes.AddScene(std::move(root));
+}
+
+void buildCameraScene(SceneManager& scenes) {
+	auto root = std::make_unique<GameObject>("Camera");
+	root->SetActive(false);
+
+	root->AddComponent<MouseCameraController>("CameraController");
+
+	auto& box = root->AddChild("Box");
+	box.transform->SetScale(200, 150);
+	box.transform->SetPosition(400, 300);
+	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
+	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);
+	box.AddComponent<SpriteRenderable>("animTag", "../assets/character_spritesheet.png", "spriteTag");
+
+	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "Prefabs");
 
 	scenes.AddScene(std::move(root));
@@ -93,9 +122,11 @@ int main(int argc, char* argv[]) {
 
 	buildPrefabScene(sceneManager);
 	buildInputReparentingScene(sceneManager);
+	buildCameraScene(sceneManager);
 
-	//	sceneManager.SwitchScene("Prefabs");
+//	sceneManager.SwitchScene("Prefabs");
 	sceneManager.SwitchScene("InputReparenting");
+//	sceneManager.SwitchScene("Camera");
 
 	blockyEngine.Run();
 

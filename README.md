@@ -79,7 +79,7 @@ Components drive the behavior of a game. However, Blocky Engine only provides th
 class ExampleComponent : public Component {
     public:
         ExampleComponent(GameObject* gameObject, const char* tag, int startingValue);
-        ~ExampleComponent() = default; //Optional
+        ~ExampleComponent() override = default; //Optional
 
         void Start() override;
         void Update(float delta) override;

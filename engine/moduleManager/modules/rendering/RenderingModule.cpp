@@ -16,7 +16,8 @@
 #include "logging/BLogger.hpp"
 #include "utilities/TimeUtil.hpp"
 
-RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer){
+RenderingModule::RenderingModule(SDL_Renderer* renderer) :
+		_renderer(renderer), _camera(std::make_unique<Camera>()) {
 	_font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
 	if (!_font) {
 		std::string err("Failed to load font: ");
@@ -65,8 +66,8 @@ void RenderingModule::_renderRectangle(RectangleRenderable& renderable) {
 	float sinTheta = sin(rad);
 
 	//Pre-getting dimensions
-	const auto& position = transform.GetWorldPosition();
-	const auto& scale = transform.GetWorldScale();
+	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
+	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
 	float x = position.x;
 	float y = position.y;
 	float w = scale.x / 2.f;
@@ -107,8 +108,8 @@ void RenderingModule::_renderEllipse(EllipseRenderable& renderable) {
 	glm::ivec4 color = renderable.GetColor();
 
 	ComponentTransform& transform = *renderable.componentTransform;
-	const auto& position = transform.GetWorldPosition();
-	const auto& scale = transform.GetWorldScale();
+	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
+	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
 
 	auto centerX = static_cast<Sint16>(position.x);
 	auto centerY = static_cast<Sint16>(position.y);
@@ -208,8 +209,8 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 		return;
 	}
 
-	const auto& position = transform.GetWorldPosition();
-	const auto& scale = transform.GetWorldScale();
+	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
+	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
 	SDL_FRect destRect = {
 			position.x - scale.x / 2.0f,
 			position.y - scale.y / 2.0f,
@@ -244,7 +245,10 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 	const auto& position = renderable.componentTransform->GetWorldPosition();
 	const std::string& text = renderable.GetText();
 
-	_renderTextHelper(text, sdlColor, {position.x, position.y});
+	_renderTextHelper(
+			text, sdlColor, {position.x, position.y},
+			renderable.componentTransform->GetWorldRotation()
+	);
 }
 
 void RenderingModule::_renderFps() {
@@ -252,7 +256,7 @@ void RenderingModule::_renderFps() {
 
 	SDL_Color color;
 	if (fps >= 60) {
-		color = {0, 255, 0, 255}; 
+		color = {0, 255, 0, 255};
 	} else if (fps >= 30) {
 		color = {255, 255, 0, 255};
 	} else {
@@ -268,10 +272,14 @@ void RenderingModule::_renderFps() {
 	TTF_SizeText(_font, fpsText.c_str(), &textWidth, &textHeight);
 	SDL_FPoint position = {static_cast<float>(windowWidth - textWidth - 10), 10};
 
-	_renderTextHelper(fpsText, color, position);
+	_renderTextHelper(fpsText, color, position, 0, false);
 }
 
-void RenderingModule::_renderTextHelper(const std::string& text, const SDL_Color& color, const SDL_FPoint& position) {
+void RenderingModule::_renderTextHelper(const std::string& text,
+										const SDL_Color& color,
+										const SDL_FPoint& position,
+										float angle,
+										bool moveWithCamera) {
 	SDL_Surface* surface = TTF_RenderText_Blended(_font, text.c_str(), color);
 	if (!surface) {
 		std::string err("Failed to create text surface: ");
@@ -292,17 +300,31 @@ void RenderingModule::_renderTextHelper(const std::string& text, const SDL_Color
 
 	int textWidth, textHeight;
 	SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
-	SDL_Rect dstRect = {
-			static_cast<int>(position.x),
-			static_cast<int>(position.y),
-			textWidth,
-			textHeight
-	};
+	SDL_Rect dstRect;
+	if (moveWithCamera)
+		dstRect = {
+				static_cast<int>(position.x - _camera->GetPosition().x),
+				static_cast<int>(position.y - _camera->GetPosition().y),
+				textWidth - static_cast<int>(_camera->GetScale().x),
+				textHeight - static_cast<int>(_camera->GetScale().y)
+		};
+	else {
+		dstRect = {
+				static_cast<int>(position.x),
+				static_cast<int>(position.y),
+				textWidth,
+				textHeight
+		};
+	}
 
-	SDL_RenderCopy(_renderer, 
-				   texture, 
-				   nullptr,
-				   &dstRect);
+	SDL_RenderCopyEx(_renderer,
+					  texture,
+					  nullptr,
+					  &dstRect,
+					  angle,
+					  nullptr,
+					  SDL_RendererFlip::SDL_FLIP_NONE
+	);
 	SDL_DestroyTexture(texture);
 }
 

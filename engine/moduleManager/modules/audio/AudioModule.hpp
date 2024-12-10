@@ -4,27 +4,27 @@
 
 #ifndef AUDIOMODULE_HPP
 #define AUDIOMODULE_HPP
+#include <map>
 #include <string>
-#include <vector>
+// #include <Audio.hpp>//todo: Audio.hpp
+#include <components/audio/Audio.hpp>
 #include <moduleManager/ModuleWrapper.hpp>
-
-class Audio;
 
 class AudioModule : public ModuleWrapper {
 public:
-	AudioModule() = default;
+	AudioModule();
 	~AudioModule() override = default;
 
 	void Update(float delta) override {};
 
-	void AddAudio(Audio& audio);
+	void AddAudio(const Audio& audio);
 	void RemoveAudio(const Audio& audio);
 
-	void PlayAudio(const std::string& tag) const;
-	void StopAudio(const std::string& tag) const;
+	void PlayAudio(const std::string& tag, int loops);
+	void StopAudio(const std::string& tag);
 
 private:
-	std::vector<std::reference_wrapper<Audio>> _audioList;
+	std::map<std::string, AudioFragment> _audioPaths;
 };
 
 #endif //AUDIOMODULE_HPP

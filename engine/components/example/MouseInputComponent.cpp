@@ -36,13 +36,15 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 
 	if (state == MouseButtonState::BUTTON_DOWN) {
 		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, true);
-		ModuleManager::getInstance().getModule<AudioModule>().PlayAudio("bubble-pop");
+		rectangle.AddComponent<Audio>("bubble-pop", "../assets/audioFiles/bubble-pop.mp3", 255, false);
+		rectangle.AddComponent<Audio>("bubble-pop", "../assets/audioFiles/bubble-pop.mp3", 255, false);
+		rectangle.GetComponent<Audio>("bubble-pop")->Play();
 	}
 	else {
+		// rectangle.GetComponent<Audio>("bubble-pop")->Stop(); //todo: component object deleted
 		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, true);
-		ModuleManager::getInstance().getModule<AudioModule>().PlayAudio("squish-pop");
-
-		// rectangle.GetComponent<Audio>()->Play(); //PlayAudio("ParentAAudio");
+		rectangle.AddComponent<Audio>("squish-pop", "../assets/audioFiles/squish-pop.mp3", 255, false).Play();
+		rectangle.RemoveComponent<Audio>("squish-pop");
 	}
 	rectangle.transform->SetScale(20.f, 20.f);
 }

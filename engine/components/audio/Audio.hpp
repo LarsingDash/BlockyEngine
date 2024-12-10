@@ -15,16 +15,18 @@ struct AudioFragment {
 	AudioFragment(std::string path, uint8_t volume, bool isLooping) : path(std::move(path)), volume(volume),
 	                                                                  isLooping(isLooping) {}
 
+	AudioFragment(const AudioFragment&) = default;
+
 	std::string path;
 	Mix_Chunk* audioChunk{};
 	int playingChannel{};
 	uint8_t volume;
 	bool isLooping;
+	uint8_t numberOfInstances{};
 };
 
 class Audio : public Component {
 public:
-	Audio(GameObject& gameObject, const char* tag, const AudioFragment& fragment);
 	Audio(GameObject& gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping);
 	~Audio() override = default;
 
@@ -32,11 +34,11 @@ public:
 	void Update(float delta) override {};
 	void End() override;
 
+	void Play(int loops = 0) const;
+	void Stop() const; // NOLINT(*-use-nodiscard)
+
 private:
 	friend AudioModule;
-	int Play(int loops = 0);
-	int Stop() const; // NOLINT(*-use-nodiscard)
-
 	AudioFragment _fragment;
 };
 

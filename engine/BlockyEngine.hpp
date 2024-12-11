@@ -17,6 +17,7 @@ class BlockyEngine {
 		struct BlockyConfigs {
 			int windowWidth;
 			int windowHeight;
+			uint32_t windowFlags;
 			std::string defaultFontPath;
 		};
 		

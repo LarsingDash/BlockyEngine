@@ -1,8 +1,8 @@
 #include "InputModule.hpp"
 #include <SDL_events.h>
-#include <iostream>
+#include <imgui_impl_sdl2.h>
 #include "BlockyEngine.hpp"
-#include "imgui_impl_sdl2.h"
+#include "logging/BLogger.hpp"
 
 // Polls events for input and window states
 void InputModule::PollEvents() {
@@ -18,8 +18,8 @@ void InputModule::PollEvents() {
 				KeyState state = (event.type == SDL_KEYDOWN) ? KeyState::KEY_DOWN : KeyState::KEY_UP;
 				auto key = _getKeyInput(event.key.keysym.sym);
 
-				std::cout << "Processing key event: " << static_cast<int>(key) << ", state: "
-						  << (state == KeyState::KEY_DOWN ? "down" : "up") << std::endl;
+				BLOCKY_ENGINE_DEBUG_STREAM("Processing key event: " << static_cast<int>(key) << ", state: "
+						  << (state == KeyState::KEY_DOWN ? "down" : "up"))
 
 				// Directly lookup and invoke listeners from the map
 				auto it = _keyListeners.find(key);
@@ -43,6 +43,9 @@ void InputModule::PollEvents() {
 						case SDLK_PAGEDOWN:
 							TimeUtil::GetInstance().DecreaseGameSpeed();
 							break;
+						case SDLK_ESCAPE:
+							BlockyEngine::isRunning = false;
+							break;
 						default:
 							break;
 					}
@@ -57,9 +60,9 @@ void InputModule::PollEvents() {
 				int x = event.button.x;
 				int y = event.button.y;
 
-				std::cout << "Processing mouse event: button " << static_cast<int>(button) << ", state: "
+				BLOCKY_ENGINE_DEBUG_STREAM("Processing mouse event: button " << static_cast<int>(button) << ", state: "
 						  << (mouseState == MouseButtonState::BUTTON_DOWN ? "down" : "up")
-						  << ", position: (" << x << ", " << y << ")" << std::endl;
+						  << ", position: (" << x << ", " << y << ")")
 
 				// Directly lookup and invoke listeners for the specific mouse button
 				auto it = _mouseListeners.find(button);

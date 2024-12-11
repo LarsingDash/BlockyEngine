@@ -16,6 +16,7 @@ After installation (see below) Blocky Engine can be used following these steps:
 called on the BlockyEngine instance to let Blocky Engine take over the flow of the program.
 
 ```cpp
+#include <SDL_main.h>
 #include <BlockyEngine.hpp>
 #include "CustomComponents/ExampleComponent"
 
@@ -24,6 +25,7 @@ int main() {
     BlockyEngine::BlockyConfigs configs{
         800,
         600,
+        SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
         "../assets/fonts/defaultFont.ttf"
     };
 

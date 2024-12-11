@@ -24,6 +24,9 @@ class WindowModule : public ModuleWrapper {
 		InputModule& GetInputModule();
 		ImGuiRenderingModule& GetGuiRenderingModule();
 		
+		glm::ivec2 GetScreenSizeI();
+		glm::vec2 GetScreenSizeF();
+		
 	private:
 		void _render();
 

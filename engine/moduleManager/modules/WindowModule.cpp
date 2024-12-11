@@ -28,7 +28,7 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr),
 	const auto& configs = BlockyEngine::GetConfigs();
 	_window = SDL_CreateWindow("SDLTest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 							   configs->windowWidth, configs->windowHeight,
-							   SDL_WINDOW_SHOWN);
+							   configs->windowFlags);
 	if (!_window) {
 		std::string err("Couldn't create window: ");
 		err += SDL_GetError();
@@ -96,4 +96,16 @@ ImGuiRenderingModule& WindowModule::GetGuiRenderingModule() {
 		throw std::runtime_error("GUI RenderingModule is not initialized.");
 	}
 	return *_guiRenderingModule;
+}
+
+glm::ivec2 WindowModule::GetScreenSizeI() {
+	int w, h;
+	SDL_GetWindowSize(_window, &w, &h);
+	return {w, h};
+}
+
+glm::vec2 WindowModule::GetScreenSizeF() {
+	int w, h;
+	SDL_GetWindowSize(_window, &w, &h);
+	return {static_cast<float>(w), static_cast<float>(h)};
 }

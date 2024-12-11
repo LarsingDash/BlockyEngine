@@ -9,10 +9,6 @@
 #include <vector>
 
 #include "moduleManager/ModuleWrapper.hpp"
-#include "components/renderables/Renderable.hpp"
-#include "components/renderables/RectangleRenderable.hpp"
-#include "components/renderables/SpriteRenderable.hpp"
-#include "components/renderables/EllipseRenderable.hpp"
 #include "moduleManager/modules/rendering/RenderingModule.hpp"
 #include "moduleManager/modules/input/InputModule.hpp"
 #include "moduleManager/modules/rendering/ImGuiRenderingModule.hpp"
@@ -28,11 +24,11 @@ class WindowModule : public ModuleWrapper {
 		InputModule& GetInputModule();
 		ImGuiRenderingModule& GetGuiRenderingModule();
 
-	private:
-		void _render();
-
 		constexpr static int WINDOW_WIDTH = 800;
 		constexpr static int WINDOW_HEIGHT = 600;
+		
+	private:
+		void _render();
 
 		SDL_Window* _window;
 		SDL_Renderer* _renderer;

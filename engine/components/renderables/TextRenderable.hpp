@@ -11,13 +11,15 @@
 
 class TextRenderable : public Renderable {
 	public:
-		TextRenderable(GameObject& gameObject, const char* tag, std::string  text, const glm::ivec4& color, TTF_Font* font);
+		TextRenderable(GameObject* gameObject, const char* tag, std::string  text, const glm::ivec4& color, TTF_Font* font, int layer = 0);
 		~TextRenderable() override;
 
 		void SetText(const std::string& newText);
 		[[nodiscard]] const std::string& GetText() const;
 		[[nodiscard]] const glm::ivec4& GetColor() const;
 		[[nodiscard]] TTF_Font* GetFont() const;
+
+		Component* _clone(const GameObject& parent) override;
 
 	private:
 		std::string _text;

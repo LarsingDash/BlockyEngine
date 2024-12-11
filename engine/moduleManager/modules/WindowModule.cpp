@@ -4,13 +4,18 @@
 
 #include "WindowModule.hpp"
 
-#include <iostream>
+#include <SDL.h>
+
+#include "logging/BLogger.hpp"
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 
 WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-		std::cerr << "Couldn't init video: " << SDL_GetError() << std::endl;
+		std::string err("Couldn't init video: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
+
 		return;
 	}
 	
@@ -24,7 +29,10 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) 
 							   WindowModule::WINDOW_WIDTH, WindowModule::WINDOW_HEIGHT,
 							   SDL_WINDOW_SHOWN);
 	if (!_window) {
-		std::cerr << "Couldn't create window: " << SDL_GetError() << std::endl;
+		std::string err("Couldn't create window: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
+
 		SDL_Quit();
 		return;
 	}
@@ -32,15 +40,17 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) 
 	//Renderer
 	_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!_renderer) {
-		std::cerr << "Couldn't create _renderer: " << SDL_GetError() << std::endl;
+		std::string err("Couldn't create _renderer: ");
+		err += SDL_GetError();
+		BLOCKY_ENGINE_ERROR(err)
 		SDL_Quit();
 		SDL_DestroyWindow(_window);
 		return;
 	}
+	
 	_renderingModule = std::make_unique<RenderingModule>(_renderer);
 	_inputModule = std::make_unique<InputModule>();
 	_guiRenderingModule = std::make_unique<ImGuiRenderingModule>(_window, _renderer, _context);
-
 }
 
 WindowModule::~WindowModule() {
@@ -72,16 +82,17 @@ InputModule& WindowModule::GetInputModule() {
 	}
 	return *_inputModule;
 }
+
 RenderingModule& WindowModule::GetRenderingModule() {
 	if (!_renderingModule) {
 		throw std::runtime_error("RenderingModule is not initialized.");
 	}
 	return *_renderingModule;
 }
+
 ImGuiRenderingModule& WindowModule::GetGuiRenderingModule() {
 	if (!_guiRenderingModule) {
 		throw std::runtime_error("GUI RenderingModule is not initialized.");
 	}
 	return *_guiRenderingModule;
 }
-

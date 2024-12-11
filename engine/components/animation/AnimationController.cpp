@@ -1,12 +1,24 @@
 //
 // Created by 11896 on 19/11/2024.
 //
+
 #include "AnimationController.hpp"
 
-AnimationController::AnimationController(GameObject& gameObject, const char* tag, AnimationRenderable& renderable)
-		: Component(gameObject, tag), _renderable(renderable) {}
+#include "gameObject/GameObject.hpp"
+#include "components/renderables/AnimationRenderable.hpp"
+#include "logging/BLogger.hpp"
 
-void AnimationController::Start() {}
+AnimationController::AnimationController(GameObject* gameObject, const char* tag)
+		: Component(gameObject, tag), _renderable(nullptr) {}
+
+Component* AnimationController::_clone(const GameObject& parent) {
+	auto clone = new AnimationController(*this);
+	return clone;
+}
+
+void AnimationController::Start() {
+	_renderable = gameObject->GetComponent<AnimationRenderable>();
+}
 
 void AnimationController::Update(float delta) {
 	//Skips update if animation is not active
@@ -46,7 +58,9 @@ bool AnimationController::PlayAnimation(const std::string& animationName) {
 	//Check if the animation exists in the map
 	auto it = _animations.find(animationName);
 	if (it == _animations.end()) {
-		std::cerr << "Animation not found: " << animationName << std::endl;
+		std::string err ("Animation not found: ");
+		err += animationName;
+		BLOCKY_ENGINE_ERROR(err)
 		return false;
 	}
 
@@ -66,5 +80,5 @@ void AnimationController::StopAnimation() {
 }
 
 void AnimationController::_updateSourceRect() {
-	_renderable.SetCurrentFrame(_currentFrame);
+	if (_renderable) _renderable->SetCurrentFrame(_currentFrame);
 }

@@ -70,6 +70,7 @@ add_subdirectory(logging)
 add_subdirectory(utilities)
 
 set(SDL_TTF_DIR "${DEPS_DIR}/SDL_ttf/x86_64-w64-mingw32")
+set(SDL_NET_DIR "${DEPS_DIR}/SDL_net/x86_64-w64-mingw32")
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         mingw32
         glm
@@ -77,6 +78,7 @@ target_link_libraries(${ENGINE_TARGET} PRIVATE
         SDL2::SDL2main
         sdl_gfx
         ${SDL_TTF_DIR}/lib/libSDL2_ttf.dll.a
+        ${SDL_NET_DIR}/lib/libSDL2_net.dll.a
         box2d
 )
 
@@ -106,6 +108,7 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
         ${IMGUI_PATH}
         ${IMGUI_PATH}/backends
         ${SDL_TTF_DIR}/include/SDL2
+        ${SDL_NET_DIR}/include/SDL2
 )
 
 # Copies dll to build directory
@@ -113,8 +116,10 @@ if (MINGW)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll")
         copy_dll_to_build(SDL2_TTF_DLL "${SDL_TTF_DIR}/../x86_64-w64-mingw32/bin/SDL2_ttf.dll")
+        copy_dll_to_build(SDL2_TTF_DLL "${SDL_NET_DIR}/../x86_64-w64-mingw32/bin/SDL2_net.dll")
     else ()
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../i686-w64-mingw32/bin/SDL2.dll")
         copy_dll_to_build(SDL2_TTF_DLL "${SDL_TTF_DIR}/../i686-w64-mingw32/bin/SDL2_ttf.dll")
+        copy_dll_to_build(SDL2_TTF_DLL "${SDL_NET_DIR}/../i686-w64-mingw32/bin/SDL2_net.dll")
     endif ()
 endif ()

@@ -19,31 +19,10 @@ MouseCameraController::MouseCameraController(GameObject* gameObject, const char*
 
 void MouseCameraController::Start() {
 	_camera.SetPosition(0.f, 0.f);
-	_camera.SetScale(1.f, 1.f);
 	_camera.SetBoundary(
 			static_cast<float>(WindowModule::WINDOW_WIDTH) / 2.f,
 			static_cast<float>(WindowModule::WINDOW_HEIGHT) / 2.f
 	);
-
-	_inputModule.AddKeyListener(
-			KeyInput::KEY_UP, *this, [&camera = _camera](KeyState state) {
-				camera.Scale(0, 0.1f);
-			});
-
-	_inputModule.AddKeyListener(
-			KeyInput::KEY_DOWN, *this, [&camera = _camera](KeyState state) {
-				camera.Scale(0, -0.1f);
-			});
-
-	_inputModule.AddKeyListener(
-			KeyInput::KEY_LEFT, *this, [&camera = _camera](KeyState state) {
-				camera.Scale(-0.1f, 0);
-			});
-
-	_inputModule.AddKeyListener(
-			KeyInput::KEY_RIGHT, *this, [&camera = _camera](KeyState state) {
-				camera.Scale(0.1f, 0);
-			});
 }
 
 void MouseCameraController::Update(float delta) {
@@ -61,12 +40,7 @@ void MouseCameraController::Update(float delta) {
 	_camera.Translate(position.x, position.y);
 }
 
-void MouseCameraController::End() {
-	_inputModule.RemoveKeyListener(KeyInput::KEY_UP, *this);
-	_inputModule.RemoveKeyListener(KeyInput::KEY_DOWN, *this);
-	_inputModule.RemoveKeyListener(KeyInput::KEY_LEFT, *this);
-	_inputModule.RemoveKeyListener(KeyInput::KEY_RIGHT, *this);
-}
+void MouseCameraController::End() {}
 
 Component* MouseCameraController::_clone(const GameObject& parent) {
 	auto clone = new MouseCameraController(*this);

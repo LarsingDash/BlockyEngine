@@ -67,7 +67,7 @@ void RenderingModule::_renderRectangle(RectangleRenderable& renderable) {
 
 	//Pre-getting dimensions
 	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
-	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
+	const auto& scale = transform.GetWorldScale();
 	float x = position.x;
 	float y = position.y;
 	float w = scale.x / 2.f;
@@ -109,7 +109,7 @@ void RenderingModule::_renderEllipse(EllipseRenderable& renderable) {
 
 	ComponentTransform& transform = *renderable.componentTransform;
 	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
-	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
+	const auto& scale = transform.GetWorldScale();
 
 	auto centerX = static_cast<Sint16>(position.x);
 	auto centerY = static_cast<Sint16>(position.y);
@@ -210,7 +210,7 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 	}
 
 	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
-	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
+	const auto& scale = transform.GetWorldScale();
 	SDL_FRect destRect = {
 			position.x - scale.x / 2.0f,
 			position.y - scale.y / 2.0f,
@@ -305,8 +305,8 @@ void RenderingModule::_renderTextHelper(const std::string& text,
 		dstRect = {
 				static_cast<int>(position.x - _camera->GetPosition().x),
 				static_cast<int>(position.y - _camera->GetPosition().y),
-				textWidth - static_cast<int>(_camera->GetScale().x),
-				textHeight - static_cast<int>(_camera->GetScale().y)
+				textWidth,
+				textHeight
 		};
 	else {
 		dstRect = {

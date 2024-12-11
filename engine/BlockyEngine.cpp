@@ -6,11 +6,15 @@
 #include "utilities/TimeUtil.hpp"
 
 bool BlockyEngine::isRunning{false};
+const BlockyEngine::BlockyConfigs* BlockyEngine::_configs{nullptr};
 
-BlockyEngine::BlockyEngine() :
-		_moduleManager(ModuleManager::CreateInstance()),
-		_sceneManager(SceneManager::CreateInstance()),
-		_timeUtil(TimeUtil::CreateInstance()) {}
+BlockyEngine::BlockyEngine(const BlockyEngine::BlockyConfigs& configs) {
+	_configs = &configs;
+
+	_moduleManager = std::unique_ptr<ModuleManager>(ModuleManager::CreateInstance());
+	_sceneManager = std::unique_ptr<SceneManager>(SceneManager::CreateInstance());
+	_timeUtil = std::unique_ptr<TimeUtil>(TimeUtil::CreateInstance());
+}
 
 SceneManager& BlockyEngine::GetSceneManager() const { return *_sceneManager; }
 

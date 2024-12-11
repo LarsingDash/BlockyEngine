@@ -13,7 +13,17 @@
 /// An instance of Blocky Engine, only one should ever need to be created
 class BlockyEngine {
 	public:
-		BlockyEngine();
+		/// Blocky Engine configs set from the constructor of BlockyEngine, used throughout the engine for various configuration
+		struct BlockyConfigs {
+			int windowWidth;
+			int windowHeight;
+			std::string defaultFontPath;
+		};
+		
+		inline static const BlockyConfigs* GetConfigs() { return _configs; }
+		
+		BlockyEngine() = delete;
+		explicit BlockyEngine(const BlockyConfigs& configs);
 		~BlockyEngine() = default;
 
 		BlockyEngine(const BlockyEngine& other) = delete;
@@ -34,6 +44,8 @@ class BlockyEngine {
 		static bool isRunning;
 
 	private:
+		static const BlockyConfigs* _configs;
+		
 		std::unique_ptr<ModuleManager> _moduleManager;
 		std::unique_ptr<SceneManager> _sceneManager;
 		std::unique_ptr<TimeUtil> _timeUtil;

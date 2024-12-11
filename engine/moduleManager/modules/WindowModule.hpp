@@ -23,9 +23,6 @@ class WindowModule : public ModuleWrapper {
 		RenderingModule& GetRenderingModule();
 		InputModule& GetInputModule();
 		ImGuiRenderingModule& GetGuiRenderingModule();
-
-		constexpr static int WINDOW_WIDTH = 800;
-		constexpr static int WINDOW_HEIGHT = 600;
 		
 	private:
 		void _render();

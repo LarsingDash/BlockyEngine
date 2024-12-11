@@ -14,13 +14,14 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
 
+#include "BlockyEngine.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 #include "logging/BLogger.hpp"
 #include "utilities/TimeUtil.hpp"
 
 RenderingModule::RenderingModule(SDL_Renderer* renderer) :
 		_renderer(renderer), _camera(std::make_unique<Camera>()) {
-	_font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
+	_font = TTF_OpenFont(BlockyEngine::GetConfigs()->defaultFontPath.c_str(), 24);
 	if (!_font) {
 		std::string err("Failed to load font: ");
 		err += TTF_GetError();
@@ -318,8 +319,8 @@ void RenderingModule::_renderTextHelper(const std::string& text,
 		dstRect = {
 				static_cast<int>(position.x - _camera->GetPosition().x),
 				static_cast<int>(position.y - _camera->GetPosition().y),
-				textWidth - static_cast<int>(_camera->GetScale().x),
-				textHeight - static_cast<int>(_camera->GetScale().y)
+				textWidth,
+				textHeight
 		};
 	else {
 		dstRect = {

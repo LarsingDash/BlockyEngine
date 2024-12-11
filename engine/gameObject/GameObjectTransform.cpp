@@ -10,10 +10,11 @@ GameObjectTransform::GameObjectTransform(GameObject& gameObject) : Transform(gam
 	if (gameObject.parent) _parent = gameObject.parent->transform.get();
 }
 
-void GameObjectTransform::RecalculateWorldMatrix() {    // NOLINT(*-no-recursion)
+void GameObjectTransform::RecalculateWorldMatrix() {
+	// NOLINT(*-no-recursion)
 	//Update self
 	_recalculateWorldMatrix();
-	
+
 	//Update components
 	for (const auto& [key, list] : gameObject->GetComponents()) {
 		for (const auto& component : list) {

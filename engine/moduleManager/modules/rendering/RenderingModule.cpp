@@ -2,6 +2,8 @@
 // Created by 11896 on 15/11/2024.
 //
 
+#include <iomanip>
+#include <sstream>
 #include "RenderingModule.hpp"
 #include "SDL_render.h"
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
@@ -11,12 +13,21 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
-#include <SDL2_gfx/SDL2_gfxPrimitives.h>
 
+#include "BlockyEngine.hpp"
 #include "components/renderables/AnimationRenderable.hpp"
 #include "logging/BLogger.hpp"
+#include "utilities/TimeUtil.hpp"
 
-RenderingModule::RenderingModule(SDL_Renderer* renderer) : _renderer(renderer) {}
+RenderingModule::RenderingModule(SDL_Renderer* renderer) :
+		_renderer(renderer), _camera(std::make_unique<Camera>()) {
+	_font = TTF_OpenFont(BlockyEngine::GetConfigs()->defaultFontPath.c_str(), 24);
+	if (!_font) {
+		std::string err("Failed to load font: ");
+		err += TTF_GetError();
+		BLOCKY_ENGINE_ERROR(err)
+	}
+}
 
 RenderingModule::~RenderingModule() = default;
 
@@ -42,6 +53,10 @@ void RenderingModule::Render() {
 			}
 		}
 	}
+
+	if (TimeUtil::GetInstance().IsFpsCounterEnabled()) {
+		_renderGameInfo();
+	}
 }
 
 void RenderingModule::_renderRectangle(RectangleRenderable& renderable) {
@@ -54,7 +69,7 @@ void RenderingModule::_renderRectangle(RectangleRenderable& renderable) {
 	float sinTheta = sin(rad);
 
 	//Pre-getting dimensions
-	const auto& position = transform.GetWorldPosition();
+	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
 	const auto& scale = transform.GetWorldScale();
 	float x = position.x;
 	float y = position.y;
@@ -96,7 +111,7 @@ void RenderingModule::_renderEllipse(EllipseRenderable& renderable) {
 	glm::ivec4 color = renderable.GetColor();
 
 	ComponentTransform& transform = *renderable.componentTransform;
-	const auto& position = transform.GetWorldPosition();
+	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
 	const auto& scale = transform.GetWorldScale();
 
 	auto centerX = static_cast<Sint16>(position.x);
@@ -197,7 +212,7 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 		return;
 	}
 
-	const auto& position = transform.GetWorldPosition();
+	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
 	const auto& scale = transform.GetWorldScale();
 	SDL_FRect destRect = {
 			position.x - scale.x / 2.0f,
@@ -229,45 +244,102 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 			static_cast<Uint8>(color.b),
 			static_cast<Uint8>(color.a)
 	};
-	SDL_Surface* textSurface = TTF_RenderText_Blended(renderable.GetFont(), renderable.GetText().c_str(), sdlColor);
-	if (!textSurface) {
+
+	const auto& position = renderable.componentTransform->GetWorldPosition();
+	const std::string& text = renderable.GetText();
+
+	_renderTextHelper(
+			text, sdlColor, {position.x, position.y},
+			renderable.componentTransform->GetWorldRotation()
+	);
+}
+
+void RenderingModule::_renderGameInfo() {
+	int fps = TimeUtil::GetInstance().GetFPS();
+
+	SDL_Color color;
+	if (fps >= 60) {
+		color = {0, 255, 0, 255};
+	} else if (fps >= 30) {
+		color = {255, 255, 0, 255};
+	} else {
+		color = {255, 0, 0, 255};
+	}
+
+	std::string fpsText = "FPS: " + std::to_string(fps);
+
+	int windowWidth, windowHeight;
+	SDL_GetRendererOutputSize(_renderer, &windowWidth, &windowHeight);
+
+	int textWidth, textHeight;
+	TTF_SizeText(_font, fpsText.c_str(), &textWidth, &textHeight);
+	SDL_FPoint fpsPosition = {static_cast<float>(windowWidth - textWidth - 10), 10};
+
+	_renderTextHelper(fpsText, color, fpsPosition, 0, false);
+
+	float gameSpeed = TimeUtil::GetInstance().GetGameSpeed();
+
+	std::ostringstream stream;
+	stream << std::fixed << std::setprecision(3) << gameSpeed;
+	std::string gameSpeedText = "Speed: " + stream.str() + "x";
+
+	TTF_SizeText(_font, gameSpeedText.c_str(), &textWidth, &textHeight);
+	SDL_FPoint speedPosition = {static_cast<float>(windowWidth - textWidth - 10), static_cast<float>(10 + textHeight + 5)};
+
+	_renderTextHelper(gameSpeedText, {255, 255, 255, 255}, speedPosition, 0, false);
+}
+
+void RenderingModule::_renderTextHelper(const std::string& text,
+										const SDL_Color& color,
+										const SDL_FPoint& position,
+										float angle,
+										bool moveWithCamera) {
+	SDL_Surface* surface = TTF_RenderText_Blended(_font, text.c_str(), color);
+	if (!surface) {
 		std::string err("Failed to create text surface: ");
 		err += TTF_GetError();
-		BLOCKY_ENGINE_ERROR(err);
+		BLOCKY_ENGINE_ERROR(err)
 		return;
 	}
 
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, textSurface);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
+	SDL_FreeSurface(surface);
+
 	if (!texture) {
 		std::string err("Failed to create text texture: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err);
-		SDL_FreeSurface(textSurface);
+		BLOCKY_ENGINE_ERROR(err)
 		return;
 	}
 
-	const auto& position = renderable.componentTransform->GetWorldPosition();
-	const auto& rotation = renderable.componentTransform->GetWorldRotation();
+	int textWidth, textHeight;
+	SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
+	SDL_Rect dstRect;
+	if (moveWithCamera)
+		dstRect = {
+				static_cast<int>(position.x - _camera->GetPosition().x),
+				static_cast<int>(position.y - _camera->GetPosition().y),
+				textWidth,
+				textHeight
+		};
+	else {
+		dstRect = {
+				static_cast<int>(position.x),
+				static_cast<int>(position.y),
+				textWidth,
+				textHeight
+		};
+	}
 
-	SDL_FRect destRect = {
-			static_cast<float>(position.x),
-			static_cast<float>(position.y),
-			static_cast<float>(textSurface->w),
-			static_cast<float>(textSurface->h)
-	};
-
-	SDL_RenderCopyExF(
-			_renderer,
-			texture,
-			nullptr,
-			&destRect,
-			rotation,
-			nullptr,
-			SDL_FLIP_NONE
+	SDL_RenderCopyEx(_renderer,
+					  texture,
+					  nullptr,
+					  &dstRect,
+					  angle,
+					  nullptr,
+					  SDL_RendererFlip::SDL_FLIP_NONE
 	);
-
 	SDL_DestroyTexture(texture);
-	SDL_FreeSurface(textSurface);
 }
 
 void RenderingModule::AddRenderable(Renderable& renderable) {

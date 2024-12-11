@@ -9,7 +9,7 @@ for transformations, meaning that the game developer does interact with the GLM 
 ## Use
 
 After installation (see below) Blocky Engine can be used following these steps:
-1. Create an instance of a BlockyEngine.
+1. Create an instance of a BlockyEngine with custom defined configs.
 2. Create a scene.
 3. Add the scene to the SceneManager from BlockyEngine instance, also select is as the starting scene.
 4. Finally, `Run()` can be
@@ -20,32 +20,38 @@ called on the BlockyEngine instance to let Blocky Engine take over the flow of t
 #include "CustomComponents/ExampleComponent"
 
 int main() {
-	//Step 1
-	BlockyEngine blockyEngine;
-	
-	//Step 2
-	//Create a root for the scene
-	auto exampleRoot = std::make_unique<GameObject>("ExampleScene");
-	exampleRoot->SetActive(false);	//Do not forget to set the scene as inactive
+    //Step 1
+    BlockyEngine::BlockyConfigs configs{
+        800,
+        600,
+        "../assets/fonts/defaultFont.ttf"
+    };
 
-	//Add and configure a child object
-	auto& child = exampleRoot->AddChild("ExampleChild");
-	child.transform->SetPosition(300.f, 300.f);
-	child.transform->SetRotation(45.f);
-	child.transform->SetScale(25.f, 50.f);
+    BlockyEngine blockyEngine{configs};
 	
-	//Add and configure a component
-	auto& component = child.AddComponent<ExampleComponent>("ExampleComponent", 10);
-	component.componentTransform->SetPosition(2.5f, 0.f);
-	component.SetExampleValue(100);
-	
-	//Step 3
-	SceneManager& sceneManager = blockyEngine.GetSceneManager();
-	sceneManager.AddScene(std::move(exampleRoot));
-	sceneManager.SwitchScene("ExampleScene");
+    //Step 2
+    //Create a root for the scene
+    auto exampleRoot = std::make_unique<GameObject>("ExampleScene");
+    exampleRoot->SetActive(false);	//Do not forget to set the scene as inactive
 
-	//Step 4
-	blockyEngine.Run();
+    //Add and configure a child object
+    auto& child = exampleRoot->AddChild("ExampleChild");
+    child.transform->SetPosition(300.f, 300.f);
+    child.transform->SetRotation(45.f);
+    child.transform->SetScale(25.f, 50.f);
+	
+    //Add and configure a component
+    auto& component = child.AddComponent<ExampleComponent>("ExampleComponent", 10);
+    component.componentTransform->SetPosition(2.5f, 0.f);
+    component.SetExampleValue(100);
+	
+    //Step 3
+    SceneManager& sceneManager = blockyEngine.GetSceneManager();
+    sceneManager.AddScene(std::move(exampleRoot));
+    sceneManager.SwitchScene("ExampleScene");
+
+    //Step 4
+    blockyEngine.Run();
 }
 ```
 Notes:
@@ -79,7 +85,7 @@ Components drive the behavior of a game. However, Blocky Engine only provides th
 class ExampleComponent : public Component {
     public:
         ExampleComponent(GameObject* gameObject, const char* tag, int startingValue);
-        ~ExampleComponent() = default; //Optional
+        ~ExampleComponent() override = default; //Optional
 
         void Start() override;
         void Update(float delta) override;

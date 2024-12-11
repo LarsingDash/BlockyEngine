@@ -1,4 +1,5 @@
 ﻿target_sources(${ENGINE_TARGET} PRIVATE
+        MouseCameraController.cpp
         MovementComp.cpp
         RotationComp.cpp
         SpawnerComp.cpp

@@ -23,12 +23,9 @@ class WindowModule : public ModuleWrapper {
 		RenderingModule& GetRenderingModule();
 		InputModule& GetInputModule();
 		ImGuiRenderingModule& GetGuiRenderingModule();
-
+		
 	private:
 		void _render();
-
-		constexpr static int WINDOW_WIDTH = 800;
-		constexpr static int WINDOW_HEIGHT = 600;
 
 		SDL_Window* _window;
 		SDL_Renderer* _renderer;

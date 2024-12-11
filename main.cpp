@@ -11,6 +11,7 @@
 #include "components/example/KeyboardInputComponent.hpp"
 #include "components/example/SceneSwitchComp.hpp"
 #include "components/example/MouseCameraController.hpp"
+#include "components/example/NetworkingComponent.hpp"
 
 void buildPrefabScene(SceneManager& scenes) {
 	auto root = std::make_unique<GameObject>("Prefabs");
@@ -116,16 +117,34 @@ void buildCameraScene(SceneManager& scenes) {
 	scenes.AddScene(std::move(root));
 }
 
+void buildNetworkingSCene(SceneManager& scenes) {
+	auto root = std::make_unique<GameObject>("Networking");
+	root->SetActive(false);
+
+	root->AddComponent<MouseCameraController>("CameraController");
+
+	auto& box = root->AddChild("Box");
+	box.transform->SetScale(200, 150);
+	box.transform->SetPosition(400, 300);
+	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
+
+	root->AddComponent<NetworkingComponent>("NetworkingComponent");
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "Networking");
+
+	scenes.AddScene(std::move(root));
+}
+
 int main(int argc, char* argv[]) {
 	BlockyEngine blockyEngine;
 	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 
+	buildNetworkingSCene(sceneManager);
 	buildPrefabScene(sceneManager);
 	buildInputReparentingScene(sceneManager);
 	buildCameraScene(sceneManager);
-
 //	sceneManager.SwitchScene("Prefabs");
-	sceneManager.SwitchScene("InputReparenting");
+	sceneManager.SwitchScene("Networking");
 //	sceneManager.SwitchScene("Camera");
 
 	blockyEngine.Run();

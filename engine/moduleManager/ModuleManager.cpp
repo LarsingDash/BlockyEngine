@@ -6,6 +6,7 @@
 
 #include "modules/WindowModule.hpp"
 #include "modules/physics/PhysicsModule.hpp"
+#include "moduleManager/modules/networking/NetworkingModule.hpp"
 
 ModuleManager* ModuleManager::_instance{nullptr};
 
@@ -18,6 +19,7 @@ ModuleManager* ModuleManager::CreateInstance() {
 ModuleManager::ModuleManager() : modules{} {
 	modules[typeid(WindowModule)] = (std::make_unique<WindowModule>());
 	modules[typeid(PhysicsModule)] = (std::make_unique<PhysicsModule>());
+	modules[typeid(NetworkingModule)] = std::make_unique<NetworkingModule>();
 }
 
 void ModuleManager::Update(float delta) {

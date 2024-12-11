@@ -7,24 +7,34 @@
 
 #include <string>
 #include <vector>
+#include <thread>
+#include <mutex>
+#include <queue>
 #include "SDL_net.h"
 #include "moduleManager/ModuleWrapper.hpp"
-
-struct PeerConnection {
-	TCPsocket socket;
-	IPaddress address;
-};
 
 
 class NetworkingModule : public ModuleWrapper {
 	public:
 		NetworkingModule();
-		~NetworkingModule() override;
+		~NetworkingModule();
+
+		void Host(Uint16 port);
+		bool Join(const std::string& host, Uint16 port);
+		void SendMessage(const std::string& message);
+		void Disconnect();
 
 		void Update(float delta) override;
 
+	private:
+		void ProcessIncomingMessages();
 
-
+		UDPsocket udpSocket;
+		IPaddress peerAddress;
+		std::thread networkingThread;
+		std::mutex messageMutex;
+		std::queue<std::string> incomingMessages;
+		bool isRunning;
 };
 
 #endif //BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_NETWORKING_NETWORKINGMODULE_HPP_

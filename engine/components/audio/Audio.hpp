@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <string>
 #include <components/Component.hpp>
-#include <SDL2_mixer/i686-w64-mingw32/include/SDL2/SDL_mixer.h> //todo: SDL_mixer.h
+#include <SDL_mixer.h>
 
 class AudioModule;
 

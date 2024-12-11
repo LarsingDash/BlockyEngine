@@ -63,8 +63,6 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 		rectangle.AddComponent<Audio>("bubble-pop", "../assets/audioFiles/bubble-pop.mp3", 255, false);
 		rectangle.AddComponent<Audio>("bubble-pop", "../assets/audioFiles/bubble-pop.mp3", 255, false);
 		rectangle.GetComponent<Audio>("bubble-pop")->Play();
-		rectangle.GetComponent<Audio>("bubble-pop")->Play();
-		rectangle.GetComponent<Audio>("bubble-pop")->Stop();
 		rectangle.GetComponent<Audio>("bubble-pop")->Stop();
 	}
 	else {

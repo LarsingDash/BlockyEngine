@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <SDL.h>
-#include <logging/BLogger.hpp>
+#include "logging/BLogger.hpp"
+#include "components/audio/Audio.hpp"
 
-#include "components/audio/Audio.hpp" //todo: audio.hpp
 constexpr int NO_CHANNEL_SPECIFIED = -1;
 
 AudioModule::AudioModule() {
@@ -33,19 +33,20 @@ AudioModule::AudioModule() {
 }
 
 void AudioModule::AddAudio(const Audio& audio) {
-	BLOCKY_ENGINE_DEBUG("AddAudio: " + audio.tag + " " + audio._fragment.path);
 	auto it = _audioPaths.find(audio.tag);
 	if (it == _audioPaths.end()) {
-		_audioPaths.emplace(std::pair<std::string, AudioFragment>(audio.tag, audio._fragment));
-		_audioPaths.at(audio.tag).audioChunk = Mix_LoadWAV(audio._fragment.path.c_str());
+		auto fragment = AudioFragment(audio.path, audio.volume, audio.isLooping);
 
-		_audioPaths.at(audio.tag).numberOfInstances = 1;
+		fragment.audioChunk = Mix_LoadWAV(fragment.path.c_str());
+		fragment.numberOfInstances = 1;
 
-		if (nullptr == _audioPaths.at(audio.tag).audioChunk) {
+		if (nullptr == fragment.audioChunk) {
 			std::string error = Mix_GetError();
 			BLOCKY_ENGINE_ERROR("Could not AddAudio, error: " + error);
 			return;
 		}
+
+		_audioPaths.emplace(std::pair(audio.tag, fragment));
 	}
 	else {
 		it->second.numberOfInstances++;
@@ -53,7 +54,6 @@ void AudioModule::AddAudio(const Audio& audio) {
 }
 
 void AudioModule::RemoveAudio(const Audio& audio) {
-	BLOCKY_ENGINE_DEBUG("RemoveAudio: " + audio.tag + " " + audio._fragment.path);
 	auto it = _audioPaths.find(audio.tag);
 	if (it == _audioPaths.end()) {
 		return;

@@ -6,17 +6,16 @@
 
 #include <moduleManager/ModuleManager.hpp>
 #include <logging/BLogger.hpp>
+#include <utility>
 #include "moduleManager/modules/audio/AudioModule.hpp"
 #include <SDL.h>
 
 constexpr int NO_CHANNEL_SPECIFIED = -1;
 
 Audio::Audio(GameObject* gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping):
-	Component(gameObject, tag), _fragment(std::move(path), volume, isLooping) {}
+	Component(gameObject, tag), path(std::move(path)), volume(volume), isLooping(isLooping) {}
 
 void Audio::Play(int loops) const {
-	BLOCKY_ENGINE_DEBUG("Play: " + tag + " loops: " + std::to_string(loops));
-
 	ModuleManager::GetInstance().GetModule<AudioModule>().PlayAudio(tag, loops);
 }
 
@@ -24,8 +23,6 @@ void Audio::Play(int loops) const {
 // when stop is called when not playing the sound, a random channel is stopped,
 //	only audio that is started after this one has finished may stop playing.
 void Audio::Stop() const {
-	BLOCKY_ENGINE_DEBUG("Stop: " + tag);
-
 	ModuleManager::GetInstance().GetModule<AudioModule>().StopAudio(tag);
 }
 

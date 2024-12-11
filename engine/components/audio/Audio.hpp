@@ -7,23 +7,8 @@
 #include <cstdint>
 #include <string>
 #include <components/Component.hpp>
-#include <SDL_mixer.h>
 
 class AudioModule;
-
-struct AudioFragment {
-	AudioFragment(std::string path, uint8_t volume, bool isLooping) : path(std::move(path)), volume(volume),
-	                                                                  isLooping(isLooping) {}
-
-	AudioFragment(const AudioFragment&) = default;
-
-	std::string path;
-	Mix_Chunk* audioChunk{};
-	int playingChannel{};
-	uint8_t volume;
-	bool isLooping;
-	uint8_t numberOfInstances{};
-};
 
 class Audio : public Component {
 public:
@@ -41,7 +26,9 @@ private:
 	friend AudioModule;
 	Component* _clone(const GameObject& parent) override;
 
-	AudioFragment _fragment;
+	std::string path;
+	uint8_t volume;
+	bool isLooping;
 };
 
 #endif //AUDIO_HPP

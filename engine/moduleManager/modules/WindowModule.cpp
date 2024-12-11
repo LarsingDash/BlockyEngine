@@ -10,7 +10,7 @@
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 
-WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) {
+WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr), _context() {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 		std::string err("Couldn't init video: ");
 		err += SDL_GetError();
@@ -25,8 +25,9 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) 
 	}
 
 	//Create window
+	const auto& configs = BlockyEngine::GetConfigs();
 	_window = SDL_CreateWindow("SDLTest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-							   WindowModule::WINDOW_WIDTH, WindowModule::WINDOW_HEIGHT,
+							   configs->windowWidth, configs->windowHeight,
 							   SDL_WINDOW_SHOWN);
 	if (!_window) {
 		std::string err("Couldn't create window: ");

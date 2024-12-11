@@ -4,6 +4,7 @@
 
 #include "MouseCameraController.hpp"
 
+#include "BlockyEngine.hpp"
 #include "gameObject/GameObject.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
@@ -11,17 +12,17 @@
 
 MouseCameraController::MouseCameraController(GameObject* gameObject, const char* tag) :
 		Component(gameObject, tag, false),
-		_threshold(static_cast<float>(WindowModule::WINDOW_WIDTH) * 0.25f / 2.f,
-				   static_cast<float>(WindowModule::WINDOW_HEIGHT) * 0.25f / 2.f),
-		_middle(WindowModule::WINDOW_WIDTH / 2, WindowModule::WINDOW_HEIGHT / 2),
+		_threshold(static_cast<float>(BlockyEngine::GetConfigs()->windowWidth) * 0.25f / 2.f,
+				   static_cast<float>(BlockyEngine::GetConfigs()->windowHeight) * 0.25f / 2.f),
+		_middle(BlockyEngine::GetConfigs()->windowWidth / 2, BlockyEngine::GetConfigs()->windowHeight / 2),
 		_camera(ModuleManager::GetInstance().GetModule<WindowModule>().GetRenderingModule().GetCamera()),
 		_inputModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule()) {}
 
 void MouseCameraController::Start() {
 	_camera.SetPosition(0.f, 0.f);
 	_camera.SetBoundary(
-			static_cast<float>(WindowModule::WINDOW_WIDTH) / 2.f,
-			static_cast<float>(WindowModule::WINDOW_HEIGHT) / 2.f
+			static_cast<float>(BlockyEngine::GetConfigs()->windowWidth) / 2.f,
+			static_cast<float>(BlockyEngine::GetConfigs()->windowHeight) / 2.f
 	);
 }
 

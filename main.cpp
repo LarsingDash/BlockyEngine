@@ -104,8 +104,13 @@ void buildCameraScene(SceneManager& scenes) {
 	root->AddComponent<MouseCameraController>("CameraController");
 
 	auto& box = root->AddChild("Box");
-	box.transform->SetScale(200, 150);
-	box.transform->SetPosition(400, 300);
+
+	const auto& configs = BlockyEngine::GetConfigs();
+	box.transform->SetScale(static_cast<float>(configs->windowWidth) / 4.f,
+							static_cast<float>(configs->windowHeight) / 4.f);
+	box.transform->SetPosition(static_cast<float>(configs->windowWidth) / 2.f,
+							   static_cast<float>(configs->windowHeight) / 2.f);
+
 	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
 	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);
 	box.AddComponent<SpriteRenderable>("animTag", "../assets/character_spritesheet.png", "spriteTag");
@@ -117,7 +122,13 @@ void buildCameraScene(SceneManager& scenes) {
 }
 
 int main(int argc, char* argv[]) {
-	BlockyEngine blockyEngine;
+	BlockyEngine::BlockyConfigs configs{
+			800,
+			600,
+			"../assets/fonts/defaultFont.ttf"
+	};
+
+	BlockyEngine blockyEngine{configs};
 	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 
 	buildPrefabScene(sceneManager);

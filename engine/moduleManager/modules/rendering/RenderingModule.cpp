@@ -2,6 +2,8 @@
 // Created by 11896 on 15/11/2024.
 //
 
+#include <iomanip>
+#include <sstream>
 #include "RenderingModule.hpp"
 #include "SDL_render.h"
 #include "SDL2_gfx/SDL2_gfxPrimitives.h"
@@ -52,7 +54,7 @@ void RenderingModule::Render() {
 	}
 
 	if (TimeUtil::GetInstance().IsFpsCounterEnabled()) {
-		_renderFps();
+		_renderGameInfo();
 	}
 }
 
@@ -67,7 +69,7 @@ void RenderingModule::_renderRectangle(RectangleRenderable& renderable) {
 
 	//Pre-getting dimensions
 	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
-	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
+	const auto& scale = transform.GetWorldScale();
 	float x = position.x;
 	float y = position.y;
 	float w = scale.x / 2.f;
@@ -109,7 +111,7 @@ void RenderingModule::_renderEllipse(EllipseRenderable& renderable) {
 
 	ComponentTransform& transform = *renderable.componentTransform;
 	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
-	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
+	const auto& scale = transform.GetWorldScale();
 
 	auto centerX = static_cast<Sint16>(position.x);
 	auto centerY = static_cast<Sint16>(position.y);
@@ -210,7 +212,7 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 	}
 
 	const auto& position = transform.GetWorldPosition() - _camera->GetPosition();
-	const auto& scale = transform.GetWorldScale() * _camera->GetScale();
+	const auto& scale = transform.GetWorldScale();
 	SDL_FRect destRect = {
 			position.x - scale.x / 2.0f,
 			position.y - scale.y / 2.0f,
@@ -251,7 +253,7 @@ void RenderingModule::_renderText(TextRenderable& renderable) {
 	);
 }
 
-void RenderingModule::_renderFps() {
+void RenderingModule::_renderGameInfo() {
 	int fps = TimeUtil::GetInstance().GetFPS();
 
 	SDL_Color color;
@@ -270,9 +272,20 @@ void RenderingModule::_renderFps() {
 
 	int textWidth, textHeight;
 	TTF_SizeText(_font, fpsText.c_str(), &textWidth, &textHeight);
-	SDL_FPoint position = {static_cast<float>(windowWidth - textWidth - 10), 10};
+	SDL_FPoint fpsPosition = {static_cast<float>(windowWidth - textWidth - 10), 10};
 
-	_renderTextHelper(fpsText, color, position, 0, false);
+	_renderTextHelper(fpsText, color, fpsPosition, 0, false);
+
+	float gameSpeed = TimeUtil::GetInstance().GetGameSpeed();
+
+	std::ostringstream stream;
+	stream << std::fixed << std::setprecision(3) << gameSpeed;
+	std::string gameSpeedText = "Speed: " + stream.str() + "x";
+
+	TTF_SizeText(_font, gameSpeedText.c_str(), &textWidth, &textHeight);
+	SDL_FPoint speedPosition = {static_cast<float>(windowWidth - textWidth - 10), static_cast<float>(10 + textHeight + 5)};
+
+	_renderTextHelper(gameSpeedText, {255, 255, 255, 255}, speedPosition, 0, false);
 }
 
 void RenderingModule::_renderTextHelper(const std::string& text,

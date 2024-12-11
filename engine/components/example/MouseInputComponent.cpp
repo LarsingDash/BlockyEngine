@@ -4,6 +4,7 @@
 
 #include "MouseInputComponent.hpp"
 
+#include <components/audio/Audio.hpp>
 #include <imgui/imgui.h>
 #include <components/physics/collider/CircleCollider.hpp>
 #include <components/physics/rigidBody/BoxRigidBody.hpp>
@@ -59,10 +60,16 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 	if (state == MouseButtonState::BUTTON_DOWN) {
 		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, std::numeric_limits<int>::max(), true);
 		rectangle.AddComponent<BoxRigidBody>("BoxRigidBody", physicsProperties);
+		rectangle.AddComponent<Audio>("bubble-pop", "../assets/audioFiles/bubble-pop.mp3", 255, false);
+		rectangle.AddComponent<Audio>("bubble-pop", "../assets/audioFiles/bubble-pop.mp3", 255, false);
+		rectangle.GetComponent<Audio>("bubble-pop")->Play();
+		rectangle.GetComponent<Audio>("bubble-pop")->Stop();
 	}
 	else {
 		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, std::numeric_limits<int>::max(), true);
 		rectangle.AddComponent<CircleCollider>("CircleRigidBody");
+		rectangle.AddComponent<Audio>("squish-pop", "../assets/audioFiles/squish-pop.mp3", 255, false).Play();
+		rectangle.RemoveComponent<Audio>("squish-pop");
 	}
 }
 

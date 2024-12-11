@@ -21,8 +21,11 @@ setup_dependencies()
 if (${MINGW})
     message(STATUS "BUILDING MINGW SDL2")
     set(SDL2_DIR "${DEPS_DIR}/SDL2/cmake")
-    message("SDL DIR: ${SDL2_DIR}")
+    set(SDL2_mixer_DIR "${DEPS_DIR}/SDL2_mixer/cmake")
+    set(SDL2_ttf_DIR "${DEPS_DIR}/SDL2_ttf/cmake")
     find_package(SDL2 CONFIG REQUIRED)
+    find_package(SDL2_mixer CONFIG REQUIRED)
+    find_package(SDL2_ttf CONFIG REQUIRED)
 
     message("SDL2 INCLUDE DIRS: ${SDL2_INCLUDE_DIRS}")
     message("SDL2 LIBRARY DIRS: ${SDL2_LIBRARIES}")
@@ -69,14 +72,16 @@ add_subdirectory(gameObject)
 add_subdirectory(logging)
 add_subdirectory(utilities)
 
-set(SDL_TTF_DIR "${DEPS_DIR}/SDL_ttf/x86_64-w64-mingw32")
+set(SDL_TTF_INCLUDE_DIR "${DEPS_DIR}/SDL2_ttf/x86_64-w64-mingw32/include/SDL2")
+set(SDL2_mixer_INCLUDE_DIR "${DEPS_DIR}/SDL2_mixer/x86_64-w64-mingw32/include/SDL2")
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         mingw32
         glm
         SDL2::SDL2
+        SDL2_mixer::SDL2_mixer
         SDL2::SDL2main
         sdl_gfx
-        ${SDL_TTF_DIR}/lib/libSDL2_ttf.dll.a
+        SDL2_ttf::SDL2_ttf
         box2d
 )
 
@@ -105,16 +110,19 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
         ${DEPS_DIR}
         ${IMGUI_PATH}
         ${IMGUI_PATH}/backends
-        ${SDL_TTF_DIR}/include/SDL2
+        ${SDL_TTF_INCLUDE_DIR}
+        ${SDL2_mixer_INCLUDE_DIR}
 )
 
 # Copies dll to build directory
 if (MINGW)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll")
-        copy_dll_to_build(SDL2_TTF_DLL "${SDL_TTF_DIR}/../x86_64-w64-mingw32/bin/SDL2_ttf.dll")
+        copy_dll_to_build(SDL2_mixer_DLL "${SDL2_mixer_DIR}/../x86_64-w64-mingw32/bin/SDL2_mixer.dll")
+        copy_dll_to_build(SDL2_TTF_DLL "${SDL2_ttf_DIR}/../x86_64-w64-mingw32/bin/SDL2_ttf.dll")
     else ()
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../i686-w64-mingw32/bin/SDL2.dll")
-        copy_dll_to_build(SDL2_TTF_DLL "${SDL_TTF_DIR}/../i686-w64-mingw32/bin/SDL2_ttf.dll")
+        copy_dll_to_build(SDL2_mixer_DLL "${SDL2_mixer_DIR}/../i686-w64-mingw32/bin/SDL2_mixer.dll")
+        copy_dll_to_build(SDL2_TTF_DLL "${SDL2_ttf_DIR}/../i686-w64-mingw32/bin/SDL2_ttf.dll")
     endif ()
 endif ()

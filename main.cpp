@@ -1,4 +1,5 @@
 #include <memory>
+#include <components/audio/Audio.hpp>
 #include <components/physics/rigidBody/BoxRigidBody.hpp>
 
 #include "BlockyEngine.hpp"
@@ -58,6 +59,7 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	parentA.transform->SetRotation(20);
 	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
 	parentA.AddComponent<BoxRigidBody>("ParentARB", physicsProperties);
+	parentA.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/clowns-jingle.mp3", 55, true).Play();
 
 	//ParentB
 	auto& parentB = root->AddChild("ParentB");
@@ -70,8 +72,8 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	//Animated Object
 	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	animatedObject.AddComponent<AnimationRenderable>(
-			"animTag", "../assets/character_spritesheet.png",
-			"spriteTag", 32, 32
+		"animTag", "../assets/character_spritesheet.png",
+		"spriteTag", 32, 32
 	);
 
 	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
@@ -124,9 +126,9 @@ int main(int argc, char* argv[]) {
 	buildInputReparentingScene(sceneManager);
 	buildCameraScene(sceneManager);
 
-//	sceneManager.SwitchScene("Prefabs");
+	//	sceneManager.SwitchScene("Prefabs");
 	sceneManager.SwitchScene("InputReparenting");
-//	sceneManager.SwitchScene("Camera");
+	//	sceneManager.SwitchScene("Camera");
 
 	blockyEngine.Run();
 

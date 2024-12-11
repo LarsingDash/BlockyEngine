@@ -11,25 +11,33 @@
 
 constexpr int NO_CHANNEL_SPECIFIED = -1;
 
-Audio::Audio(GameObject& gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping):
+Audio::Audio(GameObject* gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping):
 	Component(gameObject, tag), _fragment(std::move(path), volume, isLooping) {}
 
 void Audio::Play(int loops) const {
 	BLOCKY_ENGINE_DEBUG("Play: " + tag + " loops: " + std::to_string(loops));
 
-	ModuleManager::getInstance().getModule<AudioModule>().PlayAudio(tag, loops);
+	ModuleManager::GetInstance().GetModule<AudioModule>().PlayAudio(tag, loops);
 }
 
+// will only stop last instance with this (unique)tag.
+// when stop is called when not playing the sound, a random channel is stopped,
+//	only audio that is started after this one has finished may stop playing.
 void Audio::Stop() const {
 	BLOCKY_ENGINE_DEBUG("Stop: " + tag);
 
-	ModuleManager::getInstance().getModule<AudioModule>().StopAudio(tag);
+	ModuleManager::GetInstance().GetModule<AudioModule>().StopAudio(tag);
+}
+
+Component* Audio::_clone(const GameObject& parent) {
+	auto clone = new Audio(*this);
+	return clone;
 }
 
 void Audio::Start() {
-	ModuleManager::getInstance().getModule<AudioModule>().AddAudio(*this);
+	ModuleManager::GetInstance().GetModule<AudioModule>().AddAudio(*this);
 }
 
 void Audio::End() {
-	ModuleManager::getInstance().getModule<AudioModule>().RemoveAudio(*this);
+	ModuleManager::GetInstance().GetModule<AudioModule>().RemoveAudio(*this);
 }

@@ -10,11 +10,12 @@ set(SDLTTF_VERSION "2.22.0")
 set(GLM_VERSION "1.0.1")
 set(BOX2D_VERSION "2.4.1")
 set(IMGUI_VERSION "1.91.5")
+set(SDL_MIXER_VERSION "2.8.0")
 
 set(BLOCKY_DEPS
         googletest https://github.com/google/googletest/releases/download/v${GTEST_VERSION}/googletest-${GTEST_VERSION}.tar.gz
         SDL2_gfx https://github.com/Dogukan-lab/sdl_gfx_offshoot/releases/download/v1.0.0/SDL_gfx.tar.gz
-        SDL_ttf https://github.com/libsdl-org/SDL_ttf/releases/download/release-${SDLTTF_VERSION}/SDL2_ttf-devel-${SDLTTF_VERSION}-mingw.tar.gz        glm https://github.com/g-truc/glm/releases/download/1.0.1/glm-1.0.1-light.zip
+        SDL_ttf https://github.com/libsdl-org/SDL_ttf/releases/download/release-${SDLTTF_VERSION}/SDL2_ttf-devel-${SDLTTF_VERSION}-mingw.tar.gz glm https://github.com/g-truc/glm/releases/download/1.0.1/glm-1.0.1-light.zip
         box2d https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz
         stb_image https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
         imgui https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz

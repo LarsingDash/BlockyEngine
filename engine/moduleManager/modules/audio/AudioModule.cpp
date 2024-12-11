@@ -76,8 +76,9 @@ void AudioModule::PlayAudio(const std::string& tag, int loops) {
 	}
 }
 
-// when using stop, specify unique tag, so when stop is called right (only)instance of tag is stopped.
-// when stop is called when not playing the sound, a random channel is stopped.
+// will only stop last instance with this (unique)tag.
+// when stop is called when not playing the sound, a random channel is stopped,
+//	only audio that is started after this one has finished may stop playing.
 void AudioModule::StopAudio(const std::string& tag) {
 	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }

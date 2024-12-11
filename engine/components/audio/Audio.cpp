@@ -5,15 +5,10 @@
 #include "Audio.hpp"
 
 #include <moduleManager/ModuleManager.hpp>
-#include <logging/BLogger.hpp>
-#include <utility>
 #include "moduleManager/modules/audio/AudioModule.hpp"
-#include <SDL.h>
 
-constexpr int NO_CHANNEL_SPECIFIED = -1;
-
-Audio::Audio(GameObject* gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping):
-	Component(gameObject, tag), path(std::move(path)), volume(volume), isLooping(isLooping) {}
+Audio::Audio(GameObject* gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping) :
+		Component(gameObject, tag), _path(std::move(path)), _volume(volume), _isLooping(isLooping) {}
 
 void Audio::Play(int loops) const {
 	ModuleManager::GetInstance().GetModule<AudioModule>().PlayAudio(tag, loops);

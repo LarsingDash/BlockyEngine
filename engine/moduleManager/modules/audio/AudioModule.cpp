@@ -35,7 +35,11 @@ AudioModule::AudioModule() {
 void AudioModule::AddAudio(const Audio& audio) {
 	auto it = _audioPaths.find(audio.tag);
 	if (it == _audioPaths.end()) {
-		auto fragment = AudioFragment(audio.path, audio.volume, audio.isLooping);
+		auto fragment = AudioFragment(
+				audio.GetPath(),
+				audio.GetVolume(),
+				audio.GetIsLooping()
+		);
 
 		fragment.audioChunk = Mix_LoadWAV(fragment.path.c_str());
 		fragment.numberOfInstances = 1;
@@ -47,8 +51,7 @@ void AudioModule::AddAudio(const Audio& audio) {
 		}
 
 		_audioPaths.emplace(std::pair(audio.tag, fragment));
-	}
-	else {
+	} else {
 		it->second.numberOfInstances++;
 	}
 }
@@ -67,7 +70,7 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 }
 
 void AudioModule::PlayAudio(const std::string& tag, int loops) {
-	for (auto& [_tag,fragment] : _audioPaths) {
+	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }
 		if (fragment.isLooping) { loops = -1; }
 

@@ -9,8 +9,6 @@
 #include "logging/BLogger.hpp"
 #include "components/audio/Audio.hpp"
 
-constexpr int NO_CHANNEL_SPECIFIED = -1;
-
 AudioModule::AudioModule() {
 	constexpr int flags = MIX_INIT_MP3;
 
@@ -69,15 +67,27 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 
 	if (it->second.numberOfInstances <= 0) {
 		_audioPaths.erase(it);
+
+		// stop playing looping audio if all instances are removed, otherwise previous scene audio will keep playing
+		if (!it->second.isLooping) { return; }
+		for (auto itt : it->second.playingChannel) {
+			StopAudio(audio.tag);
+		}
 	}
 }
 
 void AudioModule::PlayAudio(const std::string& tag, int loops) {
 	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }
-		if (fragment.isLooping) { loops = -1; }
-
-		fragment.playingChannel = Mix_PlayChannel(NO_CHANNEL_SPECIFIED, fragment.audioChunk, loops);
+		if (fragment.isLooping) {
+			loops = -1;
+		}
+		else {
+			// to allow to stop non looping preemptively only the last started audio can be stopped.
+			// see StopAudio() for more details
+			fragment.playingChannel.clear();
+		}
+		fragment.playingChannel.push_back(Mix_PlayChannel(NO_CHANNEL_SPECIFIED, fragment.audioChunk, loops));
 		return;
 	}
 }
@@ -89,12 +99,12 @@ void AudioModule::StopAudio(const std::string& tag) {
 	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }
 
-		if (fragment.playingChannel == NO_CHANNEL_SPECIFIED) {
+		if (fragment.playingChannel.empty()) {
 			return;
 		}
 
-		Mix_HaltChannel(fragment.playingChannel);
-		fragment.playingChannel = NO_CHANNEL_SPECIFIED;
+		Mix_HaltChannel(fragment.playingChannel.back());
+		fragment.playingChannel.pop_back();
 		return;
 	}
 }

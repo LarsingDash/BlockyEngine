@@ -59,8 +59,8 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	parentA.transform->SetRotation(20);
 	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
 	parentA.AddComponent<BoxRigidBody>("ParentARB", physicsProperties);
-	parentA.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/clowns-jingle.mp3", 255, true);
-	parentA.GetComponent<Audio>("clowns-jingle")->Play();
+	parentA.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/clowns-jingle.mp3", 10, true);
+	parentA.GetComponent<Audio>("clowns-jingle")->Play(); //todo: audio in scene switching
 
 	//ParentB
 	auto& parentB = root->AddChild("ParentB");

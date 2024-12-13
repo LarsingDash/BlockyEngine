@@ -7,8 +7,11 @@
 #include <map>
 #include <SDL_mixer.h>
 #include <string>
+#include <vector>
 #include <components/audio/Audio.hpp>
 #include <moduleManager/ModuleWrapper.hpp>
+
+constexpr int NO_CHANNEL_SPECIFIED = -1;
 
 struct AudioFragment {
 	AudioFragment(std::string path, uint8_t volume, bool isLooping) : path(std::move(path)), volume(volume),
@@ -18,7 +21,7 @@ struct AudioFragment {
 	uint8_t volume;
 	bool isLooping;
 	Mix_Chunk* audioChunk{};
-	int playingChannel{};
+	std::vector<int> playingChannel{};
 	uint8_t numberOfInstances{};
 };
 

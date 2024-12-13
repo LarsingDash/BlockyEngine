@@ -36,13 +36,12 @@ void AudioModule::AddAudio(const Audio& audio) {
 	auto it = _audioPaths.find(audio.tag);
 	if (it == _audioPaths.end()) {
 		auto fragment = AudioFragment(
-				audio.GetPath(),
-				audio.GetVolume(),
-				audio.GetIsLooping()
+			audio.GetPath(),
+			audio.GetVolume(),
+			audio.GetIsLooping()
 		);
 
 		fragment.audioChunk = Mix_LoadWAV(fragment.path.c_str());
-		fragment.numberOfInstances = 1;
 
 		if (nullptr == fragment.audioChunk) {
 			std::string error = Mix_GetError();
@@ -50,8 +49,12 @@ void AudioModule::AddAudio(const Audio& audio) {
 			return;
 		}
 
+		Mix_VolumeChunk(fragment.audioChunk, audio.GetVolume() / 2);
+		fragment.numberOfInstances = 1;
+
 		_audioPaths.emplace(std::pair(audio.tag, fragment));
-	} else {
+	}
+	else {
 		it->second.numberOfInstances++;
 	}
 }

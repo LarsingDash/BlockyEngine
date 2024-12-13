@@ -36,7 +36,7 @@ public:
 	void StopAudio(const std::string& tag);
 
 private:
-	std::map<std::string, AudioFragment> _audioPaths;
+	std::map<std::string, AudioFragment> _audioPaths{};
 };
 
 #endif //AUDIOMODULE_HPP

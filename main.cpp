@@ -59,7 +59,8 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	parentA.transform->SetRotation(20);
 	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
 	parentA.AddComponent<BoxRigidBody>("ParentARB", physicsProperties);
-	parentA.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/clowns-jingle.mp3", 55, true).Play();
+	parentA.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/clowns-jingle.mp3", 255, true);
+	parentA.GetComponent<Audio>("clowns-jingle")->Play();
 
 	//ParentB
 	auto& parentB = root->AddChild("ParentB");
@@ -109,9 +110,9 @@ void buildCameraScene(SceneManager& scenes) {
 
 	const auto& configs = BlockyEngine::GetConfigs();
 	box.transform->SetScale(static_cast<float>(configs->windowWidth) / 4.f,
-							static_cast<float>(configs->windowHeight) / 4.f);
+	                        static_cast<float>(configs->windowHeight) / 4.f);
 	box.transform->SetPosition(static_cast<float>(configs->windowWidth) / 2.f,
-							   static_cast<float>(configs->windowHeight) / 2.f);
+	                           static_cast<float>(configs->windowHeight) / 2.f);
 
 	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
 	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);
@@ -125,9 +126,9 @@ void buildCameraScene(SceneManager& scenes) {
 
 int main(int argc, char* argv[]) {
 	BlockyEngine::BlockyConfigs configs{
-			800,
-			600,
-			"../assets/fonts/defaultFont.ttf"
+		800,
+		600,
+		"../assets/fonts/defaultFont.ttf"
 	};
 
 	BlockyEngine blockyEngine{configs};

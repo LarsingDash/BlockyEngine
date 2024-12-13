@@ -34,6 +34,8 @@ RenderingModule::~RenderingModule() = default;
 void RenderingModule::Render() {
 	for (const auto& [layer, list] : _renderables) {
 		for (Renderable& renderable : list) {
+			if (!renderable.gameObject->isActive) continue;
+			
 			switch (renderable.GetRenderableType()) {
 				case RECTANGLE:
 					_renderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));

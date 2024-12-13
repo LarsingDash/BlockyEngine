@@ -19,6 +19,7 @@ class AnimationController : public Component {
 		};
 
 		AnimationController(GameObject* gameObject, const char* tag);
+		~AnimationController();
 		
 		void Start() override;
 		void Update(float delta) override;

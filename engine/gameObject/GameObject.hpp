@@ -135,7 +135,7 @@ class GameObject {
 			//Create component and call Start() on it
 			auto typeIt = _components.find(type);
 			std::unique_ptr<T> component = std::make_unique<T>(this, componentTag, std::forward<Args>(args)...);
-			if (_isActive) {
+			if (isActive) {
 				component->Start();
 			}
 
@@ -162,7 +162,7 @@ class GameObject {
 
 			if (componentIt) {
 				//Call End()
-				if (!_isActive) {
+				if (!isActive) {
 					(*componentIt.value())->End();
 				}
 
@@ -199,7 +199,9 @@ class GameObject {
 		const std::string tag;
 		GameObject* parent;
 		std::unique_ptr<GameObjectTransform> transform;
+		bool isActive;
 
+	private:
 		//----- USINGS
 		using GameObjectList = std::vector<std::unique_ptr<GameObject>>;
 
@@ -263,7 +265,6 @@ class GameObject {
 		std::vector<std::unique_ptr<GameObject>> _children;
 		std::vector<GameObject*> _deletionList;
 
-		bool _isActive;
 		bool _isMarkedForDeletion;
 };
 

@@ -16,6 +16,7 @@ After installation (see below) Blocky Engine can be used following these steps:
 called on the BlockyEngine instance to let Blocky Engine take over the flow of the program.
 
 ```cpp
+#include <SDL_main.h>
 #include <BlockyEngine.hpp>
 #include "CustomComponents/ExampleComponent"
 
@@ -24,6 +25,7 @@ int main() {
     BlockyEngine::BlockyConfigs configs{
         800,
         600,
+        SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
         "../assets/fonts/defaultFont.ttf"
     };
 
@@ -214,19 +216,12 @@ include
 system environment variables).
 Or if that's too difficult simply copy and paste the DLL/SO into the cmake-build directory.
 
-### SDL2_gfx
-
 ### SDL2_gfx Offshoot
 
 For this project there is also a stripped down version of SDL_gfx
-[here](https://github.com/Dogukan-lab/sdl_gfx_offshoot/releases/tag/v1.0.0), there, will be no need
-to set up the cmake (seen below).
----
+[here](https://github.com/Dogukan-lab/sdl_gfx_offshoot/releases/tag/v1.0.0), there will be no need to set up the cmake (seen below).
 
-The Rendering Module, currently embedded in Blocky Engine, not only uses SDL2 for rendering, but also the SDL2_gfx
-extension library for certain specific functionality. This is a source-code library, of which all files can be
-downloaded at [the official website](https://www.ferzkopp.net/Software/SDL2_gfx/Docs/html/files.html). These files
-should be placed in `engine/dependencies/SDL2_gfx/` in addition to the following CMakeLists.txt:
+The Rendering Module, currently embedded in Blocky Engine, not only uses SDL2 for rendering, but also the SDL2_gfx extension library for certain specific functionality. This is a source-code library, of which all files can be downloaded at [the official website](https://www.ferzkopp.net/Software/SDL2_gfx/Docs/html/files.html). These files should be placed in `engine/dependencies/SDL2_gfx/` in addition to the following CMakeLists.txt:
 
 ```cmake
 find_package(SDL2 REQUIRED)

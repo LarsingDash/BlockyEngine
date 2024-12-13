@@ -1,3 +1,5 @@
+#include <SDL_main.h>
+
 #include <memory>
 #include <components/audio/Audio.hpp>
 #include <components/physics/rigidBody/BoxRigidBody.hpp>
@@ -108,11 +110,11 @@ void buildCameraScene(SceneManager& scenes) {
 
 	auto& box = root->AddChild("Box");
 
-	const auto& configs = BlockyEngine::GetConfigs();
-	box.transform->SetScale(static_cast<float>(configs->windowWidth) / 4.f,
-	                        static_cast<float>(configs->windowHeight) / 4.f);
-	box.transform->SetPosition(static_cast<float>(configs->windowWidth) / 2.f,
-	                           static_cast<float>(configs->windowHeight) / 2.f);
+	glm::vec2 screenSize = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
+	box.transform->SetScale(screenSize.x / 4.f,
+							screenSize.y / 4.f);
+	box.transform->SetPosition(screenSize.x / 2.f,
+							   screenSize.y / 2.f);
 
 	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
 	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);
@@ -126,9 +128,10 @@ void buildCameraScene(SceneManager& scenes) {
 
 int main(int argc, char* argv[]) {
 	BlockyEngine::BlockyConfigs configs{
-		800,
-		600,
-		"../assets/fonts/defaultFont.ttf"
+			800,
+			600,
+			SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
+			"../assets/fonts/defaultFont.ttf"
 	};
 
 	BlockyEngine blockyEngine{configs};

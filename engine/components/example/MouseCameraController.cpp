@@ -12,17 +12,27 @@
 
 MouseCameraController::MouseCameraController(GameObject* gameObject, const char* tag) :
 		Component(gameObject, tag, false),
-		_threshold(static_cast<float>(BlockyEngine::GetConfigs()->windowWidth) * 0.25f / 2.f,
-				   static_cast<float>(BlockyEngine::GetConfigs()->windowHeight) * 0.25f / 2.f),
-		_middle(BlockyEngine::GetConfigs()->windowWidth / 2, BlockyEngine::GetConfigs()->windowHeight / 2),
+		_threshold(), _middle(),
 		_camera(ModuleManager::GetInstance().GetModule<WindowModule>().GetRenderingModule().GetCamera()),
-		_inputModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule()) {}
+		_inputModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule()) {
+}
 
 void MouseCameraController::Start() {
+	glm::vec2 screenSize = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
+
+	_threshold = glm::vec2(
+			screenSize.x * 0.25f / 2.f,
+			screenSize.y * 0.25f / 2.f
+	);
+	_middle = glm::vec2(
+			screenSize.x / 2.f,
+			screenSize.y / 2.f
+	);
+
 	_camera.SetPosition(0.f, 0.f);
 	_camera.SetBoundary(
-			static_cast<float>(BlockyEngine::GetConfigs()->windowWidth) / 2.f,
-			static_cast<float>(BlockyEngine::GetConfigs()->windowHeight) / 2.f
+			screenSize.x / 2.f,
+			screenSize.y / 2.f
 	);
 }
 

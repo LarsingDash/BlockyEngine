@@ -162,7 +162,7 @@ class GameObject {
 
 			if (componentIt) {
 				//Call End()
-				if (!isActive) {
+				if (isActive) {
 					(*componentIt.value())->End();
 				}
 

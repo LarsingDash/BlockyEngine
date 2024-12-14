@@ -76,6 +76,7 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 	}
 }
 
+// to be able to stop looping audio don't call Play on the same tag with looping and non looping audio
 void AudioModule::PlayAudio(const std::string& tag, int loops) {
 	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }

@@ -10,6 +10,7 @@
 Audio::Audio(GameObject* gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping) :
 	Component(gameObject, tag), _path(std::move(path)), _volume(volume), _isLooping(isLooping) {}
 
+// to be able to stop looping audio don't call Play on the same tag with looping and non looping audio
 void Audio::Play(int loops) const {
 	ModuleManager::GetInstance().GetModule<AudioModule>().PlayAudio(tag, loops);
 }

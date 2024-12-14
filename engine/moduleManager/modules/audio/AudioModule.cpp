@@ -66,13 +66,13 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 	it->second.numberOfInstances--;
 
 	if (it->second.numberOfInstances <= 0) {
-		_audioPaths.erase(it);
-
 		// stop playing looping audio if all instances are removed, otherwise previous scene audio will keep playing
 		if (!it->second.isLooping) { return; }
 		for (auto itt : it->second.playingChannel) {
 			StopAudio(audio.tag);
 		}
+
+		_audioPaths.erase(it);
 	}
 }
 

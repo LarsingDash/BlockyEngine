@@ -43,7 +43,6 @@ void NetworkingComponent::RenderNetworkingGUI() {
 	static char host[128] = "127.0.0.1";
 	static int port = 12345;
 	static char message[512] = "";
-	static ImGuiTextBuffer logBuffer;
 	static bool autoScroll = true;
 
 	ImGui::TextColored(

@@ -57,6 +57,7 @@ void AudioModule::AddAudio(const Audio& audio) {
 	}
 }
 
+// Will stop audio where isLooping = true and all instances of audio.tag are removed, other audio will keep playing.
 void AudioModule::RemoveAudio(const Audio& audio) {
 	auto it = _audioPaths.find(audio.tag);
 	if (it == _audioPaths.end()) {
@@ -66,8 +67,6 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 	it->second.numberOfInstances--;
 
 	if (it->second.numberOfInstances <= 0) {
-		// stop playing looping audio if all instances are removed, otherwise previous scene audio will keep playing
-		if (!it->second.isLooping) { return; }
 		for (auto itt : it->second.playingChannel) {
 			StopAudio(audio.tag);
 		}
@@ -76,27 +75,22 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 	}
 }
 
-// to be able to stop looping audio don't call Play on the same tag with looping and non looping audio
 void AudioModule::PlayAudio(const std::string& tag, int loops) {
 	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }
 		if (fragment.isLooping) {
 			loops = -1;
+			fragment.playingChannel.push_back(Mix_PlayChannel(NO_CHANNEL_SPECIFIED, fragment.audioChunk, loops));
 		}
 		else {
-			// to allow to stop non looping preemptively only the last started audio can be stopped.
-			// see StopAudio() for more details
-			fragment.playingChannel.clear();
+			Mix_PlayChannel(NO_CHANNEL_SPECIFIED, fragment.audioChunk, loops);
 		}
-		fragment.playingChannel.push_back(Mix_PlayChannel(NO_CHANNEL_SPECIFIED, fragment.audioChunk, loops));
 		return;
 	}
 }
 
-// will only stop last started PlayAudio instance with this (unique)tag.
-// when stop is called when not playing the sound, a random channel is stopped,
-//	non looping audio chunk can only be stopped 1 time every PlayAudio.
-// for looping audio of a (unique)tag can all be stopped FILO 1 instance per time
+// Only audio fragment with isLooping = true can be stopped.
+// Will only stop last started PlayAudio instance with this (unique)tag, (FILO 1 instance per time).
 void AudioModule::StopAudio(const std::string& tag) {
 	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }

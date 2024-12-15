@@ -23,7 +23,7 @@ void NetworkingComponent::Start() {
 		RenderNetworkingGUI();
 	});
 
-	networkingModule.AddMessageListener([this](const std::string& message) {
+	networkingModule.AddMessageListener("NetListener1", [this](const std::string& message) {
 		OnMessageReceived(message);
 	});
 }
@@ -32,9 +32,8 @@ void NetworkingComponent::Update(float delta) {
 }
 
 void NetworkingComponent::End() {
-	networkingModule.RemoveMessageListener([this](const std::string& message) {
-		OnMessageReceived(message);
-	});
+	networkingModule.RemoveMessageListener("NetListener1");
+
 }
 
 void NetworkingComponent::RenderNetworkingGUI() {
@@ -120,7 +119,6 @@ void NetworkingComponent::RenderNetworkingGUI() {
 		ImGui::EndDisabled();
 	}
 
-	// Log section
 	ImGui::Separator();
 	ImGui::Text("Log");
 	ImGui::Checkbox("Auto-scroll", &autoScroll);

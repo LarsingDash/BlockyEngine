@@ -22,8 +22,8 @@ class NetworkingModule : public ModuleWrapper {
 
 		using MessageReceivedCallback = std::function<void(const std::string&)>;
 
-		void AddMessageListener(MessageReceivedCallback callback);
-		void RemoveMessageListener(MessageReceivedCallback callback);
+		void AddMessageListener(const std::string& tag, MessageReceivedCallback callback);
+		void RemoveMessageListener(const std::string& tag);
 
 		void Host(Uint16 port);
 		bool Join(const std::string& host, Uint16 port);
@@ -39,7 +39,7 @@ class NetworkingModule : public ModuleWrapper {
 		bool isConnected = false;
 
 
-		std::vector<MessageReceivedCallback> messageCallbacks;
+		std::unordered_map<std::string, MessageReceivedCallback> messageCallbacks;
 		UDPsocket udpSocket;
 		IPaddress peerAddress;
 		std::thread networkingThread;

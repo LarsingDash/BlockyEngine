@@ -123,7 +123,7 @@ void NetworkingModule::ProcessIncomingMessages() {
 			std::string message(reinterpret_cast<char*>(packet->data));
 			peerAddress = packet->address;
 			std::cout << "Notifying " << messageCallbacks.size() << " listeners!" <<std::endl;
-			for (const auto& callback : messageCallbacks) {
+			for (const auto& [tag, callback] : messageCallbacks) {
 				callback(message);
 			}
 		}
@@ -137,12 +137,13 @@ bool NetworkingModule::IsHosting() const {
 bool NetworkingModule::IsConnected() const {
 	return isConnected;
 }
-void NetworkingModule::AddMessageListener(MessageReceivedCallback callback) {
-	messageCallbacks.push_back(callback);
+
+void NetworkingModule::AddMessageListener(const std::string& tag, MessageReceivedCallback callback) {
+	messageCallbacks[tag] = std::move(callback);
 }
 
-void NetworkingModule::RemoveMessageListener(MessageReceivedCallback callback) {
-
+void NetworkingModule::RemoveMessageListener(const std::string& tag) {
+	messageCallbacks.erase(tag);
 }
 
 

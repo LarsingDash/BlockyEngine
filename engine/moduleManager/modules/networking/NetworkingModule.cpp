@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstring>
 #include <stdexcept>
+#include <functional>
 
 NetworkingModule::NetworkingModule() : isRunning(false), udpSocket(nullptr) {
 	if (SDLNet_Init() == -1) {
@@ -28,6 +29,8 @@ void NetworkingModule::Host(Uint16 port) {
 	isRunning = true;
 	networkingThread = std::thread(&NetworkingModule::ProcessIncomingMessages, this);
 	std::cout << "Hosting on port " << port << std::endl;
+	isHosting = true;
+	isConnected = true;
 }
 
 bool NetworkingModule::Join(const std::string& host, Uint16 port) {
@@ -44,6 +47,7 @@ bool NetworkingModule::Join(const std::string& host, Uint16 port) {
 	isRunning = true;
 	networkingThread = std::thread(&NetworkingModule::ProcessIncomingMessages, this);
 	std::cout << "Joined host " << host << " on port " << port << std::endl;
+	isConnected = true;
 	return true;
 }
 
@@ -92,7 +96,10 @@ void NetworkingModule::Disconnect() {
 		SDLNet_UDP_Close(udpSocket);
 		udpSocket = nullptr;
 	}
+	isHosting = false;
+	isConnected = false;
 	std::cout << "Disconnected from network." << std::endl;
+
 }
 
 void NetworkingModule::Update(float delta) {
@@ -112,16 +119,30 @@ void NetworkingModule::ProcessIncomingMessages() {
 
 	while (isRunning) {
 		if (SDLNet_UDP_Recv(udpSocket, packet)) {
-			{
-				std::lock_guard<std::mutex> lock(messageMutex);
-				incomingMessages.emplace(reinterpret_cast<char*>(packet->data));
-				peerAddress = packet->address;
-				std::cout << "Incoming message: " << reinterpret_cast<char*>(packet->data) << std::endl;
+			std::cout << "rceived package!" <<std::endl;
+			std::string message(reinterpret_cast<char*>(packet->data));
+			peerAddress = packet->address;
+			std::cout << "Notifying " << messageCallbacks.size() << " listeners!" <<std::endl;
+			for (const auto& callback : messageCallbacks) {
+				callback(message);
 			}
 		}
 	}
 
 	SDLNet_FreePacket(packet);
+}
+bool NetworkingModule::IsHosting() const {
+	return isHosting;
+}
+bool NetworkingModule::IsConnected() const {
+	return isConnected;
+}
+void NetworkingModule::AddMessageListener(MessageReceivedCallback callback) {
+	messageCallbacks.push_back(callback);
+}
+
+void NetworkingModule::RemoveMessageListener(MessageReceivedCallback callback) {
+
 }
 
 

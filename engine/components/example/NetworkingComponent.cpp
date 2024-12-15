@@ -3,6 +3,7 @@
 //
 
 #include <cstring>
+#include <iostream>
 #include "NetworkingComponent.hpp"
 #include "moduleManager/ModuleManager.hpp"
 
@@ -21,37 +22,135 @@ void NetworkingComponent::Start() {
 	imguiModule.AddComponent("Networking", [this]() {
 		RenderNetworkingGUI();
 	});
+
+	networkingModule.AddMessageListener([this](const std::string& message) {
+		OnMessageReceived(message);
+	});
 }
 
 void NetworkingComponent::Update(float delta) {
-	networkingModule.Update(delta);
 }
 
-void NetworkingComponent::End() {}
+void NetworkingComponent::End() {
+	networkingModule.RemoveMessageListener([this](const std::string& message) {
+		OnMessageReceived(message);
+	});
+}
 
 void NetworkingComponent::RenderNetworkingGUI() {
-	ImGui::Begin("Networking Test");
+	ImGui::Begin("Networking");
 
 	static char host[128] = "127.0.0.1";
 	static int port = 12345;
 	static char message[512] = "";
+	static ImGuiTextBuffer logBuffer;
+	static bool autoScroll = true;
 
-	if (ImGui::Button("Host")) {
-		networkingModule.Host(port);
+	ImGui::TextColored(
+			networkingModule.IsHosting() ? ImVec4(0.0f, 1.0f, 0.0f, 1.0f) :
+			networkingModule.IsConnected() ? ImVec4(0.0f, 1.0f, 1.0f, 1.0f) :
+			ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
+			"Status: %s",
+			networkingModule.IsHosting() ? "Hosting" :
+			networkingModule.IsConnected() ? "Connected" : "Disconnected"
+	);
+
+	ImGui::Separator();
+	ImGui::Text("Connection Settings");
+
+	bool isActive = !networkingModule.IsHosting() && !networkingModule.IsConnected();
+
+	if (!isActive) {
+		ImGui::BeginDisabled();
 	}
 
 	ImGui::InputText("Host Address", host, sizeof(host));
 	ImGui::InputInt("Port", &port);
-	if (ImGui::Button("Join")) {
-		networkingModule.Join(host, port);
+
+	if (ImGui::Button("Host", ImVec2(120, 0)) && isActive) {
+		try {
+			networkingModule.Host(port);
+			logBuffer.appendf("[%s] Started hosting on port %d\n",
+							  GetTimestamp().c_str(), port);
+		} catch (const std::exception& e) {
+			logBuffer.appendf("[%s] Error hosting: %s\n",
+							  GetTimestamp().c_str(), e.what());
+		}
 	}
 
-	ImGui::InputText("Message", message, sizeof(message));
-	if (ImGui::Button("Send")) {
-		networkingModule.SendMessage(message);
+	ImGui::SameLine();
+
+	if (ImGui::Button("Join", ImVec2(120, 0)) && isActive) {
+		try {
+			if (networkingModule.Join(host, port)) {
+				logBuffer.appendf("[%s] Connected to %s:%d\n",
+								  GetTimestamp().c_str(), host, port);
+			}
+		} catch (const std::exception& e) {
+			logBuffer.appendf("[%s] Error joining: %s\n",
+							  GetTimestamp().c_str(), e.what());
+		}
 	}
+
+	if (!isActive) {
+		ImGui::EndDisabled();
+	}
+
+	if (!isActive) {
+		if (ImGui::Button("Disconnect", ImVec2(120, 0))) {
+			networkingModule.Disconnect();
+			logBuffer.appendf("[%s] Disconnected\n", GetTimestamp().c_str());
+		}
+	}
+
+	ImGui::Separator();
+	ImGui::Text("Message");
+
+	if (!isActive) {
+		ImGui::InputText("##message", message, sizeof(message));
+		if (ImGui::Button("Send", ImVec2(120, 0))) {
+			networkingModule.SendMessage(message);
+			logBuffer.appendf("[%s] Sent: %s\n",
+							  GetTimestamp().c_str(), message);
+			memset(message, 0, sizeof(message));
+		}
+	} else {
+		ImGui::BeginDisabled();
+		ImGui::InputText("##message", message, sizeof(message));
+		ImGui::Button("Send", ImVec2(120, 0));
+		ImGui::EndDisabled();
+	}
+
+	// Log section
+	ImGui::Separator();
+	ImGui::Text("Log");
+	ImGui::Checkbox("Auto-scroll", &autoScroll);
+	ImGui::SameLine();
+	if (ImGui::Button("Clear")) {
+		logBuffer.clear();
+	}
+
+	ImGui::BeginChild("ScrollingRegion", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::TextUnformatted(logBuffer.begin(), logBuffer.end());
+	if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+		ImGui::SetScrollHereY(1.0f);
+	}
+	ImGui::EndChild();
 
 	ImGui::End();
+}
+
+void NetworkingComponent::OnMessageReceived(const std::string& message) {
+	std::cout << "On message received triggered!" << std::endl;
+	logBuffer.appendf("[%s] Received: %s\n", GetTimestamp().c_str(), message.c_str());
+}
+
+std::string NetworkingComponent::GetTimestamp() {
+	auto now = std::chrono::system_clock::now();
+	auto time = std::chrono::system_clock::to_time_t(now);
+	char buffer[32];
+	std::strftime(buffer, sizeof(buffer), "%H:%M:%S", std::localtime(&time));
+	return buffer;
 }
 
 

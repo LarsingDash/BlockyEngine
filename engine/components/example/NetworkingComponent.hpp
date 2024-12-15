@@ -17,9 +17,13 @@ class NetworkingComponent : public Component {
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
+		std::string GetTimestamp();
 
 	private:
 		void RenderNetworkingGUI();
+
+		ImGuiTextBuffer logBuffer;
+		void OnMessageReceived(const std::string& message);
 
 		NetworkingModule& networkingModule;
 		ImGuiRenderingModule& imguiModule;

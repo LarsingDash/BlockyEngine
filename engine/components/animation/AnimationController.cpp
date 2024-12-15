@@ -11,6 +11,10 @@
 AnimationController::AnimationController(GameObject* gameObject, const char* tag)
 		: Component(gameObject, tag), _renderable(nullptr) {}
 
+AnimationController::~AnimationController() {
+	StopAnimation();
+}
+
 Component* AnimationController::_clone(const GameObject& parent) {
 	auto clone = new AnimationController(*this);
 	return clone;
@@ -46,9 +50,7 @@ void AnimationController::Update(float delta) {
 	}
 }
 
-void AnimationController::End() {
-	StopAnimation();
-}
+void AnimationController::End() {}
 
 void AnimationController::AddAnimation(const std::string& animationName, int startFrame, int endFrame, float frameDuration, bool looping) {
 	_animations[animationName] = {startFrame, endFrame, looping, frameDuration};

@@ -100,6 +100,7 @@ class ExampleComponent : public Component {
         
         int _exampleValue;
 };
+
 #endif //EXAMPLECOMPONENT_H
 ```
 

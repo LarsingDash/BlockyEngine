@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <functional>
 
-NetworkingModule::NetworkingModule() : isRunning(false), udpSocket(nullptr) {
+NetworkingModule::NetworkingModule() : _isRunning(false), _udpSocket(nullptr) {
 	if (SDLNet_Init() == -1) {
 		throw std::runtime_error("SDLNet_Init Error: " + std::string(SDLNet_GetError()));
 	}
@@ -21,43 +21,43 @@ NetworkingModule::~NetworkingModule() {
 }
 
 void NetworkingModule::Host(Uint16 port) {
-	udpSocket = SDLNet_UDP_Open(port);
-	if (!udpSocket) {
+	_udpSocket = SDLNet_UDP_Open(port);
+	if (!_udpSocket) {
 		throw std::runtime_error("Failed to open UDP socket: " + std::string(SDLNet_GetError()));
 	}
 
-	isRunning = true;
-	networkingThread = std::thread(&NetworkingModule::ProcessIncomingMessages, this);
+	_isRunning = true;
+	_networkingThread = std::thread(&NetworkingModule::_processIncomingMessages, this);
 	std::cout << "Hosting on port " << port << std::endl;
-	isHosting = true;
-	isConnected = true;
+	_isHosting = true;
+	_isConnected = true;
 }
 
 bool NetworkingModule::Join(const std::string& host, Uint16 port) {
-	if (SDLNet_ResolveHost(&peerAddress, host.c_str(), port) == -1) {
+	if (SDLNet_ResolveHost(&_peerAddress, host.c_str(), port) == -1) {
 		std::cerr << "Failed to resolve host: " << SDLNet_GetError() << std::endl;
 		return false;
 	}
 
-	udpSocket = SDLNet_UDP_Open(0);
-	if (!udpSocket) {
+	_udpSocket = SDLNet_UDP_Open(0);
+	if (!_udpSocket) {
 		throw std::runtime_error("Failed to open UDP socket: " + std::string(SDLNet_GetError()));
 	}
 
-	isRunning = true;
-	networkingThread = std::thread(&NetworkingModule::ProcessIncomingMessages, this);
+	_isRunning = true;
+	_networkingThread = std::thread(&NetworkingModule::_processIncomingMessages, this);
 	std::cout << "Joined host " << host << " on port " << port << std::endl;
-	isConnected = true;
+	_isConnected = true;
 	return true;
 }
 
 void NetworkingModule::SendMessage(const std::string& message) {
-	if (!udpSocket) {
+	if (!_udpSocket) {
 		std::cerr << "Cannot send message: UDP socket is not initialized." << std::endl;
 		return;
 	}
 
-	if (peerAddress.host == 0 && peerAddress.port == 0) {
+	if (_peerAddress.host == 0 && _peerAddress.port == 0) {
 		std::cerr << "Cannot send message: No peer connected." << std::endl;
 		return;
 	}
@@ -76,9 +76,9 @@ void NetworkingModule::SendMessage(const std::string& message) {
 
 	std::memcpy(packet->data, message.c_str(), message.length() + 1);
 	packet->len = message.length() + 1;
-	packet->address = peerAddress;
+	packet->address = _peerAddress;
 
-	if (SDLNet_UDP_Send(udpSocket, -1, packet) == 0) {
+	if (SDLNet_UDP_Send(_udpSocket, -1, packet) == 0) {
 		std::cerr << "Failed to send packet: " << SDLNet_GetError() << std::endl;
 	} else {
 		std::cout << "Message sent: " << message << std::endl;
@@ -88,40 +88,40 @@ void NetworkingModule::SendMessage(const std::string& message) {
 }
 
 void NetworkingModule::Disconnect() {
-	isRunning = false;
-	if (networkingThread.joinable()) {
-		networkingThread.join();
+	_isRunning = false;
+	if (_networkingThread.joinable()) {
+		_networkingThread.join();
 	}
-	if (udpSocket) {
-		SDLNet_UDP_Close(udpSocket);
-		udpSocket = nullptr;
+	if (_udpSocket) {
+		SDLNet_UDP_Close(_udpSocket);
+		_udpSocket = nullptr;
 	}
-	isHosting = false;
-	isConnected = false;
+	_isHosting = false;
+	_isConnected = false;
 	std::cout << "Disconnected from network." << std::endl;
 
 }
 
 void NetworkingModule::Update(float delta) {
-	std::lock_guard<std::mutex> lock(messageMutex);
-	while (!incomingMessages.empty()) {
-		std::cout << "Received: " << incomingMessages.front() << std::endl;
-		incomingMessages.pop();
+	std::lock_guard<std::mutex> lock(_messageMutex);
+	while (!_incomingMessages.empty()) {
+		std::cout << "Received: " << _incomingMessages.front() << std::endl;
+		_incomingMessages.pop();
 	}
 }
 
-void NetworkingModule::ProcessIncomingMessages() {
+void NetworkingModule::_processIncomingMessages() {
 	UDPpacket* packet = SDLNet_AllocPacket(512);
 	if (!packet) {
 		std::cerr << "Failed to allocate packet: " << SDLNet_GetError() << std::endl;
 		return;
 	}
 
-	while (isRunning) {
-		if (SDLNet_UDP_Recv(udpSocket, packet)) {
+	while (_isRunning) {
+		if (SDLNet_UDP_Recv(_udpSocket, packet)) {
 			std::cout << "rceived package!" <<std::endl;
 			std::string message(reinterpret_cast<char*>(packet->data));
-			peerAddress = packet->address;
+			_peerAddress = packet->address;
 			std::cout << "Notifying " << messageCallbacks.size() << " listeners!" <<std::endl;
 			for (const auto& [tag, callback] : messageCallbacks) {
 				callback(message);
@@ -132,10 +132,10 @@ void NetworkingModule::ProcessIncomingMessages() {
 	SDLNet_FreePacket(packet);
 }
 bool NetworkingModule::IsHosting() const {
-	return isHosting;
+	return _isHosting;
 }
 bool NetworkingModule::IsConnected() const {
-	return isConnected;
+	return _isConnected;
 }
 
 void NetworkingModule::AddMessageListener(const std::string& tag, MessageReceivedCallback callback) {

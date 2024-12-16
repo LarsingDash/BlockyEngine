@@ -2,15 +2,14 @@
 // Created by 11896 on 11/12/2024.
 //
 
-#include <cstring>
 #include <iostream>
 #include "NetworkingComponent.hpp"
 #include "moduleManager/ModuleManager.hpp"
 
 NetworkingComponent::NetworkingComponent(GameObject* gameObject, const char* tag)
 		: Component(gameObject, tag),
-		  networkingModule(ModuleManager::GetInstance().GetModule<NetworkingModule>()),
-		  imguiModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetGuiRenderingModule()) {}
+		  _networkingModule(ModuleManager::GetInstance().GetModule<NetworkingModule>()),
+		  _imguiModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetGuiRenderingModule()) {}
 
 NetworkingComponent::~NetworkingComponent() = default;
 
@@ -19,12 +18,12 @@ Component* NetworkingComponent::_clone(const GameObject& parent) {
 }
 
 void NetworkingComponent::Start() {
-	imguiModule.AddComponent("Networking", [this]() {
-		RenderNetworkingGUI();
+	_imguiModule.AddComponent("Networking", [this]() {
+		_renderNetworkingGUI();
 	});
 
-	networkingModule.AddMessageListener("NetListener1", [this](const std::string& message) {
-		OnMessageReceived(message);
+	_networkingModule.AddMessageListener("NetListener1", [this](const std::string& message) {
+		_onMessageReceived(message);
 	});
 }
 
@@ -32,11 +31,11 @@ void NetworkingComponent::Update(float delta) {
 }
 
 void NetworkingComponent::End() {
-	networkingModule.RemoveMessageListener("NetListener1");
+	_networkingModule.RemoveMessageListener("NetListener1");
 
 }
 
-void NetworkingComponent::RenderNetworkingGUI() {
+void NetworkingComponent::_renderNetworkingGUI() {
 	ImGui::Begin("Networking");
 
 	static char host[128] = "127.0.0.1";
@@ -45,18 +44,18 @@ void NetworkingComponent::RenderNetworkingGUI() {
 	static bool autoScroll = true;
 
 	ImGui::TextColored(
-			networkingModule.IsHosting() ? ImVec4(0.0f, 1.0f, 0.0f, 1.0f) :
-			networkingModule.IsConnected() ? ImVec4(0.0f, 1.0f, 1.0f, 1.0f) :
+			_networkingModule.IsHosting() ? ImVec4(0.0f, 1.0f, 0.0f, 1.0f) :
+			_networkingModule.IsConnected() ? ImVec4(0.0f, 1.0f, 1.0f, 1.0f) :
 			ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
 			"Status: %s",
-			networkingModule.IsHosting() ? "Hosting" :
-			networkingModule.IsConnected() ? "Connected" : "Disconnected"
+			_networkingModule.IsHosting() ? "Hosting" :
+			_networkingModule.IsConnected() ? "Connected" : "Disconnected"
 	);
 
 	ImGui::Separator();
 	ImGui::Text("Connection Settings");
 
-	bool isActive = !networkingModule.IsHosting() && !networkingModule.IsConnected();
+	bool isActive = !_networkingModule.IsHosting() && !_networkingModule.IsConnected();
 
 	if (!isActive) {
 		ImGui::BeginDisabled();
@@ -67,12 +66,12 @@ void NetworkingComponent::RenderNetworkingGUI() {
 
 	if (ImGui::Button("Host", ImVec2(120, 0)) && isActive) {
 		try {
-			networkingModule.Host(port);
-			logBuffer.appendf("[%s] Started hosting on port %d\n",
-							  GetTimestamp().c_str(), port);
+			_networkingModule.Host(port);
+			_logBuffer.appendf("[%s] Started hosting on port %d\n",
+							   GetTimestamp().c_str(), port);
 		} catch (const std::exception& e) {
-			logBuffer.appendf("[%s] Error hosting: %s\n",
-							  GetTimestamp().c_str(), e.what());
+			_logBuffer.appendf("[%s] Error hosting: %s\n",
+							   GetTimestamp().c_str(), e.what());
 		}
 	}
 
@@ -80,13 +79,13 @@ void NetworkingComponent::RenderNetworkingGUI() {
 
 	if (ImGui::Button("Join", ImVec2(120, 0)) && isActive) {
 		try {
-			if (networkingModule.Join(host, port)) {
-				logBuffer.appendf("[%s] Connected to %s:%d\n",
-								  GetTimestamp().c_str(), host, port);
+			if (_networkingModule.Join(host, port)) {
+				_logBuffer.appendf("[%s] Connected to %s:%d\n",
+								   GetTimestamp().c_str(), host, port);
 			}
 		} catch (const std::exception& e) {
-			logBuffer.appendf("[%s] Error joining: %s\n",
-							  GetTimestamp().c_str(), e.what());
+			_logBuffer.appendf("[%s] Error joining: %s\n",
+							   GetTimestamp().c_str(), e.what());
 		}
 	}
 
@@ -96,8 +95,8 @@ void NetworkingComponent::RenderNetworkingGUI() {
 
 	if (!isActive) {
 		if (ImGui::Button("Disconnect", ImVec2(120, 0))) {
-			networkingModule.Disconnect();
-			logBuffer.appendf("[%s] Disconnected\n", GetTimestamp().c_str());
+			_networkingModule.Disconnect();
+			_logBuffer.appendf("[%s] Disconnected\n", GetTimestamp().c_str());
 		}
 	}
 
@@ -107,9 +106,9 @@ void NetworkingComponent::RenderNetworkingGUI() {
 	if (!isActive) {
 		ImGui::InputText("##message", message, sizeof(message));
 		if (ImGui::Button("Send", ImVec2(120, 0))) {
-			networkingModule.SendMessage(message);
-			logBuffer.appendf("[%s] Sent: %s\n",
-							  GetTimestamp().c_str(), message);
+			_networkingModule.SendMessage(message);
+			_logBuffer.appendf("[%s] Sent: %s\n",
+							   GetTimestamp().c_str(), message);
 			memset(message, 0, sizeof(message));
 		}
 	} else {
@@ -124,11 +123,11 @@ void NetworkingComponent::RenderNetworkingGUI() {
 	ImGui::Checkbox("Auto-scroll", &autoScroll);
 	ImGui::SameLine();
 	if (ImGui::Button("Clear")) {
-		logBuffer.clear();
+		_logBuffer.clear();
 	}
 
 	ImGui::BeginChild("ScrollingRegion", ImVec2(0, 200), true, ImGuiWindowFlags_HorizontalScrollbar);
-	ImGui::TextUnformatted(logBuffer.begin(), logBuffer.end());
+	ImGui::TextUnformatted(_logBuffer.begin(), _logBuffer.end());
 	if (autoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
 		ImGui::SetScrollHereY(1.0f);
 	}
@@ -137,9 +136,9 @@ void NetworkingComponent::RenderNetworkingGUI() {
 	ImGui::End();
 }
 
-void NetworkingComponent::OnMessageReceived(const std::string& message) {
+void NetworkingComponent::_onMessageReceived(const std::string& message) {
 	std::cout << "On message received triggered!" << std::endl;
-	logBuffer.appendf("[%s] Received: %s\n", GetTimestamp().c_str(), message.c_str());
+	_logBuffer.appendf("[%s] Received: %s\n", GetTimestamp().c_str(), message.c_str());
 }
 
 std::string NetworkingComponent::GetTimestamp() {

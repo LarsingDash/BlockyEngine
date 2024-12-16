@@ -18,7 +18,7 @@
 class NetworkingModule : public ModuleWrapper {
 	public:
 		NetworkingModule();
-		~NetworkingModule();
+		~NetworkingModule() override;
 
 		using MessageReceivedCallback = std::function<void(const std::string&)>;
 
@@ -34,18 +34,18 @@ class NetworkingModule : public ModuleWrapper {
 		void Update(float delta) override;
 
 	private:
-		void ProcessIncomingMessages();
-		bool isHosting = false;
-		bool isConnected = false;
+		void _processIncomingMessages();
+		bool _isHosting = false;
+		bool _isConnected = false;
+		bool _isRunning;
 
 
 		std::unordered_map<std::string, MessageReceivedCallback> messageCallbacks;
-		UDPsocket udpSocket;
-		IPaddress peerAddress;
-		std::thread networkingThread;
-		std::mutex messageMutex;
-		std::queue<std::string> incomingMessages;
-		bool isRunning;
+		UDPsocket _udpSocket;
+		IPaddress _peerAddress;
+		std::thread _networkingThread;
+		std::mutex _messageMutex;
+		std::queue<std::string> _incomingMessages;
 };
 
 #endif //BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_NETWORKING_NETWORKINGMODULE_HPP_

@@ -17,16 +17,15 @@ class NetworkingComponent : public Component {
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-		std::string GetTimestamp();
+		static std::string GetTimestamp();
 
 	private:
-		void RenderNetworkingGUI();
+		void _renderNetworkingGUI();
+		void _onMessageReceived(const std::string& message);
 
-		ImGuiTextBuffer logBuffer;
-		void OnMessageReceived(const std::string& message);
-
-		NetworkingModule& networkingModule;
-		ImGuiRenderingModule& imguiModule;
+		ImGuiRenderingModule& _imguiModule;
+		NetworkingModule& _networkingModule;
+		ImGuiTextBuffer _logBuffer;
 
 		Component* _clone(const GameObject& parent) override;
 };

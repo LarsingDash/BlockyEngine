@@ -20,13 +20,13 @@ PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_pt
 
 void PhysicsBody::Start()
 {
-    // todo: following switch case will overwrite the possibility to set a collider to an other size than the game object.
+    // // todo: following switch case will overwrite the possibility to set a collider to an other size than the game object.
     switch (_physicsShape->GetShape())
     {
     case BOX:
         {
             const auto* const shape = dynamic_cast<Box*>(GetShapeReference().get());
-            auto& scale = gameObject->transform->GetWorldScale();
+            auto& scale = componentTransform->GetWorldScale();
             shape->_width = scale.x;
             shape->_height = scale.y;
             break;
@@ -34,7 +34,7 @@ void PhysicsBody::Start()
     case CIRCLE:
         {
             const auto* const shape = dynamic_cast<Circle*>(GetShapeReference().get());
-            const float scale = (gameObject->transform->GetWorldScale().y + gameObject->transform->GetWorldScale().x) / 4;
+            const float scale = (componentTransform->GetWorldScale().y + componentTransform->GetWorldScale().x) / 4;
             shape->_radius = scale;
             break;
         }

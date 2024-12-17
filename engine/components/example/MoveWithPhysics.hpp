@@ -10,7 +10,7 @@
 
 class MoveWithPhysics : public Component {
 public:
-    MoveWithPhysics(GameObject* gameObject, const char* tag, PhysicsBody* body);
+    MoveWithPhysics(GameObject* gameObject, const char* tag, PhysicsBody& body);
     ~MoveWithPhysics() override = default;
 
     MoveWithPhysics(const MoveWithPhysics& other);

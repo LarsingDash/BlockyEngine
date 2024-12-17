@@ -170,15 +170,16 @@ void buildCollisionEnv(SceneManager& manager)
     TypeProperties properties(
         RIGIDBODY,
         false,
-        glm::vec2{1000, 0},
+        glm::vec2{100, 0},
         0,
         0,
         0,
         false
     );
     auto& boxRigidBody = rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
-    rigidBox.AddComponent<MoveWithPhysics>("", &boxRigidBody);
+    rigidBox.AddComponent<MoveWithPhysics>("TestMover", boxRigidBody);
 
+    // root->AddComponent<SceneSwitchComp>("SceneSwitcher", "CollisionScene");
     manager.AddScene(std::move(root));
 }
 

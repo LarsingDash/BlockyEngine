@@ -6,7 +6,7 @@
 
 #include <gameObject/GameObject.hpp>
 
-MoveWithPhysics::MoveWithPhysics(GameObject* gameObject, const char* tag, PhysicsBody* body): Component(gameObject, tag), _body(body)
+MoveWithPhysics::MoveWithPhysics(GameObject* gameObject, const char* tag, PhysicsBody& body): Component(gameObject, tag), _body(std::make_unique<PhysicsBody>(body))
 {
 }
 
@@ -25,12 +25,13 @@ void MoveWithPhysics::Start()
 
 void MoveWithPhysics::Update(float delta)
 {
-    direction += glm::vec2{delta, 0};
+    direction += glm::vec2{delta * 1000, 0};
     _body->GetTypeProperties().SetVelocity(direction);
 }
 
 void MoveWithPhysics::End()
 {
+
 }
 
 Component* MoveWithPhysics::_clone(const GameObject& parent)

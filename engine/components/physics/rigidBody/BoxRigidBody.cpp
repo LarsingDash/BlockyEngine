@@ -15,7 +15,7 @@ BoxRigidBody::BoxRigidBody(GameObject* gameObject, const char* tag, bool isStati
                                                                gameObject->transform->GetWorldScale().x) {}
 
 BoxRigidBody::BoxRigidBody(GameObject* gameObject, const char* tag, const TypeProperties& properties): BoxRigidBody(
-	gameObject, tag, properties, gameObject->transform->GetWorldScale().y, gameObject->transform->GetWorldScale().x) {}
+	gameObject, tag, properties, componentTransform->GetWorldScale().y, gameObject->transform->GetWorldScale().x) {}
 
 BoxRigidBody::BoxRigidBody(GameObject* gameObject, const char* tag, bool isStatic, glm::vec2 velocity,
                            float rotationVelocity, float angularResistance, float linearResistance, bool gravityEnabled,

@@ -61,6 +61,7 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 		const b2Vec2 position = body->GetPosition();
 		const b2Vec2 deltaPosition = {
 			position.x - body->LastPosition().x, position.y - body->LastPosition().y
+			
 		};
 
 		const float angle = body->GetAngle();

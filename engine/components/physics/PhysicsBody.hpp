@@ -23,6 +23,11 @@ struct TypeProperties {
 		linearResistance(linearResistance),
 		gravityEnabled(gravityEnabled) {}
 
+	void SetVelocity(const glm::vec2 newVelocity)
+	{
+		velocity = newVelocity;
+	}
+
 	PhysicsType physicsType;
 	bool isStatic;
 	glm::vec2 velocity;
@@ -52,7 +57,6 @@ public:
 	[[nodiscard]] virtual std::shared_ptr<Shape>& GetShapeReference();
 	[[nodiscard]] virtual PhysicsShape GetShape();
 	[[nodiscard]] virtual TypeProperties GetTypeProperties() const;
-
 
 private:
 	Component* _clone(const GameObject& parent) override;

@@ -6,6 +6,8 @@
 #include <components/physics/rigidBody/BoxRigidBody.hpp>
 
 #include <iostream>
+#include <components/example/MovementComp.hpp>
+#include <components/example/MoveWithPhysics.hpp>
 #include <components/physics/collider/CircleCollider.hpp>
 
 #include "BlockyEngine.hpp"
@@ -145,35 +147,39 @@ void buildCollisionEnv(SceneManager& manager)
 
     // auto& collider = baseRectangle.AddComponent<BoxCollider>("SceneRectangle");
     auto& collider = sceneBase.AddComponent<CircleCollider>("SceneEllipse");
+    // collider.componentTransform->SetScale(2,2);
     sceneBase.AddComponent<CollisionHandler>("Trigger handler", collider,
-                                                 [](GameObject& other)
-                                                 {
-                                                     std::cout << "ENTERING!" << other.tag << std::endl;
-                                                 },
-                                                 [](GameObject& other)
-                                                 {
-                                                     std::cout << "EXITING!" << other.tag << std::endl;
-                                                 });
+                                             [](GameObject& other)
+                                             {
+                                                 std::cout << "ENTERING!" << other.tag << std::endl;
+                                             },
+                                             [](GameObject& other)
+                                             {
+                                                 std::cout << "EXITING!" << other.tag << std::endl;
+                                             });
 
 
     auto& rigidBox = root->AddChild("rigidBox");
 
     glm::vec2 pos = sceneBase.transform->GetLocalPosition();
-    rigidBox.transform->SetPosition(pos.x, pos.y - 400);
+    rigidBox.transform->SetPosition(pos.x - 200, pos.y);
     rigidBox.transform->SetScale(10, 10);
 
     rigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, true);
+    // rigidBox.AddComponent<MovementComp>();
     TypeProperties properties(
         RIGIDBODY,
         false,
-        glm::vec2{0, 1},
+        glm::vec2{100, 0},
         0,
         0,
         0,
-        true
+        false
     );
-    rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
+    auto& boxRigidBody = rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
+    rigidBox.AddComponent<MoveWithPhysics>("TestMover", boxRigidBody);
 
+    // root->AddComponent<SceneSwitchComp>("SceneSwitcher", "CollisionScene");
     manager.AddScene(std::move(root));
 }
 
@@ -189,14 +195,14 @@ int main(int argc, char* argv[])
     BlockyEngine blockyEngine{configs};
     SceneManager& sceneManager = blockyEngine.GetSceneManager();
 
-    // buildPrefabScene(sceneManager);
-    // buildInputReparentingScene(sceneManager);
-    // buildCameraScene(sceneManager);
+    buildPrefabScene(sceneManager);
+    buildInputReparentingScene(sceneManager);
+    buildCameraScene(sceneManager);
     buildCollisionEnv(sceneManager);
 
-    //	sceneManager.SwitchScene("Prefabs");
+    // sceneManager.SwitchScene("Prefabs");
     // sceneManager.SwitchScene("InputReparenting");
-    //	sceneManager.SwitchScene("Camera");
+    // sceneManager.SwitchScene("Camera");
     sceneManager.SwitchScene("CollisionScene");
 
     blockyEngine.Run();

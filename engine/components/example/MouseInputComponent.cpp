@@ -60,14 +60,18 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 	if (state == MouseButtonState::BUTTON_DOWN) {
 		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, std::numeric_limits<int>::max(), true);
 		rectangle.AddComponent<BoxRigidBody>("BoxRigidBody", physicsProperties);
-		rectangle.AddComponent<Audio>("bubble-pop", "../assets/audioFiles/bubble-pop.mp3", 255, false);
-		rectangle.AddComponent<Audio>("bubble-pop", "../assets/audioFiles/bubble-pop.mp3", 255, false);
-		rectangle.GetComponent<Audio>("bubble-pop")->Play();
-		rectangle.GetComponent<Audio>("bubble-pop")->Stop();
+
+		rectangle.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/clowns-jingle.mp3", 10, true);
+		rectangle.GetComponent<Audio>("clowns-jingle")->Play();
 	}
 	else {
+		// add the same component
+		rectangle.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/car-horn.mp3", 255, false);
+		rectangle.GetComponent<Audio>("clowns-jingle")->Stop();
+
 		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, std::numeric_limits<int>::max(), true);
 		rectangle.AddComponent<CircleCollider>("CircleRigidBody");
+
 		rectangle.AddComponent<Audio>("squish-pop", "../assets/audioFiles/squish-pop.mp3", 255, false).Play();
 		rectangle.RemoveComponent<Audio>("squish-pop");
 	}

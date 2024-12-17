@@ -9,8 +9,6 @@
 #include "logging/BLogger.hpp"
 #include "components/audio/Audio.hpp"
 
-constexpr int NO_CHANNEL_SPECIFIED = -1;
-
 AudioModule::AudioModule() {
 	constexpr int flags = MIX_INIT_MP3;
 
@@ -36,13 +34,12 @@ void AudioModule::AddAudio(const Audio& audio) {
 	auto it = _audioPaths.find(audio.tag);
 	if (it == _audioPaths.end()) {
 		auto fragment = AudioFragment(
-				audio.GetPath(),
-				audio.GetVolume(),
-				audio.GetIsLooping()
+			audio.GetPath(),
+			audio.GetVolume(),
+			audio.GetIsLooping()
 		);
 
 		fragment.audioChunk = Mix_LoadWAV(fragment.path.c_str());
-		fragment.numberOfInstances = 1;
 
 		if (nullptr == fragment.audioChunk) {
 			std::string error = Mix_GetError();
@@ -50,12 +47,17 @@ void AudioModule::AddAudio(const Audio& audio) {
 			return;
 		}
 
+		Mix_VolumeChunk(fragment.audioChunk, audio.GetVolume() / 2);
+		fragment.numberOfInstances = 1;
+
 		_audioPaths.emplace(std::pair(audio.tag, fragment));
-	} else {
+	}
+	else {
 		it->second.numberOfInstances++;
 	}
 }
 
+// Will stop audio where isLooping = true and all instances of audio.tag are removed, other audio will keep playing.
 void AudioModule::RemoveAudio(const Audio& audio) {
 	auto it = _audioPaths.find(audio.tag);
 	if (it == _audioPaths.end()) {
@@ -65,6 +67,10 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 	it->second.numberOfInstances--;
 
 	if (it->second.numberOfInstances <= 0) {
+		for (auto itt : it->second.playingChannel) {
+			StopAudio(audio.tag);
+		}
+
 		_audioPaths.erase(it);
 	}
 }
@@ -72,26 +78,29 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 void AudioModule::PlayAudio(const std::string& tag, int loops) {
 	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }
-		if (fragment.isLooping) { loops = -1; }
-
-		fragment.playingChannel = Mix_PlayChannel(NO_CHANNEL_SPECIFIED, fragment.audioChunk, loops);
+		if (fragment.isLooping) {
+			loops = -1;
+			fragment.playingChannel.push_back(Mix_PlayChannel(NO_CHANNEL_SPECIFIED, fragment.audioChunk, loops));
+		}
+		else {
+			Mix_PlayChannel(NO_CHANNEL_SPECIFIED, fragment.audioChunk, loops);
+		}
 		return;
 	}
 }
 
-// will only stop last instance with this (unique)tag.
-// when stop is called when not playing the sound, a random channel is stopped,
-//	only audio that is started after this one has finished may stop playing.
+// Only audio fragment with isLooping = true can be stopped.
+// Will only stop last started PlayAudio instance with this (unique)tag, (FILO 1 instance per time).
 void AudioModule::StopAudio(const std::string& tag) {
 	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }
 
-		if (fragment.playingChannel == NO_CHANNEL_SPECIFIED) {
+		if (fragment.playingChannel.empty()) {
 			return;
 		}
 
-		Mix_HaltChannel(fragment.playingChannel);
-		fragment.playingChannel = NO_CHANNEL_SPECIFIED;
+		Mix_HaltChannel(fragment.playingChannel.back());
+		fragment.playingChannel.pop_back();
 		return;
 	}
 }

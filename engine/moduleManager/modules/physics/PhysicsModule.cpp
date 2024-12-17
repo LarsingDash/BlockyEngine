@@ -30,35 +30,34 @@ void PhysicsModule::Update(float delta) {
 	WritingBox2DWorldToOutside();
 }
 
-bool PhysicsModule::IsSame(const GameObject* const gameObject, const Body* const body) {
-	if (gameObject == nullptr || body == nullptr) { return false; }
+bool PhysicsModule::IsSame(const PhysicsBody* const physicsBody, const Body* const body) {
+	if (physicsBody == nullptr || body == nullptr) { return false; }
 
-	if (body->GetPosition() != Position(*gameObject)) { return false; }
+	if (body->GetPosition() != Position(*physicsBody)) { return false; }
 
-	if (body->GetAngle() != ToRadian(Angle(*gameObject))) { return false; }
+	if (body->GetAngle() != ToRadian(Angle(*physicsBody))) { return false; }
 
 	return true;
 }
 
-void PhysicsModule::WritingExternalInputToBox2DWorld()
-{
-    for (auto [gameObject, body] : _gameObjectToBodyMap)
-    {
-        if (IsSame(gameObject, body)) { continue; }
+void PhysicsModule::WritingExternalInputToBox2DWorld() {
+	for (auto [physicsBody, body] : _gameObjectToBodyMap) {
+		if (IsSame(physicsBody, body)) { continue; }
 
-        if (!body->_gameObjectIsInitialized)
-        {
-            body->LastPosition(Position(*gameObject));
-            body->LastRotation(ToRadian(Angle(*gameObject)));
-            body->_gameObjectIsInitialized = true;
-        }
+		if (!body->_gameObjectIsInitialized) {
+			body->LastPosition(Position(*physicsBody));
+			body->LastRotation(ToRadian(Angle(*physicsBody)));
+			body->_gameObjectIsInitialized = true;
+		}
 
-		body->b2body->SetTransform(Position(*gameObject), ToRadian(Angle(*gameObject)));
+		body->b2body->SetTransform(Position(*physicsBody), ToRadian(Angle(*physicsBody)));
 	}
 }
 
+// todo: gravity velocity aan de hand van delta tijd
+// velocity kunnnen aanpassen op runtime
 void PhysicsModule::WritingBox2DWorldToOutside() {
-	for (auto [gameObject, body] : _gameObjectToBodyMap) {
+	for (auto [physicsBody, body] : _gameObjectToBodyMap) {
 		const b2Vec2 position = body->GetPosition();
 		const b2Vec2 deltaPosition = {
 			position.x - body->LastPosition().x, position.y - body->LastPosition().y
@@ -67,8 +66,9 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 		const float angle = body->GetAngle();
 		const float deltaAngle = body->LastRotation() - angle;
 
-		gameObject->transform->Translate(deltaPosition.x, deltaPosition.y);
-		gameObject->transform->Rotate(ToDegree(deltaAngle));
+		// Use gameObject to apply the movement to the whole gameObject
+		physicsBody->gameObject->transform->Translate(deltaPosition.x, deltaPosition.y);
+		physicsBody->gameObject->transform->Rotate(ToDegree(deltaAngle));
 
 		body->LastPosition({position.x, position.y});
 		body->LastRotation(angle);
@@ -84,12 +84,12 @@ void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
 	auto body = std::make_unique<Body>();
 	body->b2body = CreateBody(*_box2dWorldObject, physicsBody);
 
-	_gameObjectToBodyMap[physicsBody.gameObject] = body.get();
+	_gameObjectToBodyMap[&physicsBody] = body.get();
 	_bodies.emplace_back(std::move(body));
 }
 
-void PhysicsModule::RemoveCollider(const PhysicsBody& physicsBody) {
-	auto it = _gameObjectToBodyMap.find(physicsBody.gameObject);
+void PhysicsModule::RemoveCollider(PhysicsBody& physicsBody) {
+	auto it = _gameObjectToBodyMap.find(&physicsBody);
 	if (it != _gameObjectToBodyMap.end()) {
 		_box2dWorldObject->DestroyBody(it->second->b2body);
 		_gameObjectToBodyMap.erase(it);
@@ -162,11 +162,11 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
 	// position and angel is not set when creating body, because physicsBody.gameObject position & angle is still default at this moment
 	b2Body* body;
 
-	auto gameObject = _gameObjectToBodyMap.find(physicsBody.gameObject);
+	auto pair = _gameObjectToBodyMap.find(&physicsBody);
 
 	// to have multiple PhysicsBodies on one game object use the same box2d body for the same game object.
-	if (gameObject != _gameObjectToBodyMap.end()) {
-		body = gameObject->second->b2body;
+	if (pair != _gameObjectToBodyMap.end()) {
+		body = pair->second->b2body;
 	}
 	else {
 		b2BodyDef bodyDef;

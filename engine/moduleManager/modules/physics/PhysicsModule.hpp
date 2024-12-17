@@ -62,7 +62,7 @@ public:
 
 	// when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
 	void AddCollider(PhysicsBody& physicsBody);
-	void RemoveCollider(const PhysicsBody& physicsBody);
+	void RemoveCollider(PhysicsBody& physicsBody);
 
 private:
 	void WritingExternalInputToBox2DWorld();
@@ -71,7 +71,7 @@ private:
 	b2Body* CreateBody(b2World& world, PhysicsBody& physicsBody);
 	static void AddFixture(PhysicsBody& physicsBody, b2Body* body);
 
-	static bool IsSame(const GameObject* gameObject, const Body* body);
+	static bool IsSame(const PhysicsBody* physicsBody, const Body* body);
 	static b2Vec2 VecConvert(const glm::vec2& a);
 	static glm::vec2 VecConvert(const b2Vec2& a);
 	static b2Vec2 Position(const PhysicsBody& physicsBody);
@@ -83,7 +83,7 @@ private:
 
 	std::unique_ptr<b2World> _box2dWorldObject;
 	std::unique_ptr<MyContactListener> _contactListener;
-	std::unordered_map<GameObject*, Body*> _gameObjectToBodyMap;
+	std::unordered_map<PhysicsBody*, Body*> _gameObjectToBodyMap;
 	std::vector<std::unique_ptr<Body>> _bodies;
 };
 

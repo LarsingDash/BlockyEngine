@@ -10,7 +10,7 @@
 #include "PhysicsModule.hpp"
 #include "components/physics/collision/CollisionHandler.hpp"
 
-MyContactListener::MyContactListener(std::unordered_map<GameObject*, Body*>* gameObjectToBodyMap) {
+MyContactListener::MyContactListener(std::unordered_map<PhysicsBody*, Body*>* gameObjectToBodyMap) {
     _gameObjectToBodyMap = gameObjectToBodyMap;
 }
 
@@ -24,6 +24,7 @@ MyContactListener::MyContactListener(std::unordered_map<GameObject*, Body*>* gam
 /// Note: if you set the number of contact points to zero, you will not
 /// get an EndContact callback. However, you may get a BeginContact callback
 /// the next step.
+/// todo: remove refactor
 // void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold) {
 //     auto body1 = contact->GetFixtureA()->GetBody();
 //     auto body2 = contact->GetFixtureB()->GetBody();
@@ -59,7 +60,7 @@ MyContactListener::MyContactListener(std::unordered_map<GameObject*, Body*>* gam
 //     }
 // }
 
-void MyContactListener::BeginContact(b2Contact *contact) {
+void MyContactListener::BeginContact(b2Contact* contact) {
     auto body1 = contact->GetFixtureA()->GetBody();
     auto body2 = contact->GetFixtureB()->GetBody();
 
@@ -68,13 +69,13 @@ void MyContactListener::BeginContact(b2Contact *contact) {
     Body* _body1 = nullptr;
     Body* _body2 = nullptr;
 
-    for (auto [gameObject, body] : *_gameObjectToBodyMap) {
+    for (auto [physicsBody, body] : *_gameObjectToBodyMap) {
         if (body1 == body->b2body) {
-            gameObject1 = gameObject;
+            gameObject1 = physicsBody->gameObject;
             _body1 = body;
         }
         if (body2 == body->b2body) {
-            gameObject2 = gameObject;
+            gameObject2 = physicsBody->gameObject;
             _body2 = body;
         }
     }
@@ -95,7 +96,7 @@ void MyContactListener::BeginContact(b2Contact *contact) {
 }
 
 //todo: what to do if object is removed, does give call exit.
-void MyContactListener::EndContact(b2Contact *contact) {
+void MyContactListener::EndContact(b2Contact* contact) {
     auto body1 = contact->GetFixtureA()->GetBody();
     auto body2 = contact->GetFixtureB()->GetBody();
 
@@ -104,13 +105,13 @@ void MyContactListener::EndContact(b2Contact *contact) {
     Body* _body1 = nullptr;
     Body* _body2 = nullptr;
 
-    for (auto [gameObject, body] : *_gameObjectToBodyMap) {
+    for (auto [physicsBody, body] : *_gameObjectToBodyMap) {
         if (body1 == body->b2body) {
-            gameObject1 = gameObject;
+            gameObject1 = physicsBody->gameObject;
             _body1 = body;
         }
         if (body2 == body->b2body) {
-            gameObject2 = gameObject;
+            gameObject2 = physicsBody->gameObject;
             _body2 = body;
         }
     }

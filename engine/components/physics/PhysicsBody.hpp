@@ -49,7 +49,7 @@ public:
 	void SetOnExit(const std::function<void(GameObject& other)> &callback);
 
 
-	[[nodiscard]] virtual std::shared_ptr<Shape>* GetShapeReference();
+	[[nodiscard]] virtual std::shared_ptr<Shape>& GetShapeReference();
 	[[nodiscard]] virtual PhysicsShape GetShape();
 	[[nodiscard]] virtual TypeProperties GetTypeProperties() const;
 

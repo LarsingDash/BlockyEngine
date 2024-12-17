@@ -44,14 +44,7 @@ void PhysicsModule::WritingExternalInputToBox2DWorld()
 {
     for (auto [gameObject, body] : _gameObjectToBodyMap)
     {
-        // BLOCKY_ENGINE_DEBUG_STREAM("Gameobject: " << gameObject->tag << ","<< Position(*gameObject).x << " " << Position(*gameObject).y);
-        // BLOCKY_ENGINE_DEBUG_STREAM("body " << body->GetPosition().x << " " << body->GetPosition().y);
-        // BLOCKY_ENGINE_DEBUG_STREAM("body " << body->GetPosition().x << " " << body->GetPosition().y);
-
-        BLOCKY_ENGINE_DEBUG_STREAM("body radius: " << gameObject->tag << ", " << body->b2body->GetFixtureList()->GetShape()->m_radius);
-        BLOCKY_ENGINE_DEBUG_STREAM("WORLD SCALING: " << gameObject->tag << ", " << gameObject->transform->GetWorldScale().x  << "," << gameObject->transform->GetWorldScale().y);
         if (IsSame(gameObject, body)) { continue; }
-
 
         if (!body->_gameObjectIsInitialized)
         {
@@ -123,12 +116,12 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 	// if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
 	switch (physicsBody.GetShape()) {
 		case BOX: {
-			const auto* const shape = dynamic_cast<Box*>(physicsBody.GetShapeReference()->get());
+			const auto* const shape = dynamic_cast<Box*>(physicsBody.GetShapeReference().get());
 			fixtureDef.shape = AddBoxShape(*shape).release();
 			break;
 		}
 		case CIRCLE: {
-			const auto* const shape = dynamic_cast<Circle*>(physicsBody.GetShapeReference()->get());
+			const auto* const shape = dynamic_cast<Circle*>(physicsBody.GetShapeReference().get());
 			fixtureDef.shape = AddCircleShape(*shape).release();
 			break;
 		}

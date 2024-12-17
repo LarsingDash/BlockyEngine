@@ -11,28 +11,30 @@
 #include "shape/Box.hpp"
 #include "shape/Circle.hpp"
 
-#include <utility>
-#include <iostream>
-
 PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_ptr<Shape> physicsBody,
                          const TypeProperties& typeProperties) : Component(gameObject, tag, true),
-                                                                 _physicsShape((std::move(physicsBody))),
-                                                                 _typeProperties(
-                                                                     typeProperties) {}
+                                                                 _physicsShape(std::move(physicsBody)),
+                                                                 _typeProperties(typeProperties)
+{
+}
 
-void PhysicsBody::Start() {
-    // todo: folowing switch case will overwrite the possibility to set a collider to an other size than the game object.
-    switch (_physicsShape->GetShape()) {
-        case BOX: {
-            auto* const shape = dynamic_cast<Box*>(GetShapeReference()->get());
-            auto scale = gameObject->transform->GetWorldScale();
+void PhysicsBody::Start()
+{
+    // todo: following switch case will overwrite the possibility to set a collider to an other size than the game object.
+    switch (_physicsShape->GetShape())
+    {
+    case BOX:
+        {
+            const auto* const shape = dynamic_cast<Box*>(GetShapeReference().get());
+            auto& scale = gameObject->transform->GetWorldScale();
             shape->_width = scale.x;
             shape->_height = scale.y;
             break;
         }
-        case CIRCLE: {
-            const auto* const shape = dynamic_cast<Circle*>(GetShapeReference()->get());
-            auto scale = ((gameObject->transform->GetWorldScale().y + gameObject->transform->GetWorldScale().x) / 4);
+    case CIRCLE:
+        {
+            const auto* const shape = dynamic_cast<Circle*>(GetShapeReference().get());
+            const float scale = (gameObject->transform->GetWorldScale().y + gameObject->transform->GetWorldScale().x) / 4;
             shape->_radius = scale;
             break;
         }
@@ -40,25 +42,31 @@ void PhysicsBody::Start() {
     ModuleManager::GetInstance().GetModule<PhysicsModule>().AddCollider(*this);
 }
 
-void PhysicsBody::Update(float delta) {}
+void PhysicsBody::Update(float delta)
+{
+}
 
-void PhysicsBody::End() {
+void PhysicsBody::End()
+{
     ModuleManager::GetInstance().GetModule<PhysicsModule>().RemoveCollider(*this);
 }
 
-void PhysicsBody::SetOnEnter(const std::function<void(GameObject& other)>& callback) {
+void PhysicsBody::SetOnEnter(const std::function<void(GameObject& other)>& callback)
+{
     enter = callback;
 }
 
-void PhysicsBody::SetOnExit(const std::function<void(GameObject& other)>& callback) {
+void PhysicsBody::SetOnExit(const std::function<void(GameObject& other)>& callback)
+{
     exit = callback;
 }
 
-std::shared_ptr<Shape>* PhysicsBody::GetShapeReference() { return &_physicsShape; }
+std::shared_ptr<Shape>& PhysicsBody::GetShapeReference() { return _physicsShape; }
 PhysicsShape PhysicsBody::GetShape() { return _physicsShape->GetShape(); }
 TypeProperties PhysicsBody::GetTypeProperties() const { return _typeProperties; }
 
-Component* PhysicsBody::_clone(const GameObject& parent) {
+Component* PhysicsBody::_clone(const GameObject& parent)
+{
     auto clone = new PhysicsBody(*this);
     return clone;
 }

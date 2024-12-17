@@ -17,7 +17,7 @@ public:
 	[[nodiscard]] float GetHeight() const { return _height; }
 
 private:
-	float mutable _width, _height;
+	mutable float _width, _height;
 
 	// void SetWidth(float width) { _width = width; }
 	// void SetHeight(const float height) { _height = height; }

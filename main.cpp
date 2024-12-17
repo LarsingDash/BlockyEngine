@@ -9,6 +9,7 @@
 #include <components/example/MovementComp.hpp>
 #include <components/example/MoveWithPhysics.hpp>
 #include <components/physics/collider/CircleCollider.hpp>
+#include <logging/BLogger.hpp>
 
 #include "BlockyEngine.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
@@ -151,11 +152,11 @@ void buildCollisionEnv(SceneManager& manager)
     sceneBase.AddComponent<CollisionHandler>("Trigger handler", collider,
                                              [](GameObject& other)
                                              {
-                                                 std::cout << "ENTERING!" << other.tag << std::endl;
+                                                 BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);
                                              },
                                              [](GameObject& other)
                                              {
-                                                 std::cout << "EXITING!" << other.tag << std::endl;
+                                                 BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
                                              });
 
 

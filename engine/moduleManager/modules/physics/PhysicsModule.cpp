@@ -48,9 +48,20 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 			body->LastPosition(Position(*physicsBody));
 			body->LastRotation(ToRadian(Angle(*physicsBody)));
 			body->_gameObjectIsInitialized = true;
+			body->b2body->SetTransform(Position(*physicsBody), ToRadian(Angle(*physicsBody)));
 		}
+		else {
+			constexpr float GAMEOBJECT_TRANSLATION_SPEED_COMPENSATION = 100000;
+			auto deltaPosition = Position(*physicsBody) - body->GetPosition();
+			deltaPosition.x = deltaPosition.x * deltaPosition.x;
+			deltaPosition.y = deltaPosition.y * deltaPosition.y;
 
-		body->b2body->SetTransform(Position(*physicsBody), ToRadian(Angle(*physicsBody)));
+			auto deltaAngle = ToRadian(Angle(*physicsBody)) - body->GetAngle();
+			deltaAngle = deltaAngle * GAMEOBJECT_TRANSLATION_SPEED_COMPENSATION;
+
+			body->b2body->ApplyLinearImpulseToCenter(deltaPosition, true);
+			body->b2body->ApplyAngularImpulse(deltaAngle, true);
+		}
 	}
 }
 

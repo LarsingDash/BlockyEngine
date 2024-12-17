@@ -15,6 +15,9 @@ public:
     std::unordered_map<GameObject*, Body*>* _gameObjectToBodyMap;
     explicit MyContactListener(std::unordered_map<GameObject*, Body*>* gameObjectToBodyMap);
     ~MyContactListener() override = default;
-    void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
+    // void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
+
+    void BeginContact(b2Contact *contact) override;
+    void EndContact(b2Contact *contact) override;
 };
 #endif //MYCONTACTLISTENER_HPP

@@ -8,8 +8,7 @@
 #include <gameObject/GameObject.hpp>
 
 CircleCollider::CircleCollider(GameObject* gameObject, const char* tag) : CircleCollider(
-	gameObject, tag, (gameObject->transform->GetLocalScale().y + gameObject->transform->
-	                                                                         GetLocalScale().x) / 4) {}
+	gameObject, tag, (gameObject->transform->GetWorldScale().y + gameObject->transform->GetWorldScale().x) / 4) {}
 
 CircleCollider::CircleCollider(GameObject* gameObject, const char* tag, float radius) : PhysicsBody(
 	gameObject, tag, std::make_shared<Circle>(radius), TypeProperties(COLLIDER, {}, {}, {},

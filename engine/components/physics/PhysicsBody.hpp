@@ -3,6 +3,7 @@
 //
 #ifndef PHYSICSBODY_HPP
 #define PHYSICSBODY_HPP
+#include <functional>
 #include <memory>
 
 #include "components/Component.hpp"
@@ -43,12 +44,21 @@ public:
 	void Update(float delta) override;
 	void End() override;
 
+
+	void SetOnEnter(const std::function<void(GameObject& other)> &callback);
+	void SetOnExit(const std::function<void(GameObject& other)> &callback);
+
+
 	[[nodiscard]] virtual std::shared_ptr<Shape>* GetShapeReference();
 	[[nodiscard]] virtual PhysicsShape GetShape();
 	[[nodiscard]] virtual TypeProperties GetTypeProperties() const;
 
+
 private:
 	Component* _clone(const GameObject& parent) override;
+	//Private
+	std::function<void(GameObject& other)> enter {nullptr};
+	std::function<void(GameObject& other)> exit {nullptr};
 
 	std::shared_ptr<Shape> _physicsShape;
 	TypeProperties _typeProperties;

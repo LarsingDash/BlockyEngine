@@ -13,13 +13,11 @@ CircleRigidBody::CircleRigidBody(GameObject* gameObject, const char* tag, bool i
                                                                         rotationVelocity,
                                                                         angularResistance, linearResistance,
                                                                         gravityEnabled,
-                                                                        (gameObject->transform->GetLocalScale().y +
-	                                                                        gameObject->transform->
-	                                                                        GetLocalScale().x) / 4) {}
+                                                                        (gameObject->transform->GetWorldScale().y + gameObject->transform->GetWorldScale().x) / 4) {}
 
 CircleRigidBody::CircleRigidBody(GameObject* gameObject, const char* tag, const TypeProperties& properties):
 	CircleRigidBody(gameObject, tag, properties,
-	                (gameObject->transform->GetLocalScale().y + gameObject->transform->GetLocalScale().x) / 4) {}
+	                (gameObject->transform->GetWorldScale().y + gameObject->transform->GetWorldScale().x) / 4) {}
 
 CircleRigidBody::CircleRigidBody(GameObject* gameObject, const char* tag, bool isStatic,
                                  glm::vec2 velocity,

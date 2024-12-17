@@ -8,7 +8,7 @@
 #include <gameObject/GameObject.hpp>
 
 BoxCollider::BoxCollider(GameObject* gameObject, const char* tag): BoxCollider(
-	gameObject, tag, gameObject->transform->GetLocalScale().y, gameObject->transform->GetLocalScale().x) {}
+	gameObject, tag, gameObject->transform->GetWorldScale().y, gameObject->transform->GetWorldScale().x) {}
 
 BoxCollider::BoxCollider(GameObject* gameObject, const char* tag, float height, float width) : PhysicsBody(
 	gameObject, tag, std::make_shared<Box>(height, width), TypeProperties(COLLIDER, {}, {}, {}, {}, {}, {})) {}

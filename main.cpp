@@ -61,7 +61,6 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	parentA.transform->SetRotation(20);
 	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
 	parentA.AddComponent<BoxRigidBody>("ParentARB", physicsProperties);
-	parentA.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/clowns-jingle.mp3", 55, true).Play();
 
 	//ParentB
 	auto& parentB = root->AddChild("ParentB");
@@ -111,9 +110,9 @@ void buildCameraScene(SceneManager& scenes) {
 
 	glm::vec2 screenSize = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
 	box.transform->SetScale(screenSize.x / 4.f,
-							screenSize.y / 4.f);
+	                        screenSize.y / 4.f);
 	box.transform->SetPosition(screenSize.x / 2.f,
-							   screenSize.y / 2.f);
+	                           screenSize.y / 2.f);
 
 	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
 	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);

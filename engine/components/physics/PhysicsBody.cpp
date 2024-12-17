@@ -18,10 +18,10 @@ PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_pt
                          const TypeProperties& typeProperties) : Component(gameObject, tag, true),
                                                                  _physicsShape((std::move(physicsBody))),
                                                                  _typeProperties(
-                                                                     typeProperties) {
-}
+                                                                     typeProperties) {}
 
 void PhysicsBody::Start() {
+    // todo: folowing switch case will overwrite the possibility to set a collider to an other size than the game object.
     switch (_physicsShape->GetShape()) {
         case BOX: {
             auto* const shape = dynamic_cast<Box*>(GetShapeReference()->get());
@@ -40,18 +40,17 @@ void PhysicsBody::Start() {
     ModuleManager::GetInstance().GetModule<PhysicsModule>().AddCollider(*this);
 }
 
-void PhysicsBody::Update(float delta) {
-}
+void PhysicsBody::Update(float delta) {}
 
 void PhysicsBody::End() {
     ModuleManager::GetInstance().GetModule<PhysicsModule>().RemoveCollider(*this);
 }
 
-void PhysicsBody::SetOnEnter(const std::function<void(GameObject &other)> &callback) {
+void PhysicsBody::SetOnEnter(const std::function<void(GameObject& other)>& callback) {
     enter = callback;
 }
 
-void PhysicsBody::SetOnExit(const std::function<void(GameObject &other)> &callback) {
+void PhysicsBody::SetOnExit(const std::function<void(GameObject& other)>& callback) {
     exit = callback;
 }
 

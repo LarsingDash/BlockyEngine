@@ -8,6 +8,8 @@
 #include "logging/BLogger.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/physics/PhysicsModule.hpp"
+#include "shape/Box.hpp"
+#include "shape/Circle.hpp"
 
 #include <utility>
 #include <iostream>
@@ -20,6 +22,21 @@ PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_pt
 }
 
 void PhysicsBody::Start() {
+    switch (_physicsShape->GetShape()) {
+        case BOX: {
+            auto* const shape = dynamic_cast<Box*>(GetShapeReference()->get());
+            auto scale = gameObject->transform->GetWorldScale();
+            shape->_width = scale.x;
+            shape->_height = scale.y;
+            break;
+        }
+        case CIRCLE: {
+            const auto* const shape = dynamic_cast<Circle*>(GetShapeReference()->get());
+            auto scale = ((gameObject->transform->GetWorldScale().y + gameObject->transform->GetWorldScale().x) / 4);
+            shape->_radius = scale;
+            break;
+        }
+    }
     ModuleManager::GetInstance().GetModule<PhysicsModule>().AddCollider(*this);
 }
 

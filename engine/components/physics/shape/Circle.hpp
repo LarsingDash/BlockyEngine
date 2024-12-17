@@ -17,7 +17,9 @@ public:
     [[nodiscard]] float GetRadius() const { return _radius; }
 
 private:
-    float _radius;
+    mutable float _radius;
+
+    friend class PhysicsBody;
 };
 
 #endif //CIRCLE_HPP

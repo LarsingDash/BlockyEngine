@@ -9,38 +9,35 @@
 #include <logging/BLogger.hpp>
 #include <moduleManager/modules/WindowModule.hpp>
 
-PhysicsModule::PhysicsModule()
-{
-    b2Vec2 gravity(0.f, 9.8f);
+PhysicsModule::PhysicsModule() {
+	b2Vec2 gravity(0.f, 9.8f);
 
-    _box2dWorldObject = std::make_unique<b2World>(gravity);
+	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
-    _contactListener = std::make_unique<MyContactListener>(&_gameObjectToBodyMap);
+	_contactListener = std::make_unique<MyContactListener>(&_gameObjectToBodyMap);
 
-    _box2dWorldObject->SetContactListener(_contactListener.get());
+	_box2dWorldObject->SetContactListener(_contactListener.get());
 }
 
-void PhysicsModule::Update(float delta)
-{
-    WritingExternalInputToBox2DWorld();
+void PhysicsModule::Update(float delta) {
+	WritingExternalInputToBox2DWorld();
 
-    constexpr int32 positionIterations = 2 * 100;
-    constexpr int32 velocityIterations = 6; // high velocityIterations > 50 result in bigger performers hit.
+	constexpr int32 positionIterations = 2 * 100;
+	constexpr int32 velocityIterations = 6; // high velocityIterations > 50 result in bigger performers hit.
 
-    _box2dWorldObject->Step(delta, velocityIterations, positionIterations);
+	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
 
-    WritingBox2DWorldToOutside();
+	WritingBox2DWorldToOutside();
 }
 
-bool PhysicsModule::IsSame(const GameObject* const gameObject, const Body* const body)
-{
-    if (gameObject == nullptr || body == nullptr) { return false; }
+bool PhysicsModule::IsSame(const GameObject* const gameObject, const Body* const body) {
+	if (gameObject == nullptr || body == nullptr) { return false; }
 
-    if (body->GetPosition() != Position(*gameObject)) { return false; }
+	if (body->GetPosition() != Position(*gameObject)) { return false; }
 
-    if (body->GetAngle() != ToRadian(Angle(*gameObject))) { return false; }
+	if (body->GetAngle() != ToRadian(Angle(*gameObject))) { return false; }
 
-    return true;
+	return true;
 }
 
 void PhysicsModule::WritingExternalInputToBox2DWorld()
@@ -63,210 +60,177 @@ void PhysicsModule::WritingExternalInputToBox2DWorld()
             body->_gameObjectIsInitialized = true;
         }
 
-        body->b2body->SetTransform(Position(*gameObject), ToRadian(Angle(*gameObject)));
-    }
+		body->b2body->SetTransform(Position(*gameObject), ToRadian(Angle(*gameObject)));
+	}
 }
 
-void PhysicsModule::WritingBox2DWorldToOutside()
-{
-    for (auto [gameObject, body] : _gameObjectToBodyMap)
-    {
-        const b2Vec2 position = body->GetPosition();
-        const b2Vec2 deltaPosition = {
-            position.x - body->LastPosition().x, position.y - body->LastPosition().y
-        };
+void PhysicsModule::WritingBox2DWorldToOutside() {
+	for (auto [gameObject, body] : _gameObjectToBodyMap) {
+		const b2Vec2 position = body->GetPosition();
+		const b2Vec2 deltaPosition = {
+			position.x - body->LastPosition().x, position.y - body->LastPosition().y
+		};
 
-        const float angle = body->GetAngle();
-        const float deltaAngle = body->LastRotation() - angle;
+		const float angle = body->GetAngle();
+		const float deltaAngle = body->LastRotation() - angle;
 
-        gameObject->transform->Translate(deltaPosition.x, deltaPosition.y);
-        gameObject->transform->Rotate(ToDegree(deltaAngle));
+		gameObject->transform->Translate(deltaPosition.x, deltaPosition.y);
+		gameObject->transform->Rotate(ToDegree(deltaAngle));
 
-        body->LastPosition({position.x, position.y});
-        body->LastRotation(angle);
-    }
+		body->LastPosition({position.x, position.y});
+		body->LastRotation(angle);
+	}
 }
 
-void PhysicsModule::AddCollider(PhysicsBody& physicsBody)
-{
-    if (&physicsBody.gameObject == nullptr)
-    {
-        BLOCKY_ENGINE_ERROR("AddCollider but: physicsBody.gameObject == nullptr");
-        return;
-    }
+void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
+	if (&physicsBody.gameObject == nullptr) {
+		BLOCKY_ENGINE_ERROR("AddCollider but: physicsBody.gameObject == nullptr");
+		return;
+	}
 
-    auto body = std::make_unique<Body>();
-    body->b2body = CreateBody(*_box2dWorldObject, physicsBody);
+	auto body = std::make_unique<Body>();
+	body->b2body = CreateBody(*_box2dWorldObject, physicsBody);
 
-    _gameObjectToBodyMap[physicsBody.gameObject] = body.get();
-    _bodies.emplace_back(std::move(body));
+	_gameObjectToBodyMap[physicsBody.gameObject] = body.get();
+	_bodies.emplace_back(std::move(body));
 }
 
-void PhysicsModule::RemoveCollider(const PhysicsBody& physicsBody)
-{
-    auto it = _gameObjectToBodyMap.find(physicsBody.gameObject);
-    if (it != _gameObjectToBodyMap.end())
-    {
-        _box2dWorldObject->DestroyBody(it->second->b2body);
-        _gameObjectToBodyMap.erase(it);
-    }
+void PhysicsModule::RemoveCollider(const PhysicsBody& physicsBody) {
+	auto it = _gameObjectToBodyMap.find(physicsBody.gameObject);
+	if (it != _gameObjectToBodyMap.end()) {
+		_box2dWorldObject->DestroyBody(it->second->b2body);
+		_gameObjectToBodyMap.erase(it);
+	}
 }
 
-std::unique_ptr<b2Shape> AddBoxShape(const Box& collider)
-{
-    auto dynamicBox = std::make_unique<b2PolygonShape>();
-    // Blocky Engine uses width and height, Box2D uses x&y height&width above,below&left,right of origin. so: /2
-    dynamicBox->SetAsBox(collider.GetWidth() / 2, collider.GetHeight() / 2);
+std::unique_ptr<b2Shape> AddBoxShape(const Box& collider) {
+	auto dynamicBox = std::make_unique<b2PolygonShape>();
+	// Blocky Engine uses width and height, Box2D uses x&y height&width above,below&left,right of origin. so: /2
+	dynamicBox->SetAsBox(collider.GetWidth() / 2, collider.GetHeight() / 2);
 
-    return dynamicBox;
+	return dynamicBox;
 }
 
-std::unique_ptr<b2Shape> AddCircleShape(const Circle& collider)
-{
-    auto dynamicCircle = std::make_unique<b2CircleShape>();
-    dynamicCircle->m_radius = collider.GetRadius();
-    return dynamicCircle;
+std::unique_ptr<b2Shape> AddCircleShape(const Circle& collider) {
+	auto dynamicCircle = std::make_unique<b2CircleShape>();
+	dynamicCircle->m_radius = collider.GetRadius();
+	return dynamicCircle;
 }
 
-void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body)
-{
-    b2FixtureDef fixtureDef;
+void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
+	b2FixtureDef fixtureDef;
 
-    // if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
-    switch (physicsBody.GetShape())
-    {
-    case BOX:
-        {
-            const auto* const shape = dynamic_cast<Box*>(physicsBody.GetShapeReference()->get());
-            fixtureDef.shape = AddBoxShape(*shape).release();
-            break;
-        }
-    case CIRCLE:
-        {
-            const auto* const shape = dynamic_cast<Circle*>(physicsBody.GetShapeReference()->get());
-            fixtureDef.shape = AddCircleShape(*shape).release();
-            break;
-        }
-    }
+	// if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
+	switch (physicsBody.GetShape()) {
+		case BOX: {
+			const auto* const shape = dynamic_cast<Box*>(physicsBody.GetShapeReference()->get());
+			fixtureDef.shape = AddBoxShape(*shape).release();
+			break;
+		}
+		case CIRCLE: {
+			const auto* const shape = dynamic_cast<Circle*>(physicsBody.GetShapeReference()->get());
+			fixtureDef.shape = AddCircleShape(*shape).release();
+			break;
+		}
+	}
 
-    switch (physicsBody.GetTypeProperties().physicsType)
-    {
-    case COLLIDER:
-        {
-            fixtureDef.isSensor = true;
-            break;
-        }
-    case RIGIDBODY:
-        {
-            if (!physicsBody.GetTypeProperties().gravityEnabled)
-            {
-                body->SetGravityScale(0.0f);
-            }
-            else
-            {
-                body->SetGravityScale(1000.0f);
-            }
+	switch (physicsBody.GetTypeProperties().physicsType) {
+		case COLLIDER: {
+			fixtureDef.isSensor = true;
+			break;
+		}
+		case RIGIDBODY: {
+			if (!physicsBody.GetTypeProperties().gravityEnabled) {
+				body->SetGravityScale(0.0f);
+			}
+			else {
+				body->SetGravityScale(1000.0f);
+			}
 
-            body->SetAngularDamping(physicsBody.GetTypeProperties().angularResistance);
-            body->SetLinearDamping(physicsBody.GetTypeProperties().linearResistance);
+			body->SetAngularDamping(physicsBody.GetTypeProperties().angularResistance);
+			body->SetLinearDamping(physicsBody.GetTypeProperties().linearResistance);
 
-            body->SetAngularVelocity(ToRadian(physicsBody.GetTypeProperties().rotationVelocity));
-            body->SetLinearVelocity(VecConvert(physicsBody.GetTypeProperties().velocity));
-            break;
-        }
-    }
+			body->SetAngularVelocity(ToRadian(physicsBody.GetTypeProperties().rotationVelocity));
+			body->SetLinearVelocity(VecConvert(physicsBody.GetTypeProperties().velocity));
+			break;
+		}
+	}
 
-    body->CreateFixture(&fixtureDef);
+	body->CreateFixture(&fixtureDef);
 
-    // To have all objects apply the same force on another, the density attribute is not set, and all bodies are set to the same mass
-    b2MassData b2_mass_data = {1.f};
-    body->SetMassData(&b2_mass_data);
+	// To have all objects apply the same force on another, the density attribute is not set, and all bodies are set to the same mass
+	b2MassData b2_mass_data = {1.f};
+	body->SetMassData(&b2_mass_data);
 
-    delete fixtureDef.shape;
+	delete fixtureDef.shape;
 }
 
-b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody)
-{
-    // position and angel is not set when creating body, because physicsBody.gameObject position & angle is still default at this moment
-    b2Body* body;
+b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
+	// position and angel is not set when creating body, because physicsBody.gameObject position & angle is still default at this moment
+	b2Body* body;
 
-    auto gameObject = _gameObjectToBodyMap.find(physicsBody.gameObject);
+	auto gameObject = _gameObjectToBodyMap.find(physicsBody.gameObject);
 
-    // to have multiple PhysicsBodies on one game object use the same box2d body for the same game object.
-    if (gameObject != _gameObjectToBodyMap.end())
-    {
-        body = gameObject->second->b2body;
-    }
-    else
-    {
-        b2BodyDef bodyDef;
+	// to have multiple PhysicsBodies on one game object use the same box2d body for the same game object.
+	if (gameObject != _gameObjectToBodyMap.end()) {
+		body = gameObject->second->b2body;
+	}
+	else {
+		b2BodyDef bodyDef;
 
-        // when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
-        switch (physicsBody.GetTypeProperties().physicsType)
-        {
-        case COLLIDER:
-            {
-                bodyDef.type = b2_staticBody;
-                break;
-            }
-        case RIGIDBODY:
-            {
-                if (physicsBody.GetTypeProperties().isStatic)
-                {
-                    bodyDef.type = b2_kinematicBody;
-                }
-                else
-                {
-                    bodyDef.type = b2_dynamicBody;
-                }
-                break;
-            }
-        }
+		// when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
+		switch (physicsBody.GetTypeProperties().physicsType) {
+			case COLLIDER: {
+				bodyDef.type = b2_staticBody;
+				break;
+			}
+			case RIGIDBODY: {
+				if (physicsBody.GetTypeProperties().isStatic) {
+					bodyDef.type = b2_kinematicBody;
+				}
+				else {
+					bodyDef.type = b2_dynamicBody;
+				}
+				break;
+			}
+		}
 
-        body = world.CreateBody(&bodyDef);
-    }
+		body = world.CreateBody(&bodyDef);
+	}
 
-    AddFixture(physicsBody, body);
+	AddFixture(physicsBody, body);
 
-    return body;
+	return body;
 }
 
-b2Vec2 PhysicsModule::VecConvert(const glm::vec2& a)
-{
-    return {a.x, a.y};
+b2Vec2 PhysicsModule::VecConvert(const glm::vec2& a) {
+	return {a.x, a.y};
 }
 
-glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a)
-{
-    return {a.x, a.y};
+glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a) {
+	return {a.x, a.y};
 }
 
-b2Vec2 PhysicsModule::Position(const PhysicsBody& physicsBody)
-{
-    return VecConvert(physicsBody.componentTransform->GetWorldPosition());
+b2Vec2 PhysicsModule::Position(const PhysicsBody& physicsBody) {
+	return VecConvert(physicsBody.componentTransform->GetWorldPosition());
 }
 
-b2Vec2 PhysicsModule::Position(const GameObject& gameObject)
-{
-    return VecConvert(gameObject.transform->GetWorldPosition());
+b2Vec2 PhysicsModule::Position(const GameObject& gameObject) {
+	return VecConvert(gameObject.transform->GetWorldPosition());
 }
 
-float PhysicsModule::ToDegree(float radian)
-{
-    return (radian * (180.0f / static_cast<float>(M_PI)));
+float PhysicsModule::ToDegree(float radian) {
+	return (radian * (180.0f / static_cast<float>(M_PI)));
 }
 
-float PhysicsModule::ToRadian(float degree)
-{
-    return (degree * (static_cast<float>(M_PI) / 180.0f));
+float PhysicsModule::ToRadian(float degree) {
+	return (degree * (static_cast<float>(M_PI) / 180.0f));
 }
 
-float PhysicsModule::Angle(const PhysicsBody& physicsBody)
-{
-    return physicsBody.componentTransform->GetWorldRotation();
+float PhysicsModule::Angle(const PhysicsBody& physicsBody) {
+	return physicsBody.componentTransform->GetWorldRotation();
 }
 
-float PhysicsModule::Angle(const GameObject& gameObject)
-{
-    return gameObject.transform->GetWorldRotation();
+float PhysicsModule::Angle(const GameObject& gameObject) {
+	return gameObject.transform->GetWorldRotation();
 }

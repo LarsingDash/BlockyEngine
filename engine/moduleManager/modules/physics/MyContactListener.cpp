@@ -94,6 +94,7 @@ void MyContactListener::BeginContact(b2Contact *contact) {
     }
 }
 
+//todo: what to do if object is removed, does give call exit.
 void MyContactListener::EndContact(b2Contact *contact) {
     auto body1 = contact->GetFixtureA()->GetBody();
     auto body2 = contact->GetFixtureB()->GetBody();

@@ -18,6 +18,11 @@ public:
 
 private:
 	float _width, _height;
+
+	// void SetWidth(float width) { _width = width; }
+	// void SetHeight(const float height) { _height = height; }
+
+	friend class PhysicsBody;
 };
 
 #endif //BOX_HPP

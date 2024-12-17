@@ -20,7 +20,6 @@ PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_pt
 
 void PhysicsBody::Start()
 {
-    // // todo: following switch case will overwrite the possibility to set a collider to an other size than the game object.
     switch (_physicsShape->GetShape())
     {
     case BOX:

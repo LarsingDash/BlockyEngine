@@ -17,8 +17,6 @@ public:
 
     ~CollisionHandler() override = default;
 
-    // virtual void HandleCollision(GameObject* obj1, GameObject* obj2);
-
     void Start() override;
 
     void Update(float delta) override {

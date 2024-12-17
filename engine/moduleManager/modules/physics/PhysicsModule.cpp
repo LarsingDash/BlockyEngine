@@ -54,8 +54,8 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 	}
 }
 
-// todo: gravity velocity aan de hand van delta tijd
-// velocity kunnnen aanpassen op runtime
+// todo: gravity & velocity aan de hand van delta tijd
+// todo: velocity kunnnen aanpassen op runtime
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [physicsBody, body] : _gameObjectToBodyMap) {
 		const b2Vec2 position = body->GetPosition();

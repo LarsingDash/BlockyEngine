@@ -1,3 +1,4 @@
 ﻿target_sources(${ENGINE_TARGET} PRIVATE
-NetworkingModule.cpp
+        NetworkingModule.cpp
+        NetworkMessage.cpp
 )

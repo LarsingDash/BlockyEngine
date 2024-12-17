@@ -29,6 +29,7 @@ if (${MINGW})
 endif ()
 
 set(BOX2D_INCLUDE_DIRS "${DEPS_DIR}/box2d/include")
+set(JSON_INCLUDE_DIRS "${DEPS_DIR}/json/single_include")
 
 # Box2D Options
 set(BOX2D_BUILD_UNIT_TEST OFF CACHE BOOL INTERNAL "")
@@ -104,6 +105,7 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${SDL2_INCLUDE_DIRS}
         ${BOX2D_INCLUDE_DIRS}
+        ${JSON_INCLUDE_DIRS}
         ${DEPS_DIR}
         ${IMGUI_PATH}
         ${IMGUI_PATH}/backends

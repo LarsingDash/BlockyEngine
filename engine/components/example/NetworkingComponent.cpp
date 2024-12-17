@@ -22,8 +22,27 @@ void NetworkingComponent::Start() {
 		_renderNetworkingGUI();
 	});
 
-	_networkingModule.AddMessageListener("NetListener1", [this](const std::string& message) {
-		_onMessageReceived(message);
+	_networkingModule.AddMessageListener("Networking Listener", [this](const NetworkMessage& message) {
+		switch (message.getType()) {
+			case MessageType::CONNECT:
+				_logBuffer.appendf("[%s] Connected: %s\n",
+								   GetTimestamp().c_str(), message.getPayload().c_str());
+				break;
+			case MessageType::DISCONNECT:
+				_logBuffer.appendf("[%s] Disconnected: %s\n",
+								   GetTimestamp().c_str(), message.getPayload().c_str());
+				break;
+			case MessageType::CONNECTION_LOST:
+				_logBuffer.appendf("[%s] Connection Lost: %s\n",
+								   GetTimestamp().c_str(), message.getPayload().c_str());
+				break;
+			case MessageType::DATA:
+				_logBuffer.appendf("[%s] Received Data: %s\n",
+								   GetTimestamp().c_str(), message.getPayload().c_str());
+				break;
+			default:
+				break;
+		}
 	});
 }
 
@@ -106,7 +125,7 @@ void NetworkingComponent::_renderNetworkingGUI() {
 	if (!isActive) {
 		ImGui::InputText("##message", message, sizeof(message));
 		if (ImGui::Button("Send", ImVec2(120, 0))) {
-			_networkingModule.SendMessage(message);
+			_networkingModule.SendData(message);
 			_logBuffer.appendf("[%s] Sent: %s\n",
 							   GetTimestamp().c_str(), message);
 			memset(message, 0, sizeof(message));
@@ -134,11 +153,6 @@ void NetworkingComponent::_renderNetworkingGUI() {
 	ImGui::EndChild();
 
 	ImGui::End();
-}
-
-void NetworkingComponent::_onMessageReceived(const std::string& message) {
-	std::cout << "On message received triggered!" << std::endl;
-	_logBuffer.appendf("[%s] Received: %s\n", GetTimestamp().c_str(), message.c_str());
 }
 
 std::string NetworkingComponent::GetTimestamp() {

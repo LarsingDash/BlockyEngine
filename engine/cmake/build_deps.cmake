@@ -11,6 +11,7 @@ set(SDLNET_VERSION "2.2.0")
 set(GLM_VERSION "1.0.1")
 set(BOX2D_VERSION "2.4.1")
 set(IMGUI_VERSION "1.91.5")
+set(JSON_VERSION "3.11.3")
 
 set(BLOCKY_DEPS
         googletest https://github.com/google/googletest/releases/download/v${GTEST_VERSION}/googletest-${GTEST_VERSION}.tar.gz
@@ -21,6 +22,7 @@ set(BLOCKY_DEPS
         box2d https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz
         stb_image https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
         imgui https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz
+        json https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
 )
 
 function(setup_platform_specifics)

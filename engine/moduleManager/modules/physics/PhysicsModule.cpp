@@ -53,8 +53,8 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 		else {
 			constexpr float GAMEOBJECT_TRANSLATION_SPEED_COMPENSATION = 100000;
 			auto deltaPosition = Position(*physicsBody) - body->GetPosition();
-			deltaPosition.x = deltaPosition.x * GAMEOBJECT_TRANSLATION_SPEED_COMPENSATION;
-			deltaPosition.y = deltaPosition.y * GAMEOBJECT_TRANSLATION_SPEED_COMPENSATION;
+			deltaPosition.x = deltaPosition.x * deltaPosition.x;
+			deltaPosition.y = deltaPosition.y * deltaPosition.y;
 
 			auto deltaAngle = ToRadian(Angle(*physicsBody)) - body->GetAngle();
 			deltaAngle = deltaAngle * GAMEOBJECT_TRANSLATION_SPEED_COMPENSATION;

@@ -1,10 +1,11 @@
 ﻿target_sources(${ENGINE_TARGET} PRIVATE
-        MouseCameraController.cpp
         MovementComp.cpp
         RotationComp.cpp
         SpawnerComp.cpp
-        MouseInputComponent.cpp
-        KeyboardInputComponent.cpp
-        MouseReparenting.cpp
+        InstantiatePhysicsObject.cpp
         SceneSwitchComp.cpp
+        inputScripts/MouseCameraController.cpp
+        inputScripts/MouseInputComponent.cpp
+        inputScripts/MouseReparenting.cpp
+        inputScripts/KeyboardInputComponent.cpp
 )

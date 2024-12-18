@@ -65,9 +65,8 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 		rectangle.GetComponent<Audio>("clowns-jingle")->Play();
 	}
 	else {
-		// add the same component
-		rectangle.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/car-horn.mp3", 255, false);
-		rectangle.GetComponent<Audio>("clowns-jingle")->Stop();
+		// add the same component to stop other instance form playing, will try to load audio from set source file location
+		rectangle.AddComponent<Audio>("clowns-jingle", "", 255, true).Stop();
 
 		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, std::numeric_limits<int>::max(), true);
 		rectangle.AddComponent<CircleCollider>("CircleRigidBody");

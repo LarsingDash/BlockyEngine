@@ -19,6 +19,7 @@ PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_pt
                                                                          typeProperties)) {}
 
 void PhysicsBody::Start() {
+    // On start overwrite shape scale, because scale needs to be set and cant be done when constructing PhysicsBody
     switch (_physicsShape->GetShape()) {
         case BOX: {
             const auto* const shape = dynamic_cast<Box*>(GetShapeReference().get());
@@ -52,10 +53,10 @@ void PhysicsBody::SetOnExit(const std::function<void(GameObject& other)>& callba
     exit = callback;
 }
 
-std::shared_ptr<Shape>& PhysicsBody::GetShapeReference() { return _physicsShape; }
+std::shared_ptr<Shape> PhysicsBody::GetShapeReference() { return _physicsShape; }
 PhysicsShape PhysicsBody::GetShape() { return _physicsShape->GetShape(); }
 std::shared_ptr<TypeProperties> PhysicsBody::GetTypeProperties() { return _typeProperties; }
-TypeProperties PhysicsBody::GetTypeProperties() const { return *_typeProperties; }
+const TypeProperties& PhysicsBody::GetTypeProperties() const { return *_typeProperties; }
 
 Component* PhysicsBody::_clone(const GameObject& parent) {
     auto clone = new PhysicsBody(*this);

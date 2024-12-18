@@ -11,7 +11,7 @@
 
 // objects scaled, based on DEBUG_GAME_SPEED so that it looks like the speed is incrementing,
 //	since everything is DEBUG_GAME_SPEED closer to another and takes DEBUG_GAME_SPEED less time to move to same position.
-constexpr float DEBUG_GAME_SPEED = 2;
+constexpr float DEBUG_GAME_SPEED = 1;
 
 PhysicsModule::PhysicsModule() {
 	b2Vec2 gravity(0.f, 9.8f);
@@ -46,7 +46,7 @@ bool PhysicsModule::IsSame(const PhysicsBody* const physicsBody, const Body* con
 	if (physicsBody == nullptr || body == nullptr) { return false; }
 
 	if (body->GetPosition() != Position(*physicsBody)) { return false; }
-	if (body->GetAngle() != ToRadian(Angle(*physicsBody))) { return false; }
+	if (body->GetAngle() != Angle(*physicsBody)) { return false; }
 
 	if (body->GetLinearVelocity() != LinearVelocity(*physicsBody)) { return false; }
 	if (body->GetRotationVelocity() != RotationVelocity(*physicsBody)) { return false; }
@@ -64,14 +64,14 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 		if (!body->_gameObjectIsInitialized) {
 			// only need to initialize Position and Rotation, for gameObject transform, that needs deltaPosition
 			body->LastPosition(Position(*physicsBody));
-			body->LastRotation(ToRadian(Angle(*physicsBody)));
+			body->LastRotation(Angle(*physicsBody));
 
 			body->_gameObjectIsInitialized = true;
 		}
 
 		body->SetTransform(
 			Position(*physicsBody),
-			ToRadian(Angle(*physicsBody)),
+			Angle(*physicsBody),
 			LinearVelocity(*physicsBody),
 			RotationVelocity(*physicsBody),
 			LinearResistance(*physicsBody),
@@ -88,11 +88,11 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 		};
 
 		const float angle = body->GetAngle();
-		const float deltaAngle = body->LastRotation() - angle;
+		const float deltaAngle = ToDegree(body->LastRotation() - angle) * DEBUG_GAME_SPEED;
 
 		// Use gameObject to apply the movement to the whole gameObject
 		physicsBody->gameObject->transform->Translate(deltaPosition.x, deltaPosition.y);
-		physicsBody->gameObject->transform->Rotate(ToDegree(deltaAngle));
+		physicsBody->gameObject->transform->Rotate(deltaAngle);
 
 		body->LastPosition({position.x, position.y});
 		body->LastRotation(angle);
@@ -155,7 +155,7 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 		}
 	}
 
-	auto properties = physicsBody.GetTypeProperties();
+	const auto& properties = physicsBody.GetTypeProperties();
 	switch (properties->physicsType) {
 		case COLLIDER: {
 			fixtureDef.isSensor = true;
@@ -172,7 +172,7 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 			body->SetAngularDamping(RotationResistance(physicsBody));
 			body->SetLinearDamping(LinearResistance(physicsBody));
 
-			body->SetAngularVelocity(ToRadian(RotationVelocity(physicsBody)));
+			body->SetAngularVelocity(RotationVelocity(physicsBody));
 			body->SetLinearVelocity(LinearVelocity(physicsBody));
 			break;
 		}
@@ -181,7 +181,7 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 	body->CreateFixture(&fixtureDef);
 
 	// To have all objects apply the same force on another, the density attribute is not set, and all bodies are set to the same mass
-	b2MassData b2_mass_data = {0.1f};
+	b2MassData b2_mass_data = {1.f};
 	body->SetMassData(&b2_mass_data);
 
 	delete fixtureDef.shape;
@@ -201,7 +201,7 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
 		b2BodyDef bodyDef;
 
 		// when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
-		auto properties = physicsBody.GetTypeProperties();
+		const auto& properties = physicsBody.GetTypeProperties();
 		switch (properties->physicsType) {
 			case COLLIDER: {
 				bodyDef.type = b2_staticBody;
@@ -241,12 +241,28 @@ b2Vec2 PhysicsModule::Position(const PhysicsBody& physicsBody) {
 	return vec;
 }
 
+// return Angel in radian
+float PhysicsModule::Angle(const PhysicsBody& physicsBody) {
+	return ToRadian(physicsBody.componentTransform->GetWorldRotation()) / DEBUG_GAME_SPEED;
+}
+
+// return Angel in degree
+float PhysicsModule::ToDegree(float radian) {
+	return (radian * (180.0f / static_cast<float>(M_PI)));
+}
+
+// return Angel in radian
+float PhysicsModule::ToRadian(float degree) {
+	return (degree * (static_cast<float>(M_PI) / 180.0f));
+}
+
 b2Vec2 PhysicsModule::LinearVelocity(const PhysicsBody& physicsBody) {
 	return VecConvert(physicsBody.GetTypeProperties().linearVelocity);
 }
 
+// return Angle in radian
 float PhysicsModule::RotationVelocity(const PhysicsBody& physicsBody) {
-	return physicsBody.GetTypeProperties().rotationVelocity;
+	return ToRadian(physicsBody.GetTypeProperties().rotationVelocity);
 }
 
 float PhysicsModule::RotationResistance(const PhysicsBody& physicsBody) {
@@ -255,17 +271,5 @@ float PhysicsModule::RotationResistance(const PhysicsBody& physicsBody) {
 
 float PhysicsModule::LinearResistance(const PhysicsBody& physicsBody) {
 	return physicsBody.GetTypeProperties().linearResistance;
-}
-
-float PhysicsModule::ToDegree(float radian) {
-	return (radian * (180.0f / static_cast<float>(M_PI)));
-}
-
-float PhysicsModule::ToRadian(float degree) {
-	return (degree * (static_cast<float>(M_PI) / 180.0f));
-}
-
-float PhysicsModule::Angle(const PhysicsBody& physicsBody) {
-	return physicsBody.componentTransform->GetWorldRotation();
 }
 

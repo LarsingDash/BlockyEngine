@@ -26,18 +26,24 @@ struct Body {
 	bool _gameObjectIsInitialized{};
 
 	[[nodiscard]] b2Vec2 GetPosition() const { return b2body->GetPosition(); }
+	// return Angel in radian
 	[[nodiscard]] float GetAngle() const { return b2body->GetAngle(); }
 	[[nodiscard]] b2Vec2 GetLinearVelocity() const { return b2body->GetPosition(); }
+	// return Angel in radian
 	[[nodiscard]] float GetRotationVelocity() const { return b2body->GetAngle(); }
+	// return Angel in radian
 	[[nodiscard]] float GetAngularResistance() const { return b2body->GetAngularDamping(); }
 	[[nodiscard]] float GetLinearResistance() const { return b2body->GetLinearDamping(); }
 
 	[[nodiscard]] b2Vec2 LastPosition() const { return _gameObjectLastPosition; }
+	// return Angel in radian
 	[[nodiscard]] float LastRotation() const { return _gameObjectLastRotation; }
 
 	void LastPosition(const b2Vec2 position) { _gameObjectLastPosition = position; }
+	// Angel in radian
 	void LastRotation(const float rotation) { _gameObjectLastRotation = rotation; }
 
+	// Angel in radian
 	void SetTransform(const b2Vec2& position,
 	                  const float angle,
 	                  const b2Vec2& linearVelocity,

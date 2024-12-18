@@ -53,10 +53,10 @@ public:
 	void SetOnEnter(const std::function<void(GameObject& other)>& callback);
 	void SetOnExit(const std::function<void(GameObject& other)>& callback);
 
-	[[nodiscard]] virtual std::shared_ptr<Shape>& GetShapeReference();
+	[[nodiscard]] virtual std::shared_ptr<Shape> GetShapeReference();
 	[[nodiscard]] virtual PhysicsShape GetShape();
 	[[nodiscard]] virtual std::shared_ptr<TypeProperties> GetTypeProperties();
-	[[nodiscard]] virtual TypeProperties GetTypeProperties() const;
+	[[nodiscard]] const TypeProperties& GetTypeProperties() const;
 
 private:
 	Component* _clone(const GameObject& parent) override;

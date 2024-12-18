@@ -8,9 +8,9 @@
 
 AnimationRenderable::AnimationRenderable(GameObject* gameObject, const char* tag,
 										 std::string filePath, std::string spriteTag,
-										 int frameWidth, int frameHeight, int layer)
+										 int frameWidth, int frameHeight, int layer, SpriteFlip spriteFlip)
 		: SpriteRenderable(gameObject, tag, std::move(filePath), std::move(spriteTag),
-						   RenderableType::ANIMATED, layer) {
+						   RenderableType::ANIMATED, layer, spriteFlip) {
 
 	_frameWidth = frameWidth;
 	_frameHeight = frameHeight;

@@ -57,24 +57,39 @@ void NetworkingComponent::End() {
 void NetworkingComponent::_renderNetworkingGUI() {
 	ImGui::Begin("Networking");
 
+	NetworkRole currentRole = _networkingModule.GetRole();
+	bool isConnected = _networkingModule.IsConnected();
+
+	const char* roleStr = "NONE";
+	switch (currentRole) {
+		case NetworkRole::HOST:   roleStr = "HOST"; break;
+		case NetworkRole::CLIENT: roleStr = "CLIENT"; break;
+		case NetworkRole::NONE:   roleStr = "NONE"; break;
+	}
+
+	ImVec4 roleColor;
+	if (currentRole == NetworkRole::HOST) {
+		roleColor = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+	} else if (currentRole == NetworkRole::CLIENT) {
+		roleColor = ImVec4(0.0f, 0.75f, 1.0f, 1.0f);
+	} else {
+		roleColor = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+	}
+
+	ImGui::TextColored(roleColor, "Role: %s", roleStr);
+
+
+	ImGui::Text("Peer Connected: %s", isConnected ? "YES" : "NO");
+
+	ImGui::Separator();
+	ImGui::Text("Connection Settings");
+
 	static char host[128] = "127.0.0.1";
 	static int port = 12345;
 	static char message[512] = "";
 	static bool autoScroll = true;
 
-	ImGui::TextColored(
-			_networkingModule.IsHosting() ? ImVec4(0.0f, 1.0f, 0.0f, 1.0f) :
-			_networkingModule.IsConnected() ? ImVec4(0.0f, 1.0f, 1.0f, 1.0f) :
-			ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
-			"Status: %s",
-			_networkingModule.IsHosting() ? "Hosting" :
-			_networkingModule.IsConnected() ? "Connected" : "Disconnected"
-	);
-
-	ImGui::Separator();
-	ImGui::Text("Connection Settings");
-
-	bool isActive = !_networkingModule.IsHosting() && !_networkingModule.IsConnected();
+	bool isActive = (currentRole == NetworkRole::NONE) && !isConnected;
 
 	if (!isActive) {
 		ImGui::BeginDisabled();
@@ -85,7 +100,7 @@ void NetworkingComponent::_renderNetworkingGUI() {
 
 	if (ImGui::Button("Host", ImVec2(120, 0)) && isActive) {
 		try {
-			_networkingModule.Host(port);
+			_networkingModule.Host((Uint16)port);
 			_logBuffer.appendf("[%s] Started hosting on port %d\n",
 							   GetTimestamp().c_str(), port);
 		} catch (const std::exception& e) {
@@ -98,7 +113,7 @@ void NetworkingComponent::_renderNetworkingGUI() {
 
 	if (ImGui::Button("Join", ImVec2(120, 0)) && isActive) {
 		try {
-			if (_networkingModule.Join(host, port)) {
+			if (_networkingModule.Join(host, (Uint16)port)) {
 				_logBuffer.appendf("[%s] Connected to %s:%d\n",
 								   GetTimestamp().c_str(), host, port);
 			}
@@ -112,7 +127,7 @@ void NetworkingComponent::_renderNetworkingGUI() {
 		ImGui::EndDisabled();
 	}
 
-	if (!isActive) {
+	if (currentRole != NetworkRole::NONE || isConnected) {
 		if (ImGui::Button("Disconnect", ImVec2(120, 0))) {
 			_networkingModule.Disconnect();
 			_logBuffer.appendf("[%s] Disconnected\n", GetTimestamp().c_str());
@@ -122,18 +137,21 @@ void NetworkingComponent::_renderNetworkingGUI() {
 	ImGui::Separator();
 	ImGui::Text("Message");
 
-	if (!isActive) {
-		ImGui::InputText("##message", message, sizeof(message));
-		if (ImGui::Button("Send", ImVec2(120, 0))) {
-			_networkingModule.SendData(message);
-			_logBuffer.appendf("[%s] Sent: %s\n",
-							   GetTimestamp().c_str(), message);
-			memset(message, 0, sizeof(message));
-		}
-	} else {
+	bool canSendMessages = (currentRole == NetworkRole::HOST && isConnected) ||
+			(currentRole == NetworkRole::CLIENT && isConnected);
+
+	if (!canSendMessages) {
 		ImGui::BeginDisabled();
-		ImGui::InputText("##message", message, sizeof(message));
-		ImGui::Button("Send", ImVec2(120, 0));
+	}
+
+	ImGui::InputText("##message", message, sizeof(message));
+	if (ImGui::Button("Send", ImVec2(120, 0))) {
+		_networkingModule.SendData(message);
+		_logBuffer.appendf("[%s] Sent: %s\n", GetTimestamp().c_str(), message);
+		memset(message, 0, sizeof(message));
+	}
+
+	if (!canSendMessages) {
 		ImGui::EndDisabled();
 	}
 
@@ -162,6 +180,7 @@ std::string NetworkingComponent::GetTimestamp() {
 	std::strftime(buffer, sizeof(buffer), "%H:%M:%S", std::localtime(&time));
 	return buffer;
 }
+
 
 
 

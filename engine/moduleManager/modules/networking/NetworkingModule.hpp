@@ -14,6 +14,7 @@
 #include "SDL_net.h"
 #include "moduleManager/ModuleWrapper.hpp"
 #include "NetworkMessage.hpp"
+#include "NetworkState.hpp"
 
 class NetworkingModule : public ModuleWrapper {
 	public:
@@ -33,15 +34,16 @@ class NetworkingModule : public ModuleWrapper {
 		bool IsHosting() const;
 		bool IsConnected() const;
 		void Update(float delta) override;
+		NetworkRole GetRole() const;
 
 	private:
 		void _processIncomingMessages();
-
-		bool _isHosting = false;
-		bool _isConnected = false;
 		bool _isRunning;
 
-		std::unordered_map<std::string, MessageReceivedCallback> messageCallbacks;
+		NetworkState _state;
+		float _timeSinceLastPing = 0.0f;
+
+		std::unordered_map<std::string, MessageReceivedCallback> _messageCallbacks;
 		UDPsocket _udpSocket;
 		IPaddress _peerAddress{};
 		std::thread _networkingThread;

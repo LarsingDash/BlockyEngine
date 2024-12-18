@@ -11,6 +11,7 @@ NetworkingModule::NetworkingModule() : _isRunning(false), _udpSocket(nullptr) {
 	if (SDLNet_Init() == -1) {
 		throw std::runtime_error("SDLNet_Init Error: " + std::string(SDLNet_GetError()));
 	}
+	_state.SetRole(NetworkRole::NONE);
 }
 
 NetworkingModule::~NetworkingModule() {
@@ -27,8 +28,8 @@ void NetworkingModule::Host(Uint16 port) {
 	}
 
 	_isRunning = true;
-	_isHosting = true;
-	_isConnected = false;
+	_state.SetRole(NetworkRole::HOST);
+
 	_networkingThread = std::thread(&NetworkingModule::_processIncomingMessages, this);
 
 	std::cout << "Hosting on port " << port << std::endl;
@@ -48,8 +49,7 @@ bool NetworkingModule::Join(const std::string& host, Uint16 port) {
 	}
 
 	_isRunning = true;
-	_isHosting = false;
-	_isConnected = true;
+	_state.SetRole(NetworkRole::CLIENT);
 
 	_networkingThread = std::thread(&NetworkingModule::_processIncomingMessages, this);
 
@@ -74,7 +74,7 @@ void NetworkingModule::SendMessage(const NetworkMessage& message) {
 	}
 
 	std::memcpy(packet->data, jsonStr.c_str(), jsonStr.length() + 1);
-	packet->len = jsonStr.length() + 1;
+	packet->len = (int)jsonStr.length() + 1;
 	packet->address = _peerAddress;
 
 	if (SDLNet_UDP_Send(_udpSocket, -1, packet) == 0) {
@@ -87,10 +87,11 @@ void NetworkingModule::SendMessage(const NetworkMessage& message) {
 void NetworkingModule::Disconnect() {
 	{
 		std::lock_guard<std::mutex> lock(_messageMutex);
-		if (_isConnected) SendMessage(createDisconnectMessage("Disconnecting peer"));
+		if (IsConnected()) {
+			SendMessage(createDisconnectMessage("Disconnecting peer"));
+		}
 		_isRunning = false;
-		_isConnected = false;
-		_isHosting = false;
+		_state.SetRole(NetworkRole::NONE);
 	}
 
 	if (_networkingThread.joinable()) _networkingThread.join();
@@ -101,16 +102,47 @@ void NetworkingModule::Disconnect() {
 }
 
 void NetworkingModule::Update(float delta) {
-	std::lock_guard<std::mutex> lock(_messageMutex);
-	while (!_incomingMessages.empty()) {
-		NetworkMessage& message = _incomingMessages.front();
-		for (const auto& [tag, callback] : messageCallbacks) {
-			callback(message);
+	{
+		std::lock_guard<std::mutex> lock(_messageMutex);
+		while (!_incomingMessages.empty()) {
+			NetworkMessage message = _incomingMessages.front();
+			_incomingMessages.pop();
+
+			switch (message.getType()) {
+				case MessageType::HOST_PING:
+					if (_state.GetRole() == NetworkRole::CLIENT) {
+						_state.OnHostPingReceived();
+					}
+					break;
+				case MessageType::CLIENT_PING:
+					if (_state.GetRole() == NetworkRole::HOST) {
+						_state.OnClientPingReceived();
+					}
+					break;
+				default:
+					for (const auto& [tag, callback] : _messageCallbacks) {
+						callback(message);
+					}
+					break;
+			}
 		}
-		_incomingMessages.pop();
+	}
+
+	_timeSinceLastPing += delta;
+	if (_timeSinceLastPing >= 1.0f) {
+		_timeSinceLastPing = 0.0f;
+
+		if (_state.GetRole() == NetworkRole::HOST) {
+			if (_peerAddress.host != 0 && _peerAddress.port != 0) {
+				SendMessage(createHostPingMessage());
+			}
+		} else if (_state.GetRole() == NetworkRole::CLIENT) {
+			if (_peerAddress.host != 0 && _peerAddress.port != 0) {
+				SendMessage(createClientPingMessage());
+			}
+		}
 	}
 }
-
 void NetworkingModule::_processIncomingMessages() {
 	UDPpacket* packet = SDLNet_AllocPacket(512);
 	if (!packet) return;
@@ -121,9 +153,8 @@ void NetworkingModule::_processIncomingMessages() {
 				std::string jsonStr(reinterpret_cast<char*>(packet->data));
 				NetworkMessage message = NetworkMessage::fromJson(jsonStr);
 
-				if (_isHosting && !_isConnected) {
+				if (_state.GetRole() == NetworkRole::HOST && _peerAddress.host == 0 && _peerAddress.port == 0) {
 					_peerAddress = packet->address;
-					_isConnected = true;
 				}
 
 				{
@@ -141,17 +172,26 @@ void NetworkingModule::_processIncomingMessages() {
 }
 
 void NetworkingModule::AddMessageListener(const std::string& tag, MessageReceivedCallback callback) {
-	messageCallbacks[tag] = std::move(callback);
+	_messageCallbacks[tag] = std::move(callback);
 }
 
 void NetworkingModule::RemoveMessageListener(const std::string& tag) {
-	messageCallbacks.erase(tag);
+	_messageCallbacks.erase(tag);
 }
 
 bool NetworkingModule::IsHosting() const {
-	return _isHosting;
+	return _state.GetRole() == NetworkRole::HOST;
 }
 
 bool NetworkingModule::IsConnected() const {
-	return _isConnected;
+	if (_state.GetRole() == NetworkRole::HOST) {
+		return _state.IsClientConnected();
+	}
+	if (_state.GetRole() == NetworkRole::CLIENT) {
+		return _state.IsHostConnected();
+	}
+	return false;
+}
+NetworkRole NetworkingModule::GetRole() const {
+	return _state.GetRole();
 }

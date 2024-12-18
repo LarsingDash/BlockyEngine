@@ -13,8 +13,8 @@ enum class MessageType {
 	DISCONNECT,
 	CONNECTION_LOST,
 	DATA,
-	PING,
-	PONG
+	HOST_PING,
+	CLIENT_PING
 };
 
 class NetworkMessage {
@@ -36,8 +36,8 @@ NetworkMessage createConnectMessage(const std::string& clientInfo = "");
 NetworkMessage createDisconnectMessage(const std::string& reason = "");
 NetworkMessage createConnectionLostMessage(const std::string& details = "");
 NetworkMessage createDataMessage(const std::string& data);
-NetworkMessage createPingMessage();
-NetworkMessage createPongMessage();
+NetworkMessage createHostPingMessage();
+NetworkMessage createClientPingMessage();
 
 
 #endif //BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_NETWORKING_NETWORKMESSAGE_HPP_

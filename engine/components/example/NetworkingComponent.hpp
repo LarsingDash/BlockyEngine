@@ -21,7 +21,6 @@ class NetworkingComponent : public Component {
 
 	private:
 		void _renderNetworkingGUI();
-		void _onMessageReceived(const std::string& message);
 
 		ImGuiRenderingModule& _imguiModule;
 		NetworkingModule& _networkingModule;

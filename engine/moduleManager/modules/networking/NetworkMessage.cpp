@@ -49,10 +49,10 @@ NetworkMessage createDataMessage(const std::string& data) {
 	return NetworkMessage(MessageType::DATA, data);
 }
 
-NetworkMessage createPingMessage() {
-	return NetworkMessage(MessageType::PING);
+NetworkMessage createHostPingMessage() {
+	return NetworkMessage(MessageType::HOST_PING);
 }
 
-NetworkMessage createPongMessage() {
-	return NetworkMessage(MessageType::PONG);
+NetworkMessage createClientPingMessage() {
+	return NetworkMessage(MessageType::CLIENT_PING);
 }

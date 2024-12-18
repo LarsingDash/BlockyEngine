@@ -10,7 +10,7 @@
 #include <glm/vec2.hpp>
 
 // if logging is lagging the game don't set LOG_TO_CONSOLE 0, because it gives the biggest performers hit
-#define LOG_TO_CONSOLE 1
+#define LOG_TO_CONSOLE 0
 #define LOG_TO_FILE 1
 
 // length for function/class name that is reserved

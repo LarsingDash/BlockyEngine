@@ -23,18 +23,23 @@ PhysicsModule::PhysicsModule() {
 	_box2dWorldObject->SetContactListener(_contactListener.get());
 }
 
-//todo: gamespeed is increased for running on higher fps? use of fixed update with box2d is needed?
 void PhysicsModule::Update(float delta) {
-	BLOCKY_ENGINE_DEBUG_STREAM("time step: " << delta << " seconds");
+	// fixed update implementation/fix, since Box2D world Step is inconsistent at different fps
+	static float totalDelta = 0;
+	totalDelta += delta;
+	constexpr float fixedTimeStep = (1.f / 60.f);
+	while (totalDelta >= fixedTimeStep) {
+		totalDelta -= fixedTimeStep;
 
-	WritingExternalInputToBox2DWorld();
+		WritingExternalInputToBox2DWorld();
 
-	constexpr int32 positionIterations = 2 * 100;
-	constexpr int32 velocityIterations = 6; // high velocityIterations > 50 result in bigger performers hit.
+		constexpr int32 positionIterations = 2 * 100;
+		constexpr int32 velocityIterations = 6; // high velocityIterations > 50 result in bigger performers hit.
 
-	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
+		_box2dWorldObject->Step(fixedTimeStep, velocityIterations, positionIterations);
 
-	WritingBox2DWorldToOutside();
+		WritingBox2DWorldToOutside();
+	}
 }
 
 bool PhysicsModule::IsSame(const PhysicsBody* const physicsBody, const Body* const body) {

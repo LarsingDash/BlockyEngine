@@ -184,7 +184,7 @@ void buildCollisionEnv(SceneManager& manager) {
     );
 
     auto& sceneBase2 = root->AddChild("BaseOfScene");
-    sceneBase2.transform->SetPosition(pos.x - 210, pos.y);
+    sceneBase2.transform->SetPosition(pos.x - 210, pos.y - 400);
     sceneBase2.transform->SetScale(10, 10);
     sceneBase2.AddComponent<RectangleRenderable>("RectangleRenderable", glm::vec4{0, 0, 255, 255}, 0, true);
     sceneBase2.AddComponent<BoxRigidBody>("BoxRigidBody", properties);

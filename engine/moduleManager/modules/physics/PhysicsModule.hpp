@@ -10,6 +10,7 @@
 #include <box2d/b2_math.h>
 #include <Box2D/b2_world.h>
 #include <gameObject/GameObject.hpp>
+#include <logging/BLogger.hpp>
 #include <moduleManager/ModuleWrapper.hpp>
 #include "components/physics/PhysicsBody.hpp"
 #include "MyContactListener.hpp"
@@ -48,6 +49,7 @@ struct Body {
 		b2body->SetAngularVelocity(rotationVelocity);
 		b2body->SetLinearDamping(linearResistance);
 		b2body->SetAngularDamping(rotationResistance);
+		BLOCKY_ENGINE_DEBUG_STREAM("transform: " << linearVelocity.x << ";" <<linearVelocity.y);
 	}
 };
 
@@ -59,7 +61,7 @@ public:
 	void Update(float delta) override;
 
 	// when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
-	void AddCollider(PhysicsBody& physicsBody);
+	void AddPhysicsBody(PhysicsBody& physicsBody);
 	void RemoveCollider(PhysicsBody& physicsBody);
 
 private:

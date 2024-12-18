@@ -15,7 +15,8 @@ PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_pt
                          const TypeProperties& typeProperties) : Component(gameObject, tag, true),
                                                                  _physicsShape(std::move(physicsBody)),
                                                                  _typeProperties(
-                                                                     std::make_shared<TypeProperties>(typeProperties)) {}
+                                                                     std::make_shared<TypeProperties>(
+                                                                         typeProperties)) {}
 
 void PhysicsBody::Start() {
     switch (_physicsShape->GetShape()) {
@@ -34,7 +35,7 @@ void PhysicsBody::Start() {
         }
     }
 
-    ModuleManager::GetInstance().GetModule<PhysicsModule>().AddCollider(*this);
+    ModuleManager::GetInstance().GetModule<PhysicsModule>().AddPhysicsBody(*this);
 }
 
 void PhysicsBody::Update(float delta) {}

@@ -176,7 +176,7 @@ void buildCollisionEnv(SceneManager& manager) {
     properties = TypeProperties(
         RIGIDBODY,
         false,
-        glm::vec2{0, -50},
+        glm::vec2{0, 0},
         0,
         0,
         0,

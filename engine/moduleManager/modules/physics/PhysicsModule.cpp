@@ -9,13 +9,12 @@
 #include <logging/BLogger.hpp>
 #include <moduleManager/modules/WindowModule.hpp>
 
-// to allow speed up: slow everything down by factor MAX_SIMULATION_SPEED_INCREASE as default,
-//	so that Box2D recommender 1/50 minimum timeStep is not exceeded, MAX_SIMULATION_SPEED_INCREASE should not be 0;
-constexpr float MAX_SIMULATION_SPEED_INCREASE = 100.f;
+// objects scaled, based on DEBUG_GAME_SPEED so that it looks like the speed is incrementing,
+//	since everything is DEBUG_GAME_SPEED closer to another and takes DEBUG_GAME_SPEED less time to move to same position.
+constexpr float DEBUG_GAME_SPEED = 2;
 
 PhysicsModule::PhysicsModule() {
-	// todo: both MAX_SIMULATION_SPEED_INCREASE needed
-	b2Vec2 gravity(0.f, 9.8f * MAX_SIMULATION_SPEED_INCREASE * MAX_SIMULATION_SPEED_INCREASE);
+	b2Vec2 gravity(0.f, 9.8f);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
@@ -24,18 +23,16 @@ PhysicsModule::PhysicsModule() {
 	_box2dWorldObject->SetContactListener(_contactListener.get());
 }
 
-// todo: gravity & velocity aan de hand van delta tijd
+//todo: gamespeed is increased for running on higher fps? use of fixed update with box2d is needed?
 void PhysicsModule::Update(float delta) {
-	// to allow speed up: slow everything down by factor MAX_SIMULATION_SPEED_INCREASE as default,
-	//	so that Box2D recommender 1/50 minimum timeStep is not exceeded, MAX_SIMULATION_SPEED_INCREASE should not be 0;
-	const auto timeStep = delta / MAX_SIMULATION_SPEED_INCREASE;
+	BLOCKY_ENGINE_DEBUG_STREAM("time step: " << delta << " seconds");
 
 	WritingExternalInputToBox2DWorld();
 
 	constexpr int32 positionIterations = 2 * 100;
 	constexpr int32 velocityIterations = 6; // high velocityIterations > 50 result in bigger performers hit.
 
-	_box2dWorldObject->Step(timeStep, velocityIterations, positionIterations);
+	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
 
 	WritingBox2DWorldToOutside();
 }
@@ -81,7 +78,8 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [physicsBody, body] : _gameObjectToBodyMap) {
 		const b2Vec2 position = body->GetPosition();
 		const b2Vec2 deltaPosition = {
-			position.x - body->LastPosition().x, position.y - body->LastPosition().y
+			(position.x - body->LastPosition().x) * DEBUG_GAME_SPEED,
+			(position.y - body->LastPosition().y) * DEBUG_GAME_SPEED
 		};
 
 		const float angle = body->GetAngle();
@@ -96,9 +94,9 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 	}
 }
 
-void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
+void PhysicsModule::AddPhysicsBody(PhysicsBody& physicsBody) {
 	if (&physicsBody.gameObject == nullptr) {
-		BLOCKY_ENGINE_ERROR("AddCollider but: physicsBody.gameObject == nullptr");
+		BLOCKY_ENGINE_ERROR("AddPhysicsBody but: physicsBody.gameObject == nullptr");
 		return;
 	}
 
@@ -120,14 +118,15 @@ void PhysicsModule::RemoveCollider(PhysicsBody& physicsBody) {
 std::unique_ptr<b2Shape> AddBoxShape(const Box& collider) {
 	auto dynamicBox = std::make_unique<b2PolygonShape>();
 	// Blocky Engine uses width and height, Box2D uses x&y height&width above,below&left,right of origin. so: /2
-	dynamicBox->SetAsBox(collider.GetWidth() / 2, collider.GetHeight() / 2);
+	dynamicBox->SetAsBox(collider.GetWidth() / 2 / DEBUG_GAME_SPEED,
+	                     collider.GetHeight() / 2 / DEBUG_GAME_SPEED);
 
 	return dynamicBox;
 }
 
 std::unique_ptr<b2Shape> AddCircleShape(const Circle& collider) {
 	auto dynamicCircle = std::make_unique<b2CircleShape>();
-	dynamicCircle->m_radius = collider.GetRadius();
+	dynamicCircle->m_radius = collider.GetRadius() / DEBUG_GAME_SPEED;
 	return dynamicCircle;
 }
 
@@ -174,7 +173,7 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 	body->CreateFixture(&fixtureDef);
 
 	// To have all objects apply the same force on another, the density attribute is not set, and all bodies are set to the same mass
-	b2MassData b2_mass_data = {1.f};
+	b2MassData b2_mass_data = {0.1f};
 	body->SetMassData(&b2_mass_data);
 
 	delete fixtureDef.shape;
@@ -228,26 +227,26 @@ glm::vec2 PhysicsModule::VecConvert(const b2Vec2& a) {
 }
 
 b2Vec2 PhysicsModule::Position(const PhysicsBody& physicsBody) {
-	return VecConvert(physicsBody.componentTransform->GetWorldPosition());
-}
-
-b2Vec2 PhysicsModule::LinearVelocity(const PhysicsBody& physicsBody) {
-	auto vec = VecConvert(physicsBody.GetTypeProperties().linearVelocity);
-	vec.x *= MAX_SIMULATION_SPEED_INCREASE;
-	vec.y *= MAX_SIMULATION_SPEED_INCREASE;
+	auto vec = VecConvert(physicsBody.componentTransform->GetWorldPosition());
+	vec.x /= DEBUG_GAME_SPEED;
+	vec.y /= DEBUG_GAME_SPEED;
 	return vec;
 }
 
+b2Vec2 PhysicsModule::LinearVelocity(const PhysicsBody& physicsBody) {
+	return VecConvert(physicsBody.GetTypeProperties().linearVelocity);
+}
+
 float PhysicsModule::RotationVelocity(const PhysicsBody& physicsBody) {
-	return physicsBody.GetTypeProperties().rotationVelocity * MAX_SIMULATION_SPEED_INCREASE;
+	return physicsBody.GetTypeProperties().rotationVelocity;
 }
 
 float PhysicsModule::RotationResistance(const PhysicsBody& physicsBody) {
-	return physicsBody.GetTypeProperties().rotationResistance * MAX_SIMULATION_SPEED_INCREASE;
+	return physicsBody.GetTypeProperties().rotationResistance;
 }
 
 float PhysicsModule::LinearResistance(const PhysicsBody& physicsBody) {
-	return physicsBody.GetTypeProperties().linearResistance * MAX_SIMULATION_SPEED_INCREASE;
+	return physicsBody.GetTypeProperties().linearResistance;
 }
 
 float PhysicsModule::ToDegree(float radian) {

@@ -113,7 +113,7 @@ void NetworkingComponent::_renderNetworkingGUI() {
 
 	if (ImGui::Button("Join", ImVec2(120, 0)) && isActive) {
 		try {
-			if (_networkingModule.Join(host, (Uint16)port)) {
+			if (_networkingModule.Connect(host, (Uint16) port)) {
 				_logBuffer.appendf("[%s] Connected to %s:%d\n",
 								   GetTimestamp().c_str(), host, port);
 			}

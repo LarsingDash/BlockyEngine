@@ -35,7 +35,7 @@ void NetworkingModule::Host(Uint16 port) {
 	std::cout << "Hosting on port " << port << std::endl;
 }
 
-bool NetworkingModule::Join(const std::string& host, Uint16 port) {
+bool NetworkingModule::Connect(const std::string& host, Uint16 port) {
 	if (_isRunning) return false;
 
 	if (SDLNet_ResolveHost(&_peerAddress, host.c_str(), port) == -1) {

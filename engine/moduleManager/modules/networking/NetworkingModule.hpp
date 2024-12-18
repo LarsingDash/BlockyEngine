@@ -27,7 +27,7 @@ class NetworkingModule : public ModuleWrapper {
 		void RemoveMessageListener(const std::string& tag);
 
 		void Host(Uint16 port);
-		bool Join(const std::string& host, Uint16 port);
+		bool Connect(const std::string& host, Uint16 port);
 		void SendMessage(const NetworkMessage& message);
 		void SendData(const std::string& data) { SendMessage(createDataMessage(data)); }
 		void Disconnect();

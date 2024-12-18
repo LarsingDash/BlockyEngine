@@ -32,12 +32,13 @@ void MyContactListener::BeginContact(b2Contact* contact) {
     }
 }
 
-//todo: what to do if object is removed, does give call exit.
 void MyContactListener::EndContact(b2Contact* contact) {
     auto [gameObject1, gameObject2] = _gameObjects(contact);
 
     if (gameObject1 == nullptr || gameObject2 == nullptr) {
-        BLOCKY_ENGINE_ERROR("gameObject does not exist, EndContact");
+        // when removing gameObject1 from PhysicsModule when in contact with other gameObject1 EndContact will be triggered
+        //  after remove EndContact gets called and gameObject can't be fount
+        // BLOCKY_ENGINE_ERROR("gameObject does not exist, EndContact");
         return;
     }
 

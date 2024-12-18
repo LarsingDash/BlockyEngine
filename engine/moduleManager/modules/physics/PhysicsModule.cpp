@@ -115,8 +115,11 @@ void PhysicsModule::AddPhysicsBody(PhysicsBody& physicsBody) {
 void PhysicsModule::RemoveCollider(PhysicsBody& physicsBody) {
 	auto it = _gameObjectToBodyMap.find(&physicsBody);
 	if (it != _gameObjectToBodyMap.end()) {
-		_box2dWorldObject->DestroyBody(it->second->b2body);
+		// first erase form map, because when DestroyBody is called EndContact can be triggered, if body is removed when in contact.
+		//	when erased from _gameObjectToBodyMap EndContact cant find gameObject and EndContact handler of game objects is not called.
+		const auto body = it->second->b2body;
 		_gameObjectToBodyMap.erase(it);
+		_box2dWorldObject->DestroyBody(body);
 	}
 }
 

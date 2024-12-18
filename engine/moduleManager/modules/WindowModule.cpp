@@ -55,6 +55,10 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr),
 }
 
 WindowModule::~WindowModule() {
+	_renderingModule.reset();
+	_inputModule.reset();
+	_guiRenderingModule.reset();
+
 	SDL_DestroyRenderer(_renderer);
 	SDL_DestroyWindow(_window);
 

@@ -112,7 +112,7 @@ void PhysicsModule::AddPhysicsBody(PhysicsBody& physicsBody) {
 	_bodies.emplace_back(std::move(body));
 }
 
-void PhysicsModule::RemoveCollider(PhysicsBody& physicsBody) {
+void PhysicsModule::RemovePhysicsBody(PhysicsBody& physicsBody) {
 	auto it = _gameObjectToBodyMap.find(&physicsBody);
 	if (it != _gameObjectToBodyMap.end()) {
 		// first erase form map, because when DestroyBody is called EndContact can be triggered, if body is removed when in contact.
@@ -123,18 +123,18 @@ void PhysicsModule::RemoveCollider(PhysicsBody& physicsBody) {
 	}
 }
 
-std::unique_ptr<b2Shape> AddBoxShape(const Box& collider) {
+std::unique_ptr<b2Shape> AddBoxShape(const Box& box) {
 	auto dynamicBox = std::make_unique<b2PolygonShape>();
 	// Blocky Engine uses width and height, Box2D uses x&y height&width above,below&left,right of origin. so: /2
-	dynamicBox->SetAsBox(collider.GetWidth() / 2 / DEBUG_GAME_SPEED,
-	                     collider.GetHeight() / 2 / DEBUG_GAME_SPEED);
+	dynamicBox->SetAsBox(box.GetWidth() / 2 / DEBUG_GAME_SPEED,
+	                     box.GetHeight() / 2 / DEBUG_GAME_SPEED);
 
 	return dynamicBox;
 }
 
-std::unique_ptr<b2Shape> AddCircleShape(const Circle& collider) {
+std::unique_ptr<b2Shape> AddCircleShape(const Circle& circle) {
 	auto dynamicCircle = std::make_unique<b2CircleShape>();
-	dynamicCircle->m_radius = collider.GetRadius() / DEBUG_GAME_SPEED;
+	dynamicCircle->m_radius = circle.GetRadius() / DEBUG_GAME_SPEED;
 	return dynamicCircle;
 }
 

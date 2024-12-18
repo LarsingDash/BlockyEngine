@@ -62,7 +62,7 @@ public:
 
 	// when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
 	void AddPhysicsBody(PhysicsBody& physicsBody);
-	void RemoveCollider(PhysicsBody& physicsBody);
+	void RemovePhysicsBody(PhysicsBody& physicsBody);
 
 private:
 	void WritingExternalInputToBox2DWorld();

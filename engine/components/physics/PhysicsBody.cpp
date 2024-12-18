@@ -41,7 +41,7 @@ void PhysicsBody::Start() {
 void PhysicsBody::Update(float delta) {}
 
 void PhysicsBody::End() {
-    ModuleManager::GetInstance().GetModule<PhysicsModule>().RemoveCollider(*this);
+    ModuleManager::GetInstance().GetModule<PhysicsModule>().RemovePhysicsBody(*this);
 }
 
 void PhysicsBody::SetOnEnter(const std::function<void(GameObject& other)>& callback) {

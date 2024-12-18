@@ -35,7 +35,7 @@ void AnimationRenderable::_loadFrames() {
 	if (!imageData) {
 		std::string err("Failed to load texture sheet: ");
 		err += filePath;
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return;
 	}
 
@@ -63,7 +63,7 @@ void AnimationRenderable::_loadFrames() {
 	msg << std::string();
 	msg << " _frames from texture sheet: ";
 	msg << filePath;
-	BLOCKY_ENGINE_DEBUG(msg.str())
+	BLOCKY_ENGINE_DEBUG(msg.str());
 }
 
 //Returns the source rect (current frame)

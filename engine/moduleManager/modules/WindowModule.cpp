@@ -14,7 +14,7 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr),
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 		std::string err("Couldn't init video: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 
 		return;
 	}
@@ -32,7 +32,7 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr),
 	if (!_window) {
 		std::string err("Couldn't create window: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 
 		SDL_Quit();
 		return;
@@ -43,7 +43,7 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr),
 	if (!_renderer) {
 		std::string err("Couldn't create _renderer: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		SDL_Quit();
 		SDL_DestroyWindow(_window);
 		return;

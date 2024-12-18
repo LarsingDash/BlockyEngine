@@ -25,7 +25,7 @@ RenderingModule::RenderingModule(SDL_Renderer* renderer) :
 	if (!_font) {
 		std::string err("Failed to load font: ");
 		err += TTF_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 	}
 }
 
@@ -170,7 +170,7 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 	if (!imageData) {
 		std::string err("Failed to load image: ");
 		err += filePath;
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return nullptr;
 	}
 
@@ -181,7 +181,7 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 	if (!surface) {
 		std::string err("Failed to create SDL surface: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		stbi_image_free(imageData);
 		return nullptr;
 	}
@@ -196,7 +196,7 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 	if (!texture) {
 		std::string err("Failed to create SDL texture: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return nullptr;
 	}
 
@@ -210,7 +210,7 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 									 const ComponentTransform& transform,
 									 const glm::ivec4* sourceRect, SpriteFlip spriteFlip) {
 	if (!texture) {
-		BLOCKY_ENGINE_ERROR("Cannot render null texture.")
+		BLOCKY_ENGINE_ERROR("Cannot render null texture.");
 		return;
 	}
 
@@ -301,7 +301,7 @@ void RenderingModule::_renderTextHelper(const std::string& text,
 	if (!surface) {
 		std::string err("Failed to create text surface: ");
 		err += TTF_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return;
 	}
 
@@ -311,7 +311,7 @@ void RenderingModule::_renderTextHelper(const std::string& text,
 	if (!texture) {
 		std::string err("Failed to create text texture: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return;
 	}
 
@@ -366,6 +366,6 @@ void RenderingModule::RemoveRenderable(Renderable& renderable) {
 		err += "} was requested on layer ";
 		err += std::to_string(renderable.GetLayer());
 		err += ", but that layer was not found.";
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 	}
 }

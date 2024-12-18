@@ -19,7 +19,7 @@ void InputModule::PollEvents() {
 				auto key = _getKeyInput(event.key.keysym.sym);
 
 				BLOCKY_ENGINE_DEBUG_STREAM("Processing key event: " << static_cast<int>(key) << ", state: "
-						  << (state == KeyState::KEY_DOWN ? "down" : "up"))
+						  << (state == KeyState::KEY_DOWN ? "down" : "up"));
 
 				// Directly lookup and invoke listeners from the map
 				auto it = _keyListeners.find(key);
@@ -62,7 +62,7 @@ void InputModule::PollEvents() {
 
 				BLOCKY_ENGINE_DEBUG_STREAM("Processing mouse event: button " << static_cast<int>(button) << ", state: "
 						  << (mouseState == MouseButtonState::BUTTON_DOWN ? "down" : "up")
-						  << ", position: (" << x << ", " << y << ")")
+						  << ", position: (" << x << ", " << y << ")");
 
 				// Directly lookup and invoke listeners for the specific mouse button
 				auto it = _mouseListeners.find(button);

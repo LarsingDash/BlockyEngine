@@ -9,9 +9,9 @@
 #include <sstream>
 #include <glm/vec2.hpp>
 
-// if logging is lagging the game don't set LOG_TO_CONSOLE 0, because it gives the biggest performers hit
-#define LOG_TO_CONSOLE 0
-#define LOG_TO_FILE 1
+// if logging is lagging the game don't set LOG_TO_CONSOLE true because it gives the biggest performers hit
+constexpr bool LOG_TO_CONSOLE = true;
+constexpr bool LOG_TO_FILE = true;
 
 // length for function/class name that is reserved
 // if length function/class name is > value, alignment

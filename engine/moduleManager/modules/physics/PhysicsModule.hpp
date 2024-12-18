@@ -49,7 +49,6 @@ struct Body {
 		b2body->SetAngularVelocity(rotationVelocity);
 		b2body->SetLinearDamping(linearResistance);
 		b2body->SetAngularDamping(rotationResistance);
-		BLOCKY_ENGINE_DEBUG_STREAM("transform: " << linearVelocity.x << ";" <<linearVelocity.y);
 	}
 };
 

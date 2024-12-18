@@ -43,7 +43,7 @@ void buildPrefabScene(SceneManager& scenes) {
 	barrel.transform->SetPosition(0.5f, 0);
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "InputReparenting");
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "CollisionScene");
 
 	scenes.AddScene(std::move(root));
 }
@@ -130,65 +130,66 @@ void buildCameraScene(SceneManager& scenes) {
 }
 
 void buildCollisionEnv(SceneManager& manager) {
-    auto root = std::make_unique<GameObject>("CollisionScene");
-    root->SetActive(false);
+	auto root = std::make_unique<GameObject>("CollisionScene");
+	root->SetActive(false);
 
-    auto& sceneBase = root->AddChild("BaseOfScene");
-    sceneBase.transform->SetPosition(500, 500);
-    sceneBase.transform->SetScale(200, 200);
+	auto& sceneBase = root->AddChild("BaseOfScene");
+	sceneBase.transform->SetPosition(500, 500);
+	sceneBase.transform->SetScale(200, 200);
 
-    // baseRectangle.AddComponent<RectangleRenderable>("RectangleBase", glm::vec4{93, 93, 93, 255}, 0, true);
-    sceneBase.AddComponent<EllipseRenderable>("EllipseBase", glm::vec4{93, 93, 93, 255}, 0, true);
+	// baseRectangle.AddComponent<RectangleRenderable>("RectangleBase", glm::vec4{93, 93, 93, 255}, 0, true);
+	sceneBase.AddComponent<EllipseRenderable>("EllipseBase", glm::vec4{93, 93, 93, 255}, 0, true);
 
-    // auto& collider = baseRectangle.AddComponent<BoxCollider>("SceneRectangle");
-    auto& collider = sceneBase.AddComponent<CircleCollider>("SceneEllipse");
-    // collider.componentTransform->SetScale(2,2);
-    sceneBase.AddComponent<CollisionHandler>("Trigger handler", collider,
-                                             [](GameObject& other) {
-                                                 BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);
-                                             },
-                                             [](GameObject& other) {
-                                                 BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
-                                             });
+	// auto& collider = baseRectangle.AddComponent<BoxCollider>("SceneRectangle");
+	auto& collider = sceneBase.AddComponent<CircleCollider>("SceneEllipse");
+	// collider.componentTransform->SetScale(2,2);
+	sceneBase.AddComponent<CollisionHandler>("Trigger handler", collider,
+	                                         [](GameObject& other) {
+		                                         BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);
+	                                         },
+	                                         [](GameObject& other) {
+		                                         BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
+	                                         });
 
-    auto& rigidBox = root->AddChild("rigidBox");
+	auto& rigidBox = root->AddChild("rigidBox");
 
-    glm::vec2 pos = sceneBase.transform->GetLocalPosition();
-    rigidBox.transform->SetPosition(pos.x - 200, pos.y);
-    rigidBox.transform->SetScale(10, 10);
+	glm::vec2 pos = sceneBase.transform->GetLocalPosition();
+	rigidBox.transform->SetPosition(pos.x - 200, pos.y);
+	rigidBox.transform->SetScale(10, 10);
 
-    rigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, true);
-    // rigidBox.AddComponent<MovementComp>();
-    TypeProperties properties(
-        RIGIDBODY,
-        false,
-        glm::vec2{0, -50},
-        0,
-        0,
-        0,
-        false
-    );
-    auto& boxRigidBody = rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
-    rigidBox.AddComponent<MoveWithPhysics>("TestMover", boxRigidBody);
+	rigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, true);
+	// rigidBox.AddComponent<MovementComp>();
+	TypeProperties properties(
+		RIGIDBODY,
+		false,
+		glm::vec2{0, -50},
+		0,
+		0,
+		0,
+		false
+	);
+	auto& boxRigidBody = rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
+	rigidBox.AddComponent<MoveWithPhysics>("TestMover", boxRigidBody);
 
-    properties = TypeProperties(
-        RIGIDBODY,
-        false,
-        glm::vec2{0, 0},
-        0,
-        0,
-        0,
-        true
-    );
+	properties = TypeProperties(
+		RIGIDBODY,
+		false,
+		glm::vec2{0, 0},
+		0,
+		0,
+		0,
+		true
+	);
 
-    auto& sceneBase2 = root->AddChild("BaseOfScene");
-    sceneBase2.transform->SetPosition(pos.x - 210, pos.y - 400);
-    sceneBase2.transform->SetScale(10, 10);
-    sceneBase2.AddComponent<RectangleRenderable>("RectangleRenderable", glm::vec4{0, 0, 255, 255}, 0, true);
-    sceneBase2.AddComponent<BoxRigidBody>("BoxRigidBody", properties);
+	auto& sceneBase2 = root->AddChild("BaseOfScene");
+	sceneBase2.transform->SetPosition(pos.x - 210, pos.y - 400);
+	sceneBase2.transform->SetScale(10, 10);
+	sceneBase2.AddComponent<RectangleRenderable>("RectangleRenderable", glm::vec4{0, 0, 255, 255}, 0, true);
+	sceneBase2.AddComponent<BoxRigidBody>("BoxRigidBody", properties);
 
-    // root->AddComponent<SceneSwitchComp>("SceneSwitcher", "CollisionScene");
-    manager.AddScene(std::move(root));
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "InputReparenting");
+	manager.AddScene(std::move(root));
 }
 
 int main(int argc, char* argv[]) {
@@ -202,15 +203,15 @@ int main(int argc, char* argv[]) {
 	BlockyEngine blockyEngine{configs};
 	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 
-    buildPrefabScene(sceneManager);
-    buildInputReparentingScene(sceneManager);
-    buildCameraScene(sceneManager);
-    buildCollisionEnv(sceneManager);
+	buildPrefabScene(sceneManager);
+	buildInputReparentingScene(sceneManager);
+	buildCameraScene(sceneManager);
+	buildCollisionEnv(sceneManager);
 
-    // sceneManager.SwitchScene("Prefabs");
-    // sceneManager.SwitchScene("InputReparenting");
-    // sceneManager.SwitchScene("Camera");
-    sceneManager.SwitchScene("CollisionScene");
+	// sceneManager.SwitchScene("Prefabs");
+	sceneManager.SwitchScene("InputReparenting");
+	// sceneManager.SwitchScene("Camera");
+	// sceneManager.SwitchScene("CollisionScene");
 
 	blockyEngine.Run();
 

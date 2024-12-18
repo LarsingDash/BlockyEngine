@@ -25,7 +25,7 @@ RenderingModule::RenderingModule(SDL_Renderer* renderer) :
 	if (!_font) {
 		std::string err("Failed to load font: ");
 		err += TTF_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 	}
 }
 
@@ -35,7 +35,7 @@ void RenderingModule::Render() {
 	for (const auto& [layer, list] : _renderables) {
 		for (Renderable& renderable : list) {
 			if (!renderable.gameObject->isActive) continue;
-			
+
 			switch (renderable.GetRenderableType()) {
 				case RECTANGLE:
 					_renderRectangle(reinterpret_cast<RectangleRenderable&>(renderable));
@@ -136,7 +136,7 @@ void RenderingModule::_renderSprite(SpriteRenderable& renderable) {
 	if (!texture) {
 		return;
 	}
-	_renderTexture(texture, *renderable.componentTransform, nullptr);
+	_renderTexture(texture, *renderable.componentTransform, nullptr, renderable.GetSpriteFlip());
 }
 
 void RenderingModule::_renderAnimatedSprite(AnimationRenderable& renderable) {
@@ -148,7 +148,7 @@ void RenderingModule::_renderAnimatedSprite(AnimationRenderable& renderable) {
 
 	const glm::ivec4* sourceRect = renderable.GetSourceRect();
 
-	_renderTexture(texture, *renderable.componentTransform, sourceRect);
+	_renderTexture(texture, *renderable.componentTransform, sourceRect, renderable.GetSpriteFlip());
 }
 
 SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& width, int& height) {
@@ -170,7 +170,7 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 	if (!imageData) {
 		std::string err("Failed to load image: ");
 		err += filePath;
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return nullptr;
 	}
 
@@ -181,7 +181,7 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 	if (!surface) {
 		std::string err("Failed to create SDL surface: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		stbi_image_free(imageData);
 		return nullptr;
 	}
@@ -196,7 +196,7 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 	if (!texture) {
 		std::string err("Failed to create SDL texture: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return nullptr;
 	}
 
@@ -208,9 +208,9 @@ SDL_Texture* RenderingModule::_loadTexture(const SpriteRenderable& sprite, int& 
 
 void RenderingModule::_renderTexture(SDL_Texture* texture,
 									 const ComponentTransform& transform,
-									 const glm::ivec4* sourceRect) {
+									 const glm::ivec4* sourceRect, SpriteFlip spriteFlip) {
 	if (!texture) {
-		BLOCKY_ENGINE_ERROR("Cannot render null texture.")
+		BLOCKY_ENGINE_ERROR("Cannot render null texture.");
 		return;
 	}
 
@@ -235,7 +235,7 @@ void RenderingModule::_renderTexture(SDL_Texture* texture,
 
 	SDL_RenderCopyExF(
 			_renderer, texture, sourceRect ? &sdlSourceRect : nullptr, &destRect,
-			transform.GetWorldRotation(), nullptr, SDL_RendererFlip::SDL_FLIP_NONE
+			transform.GetWorldRotation(), nullptr, static_cast<SDL_RendererFlip>(spriteFlip)
 	);
 }
 void RenderingModule::_renderText(TextRenderable& renderable) {
@@ -286,7 +286,8 @@ void RenderingModule::_renderGameInfo() {
 	std::string gameSpeedText = "Speed: " + stream.str() + "x";
 
 	TTF_SizeText(_font, gameSpeedText.c_str(), &textWidth, &textHeight);
-	SDL_FPoint speedPosition = {static_cast<float>(windowWidth - textWidth - 10), static_cast<float>(10 + textHeight + 5)};
+	SDL_FPoint
+			speedPosition = {static_cast<float>(windowWidth - textWidth - 10), static_cast<float>(10 + textHeight + 5)};
 
 	_renderTextHelper(gameSpeedText, {255, 255, 255, 255}, speedPosition, 0, false);
 }
@@ -300,7 +301,7 @@ void RenderingModule::_renderTextHelper(const std::string& text,
 	if (!surface) {
 		std::string err("Failed to create text surface: ");
 		err += TTF_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return;
 	}
 
@@ -310,7 +311,7 @@ void RenderingModule::_renderTextHelper(const std::string& text,
 	if (!texture) {
 		std::string err("Failed to create text texture: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return;
 	}
 
@@ -334,12 +335,12 @@ void RenderingModule::_renderTextHelper(const std::string& text,
 	}
 
 	SDL_RenderCopyEx(_renderer,
-					  texture,
-					  nullptr,
-					  &dstRect,
-					  angle,
-					  nullptr,
-					  SDL_RendererFlip::SDL_FLIP_NONE
+					 texture,
+					 nullptr,
+					 &dstRect,
+					 angle,
+					 nullptr,
+					 SDL_RendererFlip::SDL_FLIP_NONE
 	);
 	SDL_DestroyTexture(texture);
 }
@@ -365,6 +366,6 @@ void RenderingModule::RemoveRenderable(Renderable& renderable) {
 		err += "} was requested on layer ";
 		err += std::to_string(renderable.GetLayer());
 		err += ", but that layer was not found.";
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 	}
 }

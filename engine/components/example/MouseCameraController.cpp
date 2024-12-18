@@ -4,7 +4,6 @@
 
 #include "MouseCameraController.hpp"
 
-#include "BlockyEngine.hpp"
 #include "gameObject/GameObject.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
@@ -31,7 +30,9 @@ void MouseCameraController::Start() {
 
 	_camera.SetPosition(0.f, 0.f);
 	_camera.SetBoundary(
+			screenSize.x / -2.f,
 			screenSize.x / 2.f,
+			screenSize.y / -2.f,
 			screenSize.y / 2.f
 	);
 }

@@ -267,7 +267,7 @@ void GameObject::_reparent(GameObject* target) {
 		} catch (const std::exception& e) {
 			std::string err = "Exception occurred while reparenting: ";
 			err += e.what();
-			BLOCKY_ENGINE_ERROR(err)
+			BLOCKY_ENGINE_ERROR(err);
 		}
 	}
 }

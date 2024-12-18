@@ -74,7 +74,7 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	animatedObject.AddComponent<AnimationRenderable>(
 		"animTag", "../assets/character_spritesheet.png",
-		"spriteTag", 32, 32
+		"spriteTag", 32, 32, 0, SpriteFlip::FlipHorizontal
 	);
 
 	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);

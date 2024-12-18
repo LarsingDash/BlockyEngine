@@ -15,7 +15,7 @@ BLogger::BLogger(const std::string& filename) {
 		std::cerr << "Error opening log file." << std::endl;
 	}
 	else {
-		BLOCKY_ENGINE_INFO("Logging started.")
+		BLOCKY_ENGINE_INFO("Logging started.");
 	}
 }
 

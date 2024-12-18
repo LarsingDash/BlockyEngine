@@ -22,8 +22,7 @@
 #include "components/example/inputScripts/MouseCameraController.hpp"
 #include "components/example/SceneSwitchComp.hpp"
 
-void buildPrefabScene(SceneManager& scenes)
-{
+void buildPrefabScene(SceneManager& scenes) {
     auto root = std::make_unique<GameObject>("Prefabs");
     root->SetActive(false);
 
@@ -51,8 +50,7 @@ void buildPrefabScene(SceneManager& scenes)
     scenes.AddScene(std::move(root));
 }
 
-void buildInputReparentingScene(SceneManager& scenes)
-{
+void buildInputReparentingScene(SceneManager& scenes) {
     auto root = std::make_unique<GameObject>("InputReparenting");
     root->SetActive(false);
 
@@ -109,8 +107,7 @@ void buildInputReparentingScene(SceneManager& scenes)
     scenes.AddScene(std::move(root));
 }
 
-void buildCameraScene(SceneManager& scenes)
-{
+void buildCameraScene(SceneManager& scenes) {
     auto root = std::make_unique<GameObject>("Camera");
     root->SetActive(false);
 
@@ -134,8 +131,7 @@ void buildCameraScene(SceneManager& scenes)
     scenes.AddScene(std::move(root));
 }
 
-void buildCollisionEnv(SceneManager& manager)
-{
+void buildCollisionEnv(SceneManager& manager) {
     auto root = std::make_unique<GameObject>("CollisionScene");
     root->SetActive(false);
 
@@ -150,15 +146,12 @@ void buildCollisionEnv(SceneManager& manager)
     auto& collider = sceneBase.AddComponent<CircleCollider>("SceneEllipse");
     // collider.componentTransform->SetScale(2,2);
     sceneBase.AddComponent<CollisionHandler>("Trigger handler", collider,
-                                             [](GameObject& other)
-                                             {
+                                             [](GameObject& other) {
                                                  BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);
                                              },
-                                             [](GameObject& other)
-                                             {
+                                             [](GameObject& other) {
                                                  BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
                                              });
-
 
     auto& rigidBox = root->AddChild("rigidBox");
 
@@ -171,21 +164,23 @@ void buildCollisionEnv(SceneManager& manager)
     TypeProperties properties(
         RIGIDBODY,
         false,
-        glm::vec2{100, 0},
+        glm::vec2{0, -50},
         0,
         0,
         0,
         false
     );
     auto& boxRigidBody = rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
+    BLOCKY_ENGINE_DEBUG_STREAM(
+        "Address: " << &boxRigidBody << " properties: "<< boxRigidBody.GetTypeProperties()<< ", Tag: " << boxRigidBody.
+        tag);
     rigidBox.AddComponent<MoveWithPhysics>("TestMover", boxRigidBody);
 
     // root->AddComponent<SceneSwitchComp>("SceneSwitcher", "CollisionScene");
     manager.AddScene(std::move(root));
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     BlockyEngine::BlockyConfigs configs{
         1920,
         1080,

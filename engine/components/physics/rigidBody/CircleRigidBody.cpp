@@ -24,7 +24,7 @@ CircleRigidBody::CircleRigidBody(GameObject* gameObject, const char* tag, const 
 	            std::make_shared<Circle>(0),
 	            TypeProperties(
 		            RIGIDBODY, properties.isStatic,
-		            properties.velocity,
+		            properties.linearVelocity,
 		            properties.rotationVelocity,
 		            properties.angularResistance,
 		            properties.linearResistance,

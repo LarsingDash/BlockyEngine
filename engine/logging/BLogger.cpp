@@ -148,7 +148,7 @@ void BLogger::_writeLog(const std::stringstream& logMessage) {
 	if constexpr (LOG_TO_FILE) {
 		// Output to log file
 		if (_logFile.is_open()) {
-			_logFile << logMessage.str();
+			_logFile << logMessage.str() << '\n';
 			_logFile.flush(); // Ensure immediate write to file
 		}
 	}

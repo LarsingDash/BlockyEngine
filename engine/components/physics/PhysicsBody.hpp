@@ -15,22 +15,23 @@ enum PhysicsType {
 };
 
 struct TypeProperties {
-	TypeProperties(PhysicsType physicsType, bool isStatic, glm::vec2 velocity, float rotationVelocity,
-	               float angularResistance, float linearResistance, bool gravityEnabled): physicsType(physicsType),
-		isStatic(isStatic), velocity(velocity),
+	TypeProperties(PhysicsType physicsType, bool isStatic, glm::vec2 linearVelocity, float rotationVelocity,
+	               float angularResistance, float linearResistance, bool gravityEnabled):
+		physicsType(physicsType),
+		isStatic(isStatic),
+		linearVelocity(linearVelocity),
 		rotationVelocity(rotationVelocity),
 		angularResistance(angularResistance),
 		linearResistance(linearResistance),
 		gravityEnabled(gravityEnabled) {}
 
-	void SetVelocity(const glm::vec2 newVelocity)
-	{
-		velocity = newVelocity;
+	void SetLinearVelocity(const glm::vec2 newVelocity) {
+		linearVelocity = newVelocity;
 	}
 
 	PhysicsType physicsType;
 	bool isStatic;
-	glm::vec2 velocity;
+	glm::vec2 linearVelocity;
 	float rotationVelocity;
 	float angularResistance;
 	float linearResistance;
@@ -49,22 +50,21 @@ public:
 	void Update(float delta) override;
 	void End() override;
 
-
-	void SetOnEnter(const std::function<void(GameObject& other)> &callback);
-	void SetOnExit(const std::function<void(GameObject& other)> &callback);
-
+	void SetOnEnter(const std::function<void(GameObject& other)>& callback);
+	void SetOnExit(const std::function<void(GameObject& other)>& callback);
 
 	[[nodiscard]] virtual std::shared_ptr<Shape>& GetShapeReference();
 	[[nodiscard]] virtual PhysicsShape GetShape();
+	[[nodiscard]] virtual std::shared_ptr<TypeProperties> GetTypeProperties();
 	[[nodiscard]] virtual TypeProperties GetTypeProperties() const;
 
 private:
 	Component* _clone(const GameObject& parent) override;
 	//Private
-	std::function<void(GameObject& other)> enter {nullptr};
-	std::function<void(GameObject& other)> exit {nullptr};
+	std::function<void(GameObject& other)> enter{nullptr};
+	std::function<void(GameObject& other)> exit{nullptr};
 
 	std::shared_ptr<Shape> _physicsShape;
-	TypeProperties _typeProperties;
+	std::shared_ptr<TypeProperties> _typeProperties;
 };
 #endif //PHYSICSBODY_HPP

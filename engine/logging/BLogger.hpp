@@ -18,7 +18,7 @@
 // of msg is offset by length function/class - value.
 constexpr int MAX_FUNCTION_NAME_LENGTH = 15;
 constexpr bool REMOVE_ARGS = true;
-constexpr bool REMOVE_FUNCTION_NAME_FROM_CLASSES = true;
+constexpr bool REMOVE_FUNCTION_NAME_FROM_CLASSES = false;
 constexpr bool REMOVE_RETURN_TYPE = true;
 
 // for function name only: __func__

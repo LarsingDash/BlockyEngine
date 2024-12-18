@@ -21,6 +21,8 @@ class b2World;
 struct Body {
 	b2Body* b2body{};
 	b2Vec2 _gameObjectLastPosition{};
+	b2Vec2 _gameObjectLastLinearVelocity{};
+	float _gameObjectLastRotationVelocity{};
 	float _gameObjectLastRotation{};
 	bool _gameObjectIsInitialized{};
 
@@ -32,24 +34,51 @@ struct Body {
 		return b2body->GetAngle();
 	}
 
+	[[nodiscard]] b2Vec2 GetLinearVelocity() const {
+		return b2body->GetPosition();
+	}
+
+	[[nodiscard]] float GetRotationVelocity() const {
+		return b2body->GetAngle();
+	}
+
 	[[nodiscard]] b2Vec2 LastPosition() const {
 		return _gameObjectLastPosition;
+	}
+
+	[[nodiscard]] b2Vec2 LastLinearVelocity() const {
+		return _gameObjectLastLinearVelocity;
+	}
+
+	[[nodiscard]] float LastRotationVelocity() const {
+		return _gameObjectLastRotationVelocity;
 	}
 
 	[[nodiscard]] float LastRotation() const {
 		return _gameObjectLastRotation;
 	}
 
-	void LastPosition(b2Vec2 position) {
+	void LastPosition(const b2Vec2 position) {
 		_gameObjectLastPosition = position;
 	}
 
-	void LastRotation(float rotation) {
+	void LastLinearVelocity(const b2Vec2 velocity) {
+		_gameObjectLastLinearVelocity = velocity;
+	}
+
+	void LastRotationVelocity(const float velocity) {
+		_gameObjectLastRotationVelocity = velocity;
+	}
+
+	void LastRotation(const float rotation) {
 		_gameObjectLastRotation = rotation;
 	}
 
-	void SetTransform(const b2Vec2& position, float angle) {
+	void SetTransform(const b2Vec2& position, const float angle, const b2Vec2& linearVelocity,
+	                  const float rotationVelocity) const {
 		b2body->SetTransform(position, angle);
+		b2body->SetLinearVelocity(linearVelocity);
+		b2body->SetAngularVelocity(rotationVelocity);
 	}
 };
 
@@ -75,11 +104,11 @@ private:
 	static b2Vec2 VecConvert(const glm::vec2& a);
 	static glm::vec2 VecConvert(const b2Vec2& a);
 	static b2Vec2 Position(const PhysicsBody& physicsBody);
-	static b2Vec2 Position(const GameObject& gameObject);
+	static b2Vec2 LinearVelocity(const PhysicsBody& physicsBody);
+	static float RotationVelocity(const PhysicsBody& physicsBody);
 	static float ToDegree(float radian);
 	static float ToRadian(float degree);
 	static float Angle(const PhysicsBody& physicsBody);
-	static float Angle(const GameObject& gameObject);
 
 	std::unique_ptr<b2World> _box2dWorldObject;
 	std::unique_ptr<MyContactListener> _contactListener;

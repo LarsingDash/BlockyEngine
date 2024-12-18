@@ -34,8 +34,10 @@ bool PhysicsModule::IsSame(const PhysicsBody* const physicsBody, const Body* con
 	if (physicsBody == nullptr || body == nullptr) { return false; }
 
 	if (body->GetPosition() != Position(*physicsBody)) { return false; }
-
 	if (body->GetAngle() != ToRadian(Angle(*physicsBody))) { return false; }
+
+	if (body->GetLinearVelocity() != LinearVelocity(*physicsBody)) { return false; }
+	if (body->GetRotationVelocity() != RotationVelocity(*physicsBody)) { return false; }
 
 	return true;
 }
@@ -44,13 +46,25 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 	for (auto [physicsBody, body] : _gameObjectToBodyMap) {
 		if (IsSame(physicsBody, body)) { continue; }
 
+		BLOCKY_ENGINE_DEBUG_STREAM(
+			"Address: " << physicsBody<< " properties: "<< physicsBody->GetTypeProperties() << ", Tag: " << physicsBody
+			->tag);
+		BLOCKY_ENGINE_DEBUG_STREAM(
+			"LinearVelocity(*physicsBody):" << LinearVelocity(*physicsBody).x << ";" << LinearVelocity(*physicsBody).y);
 		if (!body->_gameObjectIsInitialized) {
 			body->LastPosition(Position(*physicsBody));
 			body->LastRotation(ToRadian(Angle(*physicsBody)));
+
+			body->LastLinearVelocity(LinearVelocity(*physicsBody));
+			body->LastRotationVelocity(RotationVelocity(*physicsBody));
 			body->_gameObjectIsInitialized = true;
 		}
 
-		body->b2body->SetTransform(Position(*physicsBody), ToRadian(Angle(*physicsBody)));
+		body->SetTransform(
+			Position(*physicsBody),
+			ToRadian(Angle(*physicsBody)),
+			LinearVelocity(*physicsBody),
+			RotationVelocity(*physicsBody));
 	}
 }
 
@@ -61,7 +75,6 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 		const b2Vec2 position = body->GetPosition();
 		const b2Vec2 deltaPosition = {
 			position.x - body->LastPosition().x, position.y - body->LastPosition().y
-			
 		};
 
 		const float angle = body->GetAngle();
@@ -73,10 +86,16 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 
 		body->LastPosition({position.x, position.y});
 		body->LastRotation(angle);
+
+		body->LastLinearVelocity(LinearVelocity(*physicsBody));
+		body->LastRotationVelocity(RotationVelocity(*physicsBody));
 	}
 }
 
 void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
+	BLOCKY_ENGINE_DEBUG_STREAM(
+		"Address: " << &physicsBody<< " properties: "<< physicsBody.GetTypeProperties() << ", Tag: " << physicsBody.
+		tag);
 	if (&physicsBody.gameObject == nullptr) {
 		BLOCKY_ENGINE_ERROR("AddCollider but: physicsBody.gameObject == nullptr");
 		return;
@@ -128,24 +147,25 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 		}
 	}
 
-	switch (physicsBody.GetTypeProperties().physicsType) {
+	auto properties = physicsBody.GetTypeProperties();
+	switch (properties->physicsType) {
 		case COLLIDER: {
 			fixtureDef.isSensor = true;
 			break;
 		}
 		case RIGIDBODY: {
-			if (!physicsBody.GetTypeProperties().gravityEnabled) {
+			if (!properties->gravityEnabled) {
 				body->SetGravityScale(0.0f);
 			}
 			else {
 				body->SetGravityScale(1000.0f);
 			}
 
-			body->SetAngularDamping(physicsBody.GetTypeProperties().angularResistance);
-			body->SetLinearDamping(physicsBody.GetTypeProperties().linearResistance);
+			body->SetAngularDamping(properties->angularResistance);
+			body->SetLinearDamping(properties->linearResistance);
 
-			body->SetAngularVelocity(ToRadian(physicsBody.GetTypeProperties().rotationVelocity));
-			body->SetLinearVelocity(VecConvert(physicsBody.GetTypeProperties().velocity));
+			body->SetAngularVelocity(ToRadian(properties->rotationVelocity));
+			body->SetLinearVelocity(VecConvert(properties->linearVelocity));
 			break;
 		}
 	}
@@ -173,13 +193,14 @@ b2Body* PhysicsModule::CreateBody(b2World& world, PhysicsBody& physicsBody) {
 		b2BodyDef bodyDef;
 
 		// when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
-		switch (physicsBody.GetTypeProperties().physicsType) {
+		auto properties = physicsBody.GetTypeProperties();
+		switch (properties->physicsType) {
 			case COLLIDER: {
 				bodyDef.type = b2_staticBody;
 				break;
 			}
 			case RIGIDBODY: {
-				if (physicsBody.GetTypeProperties().isStatic) {
+				if (properties->isStatic) {
 					bodyDef.type = b2_kinematicBody;
 				}
 				else {
@@ -209,8 +230,12 @@ b2Vec2 PhysicsModule::Position(const PhysicsBody& physicsBody) {
 	return VecConvert(physicsBody.componentTransform->GetWorldPosition());
 }
 
-b2Vec2 PhysicsModule::Position(const GameObject& gameObject) {
-	return VecConvert(gameObject.transform->GetWorldPosition());
+b2Vec2 PhysicsModule::LinearVelocity(const PhysicsBody& physicsBody) {
+	return VecConvert(physicsBody.GetTypeProperties().linearVelocity);
+}
+
+float PhysicsModule::RotationVelocity(const PhysicsBody& physicsBody) {
+	return physicsBody.GetTypeProperties().rotationVelocity;
 }
 
 float PhysicsModule::ToDegree(float radian) {
@@ -225,6 +250,3 @@ float PhysicsModule::Angle(const PhysicsBody& physicsBody) {
 	return physicsBody.componentTransform->GetWorldRotation();
 }
 
-float PhysicsModule::Angle(const GameObject& gameObject) {
-	return gameObject.transform->GetWorldRotation();
-}

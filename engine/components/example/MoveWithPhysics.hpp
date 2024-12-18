@@ -13,7 +13,7 @@ public:
     MoveWithPhysics(GameObject* gameObject, const char* tag, PhysicsBody& body);
     ~MoveWithPhysics() override = default;
 
-    MoveWithPhysics(const MoveWithPhysics& other);
+    MoveWithPhysics(const MoveWithPhysics& other) = default;
 
     void Start() override;
     void Update(float delta) override;
@@ -22,9 +22,7 @@ public:
 private:
     Component* _clone(const GameObject& parent) override;
 
-    std::unique_ptr<PhysicsBody> _body;
+    std::shared_ptr<TypeProperties> _bodyType;
 };
-
-
 
 #endif //MOVEWITHPHYSICS_HPP

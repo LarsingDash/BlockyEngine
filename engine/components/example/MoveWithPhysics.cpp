@@ -5,36 +5,31 @@
 #include "MoveWithPhysics.hpp"
 
 #include <gameObject/GameObject.hpp>
+#include <logging/BLogger.hpp>
 
-MoveWithPhysics::MoveWithPhysics(GameObject* gameObject, const char* tag, PhysicsBody& body): Component(gameObject, tag), _body(std::make_unique<PhysicsBody>(body))
-{
+MoveWithPhysics::MoveWithPhysics(GameObject* gameObject, const char* tag, PhysicsBody& body):
+    Component(gameObject, tag), _bodyType(body.GetTypeProperties()) {
+    BLOCKY_ENGINE_DEBUG_STREAM(
+        "Address: " << &body << " properties: "<< body.GetTypeProperties()<<", Tag: " << body.tag);
 }
 
-MoveWithPhysics::MoveWithPhysics(const MoveWithPhysics& other): Component(other.gameObject, other.tag.c_str()), _body(std::make_unique<PhysicsBody>(*other._body))
-{
+void MoveWithPhysics::Start() {}
+
+void MoveWithPhysics::Update(float delta) {
+    static double i = 2;
+    const auto direction = glm::vec2{delta * 10000, i};
+    i = (i * 1.1);
+
+    if (abs(i) > 10000) { i = -(i / 10000); }
+
+    BLOCKY_ENGINE_DEBUG_STREAM(
+        "Address: " << &_bodyType << ", xy velocity: " << _bodyType.get()->linearVelocity.x<<", "<< _bodyType.get()->
+        linearVelocity.y);
+    _bodyType->SetLinearVelocity(direction);
 }
 
-//NOTE: This is ugly never actually do this.
-glm::vec2 direction;
+void MoveWithPhysics::End() {}
 
-void MoveWithPhysics::Start()
-{
-    direction = _body->GetTypeProperties().velocity;
-    // _body = std::make_unique<PhysicsBody>(*gameObject->GetComponent<PhysicsBody>("BoxColl"));
-}
-
-void MoveWithPhysics::Update(float delta)
-{
-    direction += glm::vec2{delta * 1000, 0};
-    _body->GetTypeProperties().SetVelocity(direction);
-}
-
-void MoveWithPhysics::End()
-{
-
-}
-
-Component* MoveWithPhysics::_clone(const GameObject& parent)
-{
+Component* MoveWithPhysics::_clone(const GameObject& parent) {
     return new MoveWithPhysics(*this);
 }

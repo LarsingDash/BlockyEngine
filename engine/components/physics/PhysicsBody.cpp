@@ -14,58 +14,54 @@
 PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_ptr<Shape> physicsBody,
                          const TypeProperties& typeProperties) : Component(gameObject, tag, true),
                                                                  _physicsShape(std::move(physicsBody)),
-                                                                 _typeProperties(typeProperties)
-{
+                                                                 _typeProperties(
+                                                                     std::make_shared<TypeProperties>(typeProperties)) {
+    BLOCKY_ENGINE_DEBUG_STREAM("Address: " << this << " properties: "<< this->_typeProperties << ", Tag: " << tag);
 }
 
-void PhysicsBody::Start()
-{
-    switch (_physicsShape->GetShape())
-    {
-    case BOX:
-        {
+void PhysicsBody::Start() {
+    switch (_physicsShape->GetShape()) {
+        case BOX: {
             const auto* const shape = dynamic_cast<Box*>(GetShapeReference().get());
             auto& scale = componentTransform->GetWorldScale();
             shape->_width = scale.x;
             shape->_height = scale.y;
             break;
         }
-    case CIRCLE:
-        {
+        case CIRCLE: {
             const auto* const shape = dynamic_cast<Circle*>(GetShapeReference().get());
             const float scale = (componentTransform->GetWorldScale().y + componentTransform->GetWorldScale().x) / 4;
             shape->_radius = scale;
             break;
         }
     }
+
+    BLOCKY_ENGINE_DEBUG_STREAM("Address: " << this << " properties: "<< this->_typeProperties<< ", Tag: " << tag);
     ModuleManager::GetInstance().GetModule<PhysicsModule>().AddCollider(*this);
 }
 
-void PhysicsBody::Update(float delta)
-{
-}
+void PhysicsBody::Update(float delta) {}
 
-void PhysicsBody::End()
-{
+void PhysicsBody::End() {
     ModuleManager::GetInstance().GetModule<PhysicsModule>().RemoveCollider(*this);
 }
 
-void PhysicsBody::SetOnEnter(const std::function<void(GameObject& other)>& callback)
-{
+void PhysicsBody::SetOnEnter(const std::function<void(GameObject& other)>& callback) {
     enter = callback;
 }
 
-void PhysicsBody::SetOnExit(const std::function<void(GameObject& other)>& callback)
-{
+void PhysicsBody::SetOnExit(const std::function<void(GameObject& other)>& callback) {
     exit = callback;
 }
 
 std::shared_ptr<Shape>& PhysicsBody::GetShapeReference() { return _physicsShape; }
 PhysicsShape PhysicsBody::GetShape() { return _physicsShape->GetShape(); }
-TypeProperties PhysicsBody::GetTypeProperties() const { return _typeProperties; }
+std::shared_ptr<TypeProperties> PhysicsBody::GetTypeProperties() { return _typeProperties; }
+TypeProperties PhysicsBody::GetTypeProperties() const { return *_typeProperties; }
 
-Component* PhysicsBody::_clone(const GameObject& parent)
-{
+Component* PhysicsBody::_clone(const GameObject& parent) {
+    BLOCKY_ENGINE_DEBUG_STREAM("Address: " << this << " properties: "<< this->_typeProperties<< ", Tag: " << tag);
     auto clone = new PhysicsBody(*this);
+    BLOCKY_ENGINE_DEBUG_STREAM("Address: " << clone << " properties: "<< clone->_typeProperties<< ", Tag: " << tag);
     return clone;
 }

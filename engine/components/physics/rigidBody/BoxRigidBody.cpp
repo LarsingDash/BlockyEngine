@@ -26,6 +26,6 @@ BoxRigidBody::BoxRigidBody(GameObject* gameObject, const char* tag, const TypePr
 		              properties.isStatic,
 		              properties.linearVelocity,
 		              properties.rotationVelocity,
-		              properties.angularResistance,
+		              properties.rotationResistance,
 		              properties.linearResistance,
 		              properties.gravityEnabled)) {}

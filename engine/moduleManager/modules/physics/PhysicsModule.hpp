@@ -21,64 +21,33 @@ class b2World;
 struct Body {
 	b2Body* b2body{};
 	b2Vec2 _gameObjectLastPosition{};
-	b2Vec2 _gameObjectLastLinearVelocity{};
-	float _gameObjectLastRotationVelocity{};
 	float _gameObjectLastRotation{};
 	bool _gameObjectIsInitialized{};
 
-	[[nodiscard]] b2Vec2 GetPosition() const {
-		return b2body->GetPosition();
-	}
+	[[nodiscard]] b2Vec2 GetPosition() const { return b2body->GetPosition(); }
+	[[nodiscard]] float GetAngle() const { return b2body->GetAngle(); }
+	[[nodiscard]] b2Vec2 GetLinearVelocity() const { return b2body->GetPosition(); }
+	[[nodiscard]] float GetRotationVelocity() const { return b2body->GetAngle(); }
+	[[nodiscard]] float GetAngularResistance() const { return b2body->GetAngularDamping(); }
+	[[nodiscard]] float GetLinearResistance() const { return b2body->GetLinearDamping(); }
 
-	[[nodiscard]] float GetAngle() const {
-		return b2body->GetAngle();
-	}
+	[[nodiscard]] b2Vec2 LastPosition() const { return _gameObjectLastPosition; }
+	[[nodiscard]] float LastRotation() const { return _gameObjectLastRotation; }
 
-	[[nodiscard]] b2Vec2 GetLinearVelocity() const {
-		return b2body->GetPosition();
-	}
+	void LastPosition(const b2Vec2 position) { _gameObjectLastPosition = position; }
+	void LastRotation(const float rotation) { _gameObjectLastRotation = rotation; }
 
-	[[nodiscard]] float GetRotationVelocity() const {
-		return b2body->GetAngle();
-	}
-
-	[[nodiscard]] b2Vec2 LastPosition() const {
-		return _gameObjectLastPosition;
-	}
-
-	[[nodiscard]] b2Vec2 LastLinearVelocity() const {
-		return _gameObjectLastLinearVelocity;
-	}
-
-	[[nodiscard]] float LastRotationVelocity() const {
-		return _gameObjectLastRotationVelocity;
-	}
-
-	[[nodiscard]] float LastRotation() const {
-		return _gameObjectLastRotation;
-	}
-
-	void LastPosition(const b2Vec2 position) {
-		_gameObjectLastPosition = position;
-	}
-
-	void LastLinearVelocity(const b2Vec2 velocity) {
-		_gameObjectLastLinearVelocity = velocity;
-	}
-
-	void LastRotationVelocity(const float velocity) {
-		_gameObjectLastRotationVelocity = velocity;
-	}
-
-	void LastRotation(const float rotation) {
-		_gameObjectLastRotation = rotation;
-	}
-
-	void SetTransform(const b2Vec2& position, const float angle, const b2Vec2& linearVelocity,
-	                  const float rotationVelocity) const {
+	void SetTransform(const b2Vec2& position,
+	                  const float angle,
+	                  const b2Vec2& linearVelocity,
+	                  const float rotationVelocity,
+	                  const float linearResistance,
+	                  const float rotationResistance) const {
 		b2body->SetTransform(position, angle);
 		b2body->SetLinearVelocity(linearVelocity);
 		b2body->SetAngularVelocity(rotationVelocity);
+		b2body->SetLinearDamping(linearResistance);
+		b2body->SetAngularDamping(rotationResistance);
 	}
 };
 
@@ -106,6 +75,8 @@ private:
 	static b2Vec2 Position(const PhysicsBody& physicsBody);
 	static b2Vec2 LinearVelocity(const PhysicsBody& physicsBody);
 	static float RotationVelocity(const PhysicsBody& physicsBody);
+	static float RotationResistance(const PhysicsBody& physicsBody);
+	static float LinearResistance(const PhysicsBody& physicsBody);
 	static float ToDegree(float radian);
 	static float ToRadian(float degree);
 	static float Angle(const PhysicsBody& physicsBody);

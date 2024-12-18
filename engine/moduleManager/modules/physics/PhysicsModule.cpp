@@ -9,8 +9,13 @@
 #include <logging/BLogger.hpp>
 #include <moduleManager/modules/WindowModule.hpp>
 
+// to allow speed up: slow everything down by factor MAX_SIMULATION_SPEED_INCREASE as default,
+//	so that Box2D recommender 1/50 minimum timeStep is not exceeded, MAX_SIMULATION_SPEED_INCREASE should not be 0;
+constexpr float MAX_SIMULATION_SPEED_INCREASE = 100.f;
+
 PhysicsModule::PhysicsModule() {
-	b2Vec2 gravity(0.f, 9.8f);
+	// todo: both MAX_SIMULATION_SPEED_INCREASE needed
+	b2Vec2 gravity(0.f, 9.8f * MAX_SIMULATION_SPEED_INCREASE * MAX_SIMULATION_SPEED_INCREASE);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
@@ -19,13 +24,18 @@ PhysicsModule::PhysicsModule() {
 	_box2dWorldObject->SetContactListener(_contactListener.get());
 }
 
+// todo: gravity & velocity aan de hand van delta tijd
 void PhysicsModule::Update(float delta) {
+	// to allow speed up: slow everything down by factor MAX_SIMULATION_SPEED_INCREASE as default,
+	//	so that Box2D recommender 1/50 minimum timeStep is not exceeded, MAX_SIMULATION_SPEED_INCREASE should not be 0;
+	const auto timeStep = delta / MAX_SIMULATION_SPEED_INCREASE;
+
 	WritingExternalInputToBox2DWorld();
 
 	constexpr int32 positionIterations = 2 * 100;
 	constexpr int32 velocityIterations = 6; // high velocityIterations > 50 result in bigger performers hit.
 
-	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
+	_box2dWorldObject->Step(timeStep, velocityIterations, positionIterations);
 
 	WritingBox2DWorldToOutside();
 }
@@ -39,6 +49,9 @@ bool PhysicsModule::IsSame(const PhysicsBody* const physicsBody, const Body* con
 	if (body->GetLinearVelocity() != LinearVelocity(*physicsBody)) { return false; }
 	if (body->GetRotationVelocity() != RotationVelocity(*physicsBody)) { return false; }
 
+	if (body->GetLinearResistance() != LinearResistance(*physicsBody)) { return false; }
+	if (body->GetAngularResistance() != RotationResistance(*physicsBody)) { return false; }
+
 	return true;
 }
 
@@ -46,17 +59,11 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 	for (auto [physicsBody, body] : _gameObjectToBodyMap) {
 		if (IsSame(physicsBody, body)) { continue; }
 
-		BLOCKY_ENGINE_DEBUG_STREAM(
-			"Address: " << physicsBody<< " properties: "<< physicsBody->GetTypeProperties() << ", Tag: " << physicsBody
-			->tag);
-		BLOCKY_ENGINE_DEBUG_STREAM(
-			"LinearVelocity(*physicsBody):" << LinearVelocity(*physicsBody).x << ";" << LinearVelocity(*physicsBody).y);
 		if (!body->_gameObjectIsInitialized) {
+			// only need to initialize Position and Rotation, for gameObject transform, that needs deltaPosition
 			body->LastPosition(Position(*physicsBody));
 			body->LastRotation(ToRadian(Angle(*physicsBody)));
 
-			body->LastLinearVelocity(LinearVelocity(*physicsBody));
-			body->LastRotationVelocity(RotationVelocity(*physicsBody));
 			body->_gameObjectIsInitialized = true;
 		}
 
@@ -64,12 +71,12 @@ void PhysicsModule::WritingExternalInputToBox2DWorld() {
 			Position(*physicsBody),
 			ToRadian(Angle(*physicsBody)),
 			LinearVelocity(*physicsBody),
-			RotationVelocity(*physicsBody));
+			RotationVelocity(*physicsBody),
+			LinearResistance(*physicsBody),
+			RotationResistance(*physicsBody));
 	}
 }
 
-// todo: gravity & velocity aan de hand van delta tijd
-// todo: velocity kunnnen aanpassen op runtime
 void PhysicsModule::WritingBox2DWorldToOutside() {
 	for (auto [physicsBody, body] : _gameObjectToBodyMap) {
 		const b2Vec2 position = body->GetPosition();
@@ -86,16 +93,10 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 
 		body->LastPosition({position.x, position.y});
 		body->LastRotation(angle);
-
-		body->LastLinearVelocity(LinearVelocity(*physicsBody));
-		body->LastRotationVelocity(RotationVelocity(*physicsBody));
 	}
 }
 
 void PhysicsModule::AddCollider(PhysicsBody& physicsBody) {
-	BLOCKY_ENGINE_DEBUG_STREAM(
-		"Address: " << &physicsBody<< " properties: "<< physicsBody.GetTypeProperties() << ", Tag: " << physicsBody.
-		tag);
 	if (&physicsBody.gameObject == nullptr) {
 		BLOCKY_ENGINE_ERROR("AddCollider but: physicsBody.gameObject == nullptr");
 		return;
@@ -161,11 +162,11 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 				body->SetGravityScale(1000.0f);
 			}
 
-			body->SetAngularDamping(properties->angularResistance);
-			body->SetLinearDamping(properties->linearResistance);
+			body->SetAngularDamping(RotationResistance(physicsBody));
+			body->SetLinearDamping(LinearResistance(physicsBody));
 
-			body->SetAngularVelocity(ToRadian(properties->rotationVelocity));
-			body->SetLinearVelocity(VecConvert(properties->linearVelocity));
+			body->SetAngularVelocity(ToRadian(RotationVelocity(physicsBody)));
+			body->SetLinearVelocity(LinearVelocity(physicsBody));
 			break;
 		}
 	}
@@ -231,11 +232,22 @@ b2Vec2 PhysicsModule::Position(const PhysicsBody& physicsBody) {
 }
 
 b2Vec2 PhysicsModule::LinearVelocity(const PhysicsBody& physicsBody) {
-	return VecConvert(physicsBody.GetTypeProperties().linearVelocity);
+	auto vec = VecConvert(physicsBody.GetTypeProperties().linearVelocity);
+	vec.x *= MAX_SIMULATION_SPEED_INCREASE;
+	vec.y *= MAX_SIMULATION_SPEED_INCREASE;
+	return vec;
 }
 
 float PhysicsModule::RotationVelocity(const PhysicsBody& physicsBody) {
-	return physicsBody.GetTypeProperties().rotationVelocity;
+	return physicsBody.GetTypeProperties().rotationVelocity * MAX_SIMULATION_SPEED_INCREASE;
+}
+
+float PhysicsModule::RotationResistance(const PhysicsBody& physicsBody) {
+	return physicsBody.GetTypeProperties().rotationResistance * MAX_SIMULATION_SPEED_INCREASE;
+}
+
+float PhysicsModule::LinearResistance(const PhysicsBody& physicsBody) {
+	return physicsBody.GetTypeProperties().linearResistance * MAX_SIMULATION_SPEED_INCREASE;
 }
 
 float PhysicsModule::ToDegree(float radian) {

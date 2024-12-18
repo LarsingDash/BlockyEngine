@@ -26,6 +26,6 @@ CircleRigidBody::CircleRigidBody(GameObject* gameObject, const char* tag, const 
 		            RIGIDBODY, properties.isStatic,
 		            properties.linearVelocity,
 		            properties.rotationVelocity,
-		            properties.angularResistance,
+		            properties.rotationResistance,
 		            properties.linearResistance,
 		            properties.gravityEnabled)) {}

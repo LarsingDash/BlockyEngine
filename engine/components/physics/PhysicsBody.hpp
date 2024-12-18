@@ -16,12 +16,12 @@ enum PhysicsType {
 
 struct TypeProperties {
 	TypeProperties(PhysicsType physicsType, bool isStatic, glm::vec2 linearVelocity, float rotationVelocity,
-	               float angularResistance, float linearResistance, bool gravityEnabled):
+	               float rotationResistance, float linearResistance, bool gravityEnabled):
 		physicsType(physicsType),
 		isStatic(isStatic),
 		linearVelocity(linearVelocity),
 		rotationVelocity(rotationVelocity),
-		angularResistance(angularResistance),
+		rotationResistance(rotationResistance),
 		linearResistance(linearResistance),
 		gravityEnabled(gravityEnabled) {}
 
@@ -33,7 +33,7 @@ struct TypeProperties {
 	bool isStatic;
 	glm::vec2 linearVelocity;
 	float rotationVelocity;
-	float angularResistance;
+	float rotationResistance;
 	float linearResistance;
 	bool gravityEnabled;
 };

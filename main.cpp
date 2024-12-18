@@ -171,10 +171,23 @@ void buildCollisionEnv(SceneManager& manager) {
         false
     );
     auto& boxRigidBody = rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
-    BLOCKY_ENGINE_DEBUG_STREAM(
-        "Address: " << &boxRigidBody << " properties: "<< boxRigidBody.GetTypeProperties()<< ", Tag: " << boxRigidBody.
-        tag);
     rigidBox.AddComponent<MoveWithPhysics>("TestMover", boxRigidBody);
+
+    properties = TypeProperties(
+        RIGIDBODY,
+        false,
+        glm::vec2{0, -50},
+        0,
+        0,
+        0,
+        true
+    );
+
+    auto& sceneBase2 = root->AddChild("BaseOfScene");
+    sceneBase2.transform->SetPosition(pos.x - 210, pos.y);
+    sceneBase2.transform->SetScale(10, 10);
+    sceneBase2.AddComponent<RectangleRenderable>("RectangleRenderable", glm::vec4{0, 0, 255, 255}, 0, true);
+    sceneBase2.AddComponent<BoxRigidBody>("BoxRigidBody", properties);
 
     // root->AddComponent<SceneSwitchComp>("SceneSwitcher", "CollisionScene");
     manager.AddScene(std::move(root));

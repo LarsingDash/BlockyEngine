@@ -15,9 +15,7 @@ PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_pt
                          const TypeProperties& typeProperties) : Component(gameObject, tag, true),
                                                                  _physicsShape(std::move(physicsBody)),
                                                                  _typeProperties(
-                                                                     std::make_shared<TypeProperties>(typeProperties)) {
-    BLOCKY_ENGINE_DEBUG_STREAM("Address: " << this << " properties: "<< this->_typeProperties << ", Tag: " << tag);
-}
+                                                                     std::make_shared<TypeProperties>(typeProperties)) {}
 
 void PhysicsBody::Start() {
     switch (_physicsShape->GetShape()) {
@@ -36,7 +34,6 @@ void PhysicsBody::Start() {
         }
     }
 
-    BLOCKY_ENGINE_DEBUG_STREAM("Address: " << this << " properties: "<< this->_typeProperties<< ", Tag: " << tag);
     ModuleManager::GetInstance().GetModule<PhysicsModule>().AddCollider(*this);
 }
 
@@ -60,8 +57,6 @@ std::shared_ptr<TypeProperties> PhysicsBody::GetTypeProperties() { return _typeP
 TypeProperties PhysicsBody::GetTypeProperties() const { return *_typeProperties; }
 
 Component* PhysicsBody::_clone(const GameObject& parent) {
-    BLOCKY_ENGINE_DEBUG_STREAM("Address: " << this << " properties: "<< this->_typeProperties<< ", Tag: " << tag);
     auto clone = new PhysicsBody(*this);
-    BLOCKY_ENGINE_DEBUG_STREAM("Address: " << clone << " properties: "<< clone->_typeProperties<< ", Tag: " << tag);
     return clone;
 }

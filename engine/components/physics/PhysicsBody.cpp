@@ -8,34 +8,16 @@
 #include "logging/BLogger.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/physics/PhysicsModule.hpp"
-#include "shape/Box.hpp"
-#include "shape/Circle.hpp"
+#include "shape/Shape.hpp"
 
-PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, std::shared_ptr<Shape> physicsBody,
+PhysicsBody::PhysicsBody(GameObject* gameObject, const char* tag, const PhysicsShape shape,
                          const TypeProperties& typeProperties) : Component(gameObject, tag, true),
-                                                                 _physicsShape(std::move(physicsBody)),
+                                                                 _shape(shape),
                                                                  _typeProperties(
                                                                      std::make_shared<TypeProperties>(
                                                                          typeProperties)) {}
 
 void PhysicsBody::Start() {
-    // On start overwrite shape scale, because scale needs to be set and cant be done when constructing PhysicsBody
-    switch (_physicsShape->GetShape()) {
-        case BOX: {
-            const auto* const shape = dynamic_cast<Box*>(GetShapeReference().get());
-            auto& scale = componentTransform->GetWorldScale();
-            shape->_width = scale.x;
-            shape->_height = scale.y;
-            break;
-        }
-        case CIRCLE: {
-            const auto* const shape = dynamic_cast<Circle*>(GetShapeReference().get());
-            const float scale = (componentTransform->GetWorldScale().y + componentTransform->GetWorldScale().x) / 4;
-            shape->_radius = scale;
-            break;
-        }
-    }
-
     ModuleManager::GetInstance().GetModule<PhysicsModule>().AddPhysicsBody(*this);
 }
 
@@ -53,8 +35,7 @@ void PhysicsBody::SetOnExit(const std::function<void(GameObject& other)>& callba
     exit = callback;
 }
 
-std::shared_ptr<Shape> PhysicsBody::GetShapeReference() { return _physicsShape; }
-PhysicsShape PhysicsBody::GetShape() { return _physicsShape->GetShape(); }
+PhysicsShape PhysicsBody::GetShape() { return _shape; }
 std::shared_ptr<TypeProperties> PhysicsBody::GetTypeProperties() { return _typeProperties; }
 const TypeProperties& PhysicsBody::GetTypeProperties() const { return *_typeProperties; }
 

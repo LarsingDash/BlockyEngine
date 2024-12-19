@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <Box2D/Box2D.h>
-#include <components/physics/shape/Box.hpp>
-#include <components/physics/shape/Circle.hpp>
+#include "components/physics/shape/Shape.hpp"
+#include "components/physics/shape/Shape.hpp"
 #include <components/renderables/EllipseRenderable.hpp>
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
@@ -123,18 +123,20 @@ void PhysicsModule::RemovePhysicsBody(PhysicsBody& physicsBody) {
 	}
 }
 
-std::unique_ptr<b2Shape> AddBoxShape(const Box& box) {
+std::unique_ptr<b2Shape> AddBoxShape(const PhysicsBody& physicsBody) {
 	auto dynamicBox = std::make_unique<b2PolygonShape>();
 	// Blocky Engine uses width and height, Box2D uses x&y height&width above,below&left,right of origin. so: /2
-	dynamicBox->SetAsBox(box.GetWidth() / 2 / DEBUG_GAME_SPEED,
-	                     box.GetHeight() / 2 / DEBUG_GAME_SPEED);
+	dynamicBox->SetAsBox(physicsBody.componentTransform->GetWorldScale().x / 2 / DEBUG_GAME_SPEED,
+	                     physicsBody.componentTransform->GetWorldScale().y / 2 / DEBUG_GAME_SPEED);
 
 	return dynamicBox;
 }
 
-std::unique_ptr<b2Shape> AddCircleShape(const Circle& circle) {
+std::unique_ptr<b2Shape> AddCircleShape(const PhysicsBody& physicsBody) {
 	auto dynamicCircle = std::make_unique<b2CircleShape>();
-	dynamicCircle->m_radius = circle.GetRadius() / DEBUG_GAME_SPEED;
+	dynamicCircle->m_radius = ((
+		physicsBody.componentTransform->GetWorldScale().y +
+		physicsBody.componentTransform->GetWorldScale().x) / 4) / DEBUG_GAME_SPEED;
 	return dynamicCircle;
 }
 
@@ -144,13 +146,11 @@ void PhysicsModule::AddFixture(PhysicsBody& physicsBody, b2Body* body) {
 	// if width/height/radius < 0, error: Assertion failed: area > 1.19209289550781250000000000000000000e-7F
 	switch (physicsBody.GetShape()) {
 		case BOX: {
-			const auto* const shape = dynamic_cast<Box*>(physicsBody.GetShapeReference().get());
-			fixtureDef.shape = AddBoxShape(*shape).release();
+			fixtureDef.shape = AddBoxShape(physicsBody).release();
 			break;
 		}
 		case CIRCLE: {
-			const auto* const shape = dynamic_cast<Circle*>(physicsBody.GetShapeReference().get());
-			fixtureDef.shape = AddCircleShape(*shape).release();
+			fixtureDef.shape = AddCircleShape(physicsBody).release();
 			break;
 		}
 	}

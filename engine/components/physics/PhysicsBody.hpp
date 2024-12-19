@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "components/Component.hpp"
-#include "components/physics/shape/Shape.hpp"
+#include "shape/Shape.hpp"
 
 enum PhysicsType {
 	COLLIDER,
@@ -40,8 +40,7 @@ struct TypeProperties {
 
 class PhysicsBody : public Component {
 public:
-	PhysicsBody(GameObject* gameObject, const char* tag, std::shared_ptr<Shape> physicsBody,
-	            const TypeProperties& typeProperties);
+	PhysicsBody(GameObject* gameObject, const char* tag, PhysicsShape shape, const TypeProperties& typeProperties);
 	~PhysicsBody() override = default;
 
 	PhysicsBody(const PhysicsBody& other) = default;
@@ -53,7 +52,6 @@ public:
 	void SetOnEnter(const std::function<void(GameObject& other)>& callback);
 	void SetOnExit(const std::function<void(GameObject& other)>& callback);
 
-	[[nodiscard]] virtual std::shared_ptr<Shape> GetShapeReference();
 	[[nodiscard]] virtual PhysicsShape GetShape();
 	[[nodiscard]] virtual std::shared_ptr<TypeProperties> GetTypeProperties();
 	[[nodiscard]] const TypeProperties& GetTypeProperties() const;
@@ -64,7 +62,7 @@ private:
 	std::function<void(GameObject& other)> enter{nullptr};
 	std::function<void(GameObject& other)> exit{nullptr};
 
-	std::shared_ptr<Shape> _physicsShape;
+	PhysicsShape _shape;
 	std::shared_ptr<TypeProperties> _typeProperties;
 };
 #endif //PHYSICSBODY_HPP

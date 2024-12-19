@@ -52,10 +52,9 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 	auto& rectangle = gameObject->AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
 	auto& cameraPos = _camera.GetPosition();
 	rectangle.transform->SetPosition(static_cast<float>(x) + cameraPos.x, static_cast<float>(y) + cameraPos.y);
+	rectangle.transform->SetScale(20.f, 20.f);
 
 	TypeProperties physicsProperties(RIGIDBODY, false, {0, 0}, 36, 0, 0, true);
-
-	rectangle.transform->Scale(20.f, 20.f);
 
 	if (state == MouseButtonState::BUTTON_DOWN) {
 		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, std::numeric_limits<int>::max(), true);
@@ -65,9 +64,8 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 		rectangle.GetComponent<Audio>("clowns-jingle")->Play();
 	}
 	else {
-		// add the same component
-		rectangle.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/car-horn.mp3", 255, false);
-		rectangle.GetComponent<Audio>("clowns-jingle")->Stop();
+		// add the same component to stop other instance form playing, will try to load audio from set source file location
+		rectangle.AddComponent<Audio>("clowns-jingle", "", 255, true).Stop();
 
 		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, std::numeric_limits<int>::max(), true);
 		rectangle.AddComponent<CircleCollider>("CircleRigidBody");

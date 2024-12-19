@@ -11,7 +11,7 @@
 
 // objects scaled, based on DEBUG_GAME_SPEED so that it looks like the speed is incrementing,
 //	since everything is DEBUG_GAME_SPEED closer to another and takes DEBUG_GAME_SPEED less time to move to same position.
-constexpr float DEBUG_GAME_SPEED = 0.1;
+constexpr float DEBUG_GAME_SPEED = 0.5;
 
 PhysicsModule::PhysicsModule() {
 	b2Vec2 gravity(0.f, 9.8f);

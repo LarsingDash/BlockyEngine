@@ -11,7 +11,7 @@
 
 // objects scaled, based on DEBUG_GAME_SPEED so that it looks like the speed is incrementing,
 //	since everything is DEBUG_GAME_SPEED closer to another and takes DEBUG_GAME_SPEED less time to move to same position.
-constexpr float DEBUG_GAME_SPEED = 1;
+constexpr float DEBUG_GAME_SPEED = 0.1;
 
 PhysicsModule::PhysicsModule() {
 	b2Vec2 gravity(0.f, 9.8f);
@@ -88,7 +88,7 @@ void PhysicsModule::WritingBox2DWorldToOutside() {
 		};
 
 		const float angle = body->GetAngle();
-		const float deltaAngle = ToDegree(body->LastRotation() - angle) * DEBUG_GAME_SPEED;
+		const float deltaAngle = ToDegree(body->LastRotation() - angle); //* DEBUG_GAME_SPEED;
 
 		// Use gameObject to apply the movement to the whole gameObject
 		physicsBody->gameObject->transform->Translate(deltaPosition.x, deltaPosition.y);
@@ -243,7 +243,7 @@ b2Vec2 PhysicsModule::Position(const PhysicsBody& physicsBody) {
 
 // return Angel in radian
 float PhysicsModule::Angle(const PhysicsBody& physicsBody) {
-	return ToRadian(physicsBody.componentTransform->GetWorldRotation()) / DEBUG_GAME_SPEED;
+	return ToRadian(physicsBody.componentTransform->GetWorldRotation()); // / DEBUG_GAME_SPEED;
 }
 
 // return Angel in degree
@@ -262,7 +262,7 @@ b2Vec2 PhysicsModule::LinearVelocity(const PhysicsBody& physicsBody) {
 
 // return Angle in radian
 float PhysicsModule::RotationVelocity(const PhysicsBody& physicsBody) {
-	return ToRadian(physicsBody.GetTypeProperties().rotationVelocity);
+	return ToRadian(physicsBody.GetTypeProperties().rotationVelocity) * DEBUG_GAME_SPEED;
 }
 
 float PhysicsModule::RotationResistance(const PhysicsBody& physicsBody) {

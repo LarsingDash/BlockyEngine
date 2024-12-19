@@ -52,10 +52,9 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 	auto& rectangle = gameObject->AddChild("Rectangle_" + std::to_string(x) + "_" + std::to_string(y));
 	auto& cameraPos = _camera.GetPosition();
 	rectangle.transform->SetPosition(static_cast<float>(x) + cameraPos.x, static_cast<float>(y) + cameraPos.y);
+	rectangle.transform->Scale(20.f, 20.f);
 
 	TypeProperties physicsProperties(RIGIDBODY, false, {0, 0}, 36, 0, 0, true);
-
-	rectangle.transform->Scale(20.f, 20.f);
 
 	if (state == MouseButtonState::BUTTON_DOWN) {
 		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, std::numeric_limits<int>::max(), true);

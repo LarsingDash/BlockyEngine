@@ -187,6 +187,27 @@ void buildCollisionEnv(SceneManager& manager) {
 	sceneBase2.AddComponent<RectangleRenderable>("RectangleRenderable", glm::vec4{0, 0, 255, 255}, 0, true);
 	sceneBase2.AddComponent<BoxRigidBody>("BoxRigidBody", properties);
 
+	//Basic mouse input
+	auto& mouseInputComponent = root->AddChild("MouseInput");
+	mouseInputComponent.AddComponent<MouseInputComponent>("MouseInputComponent");
+
+	//ParentA
+	auto& parentA = root->AddChild("ParentA");
+	parentA.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, -1, true);
+	parentA.transform->SetPosition(200, 300);
+	parentA.transform->SetScale(150, 300);
+	parentA.transform->SetRotation(20);
+	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
+	parentA.AddComponent<BoxRigidBody>("ParentARB", physicsProperties);
+
+	//ParentB
+	auto& parentB = root->AddChild("ParentB");
+	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 0, 255, 255}, -1, true);
+	parentB.transform->SetPosition(525, 325);
+	parentB.transform->SetScale(350, 200);
+	parentB.transform->SetRotation(-125);
+	parentB.AddComponent<BoxRigidBody>("ParentBRB", physicsProperties);
+
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "InputReparenting");
 	manager.AddScene(std::move(root));

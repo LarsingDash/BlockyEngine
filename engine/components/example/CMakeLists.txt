@@ -7,4 +7,5 @@
         KeyboardInputComponent.cpp
         MouseReparenting.cpp
         SceneSwitchComp.cpp
+        NetworkingComponent.cpp
 )

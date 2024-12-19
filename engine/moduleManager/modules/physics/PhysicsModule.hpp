@@ -70,23 +70,24 @@ public:
 	void RemovePhysicsBody(PhysicsBody& physicsBody);
 
 private:
-	void WritingExternalInputToBox2DWorld();
-	void WritingBox2DWorldToOutside();
+	void _writingExternalInputToBox2DWorld();
+	void _writingBox2DWorldToOutside();
 
-	b2Body* CreateBody(b2World& world, PhysicsBody& physicsBody);
-	static void AddFixture(PhysicsBody& physicsBody, b2Body* body);
+	void _createPhysicsBody(PhysicsBody& physicsBody);
+	b2Body* _createBody(b2World& world, PhysicsBody& physicsBody);
+	static void _addFixture(PhysicsBody& physicsBody, b2Body* body);
 
-	static bool IsSame(const PhysicsBody* physicsBody, const Body* body);
-	static b2Vec2 VecConvert(const glm::vec2& a);
-	static glm::vec2 VecConvert(const b2Vec2& a);
-	static b2Vec2 Position(const PhysicsBody& physicsBody);
-	static b2Vec2 LinearVelocity(const PhysicsBody& physicsBody);
-	static float RotationVelocity(const PhysicsBody& physicsBody);
-	static float RotationResistance(const PhysicsBody& physicsBody);
-	static float LinearResistance(const PhysicsBody& physicsBody);
-	static float ToDegree(float radian);
-	static float ToRadian(float degree);
-	static float Angle(const PhysicsBody& physicsBody);
+	static bool _isSame(const PhysicsBody* physicsBody, const Body* body);
+	static b2Vec2 _vecConvert(const glm::vec2& a);
+	static glm::vec2 _vecConvert(const b2Vec2& a);
+	static b2Vec2 _position(const PhysicsBody& physicsBody);
+	static b2Vec2 _linearVelocity(const PhysicsBody& physicsBody);
+	static float _rotationVelocity(const PhysicsBody& physicsBody);
+	static float _rotationResistance(const PhysicsBody& physicsBody);
+	static float _linearResistance(const PhysicsBody& physicsBody);
+	static float _toDegree(float radian);
+	static float _toRadian(float degree);
+	static float _angle(const PhysicsBody& physicsBody);
 
 	std::unique_ptr<b2World> _box2dWorldObject;
 	std::unique_ptr<MyContactListener> _contactListener;

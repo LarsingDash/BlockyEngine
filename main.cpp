@@ -1,4 +1,7 @@
+#include <SDL_main.h>
+
 #include <memory>
+#include <components/audio/Audio.hpp>
 #include <components/physics/rigidBody/BoxRigidBody.hpp>
 
 #include "BlockyEngine.hpp"
@@ -71,8 +74,8 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	//Animated Object
 	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	animatedObject.AddComponent<AnimationRenderable>(
-			"animTag", "../assets/character_spritesheet.png",
-			"spriteTag", 32, 32
+		"animTag", "../assets/character_spritesheet.png",
+		"spriteTag", 32, 32, 0, SpriteFlip::FlipHorizontal
 	);
 
 	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
@@ -105,8 +108,13 @@ void buildCameraScene(SceneManager& scenes) {
 	root->AddComponent<MouseCameraController>("CameraController");
 
 	auto& box = root->AddChild("Box");
-	box.transform->SetScale(200, 150);
-	box.transform->SetPosition(400, 300);
+
+	glm::vec2 screenSize = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
+	box.transform->SetScale(screenSize.x / 4.f,
+	                        screenSize.y / 4.f);
+	box.transform->SetPosition(screenSize.x / 2.f,
+	                           screenSize.y / 2.f);
+
 	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
 	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);
 	box.AddComponent<SpriteRenderable>("animTag", "../assets/character_spritesheet.png", "spriteTag");
@@ -136,16 +144,25 @@ void buildNetworkingSCene(SceneManager& scenes) {
 }
 
 int main(int argc, char* argv[]) {
-	BlockyEngine blockyEngine;
+	BlockyEngine::BlockyConfigs configs{
+		800,
+		600,
+		SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
+		"../assets/fonts/defaultFont.ttf"
+	};
+
+	BlockyEngine blockyEngine{configs};
 	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 
 	buildNetworkingSCene(sceneManager);
 	buildPrefabScene(sceneManager);
 	buildInputReparentingScene(sceneManager);
 	buildCameraScene(sceneManager);
-//	sceneManager.SwitchScene("Prefabs");
+
+	//	sceneManager.SwitchScene("Prefabs");
+//	sceneManager.SwitchScene("InputReparenting");
 	sceneManager.SwitchScene("Networking");
-//	sceneManager.SwitchScene("Camera");
+	//	sceneManager.SwitchScene("Camera");
 
 	blockyEngine.Run();
 

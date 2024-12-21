@@ -12,6 +12,7 @@ enum class MessageType {
 	CONNECT,
 	DISCONNECT,
 	CONNECTION_LOST,
+	CONNECTION_CONFIRMED,
 	DATA,
 	HOST_PING,
 	CLIENT_PING
@@ -35,6 +36,7 @@ class NetworkMessage {
 NetworkMessage createConnectMessage(const std::string& clientInfo = "");
 NetworkMessage createDisconnectMessage(const std::string& reason = "");
 NetworkMessage createConnectionLostMessage(const std::string& details = "");
+NetworkMessage createConnectionConfirmedMessage(const std::string& details = "");
 NetworkMessage createDataMessage(const std::string& data);
 NetworkMessage createHostPingMessage();
 NetworkMessage createClientPingMessage();

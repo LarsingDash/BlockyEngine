@@ -36,6 +36,10 @@ void NetworkingComponent::Start() {
 				_logBuffer.appendf("[%s] Connection Lost: %s\n",
 								   GetTimestamp().c_str(), message.getPayload().c_str());
 				break;
+			case MessageType::CONNECTION_CONFIRMED:
+				_logBuffer.appendf("[%s] Connection Confirmed From Host: %s\n",
+								   GetTimestamp().c_str(), message.getPayload().c_str());
+				break;
 			case MessageType::DATA:
 				_logBuffer.appendf("[%s] Received Data: %s\n",
 								   GetTimestamp().c_str(), message.getPayload().c_str());

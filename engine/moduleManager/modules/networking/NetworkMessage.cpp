@@ -40,7 +40,9 @@ NetworkMessage createConnectMessage(const std::string& clientInfo) {
 NetworkMessage createDisconnectMessage(const std::string& reason) {
 	return NetworkMessage(MessageType::DISCONNECT, reason);
 }
-
+NetworkMessage createConnectionConfirmedMessage(const std::string& reason) {
+	return NetworkMessage(MessageType::CONNECTION_CONFIRMED, reason);
+}
 NetworkMessage createConnectionLostMessage(const std::string& details) {
 	return NetworkMessage(MessageType::CONNECTION_LOST, details);
 }

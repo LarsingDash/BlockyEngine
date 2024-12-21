@@ -109,6 +109,12 @@ void NetworkingModule::Update(float delta) {
 			_incomingMessages.pop();
 
 			switch (message.getType()) {
+				case MessageType::CONNECT:{
+					if(GetRole() == NetworkRole::HOST){
+						SendMessage(createConnectionConfirmedMessage("Confirming connection made to host"));
+					}
+					break;
+				}
 				case MessageType::HOST_PING:
 					if (_state.GetRole() == NetworkRole::CLIENT) {
 						_state.OnHostPingReceived();

@@ -10,11 +10,11 @@
 #include "BlockyEngine.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 
-WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) {
+WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr), _context() {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
 		std::string err("Couldn't init video: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 
 		return;
 	}
@@ -25,13 +25,14 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) 
 	}
 
 	//Create window
+	const auto& configs = BlockyEngine::GetConfigs();
 	_window = SDL_CreateWindow("SDLTest", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-							   WindowModule::WINDOW_WIDTH, WindowModule::WINDOW_HEIGHT,
-							   SDL_WINDOW_SHOWN);
+							   configs->windowWidth, configs->windowHeight,
+							   configs->windowFlags);
 	if (!_window) {
 		std::string err("Couldn't create window: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 
 		SDL_Quit();
 		return;
@@ -42,7 +43,7 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) 
 	if (!_renderer) {
 		std::string err("Couldn't create _renderer: ");
 		err += SDL_GetError();
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		SDL_Quit();
 		SDL_DestroyWindow(_window);
 		return;
@@ -54,6 +55,10 @@ WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr) 
 }
 
 WindowModule::~WindowModule() {
+	_renderingModule.reset();
+	_inputModule.reset();
+	_guiRenderingModule.reset();
+
 	SDL_DestroyRenderer(_renderer);
 	SDL_DestroyWindow(_window);
 
@@ -95,4 +100,16 @@ ImGuiRenderingModule& WindowModule::GetGuiRenderingModule() {
 		throw std::runtime_error("GUI RenderingModule is not initialized.");
 	}
 	return *_guiRenderingModule;
+}
+
+glm::ivec2 WindowModule::GetScreenSizeI() {
+	int w, h;
+	SDL_GetWindowSize(_window, &w, &h);
+	return {w, h};
+}
+
+glm::vec2 WindowModule::GetScreenSizeF() {
+	int w, h;
+	SDL_GetWindowSize(_window, &w, &h);
+	return {static_cast<float>(w), static_cast<float>(h)};
 }

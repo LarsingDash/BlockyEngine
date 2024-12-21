@@ -53,7 +53,7 @@ void SceneManager::_switchScene() {
 		std::string err("Scene {");
 		err += _switchTarget;
 		err += "} could not be found";
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 	}
 	
 	_switchTarget.clear();

@@ -7,17 +7,23 @@ set(DEPS_DOWNLOADED FALSE CACHE BOOL INTERNAL "")
 set(GTEST_VERSION "1.15.2")
 set(SDL_VERSION "2.30.9")
 set(SDLTTF_VERSION "2.22.0")
+set(SDLNET_VERSION "2.2.0")
 set(GLM_VERSION "1.0.1")
 set(BOX2D_VERSION "2.4.1")
 set(IMGUI_VERSION "1.91.5")
+set(JSON_VERSION "3.11.3")
+set(SDL_MIXER_VERSION "2.8.0")
 
 set(BLOCKY_DEPS
         googletest https://github.com/google/googletest/releases/download/v${GTEST_VERSION}/googletest-${GTEST_VERSION}.tar.gz
         SDL2_gfx https://github.com/Dogukan-lab/sdl_gfx_offshoot/releases/download/v1.0.0/SDL_gfx.tar.gz
-        SDL_ttf https://github.com/libsdl-org/SDL_ttf/releases/download/release-${SDLTTF_VERSION}/SDL2_ttf-devel-${SDLTTF_VERSION}-mingw.tar.gz        glm https://github.com/g-truc/glm/releases/download/1.0.1/glm-1.0.1-light.zip
+        SDL2_ttf https://github.com/libsdl-org/SDL_ttf/releases/download/release-${SDLTTF_VERSION}/SDL2_ttf-devel-${SDLTTF_VERSION}-mingw.tar.gz
+        SDL_net https://github.com/libsdl-org/SDL_net/releases/download/release-2.2.0/SDL2_net-devel-${SDLNET_VERSION}-mingw.tar.gz
+        glm https://github.com/g-truc/glm/releases/download/1.0.1/glm-1.0.1-light.zip
         box2d https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz
         stb_image https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
         imgui https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz
+        json https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
 )
 
 function(setup_platform_specifics)
@@ -26,12 +32,18 @@ function(setup_platform_specifics)
         set(SDL2_DEP
                 SDL2 https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.zip
         )
+        set(SDL2_mixer_DEP
+                SDL2_mixer https://github.com/libsdl-org/SDL_mixer/releases/download/release-${SDL_MIXER_VERSION}/SDL2_mixer-devel-${SDL_MIXER_VERSION}-mingw.zip
+        )
         message(STATUS "APPENDING LINK: ${SDL2_DEP}")
+        message(STATUS "APPENDING LINK: ${SDL2_mixer_DEP}")
         list(APPEND BLOCKY_DEPS ${SDL2_DEP})
+        list(APPEND BLOCKY_DEPS ${SDL2_mixer_DEP})
         message(STATUS "${BLOCKY_DEPS}")
     elseif (${LINUX})
         message(STATUS "${BLOCKY_DEPS}")
         find_package(SDL2 CONFIG REQUIRED)
+        find_package(SDL2_mixer CONFIG REQUIRED)
     endif ()
 
     set(BLOCKY_DEPS "${BLOCKY_DEPS}" PARENT_SCOPE)

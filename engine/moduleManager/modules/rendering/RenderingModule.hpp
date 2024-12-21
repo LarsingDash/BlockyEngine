@@ -28,7 +28,7 @@ class RenderingModule {
 		void Render();
 		void AddRenderable(Renderable& renderable);
 		void RemoveRenderable(Renderable& renderable);
-		
+
 		inline Camera& GetCamera() const { return *_camera; }
 
 	private:
@@ -42,10 +42,17 @@ class RenderingModule {
 		void _renderEllipse(EllipseRenderable& renderable);
 		void _renderSprite(SpriteRenderable& renderable);
 		void _renderAnimatedSprite(AnimationRenderable& renderable);
-		void _renderTexture(SDL_Texture* texture, const ComponentTransform& transform, const glm::ivec4* sourceRect);
+		void _renderTexture(SDL_Texture* texture,
+							const ComponentTransform& transform,
+							const glm::ivec4* sourceRect,
+							SpriteFlip spriteFlip);
 		void _renderText(TextRenderable& renderable);
-		void _renderTextHelper(const std::string& text, const SDL_Color& color, const SDL_FPoint& position, float angle = 0.f, bool moveWithCamera = true);
-		void _renderFps();
+		void _renderTextHelper(const std::string& text,
+							   const SDL_Color& color,
+							   const SDL_FPoint& position,
+							   float angle = 0.f,
+							   bool moveWithCamera = true);
+		void _renderGameInfo();
 		SDL_Texture* _loadTexture(const SpriteRenderable& sprite, int& width, int& height);
 };
 

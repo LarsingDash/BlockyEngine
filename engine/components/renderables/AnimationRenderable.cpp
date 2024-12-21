@@ -8,9 +8,9 @@
 
 AnimationRenderable::AnimationRenderable(GameObject* gameObject, const char* tag,
 										 std::string filePath, std::string spriteTag,
-										 int frameWidth, int frameHeight, int layer)
+										 int frameWidth, int frameHeight, int layer, SpriteFlip spriteFlip)
 		: SpriteRenderable(gameObject, tag, std::move(filePath), std::move(spriteTag),
-						   RenderableType::ANIMATED, layer) {
+						   RenderableType::ANIMATED, layer, spriteFlip) {
 
 	_frameWidth = frameWidth;
 	_frameHeight = frameHeight;
@@ -35,7 +35,7 @@ void AnimationRenderable::_loadFrames() {
 	if (!imageData) {
 		std::string err("Failed to load texture sheet: ");
 		err += filePath;
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return;
 	}
 
@@ -63,7 +63,7 @@ void AnimationRenderable::_loadFrames() {
 	msg << std::string();
 	msg << " _frames from texture sheet: ";
 	msg << filePath;
-	BLOCKY_ENGINE_DEBUG(msg.str())
+	BLOCKY_ENGINE_DEBUG(msg.str());
 }
 
 //Returns the source rect (current frame)

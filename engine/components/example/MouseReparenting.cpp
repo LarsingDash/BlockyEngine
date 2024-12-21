@@ -40,6 +40,15 @@ void MouseReparenting::Start() {
 	);
 
 	inputModule.AddMouseListener(
+			MouseInput::BUTTON_MIDDLE, *this,
+			[&target = target](MouseButtonState state, int x, int y) {
+				if (state == MouseButtonState::BUTTON_DOWN && target) {
+					target->SetActive(!target->isActive);
+				}
+			}
+	);
+
+	inputModule.AddMouseListener(
 			MouseInput::BUTTON_RIGHT, *this,
 			[&target = target, &parentB = parentB](MouseButtonState state, int x, int y) {
 				if (state == MouseButtonState::BUTTON_DOWN && parentB && target) {
@@ -55,5 +64,6 @@ void MouseReparenting::End() {
 	InputModule& inputModule = ModuleManager::GetInstance().GetModule<WindowModule>().GetInputModule();
 
 	inputModule.RemoveMouseListener(MouseInput::BUTTON_LEFT, *this);
+	inputModule.RemoveMouseListener(MouseInput::BUTTON_MIDDLE, *this);
 	inputModule.RemoveMouseListener(MouseInput::BUTTON_RIGHT, *this);
 }

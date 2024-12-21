@@ -15,7 +15,7 @@ BLogger::BLogger(const std::string& filename) {
 		std::cerr << "Error opening log file." << std::endl;
 	}
 	else {
-		BLOCKY_ENGINE_INFO("Logging started.")
+		BLOCKY_ENGINE_INFO("Logging started.");
 	}
 }
 
@@ -27,7 +27,7 @@ void BLogger::Log(const LogLevel level, const std::string& funcName, const std::
 	logMessage << "   "
 		<< _levelToString(level) << "   "
 		<< _funcSignToString(funcName) << "   "
-		<< message << std::endl;
+		<< message;
 
 	_writeLog(logMessage);
 }
@@ -142,7 +142,7 @@ std::stringstream BLogger::_makeTimeStamp() {
 
 void BLogger::_writeLog(const std::stringstream& logMessage) {
 	if constexpr (LOG_TO_CONSOLE) {
-		std::cout << logMessage.str();
+		std::cout << logMessage.str() << std::endl;
 	}
 
 	if constexpr (LOG_TO_FILE) {

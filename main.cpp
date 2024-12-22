@@ -151,25 +151,32 @@ void buildCollisionEnv(SceneManager& manager) {
 		                                         BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
 	                                         });
 
-	auto& rigidBox = root->AddChild("rigidBox");
-
-	glm::vec2 pos = sceneBase.transform->GetLocalPosition();
-	rigidBox.transform->SetPosition(pos.x - 200, pos.y);
-	rigidBox.transform->SetScale(10, 10);
-
-	rigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, true);
-	// rigidBox.AddComponent<MovementComp>();
 	TypeProperties properties(
 		RIGIDBODY,
 		false,
-		glm::vec2{0, -50},
+		glm::vec2{0, 0},
 		0,
 		0,
 		0,
 		false
 	);
+
+	auto& rigidBox = root->AddChild("rigidBox");
+	glm::vec2 pos = sceneBase.transform->GetLocalPosition();
+	rigidBox.transform->SetPosition(pos.x - 200, pos.y);
+	rigidBox.transform->SetScale(50, 50);
+	rigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, true);
 	auto& boxRigidBody = rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
 	rigidBox.AddComponent<MoveWithPhysics>("TestMover", boxRigidBody);
+
+	properties.isStatic = true;
+
+	auto& staticRigidBox = root->AddChild("rigidBox");
+	staticRigidBox.transform->SetPosition(pos.x - 300, pos.y);
+	staticRigidBox.transform->SetScale(50, 50);
+	staticRigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, false);
+	staticRigidBox.AddComponent<MoveWithPhysics>("TestMover",
+	                                             staticRigidBox.AddComponent<BoxRigidBody>("BoxColl", properties));
 
 	properties = TypeProperties(
 		RIGIDBODY,
@@ -187,26 +194,24 @@ void buildCollisionEnv(SceneManager& manager) {
 	sceneBase2.AddComponent<RectangleRenderable>("RectangleRenderable", glm::vec4{0, 0, 255, 255}, 0, true);
 	sceneBase2.AddComponent<BoxRigidBody>("BoxRigidBody", properties);
 
+	for (int i = 0; i < 20; ++i) {
+		auto& obj = root->AddChild("ParentA");
+		obj.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, -1, true);
+		obj.transform->SetPosition(800, 250);
+		obj.transform->SetScale(100, 100);
+		obj.AddComponent<BoxRigidBody>("ParentARB", TypeProperties(RIGIDBODY, false, {0, 0}, 0, 0, 0, true));
+	}
+	for (int i = 0; i < 20; ++i) {
+		auto& obj = root->AddChild("ParentA");
+		obj.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{0, 255, 0, 255}, -1, true);
+		obj.transform->SetPosition(400, 250);
+		obj.transform->SetScale(100, 100);
+		obj.AddComponent<BoxRigidBody>("ParentARB", TypeProperties(RIGIDBODY, false, {0, 0}, 0, 0, 0, false));
+	}
+
 	//Basic mouse input
 	auto& mouseInputComponent = root->AddChild("MouseInput");
 	mouseInputComponent.AddComponent<MouseInputComponent>("MouseInputComponent");
-
-	//ParentA
-	auto& parentA = root->AddChild("ParentA");
-	parentA.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, -1, true);
-	parentA.transform->SetPosition(200, 300);
-	parentA.transform->SetScale(150, 300);
-	parentA.transform->SetRotation(20);
-	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
-	parentA.AddComponent<BoxRigidBody>("ParentARB", physicsProperties);
-
-	//ParentB
-	auto& parentB = root->AddChild("ParentB");
-	parentB.AddComponent<RectangleRenderable>("ParentBR", glm::vec4{0, 0, 255, 255}, -1, true);
-	parentB.transform->SetPosition(525, 325);
-	parentB.transform->SetScale(350, 200);
-	parentB.transform->SetRotation(-125);
-	parentB.AddComponent<BoxRigidBody>("ParentBRB", physicsProperties);
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "InputReparenting");

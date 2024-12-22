@@ -23,27 +23,45 @@ struct Body {
 	b2Body* b2body{};
 	b2Vec2 _gameObjectLastPosition{};
 	float _gameObjectLastRotation{};
+
+	b2Vec2 _physicsBodyLastLinearVelocity{};
+	float _physicsBodyLastLinearResistance{};
+	float _physicsBodyLastRotationVelocity{};
+	float _physicsBodyLastRotationResistance{};
+
 	bool _gameObjectIsInitialized{};
 
 	[[nodiscard]] b2Vec2 GetPosition() const { return b2body->GetPosition(); }
-	// return Angel in radian
+	// Return rotation in radian
 	[[nodiscard]] float GetAngle() const { return b2body->GetAngle(); }
 	[[nodiscard]] b2Vec2 GetLinearVelocity() const { return b2body->GetPosition(); }
-	// return Angel in radian
+	// Return rotation in radian
 	[[nodiscard]] float GetRotationVelocity() const { return b2body->GetAngle(); }
-	// return Angel in radian
-	[[nodiscard]] float GetAngularResistance() const { return b2body->GetAngularDamping(); }
+	// Return rotation in radian
+	[[nodiscard]] float GetRotationResistance() const { return b2body->GetAngularDamping(); }
 	[[nodiscard]] float GetLinearResistance() const { return b2body->GetLinearDamping(); }
 
 	[[nodiscard]] b2Vec2 LastPosition() const { return _gameObjectLastPosition; }
-	// return Angel in radian
+	// Return rotation in radian
 	[[nodiscard]] float LastRotation() const { return _gameObjectLastRotation; }
+	[[nodiscard]] b2Vec2 PhysicsBodyLastLinearVelocity() const { return _physicsBodyLastLinearVelocity; }
+	[[nodiscard]] float PhysicsBodyLastLinearResistance() const { return _physicsBodyLastLinearResistance; }
+	// Return rotation in radian
+	[[nodiscard]] float PhysicsBodyLastRotationVelocity() const { return _physicsBodyLastRotationVelocity; }
+	// Return rotation in radian
+	[[nodiscard]] float PhysicsBodyLastRotationResistance() const { return _physicsBodyLastRotationResistance; }
 
 	void LastPosition(const b2Vec2 position) { _gameObjectLastPosition = position; }
-	// Angel in radian
+	// Rotation in radian
 	void LastRotation(const float rotation) { _gameObjectLastRotation = rotation; }
+	void PhysicsBodyLastLinearVelocity(b2Vec2 velocity) { _physicsBodyLastLinearVelocity = velocity; }
+	void PhysicsBodyLastLinearResistance(float resistance) { _physicsBodyLastLinearResistance = resistance; }
+	// Rotation in radian
+	void PhysicsBodyLastRotationVelocity(float velocity) { _physicsBodyLastRotationVelocity = velocity; }
+	// Rotation in radian
+	void PhysicsBodyLastRotationResistance(float resistance) { _physicsBodyLastRotationResistance = resistance; }
 
-	// Angel in radian
+	// Rotation in radian
 	void SetTransform(const b2Vec2& position,
 	                  const float angle,
 	                  const b2Vec2& linearVelocity,
@@ -77,7 +95,7 @@ private:
 	b2Body* _createBody(b2World& world, PhysicsBody& physicsBody);
 	static void _addFixture(PhysicsBody& physicsBody, b2Body* body);
 
-	static bool _isSame(const PhysicsBody* physicsBody, const Body* body);
+	static void _updateBox2DIfChanges(const PhysicsBody* physicsBody, Body* body);
 	static b2Vec2 _vecConvert(const glm::vec2& a);
 	static glm::vec2 _vecConvert(const b2Vec2& a);
 	static b2Vec2 _position(const PhysicsBody& physicsBody);

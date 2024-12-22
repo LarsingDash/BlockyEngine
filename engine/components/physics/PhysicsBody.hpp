@@ -32,6 +32,7 @@ struct TypeProperties {
 	PhysicsType physicsType;
 	bool isStatic;
 	glm::vec2 linearVelocity;
+	// in degree
 	float rotationVelocity;
 	float rotationResistance;
 	float linearResistance;

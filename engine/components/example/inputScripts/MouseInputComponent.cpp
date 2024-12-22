@@ -8,6 +8,8 @@
 #include <imgui/imgui.h>
 #include <components/physics/collider/CircleCollider.hpp>
 #include <components/physics/rigidBody/BoxRigidBody.hpp>
+#include <components/physics/rigidBody/CircleRigidBody.hpp>
+
 #include "gameObject/GameObject.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
@@ -54,10 +56,10 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 	rectangle.transform->SetPosition(static_cast<float>(x) + cameraPos.x, static_cast<float>(y) + cameraPos.y);
 	rectangle.transform->SetScale(20.f, 20.f);
 
-	TypeProperties physicsProperties(RIGIDBODY, false, {0, 0}, 36, 0, 0, true);
-
 	if (state == MouseButtonState::BUTTON_DOWN) {
 		rectangle.AddComponent<RectangleRenderable>("rectRenderable", color, std::numeric_limits<int>::max(), true);
+
+		TypeProperties physicsProperties(RIGIDBODY, false, {0, 0}, 36, 0, 0, true);
 		rectangle.AddComponent<BoxRigidBody>("BoxRigidBody", physicsProperties);
 
 		rectangle.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/clowns-jingle.mp3", 10, true);
@@ -68,7 +70,9 @@ void MouseInputComponent::HandleMouseInput(MouseButtonState state, int x, int y,
 		rectangle.AddComponent<Audio>("clowns-jingle", "", 255, true).Stop();
 
 		rectangle.AddComponent<EllipseRenderable>("ellipseRenderable", color, std::numeric_limits<int>::max(), true);
-		rectangle.AddComponent<CircleCollider>("CircleRigidBody");
+
+		TypeProperties physicsProperties(RIGIDBODY, false, {0, 0}, 0, 0, 0, false);
+		rectangle.AddComponent<CircleRigidBody>("CircleRigidBody", physicsProperties);
 
 		rectangle.AddComponent<Audio>("squish-pop", "../assets/audioFiles/squish-pop.mp3", 255, false).Play();
 		rectangle.RemoveComponent<Audio>("squish-pop");

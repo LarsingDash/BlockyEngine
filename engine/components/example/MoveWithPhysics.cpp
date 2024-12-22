@@ -4,6 +4,7 @@
 
 #include "MoveWithPhysics.hpp"
 
+#include <bits/random.h>
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
 
@@ -14,12 +15,14 @@ void MoveWithPhysics::Start() {}
 
 void MoveWithPhysics::Update(float delta) {
     // Some movement pattern
-    static double i = 2;
+    static int i = 10;
+
     const auto direction = glm::vec2{delta * 10000, i};
     i = (i * 1.1);
-    if (abs(i) > 10000) { i = -(i / 10000); }
+    if (abs(i) > 10000) { i = -(i / 1000); }
 
     _bodyType->SetLinearVelocity(direction);
+    _bodyType->rotationVelocity = delta * 100;
 }
 
 void MoveWithPhysics::End() {}

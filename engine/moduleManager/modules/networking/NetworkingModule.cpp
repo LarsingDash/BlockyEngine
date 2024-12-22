@@ -109,10 +109,11 @@ void NetworkingModule::Update(float delta) {
 			_incomingMessages.pop();
 
 			switch (message.getType()) {
-				case MessageType::CONNECT:{
-					if(GetRole() == NetworkRole::HOST){
-						SendMessage(createConnectionConfirmedMessage("Confirming connection made to host"));
-					}
+				case MessageType::CONNECT:
+					if(_state.GetRole() == NetworkRole::HOST){
+						SendMessage(createConnectionConfirmedMessage("Connected to host"));
+					}else if(_state.GetRole() == NetworkRole::CLIENT){
+						SendMessage(createConnectMessage("Client has connected"));
 					break;
 				}
 				case MessageType::HOST_PING:
@@ -125,11 +126,9 @@ void NetworkingModule::Update(float delta) {
 						_state.OnClientPingReceived();
 					}
 					break;
-				default:
-					for (const auto& [tag, callback] : _messageCallbacks) {
-						callback(message);
-					}
-					break;
+			}
+			for (const auto& [tag, callback] : _messageCallbacks) {
+				callback(message);
 			}
 		}
 	}

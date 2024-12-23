@@ -6,15 +6,19 @@
 #include <components/renderables/EllipseRenderable.hpp>
 #include <gameObject/GameObject.hpp>
 #include <logging/BLogger.hpp>
+#include <moduleManager/ModuleManager.hpp>
 #include <moduleManager/modules/WindowModule.hpp>
 
 // objects scaled, based on DEBUG_GAME_SPEED so that it looks like the speed is incrementing,
 //	since everything is DEBUG_GAME_SPEED closer to another and takes DEBUG_GAME_SPEED less time to move to same position.
 // todo: changing game speed at runtime will result in bigger .... todo: resize all
-constexpr float DEBUG_GAME_SPEED = 1.5;
+constexpr float DEBUG_GAME_SPEED = 1.7;
 
 PhysicsModule::PhysicsModule() {
-	b2Vec2 gravity(0.f, 9.8f);
+	// Use lower gravity than 9.8 velocity so that objects do not face throw another.
+	// Gravity value is starting velocity of gravity effected object not the terminal velocity,
+	//	terminal velocity is still capped at 9.8
+	b2Vec2 gravity(0.f, 2.98f);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
@@ -24,13 +28,29 @@ PhysicsModule::PhysicsModule() {
 }
 
 void PhysicsModule::Update(float delta) {
-	// fixed update implementation/fix, since Box2D world Step is inconsistent at different fps, todo:
-	// static float totalDelta = 0;
-	// totalDelta += delta;
-	// constexpr float fixedTimeStep = (1.f / 60.f);
-	// while (totalDelta >= fixedTimeStep) {
-	// 	totalDelta -= fixedTimeStep;
+	// FixedUpdate implementation/fix, since Box2D world Step is inconsistent at different fps
+	static float totalDelta = 0;
+	totalDelta += delta;
+	constexpr float fixedTimeStep = (1.f / 144.f);
+	bool updated = false;
+	while (totalDelta >= fixedTimeStep) {
+		if (updated) {
+			auto pair = _gameObjectToBodyMap.begin();
 
+			auto root = pair->first->gameObject;
+			while (root->parent != nullptr) { root = root->parent; }
+
+			root->transform->RecalculateWorldMatrix();
+		}
+
+		totalDelta -= fixedTimeStep;
+		FixedUpdate(fixedTimeStep);
+
+		updated = true;
+	}
+}
+
+void PhysicsModule::FixedUpdate(float delta) {
 	_writingExternalInputToBox2DWorld();
 
 	constexpr int32 positionIterations = 50; // high positionIterations > 50 result in bigger performers hit.
@@ -39,7 +59,6 @@ void PhysicsModule::Update(float delta) {
 	_box2dWorldObject->Step(delta, velocityIterations, positionIterations);
 
 	_writingBox2DWorldToOutside();
-	// }
 }
 
 void PhysicsModule::_updateBox2DIfChanges(const PhysicsBody* const physicsBody, Body* const body) {
@@ -114,8 +133,10 @@ void PhysicsModule::_writingBox2DWorldToOutside() {
 		const float deltaAngle = _toDegree(body->LastRotation() - angle);
 
 		// Use gameObject to apply the movement to the whole gameObject
-		physicsBody->gameObject->transform->Translate(deltaPosition.x, deltaPosition.y);
-		physicsBody->gameObject->transform->Rotate(deltaAngle);
+		if (deltaPosition != b2Vec2{0, 0}) {
+			physicsBody->gameObject->transform->Translate(deltaPosition.x, deltaPosition.y);
+		}
+		if (deltaAngle != 0) { physicsBody->gameObject->transform->Rotate(deltaAngle); }
 
 		body->LastPosition(position);
 		body->LastRotation(angle);

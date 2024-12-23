@@ -82,6 +82,7 @@ public:
 	~PhysicsModule() override = default;
 
 	void Update(float delta) override;
+	void FixedUpdate(float delta);
 
 	// when setting multiple different types of PhysicsBodies on the same gameObject will override partial properties
 	void AddPhysicsBody(PhysicsBody& physicsBody);

@@ -12,13 +12,13 @@
 // objects scaled, based on DEBUG_GAME_SPEED so that it looks like the speed is incrementing,
 //	since everything is DEBUG_GAME_SPEED closer to another and takes DEBUG_GAME_SPEED less time to move to same position.
 // todo: changing game speed at runtime will result in bigger .... todo: resize all
-constexpr float DEBUG_GAME_SPEED = 1.7;
+float DEBUG_GAME_SPEED = 1.1;
 
 PhysicsModule::PhysicsModule() {
 	// Use lower gravity than 9.8 velocity so that objects do not face throw another.
 	// Gravity value is starting velocity of gravity effected object not the terminal velocity,
 	//	terminal velocity is still capped at 9.8
-	b2Vec2 gravity(0.f, 2.98f);
+	b2Vec2 gravity(0.f, 0.98f);
 
 	_box2dWorldObject = std::make_unique<b2World>(gravity);
 
@@ -27,13 +27,16 @@ PhysicsModule::PhysicsModule() {
 	_box2dWorldObject->SetContactListener(_contactListener.get());
 }
 
+constexpr float physicsFPS = 60.0f;
+
 void PhysicsModule::Update(float delta) {
 	// FixedUpdate implementation/fix, since Box2D world Step is inconsistent at different fps
 	static float totalDelta = 0;
 	totalDelta += delta;
-	constexpr float fixedTimeStep = (1.f / 144.f);
+	DEBUG_GAME_SPEED += 0.0001f;
+
 	bool updated = false;
-	while (totalDelta >= fixedTimeStep) {
+	for (float fixedTimeStep = (1.f / physicsFPS); totalDelta >= fixedTimeStep; totalDelta -= fixedTimeStep) {
 		if (updated) {
 			auto pair = _gameObjectToBodyMap.begin();
 
@@ -42,11 +45,9 @@ void PhysicsModule::Update(float delta) {
 
 			root->transform->RecalculateWorldMatrix();
 		}
-
-		totalDelta -= fixedTimeStep;
-		FixedUpdate(fixedTimeStep);
-
 		updated = true;
+
+		FixedUpdate(fixedTimeStep);
 	}
 }
 

@@ -22,15 +22,14 @@ class NetworkMessage {
 	public:
 		explicit NetworkMessage(MessageType type, std::string payload = "");
 
-		static NetworkMessage fromJson(const std::string& jsonStr);
-
-		[[nodiscard]] std::string toJson() const;
-		[[nodiscard]] MessageType getType() const;
-		[[nodiscard]] const std::string& getPayload() const;
+		static NetworkMessage FromJson(const std::string& jsonStr);
+		[[nodiscard]] std::string ToJson() const;
+		[[nodiscard]] MessageType GetType() const;
+		[[nodiscard]] const std::string& GetPayload() const;
 
 	private:
-		MessageType type;
-		std::string payload;
+		MessageType _type;
+		std::string _payload;
 };
 
 NetworkMessage createConnectMessage(const std::string& clientInfo = "");

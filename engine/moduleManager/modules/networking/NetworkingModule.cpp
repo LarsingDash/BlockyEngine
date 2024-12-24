@@ -64,7 +64,7 @@ void NetworkingModule::SendMessage(const NetworkMessage& message) {
 		return;
 	}
 
-	std::string jsonStr = message.toJson();
+	std::string jsonStr = message.ToJson();
 	UDPpacket* packet = SDLNet_AllocPacket(512);
 
 	if (!packet || jsonStr.length() + 1 > packet->maxlen) {
@@ -108,7 +108,7 @@ void NetworkingModule::Update(float delta) {
 			NetworkMessage message = _incomingMessages.front();
 			_incomingMessages.pop();
 
-			switch (message.getType()) {
+			switch (message.GetType()) {
 				case MessageType::CONNECT:
 					if(_state.GetRole() == NetworkRole::HOST){
 						SendMessage(createConnectionConfirmedMessage("Connected to host"));
@@ -156,7 +156,7 @@ void NetworkingModule::_processIncomingMessages() {
 		if (SDLNet_UDP_Recv(_udpSocket, packet)) {
 			try {
 				std::string jsonStr(reinterpret_cast<char*>(packet->data));
-				NetworkMessage message = NetworkMessage::fromJson(jsonStr);
+				NetworkMessage message = NetworkMessage::FromJson(jsonStr);
 
 				if (_state.GetRole() == NetworkRole::HOST && _peerAddress.host == 0 && _peerAddress.port == 0) {
 					_peerAddress = packet->address;

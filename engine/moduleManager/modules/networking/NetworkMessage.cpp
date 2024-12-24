@@ -4,9 +4,9 @@
 #include <nlohmann/json.hpp>
 
 NetworkMessage::NetworkMessage(MessageType type, std::string payload)
-		: type(type), payload(std::move(payload)) {}
+		: _type(type), _payload(std::move(payload)) {}
 
-NetworkMessage NetworkMessage::fromJson(const std::string& jsonStr) {
+NetworkMessage NetworkMessage::FromJson(const std::string& jsonStr) {
 	try {
 		nlohmann::json j = nlohmann::json::parse(jsonStr);
 		return NetworkMessage(
@@ -18,19 +18,19 @@ NetworkMessage NetworkMessage::fromJson(const std::string& jsonStr) {
 	}
 }
 
-std::string NetworkMessage::toJson() const {
+std::string NetworkMessage::ToJson() const {
 	nlohmann::json j;
-	j["type"] = static_cast<int>(type);
-	j["payload"] = payload;
+	j["type"] = static_cast<int>(_type);
+	j["payload"] = _payload;
 	return j.dump();
 }
 
-MessageType NetworkMessage::getType() const {
-	return type;
+MessageType NetworkMessage::GetType() const {
+	return _type;
 }
 
-const std::string& NetworkMessage::getPayload() const {
-	return payload;
+const std::string& NetworkMessage::GetPayload() const {
+	return _payload;
 }
 
 NetworkMessage createConnectMessage(const std::string& clientInfo) {

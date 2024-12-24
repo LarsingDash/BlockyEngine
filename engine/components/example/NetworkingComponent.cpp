@@ -23,26 +23,26 @@ void NetworkingComponent::Start() {
 	});
 
 	_networkingModule.AddMessageListener("Networking Listener", [this](const NetworkMessage& message) {
-		switch (message.getType()) {
+		switch (message.GetType()) {
 			case MessageType::CONNECT:
 				_logBuffer.appendf("[%s] Connected: %s\n",
-								   GetTimestamp().c_str(), message.getPayload().c_str());
+								   GetTimestamp().c_str(), message.GetPayload().c_str());
 				break;
 			case MessageType::DISCONNECT:
 				_logBuffer.appendf("[%s] Disconnected: %s\n",
-								   GetTimestamp().c_str(), message.getPayload().c_str());
+								   GetTimestamp().c_str(), message.GetPayload().c_str());
 				break;
 			case MessageType::CONNECTION_LOST:
 				_logBuffer.appendf("[%s] Connection Lost: %s\n",
-								   GetTimestamp().c_str(), message.getPayload().c_str());
+								   GetTimestamp().c_str(), message.GetPayload().c_str());
 				break;
 			case MessageType::CONNECTION_CONFIRMED:
 				_logBuffer.appendf("[%s] Connection Confirmed From Host: %s\n",
-								   GetTimestamp().c_str(), message.getPayload().c_str());
+								   GetTimestamp().c_str(), message.GetPayload().c_str());
 				break;
 			case MessageType::DATA:
 				_logBuffer.appendf("[%s] Received Data: %s\n",
-								   GetTimestamp().c_str(), message.getPayload().c_str());
+								   GetTimestamp().c_str(), message.GetPayload().c_str());
 				break;
 			default:
 				break;

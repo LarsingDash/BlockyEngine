@@ -55,7 +55,7 @@ public:
 
 	[[nodiscard]] virtual PhysicsShape GetShape();
 	[[nodiscard]] virtual std::shared_ptr<TypeProperties> GetTypeProperties();
-	[[nodiscard]] const TypeProperties& GetTypeProperties() const;
+	[[nodiscard]] const TypeProperties& ReadTypeProperties() const;
 
 private:
 	Component* _clone(const GameObject& parent) override;

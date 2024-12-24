@@ -99,19 +99,19 @@ private:
 	static void _updateBox2DIfChanges(const PhysicsBody* physicsBody, Body* body);
 	static b2Vec2 _vecConvert(const glm::vec2& a);
 	static glm::vec2 _vecConvert(const b2Vec2& a);
-	static b2Vec2 _position(const PhysicsBody& physicsBody);
-	static b2Vec2 _linearVelocity(const PhysicsBody& physicsBody);
-	static float _rotationVelocity(const PhysicsBody& physicsBody);
-	static float _rotationResistance(const PhysicsBody& physicsBody);
-	static float _linearResistance(const PhysicsBody& physicsBody);
+	static b2Vec2 _position(const PhysicsBody* physicsBody);
+	static float _rotation(const PhysicsBody* physicsBody);
+	static b2Vec2 _linearVelocity(const PhysicsBody* physicsBody);
+	static float _rotationVelocity(const PhysicsBody* physicsBody);
+	static float _rotationResistance(const PhysicsBody* physicsBody);
+	static float _linearResistance(const PhysicsBody* physicsBody);
 	static float _toDegree(float radian);
 	static float _toRadian(float degree);
-	static float _angle(const PhysicsBody& physicsBody);
 
-	std::unique_ptr<b2World> _box2dWorldObject;
-	std::unique_ptr<MyContactListener> _contactListener;
-	std::unordered_map<PhysicsBody*, Body*> _gameObjectToBodyMap;
-	std::vector<std::unique_ptr<Body>> _bodies;
+	std::unique_ptr<b2World> _box2dWorldObject{};
+	std::unique_ptr<MyContactListener> _contactListener{};
+	std::unordered_map<PhysicsBody*, Body*> _physicsBodyToBodyMap{};
+	std::vector<std::unique_ptr<Body>> _bodies{};
 };
 
 #endif //PHYSICSMODULE_HPP

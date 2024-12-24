@@ -10,7 +10,7 @@
 #include <glm/vec2.hpp>
 
 // if logging is lagging the game don't set LOG_TO_CONSOLE true because it gives the biggest performers hit
-constexpr bool LOG_TO_CONSOLE = true;
+constexpr bool LOG_TO_CONSOLE = false;
 constexpr bool LOG_TO_FILE = true;
 
 // length for function/class name that is reserved
@@ -27,7 +27,9 @@ constexpr bool REMOVE_RETURN_TYPE = true;
 #define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, msg)
 #define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, msg)
 
+#define BLOCKY_ENGINE_INFO_STREAM(msg) bLogger.Log(LogLevel::INFO, __PRETTY_FUNCTION__, (std::stringstream() << msg).str())
 #define BLOCKY_ENGINE_DEBUG_STREAM(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, (std::stringstream() << msg).str())
+#define BLOCKY_ENGINE_WARNING_STREAM(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, (std::stringstream() << msg).str())
 #define BLOCKY_ENGINE_ERROR_STREAM(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, (std::stringstream() << msg).str())
 
 enum LogLevel {

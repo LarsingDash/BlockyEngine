@@ -12,7 +12,6 @@ struct Body;
 
 class MyContactListener : public b2ContactListener {
 public:
-    std::unordered_map<PhysicsBody*, Body*>* _gameObjectToBodyMap;
     explicit MyContactListener(std::unordered_map<PhysicsBody*, Body*>* gameObjectToBodyMap);
     ~MyContactListener() override = default;
 
@@ -20,6 +19,7 @@ public:
     void EndContact(b2Contact* contact) override;
 
 private:
+    std::unordered_map<PhysicsBody*, Body*>* _physicsBodyToBodyMap;
     std::pair<GameObject*, GameObject*> _gameObjects(b2Contact* contact) const;
 };
 #endif //MYCONTACTLISTENER_HPP

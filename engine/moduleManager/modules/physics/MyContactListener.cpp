@@ -11,14 +11,14 @@
 #include "components/physics/collision/CollisionHandler.hpp"
 
 MyContactListener::MyContactListener(std::unordered_map<PhysicsBody*, Body*>* gameObjectToBodyMap) {
-    _gameObjectToBodyMap = gameObjectToBodyMap;
+    _physicsBodyToBodyMap = gameObjectToBodyMap;
 }
 
 void MyContactListener::BeginContact(b2Contact* contact) {
     auto [gameObject1, gameObject2] = _gameObjects(contact);
 
     if (gameObject1 == nullptr || gameObject2 == nullptr) {
-        BLOCKY_ENGINE_ERROR("gameObject does not exist, BeginContact");
+        BLOCKY_ENGINE_ERROR_STREAM("gameObject does not exist, BeginContact: " << gameObject1 << ", " << gameObject2);
         return;
     }
 
@@ -58,7 +58,9 @@ std::pair<GameObject*, GameObject*> MyContactListener::_gameObjects(b2Contact* c
 
     std::pair<GameObject*, GameObject*> gameObjects = std::make_pair(nullptr, nullptr);
 
-    for (auto [physicsBody, body] : *_gameObjectToBodyMap) {
+    for (auto [physicsBody, body] : *_physicsBodyToBodyMap) {
+        if (body == nullptr || physicsBody == nullptr) { continue; }
+
         if (body1 == body->b2body) {
             gameObjects.first = physicsBody->gameObject;
         }

@@ -37,7 +37,7 @@ void PhysicsBody::SetOnExit(const std::function<void(GameObject& other)>& callba
 
 PhysicsShape PhysicsBody::GetShape() { return _shape; }
 std::shared_ptr<TypeProperties> PhysicsBody::GetTypeProperties() { return _typeProperties; }
-const TypeProperties& PhysicsBody::GetTypeProperties() const { return *_typeProperties; }
+const TypeProperties& PhysicsBody::ReadTypeProperties() const { return *_typeProperties; }
 
 Component* PhysicsBody::_clone(const GameObject& parent) {
     auto clone = new PhysicsBody(*this);

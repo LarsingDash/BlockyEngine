@@ -33,7 +33,7 @@ struct Body {
 
 	[[nodiscard]] b2Vec2 GetPosition() const { return b2body->GetPosition(); }
 	// Return rotation in radian
-	[[nodiscard]] float GetAngle() const { return b2body->GetAngle(); }
+	[[nodiscard]] float GetRotation() const { return b2body->GetAngle(); }
 	[[nodiscard]] b2Vec2 GetLinearVelocity() const { return b2body->GetPosition(); }
 	// Return rotation in radian
 	[[nodiscard]] float GetRotationVelocity() const { return b2body->GetAngle(); }
@@ -62,7 +62,7 @@ struct Body {
 	void PhysicsBodyLastRotationResistance(float resistance) { _physicsBodyLastRotationResistance = resistance; }
 
 	// Rotation in radian
-	void SetTransform(const b2Vec2& position,
+	void SetBox2DBody(const b2Vec2& position,
 	                  const float angle,
 	                  const b2Vec2& linearVelocity,
 	                  const float rotationVelocity,

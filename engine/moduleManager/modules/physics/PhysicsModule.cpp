@@ -54,12 +54,12 @@ void PhysicsModule::Update(float delta) {
 }
 
 void PhysicsModule::FixedUpdate(float delta) {
-	// static int i = 0;
-	// if (i >= 60) {
-	// 	SET_GAME_SPEED += 0.1f;
-	// 	i = 0;
-	// }
-	// i++;
+	static int i = 0;
+	if (i >= 60) {
+		SET_GAME_SPEED += 0.1f;
+		i = 0;
+	}
+	i++;
 	GAME_SPEED = SET_GAME_SPEED;
 
 	_writingExternalInputToBox2DWorld();
@@ -77,7 +77,7 @@ void PhysicsModule::FixedUpdate(float delta) {
 void PhysicsModule::_updateBox2DIfChanges(const PhysicsBody* const physicsBody, Body* const body) {
 	if (physicsBody == nullptr || body == nullptr) { return; }
 
-	if (body->GetPosition() != _position(physicsBody) || body->GetAngle() != _rotation(physicsBody)) {
+	if (body->GetPosition() != _position(physicsBody) || body->GetRotation() != _rotation(physicsBody)) {
 		body->b2body->SetTransform(_position(physicsBody), _rotation(physicsBody));
 	}
 
@@ -138,7 +138,7 @@ void PhysicsModule::_writingExternalInputToBox2DWorld() {
 				body->PhysicsBodyLastLinearResistance(_linearResistance(physicsBody));
 				body->PhysicsBodyLastRotationResistance(_rotationResistance(physicsBody));
 
-				body->SetTransform(
+				body->SetBox2DBody(
 					_position(physicsBody),
 					_rotation(physicsBody),
 					_linearVelocity(physicsBody),
@@ -164,7 +164,7 @@ void PhysicsModule::_writingBox2DWorldToOutside() {
 			(position.y - body->LastPosition().y) * GAME_SPEED
 		};
 
-		const float angle = body->GetAngle();
+		const float angle = body->GetRotation();
 		const float deltaAngle = _toDegree(body->LastRotation() - angle);
 
 		// Use gameObject to apply the movement to the whole gameObject
@@ -204,6 +204,14 @@ void PhysicsModule::RemovePhysicsBody(PhysicsBody& physicsBody) {
 			const auto body = it->second->b2body;
 			_physicsBodyToBodyMap.erase(it);
 			_box2dWorldObject->DestroyBody(body);
+
+			const auto& removeBody = std::find_if(_bodies.begin(), _bodies.end(),
+			                                      [it](const std::unique_ptr<Body>& bodyIt) {
+				                                      return bodyIt.get() == it->second;
+			                                      });
+			if (removeBody != _bodies.end()) {
+				_bodies.erase(removeBody);
+			}
 		}
 		else {
 			_physicsBodyToBodyMap.erase(it);

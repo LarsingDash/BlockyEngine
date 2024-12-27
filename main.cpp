@@ -1,24 +1,29 @@
 #include <SDL_main.h>
 
 #include <memory>
-#include <components/physics/collider/BoxCollider.hpp>
-#include <components/physics/collision/CollisionHandler.hpp>
-#include <components/physics/rigidBody/BoxRigidBody.hpp>
 
-#include <components/example/MoveWithPhysics.hpp>
-#include <components/physics/collider/CircleCollider.hpp>
 #include <logging/BLogger.hpp>
 
 #include "BlockyEngine.hpp"
+#include "moduleManager/modules/pathfinding/PathfindingModule.hpp"
+
+#include "components/example/SceneSwitchComp.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/TextRenderable.hpp"
+
 #include "components/example/SpawnerComp.hpp"
 #include "components/example/RotationComp.hpp"
+
 #include "components/example/inputScripts/MouseReparenting.hpp"
 #include "components/example/inputScripts/MouseInputComponent.hpp"
 #include "components/example/inputScripts/KeyboardInputComponent.hpp"
 #include "components/example/inputScripts/MouseCameraController.hpp"
-#include "components/example/SceneSwitchComp.hpp"
+
+#include <components/physics/collider/BoxCollider.hpp>
+#include <components/physics/collision/CollisionHandler.hpp>
+#include <components/physics/rigidBody/BoxRigidBody.hpp>
+#include <components/physics/collider/CircleCollider.hpp>
+#include <components/example/MoveWithPhysics.hpp>
 
 void buildPrefabScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Prefab");
@@ -221,6 +226,10 @@ void buildCollisionScene(SceneManager& scenes, const char* next) {
 void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Pathfinding");
 	root->SetActive(false);
+
+	auto graph = std::make_unique<GridGraph>(1, glm::ivec2{5, 5});
+
+	ModuleManager::GetInstance().GetModule<PathfindingModule>().SetGrid(std::move(*graph.release()));
 	
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);

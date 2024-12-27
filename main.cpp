@@ -20,8 +20,8 @@
 #include "components/example/inputScripts/MouseCameraController.hpp"
 #include "components/example/SceneSwitchComp.hpp"
 
-void buildPrefabScene(SceneManager& scenes) {
-	auto root = std::make_unique<GameObject>("Prefabs");
+void buildPrefabScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("Prefab");
 	root->SetActive(false);
 
 	root->AddComponent<MouseCameraController>("CameraController");
@@ -43,12 +43,12 @@ void buildPrefabScene(SceneManager& scenes) {
 	barrel.transform->SetPosition(0.5f, 0);
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "CollisionScene");
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
 
 	scenes.AddScene(std::move(root));
 }
 
-void buildInputReparentingScene(SceneManager& scenes) {
+void buildInputReparentingScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("InputReparenting");
 	root->SetActive(false);
 
@@ -100,12 +100,12 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	root->AddComponent<MouseReparenting>("Reparenting", "AnimatedObject", "ParentA", "ParentB");
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "Camera");
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
 
 	scenes.AddScene(std::move(root));
 }
 
-void buildCameraScene(SceneManager& scenes) {
+void buildCameraScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Camera");
 	root->SetActive(false);
 
@@ -124,13 +124,13 @@ void buildCameraScene(SceneManager& scenes) {
 	box.AddComponent<SpriteRenderable>("animTag", "../assets/character_spritesheet.png", "spriteTag");
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "Prefabs");
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
 
 	scenes.AddScene(std::move(root));
 }
 
-void buildCollisionEnv(SceneManager& manager) {
-	auto root = std::make_unique<GameObject>("CollisionScene");
+void buildCollisionScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("Collision");
 	root->SetActive(false);
 
 	auto& sceneBase = root->AddChild("BaseOfScene");
@@ -214,8 +214,18 @@ void buildCollisionEnv(SceneManager& manager) {
 	mouseInputComponent.AddComponent<MouseInputComponent>("MouseInputComponent");
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "InputReparenting");
-	manager.AddScene(std::move(root));
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
+	scenes.AddScene(std::move(root));
+}
+
+void buildPathfindingScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("Pathfinding");
+	root->SetActive(false);
+	
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
+
+	scenes.AddScene(std::move(root));
 }
 
 int main(int argc, char* argv[]) {
@@ -229,15 +239,17 @@ int main(int argc, char* argv[]) {
 	BlockyEngine blockyEngine{configs};
 	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 
-	buildPrefabScene(sceneManager);
-	buildInputReparentingScene(sceneManager);
-	buildCameraScene(sceneManager);
-	buildCollisionEnv(sceneManager);
+	buildPrefabScene(sceneManager, "InputReparenting");
+	buildInputReparentingScene(sceneManager, "Camera");
+	buildCameraScene(sceneManager, "Collision");
+	buildCollisionScene(sceneManager, "Pathfinding");
+	buildPathfindingScene(sceneManager, "Prefab");
 
 	// sceneManager.SwitchScene("Prefabs");
-	sceneManager.SwitchScene("InputReparenting");
+	// sceneManager.SwitchScene("InputReparenting");
 	// sceneManager.SwitchScene("Camera");
 	// sceneManager.SwitchScene("CollisionScene");
+	 sceneManager.SwitchScene("Pathfinding");
 
 	blockyEngine.Run();
 

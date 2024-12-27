@@ -168,12 +168,6 @@ void buildCollisionEnv(SceneManager& manager) {
 	rigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, true);
 	auto& boxRigidBody = rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
 	rigidBox.AddComponent<MoveWithPhysics>("TestMover", boxRigidBody);
-	//todo: breakt all if enables with BoxRigidBody oplossen??
-	// rigidBox.AddComponent<CollisionHandler>("Trigger handler", collider,
-	//                                         [](GameObject& other) {
-	// 	                                        BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);;
-	//                                         },
-	//                                         [](GameObject& other) { other.Destroy(); });
 
 	properties.isStatic = true;
 
@@ -181,14 +175,8 @@ void buildCollisionEnv(SceneManager& manager) {
 	staticRigidBox.transform->SetPosition(pos.x - 300, pos.y);
 	staticRigidBox.transform->SetScale(50, 50);
 	staticRigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, false);
-	//todo: move also met collider: BoxCollider oplossen??
 	staticRigidBox.AddComponent<MoveWithPhysics>("TestMover",
 	                                             staticRigidBox.AddComponent<BoxRigidBody>("BoxColl", properties));
-	// staticRigidBox.AddComponent<CollisionHandler>("Trigger handler", collider,
-	//                                               [](GameObject& other) { other.Destroy(); },
-	//                                               [](GameObject& other) {
-	// 	                                              BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
-	//                                               });
 
 	properties = TypeProperties(
 		RIGIDBODY,

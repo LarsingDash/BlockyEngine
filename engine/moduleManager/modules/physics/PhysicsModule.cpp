@@ -54,12 +54,6 @@ void PhysicsModule::Update(float delta) {
 }
 
 void PhysicsModule::FixedUpdate(float delta) {
-	static int i = 0;
-	if (i >= 60) {
-		SET_GAME_SPEED += 0.1f;
-		i = 0;
-	}
-	i++;
 	GAME_SPEED = SET_GAME_SPEED;
 
 	_writingExternalInputToBox2DWorld();
@@ -111,7 +105,7 @@ void PhysicsModule::_writingExternalInputToBox2DWorld() {
 		for (auto [physicsBody, body] : copy) {
 			if (body == nullptr || physicsBody == nullptr) { continue; }
 
-			//todo: store properties to not lose velocity and other properties
+			// To_Do: store properties to not lose velocity and other properties
 			RemovePhysicsBody(*physicsBody);
 			AddPhysicsBody(*physicsBody);
 

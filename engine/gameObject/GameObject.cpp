@@ -7,7 +7,7 @@
 #include "logging/BLogger.hpp"
 
 GameObject::GameObject(std::string tag, GameObject* parent) :
-		tag(std::move(tag)), parent(parent), _isMarkedForDeletion(false), _isActive(true), _deletionList() {
+		tag(std::move(tag)), parent(parent), _isMarkedForDeletion(false), isActive(true), _deletionList() {
 	transform = std::make_unique<GameObjectTransform>(*this);
 }
 
@@ -19,7 +19,7 @@ GameObject::~GameObject() {
 	for (auto& type : _components) {
 		for (auto& component : type.second) {
 			//Call end before deleting
-			if (_isActive) {
+			if (isActive) {
 				component->End();
 			}
 		}
@@ -31,7 +31,7 @@ GameObject::~GameObject() {
 }
 
 GameObject::GameObject(const GameObject& other) :
-		tag(other.tag), parent(other.parent), transform(std::make_unique<GameObjectTransform>(*other.transform)), _isActive(other._isActive),
+		tag(other.tag), parent(other.parent), transform(std::make_unique<GameObjectTransform>(*other.transform)), isActive(other.isActive),
 		_isMarkedForDeletion(other._isMarkedForDeletion), _deletionList(other._deletionList) {
 	transform->SetGameObject(*this);
 
@@ -53,8 +53,8 @@ GameObject::GameObject(const GameObject& other) :
 
 void GameObject::Update(    // NOLINT(*-no-recursion)
 		float delta, std::vector<std::reference_wrapper<Transform>>& recalculationList) {
-	//Cancel update cycle if it was marked before by something else
-	if (_isMarkedForDeletion) return;
+	//Cancel update cycle if it was marked before by something else or is inactive
+	if (!isActive || _isMarkedForDeletion) return;
 	
 	//Cascade update to components
 	for (auto& type : _components) {
@@ -117,11 +117,11 @@ void GameObject::Update(    // NOLINT(*-no-recursion)
 
 void GameObject::SetActive(bool active, bool force) {    // NOLINT(*-no-recursion)
 	//Early return if nothing changed
-	if (_isActive == active && !force) return;
-	_isActive = active;
+	if (isActive == active && !force) return;
+	isActive = active;
 
 	//Cascade End to components
-	if (_isActive) {
+	if (isActive) {
 		transform->RecalculateWorldMatrix();
 
 		for (auto& type : _components) {
@@ -138,7 +138,7 @@ void GameObject::SetActive(bool active, bool force) {    // NOLINT(*-no-recursio
 	}
 
 	for (auto& child : _children) {
-		child->SetActive(_isActive, force);
+		child->SetActive(isActive, force);
 	}
 }
 
@@ -149,7 +149,7 @@ GameObject& GameObject::AddChild(std::string_view childTag) {
 	);
 
 	//Pass active mode onto child
-	child.SetActive(_isActive, true);
+	child.SetActive(isActive, true);
 
 	//Return newly created child
 	return child;
@@ -160,7 +160,7 @@ GameObject& GameObject::AddChild(GameObject& prefab) {
 	GameObject& child = *_children.emplace_back(std::make_unique<GameObject>(prefab));
 
 	//Pass active mode onto child
-	child.SetActive(_isActive, true);
+	child.SetActive(isActive, true);
 
 	//Return newly created child
 	return child;
@@ -267,7 +267,7 @@ void GameObject::_reparent(GameObject* target) {
 		} catch (const std::exception& e) {
 			std::string err = "Exception occurred while reparenting: ";
 			err += e.what();
-			BLOCKY_ENGINE_ERROR(err)
+			BLOCKY_ENGINE_ERROR(err);
 		}
 	}
 }

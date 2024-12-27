@@ -2,20 +2,27 @@
 // Created by larsv on 12/11/2024.
 //
 
+#include <iostream>
 #include "BlockyEngine.hpp"
 #include "utilities/TimeUtil.hpp"
+#include "moduleManager/modules/networking/NetworkingModule.hpp"
 
 bool BlockyEngine::isRunning{false};
+const BlockyEngine::BlockyConfigs* BlockyEngine::_configs{nullptr};
 
-BlockyEngine::BlockyEngine() :
-		_moduleManager(ModuleManager::CreateInstance()),
-		_sceneManager(SceneManager::CreateInstance()),
-		_timeUtil(TimeUtil::CreateInstance()) {}
+BlockyEngine::BlockyEngine(const BlockyEngine::BlockyConfigs& configs) {
+	_configs = &configs;
+
+	_moduleManager = std::unique_ptr<ModuleManager>(ModuleManager::CreateInstance());
+	_sceneManager = std::unique_ptr<SceneManager>(SceneManager::CreateInstance());
+	_timeUtil = std::unique_ptr<TimeUtil>(TimeUtil::CreateInstance());
+}
 
 SceneManager& BlockyEngine::GetSceneManager() const { return *_sceneManager; }
 
 void BlockyEngine::Run() {
 	BlockyEngine::isRunning = true;
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "LoopDoesntUseConditionVariableInspection"
 	while (BlockyEngine::isRunning) {

@@ -14,13 +14,6 @@ public:
 	                float rotationVelocity, float angularResistance, float linearResistance,
 	                bool gravityEnabled);
 	CircleRigidBody(GameObject* gameObject, const char* tag, const TypeProperties& properties);
-
-	CircleRigidBody(GameObject* gameObject, const char* tag, bool isStatic,
-	                glm::vec2 velocity,
-	                float rotationVelocity, float angularResistance, float linearResistance,
-	                bool gravityEnabled,
-	                float radius);
-	CircleRigidBody(GameObject* gameObject, const char* tag, const TypeProperties& properties, float radius);
 };
 
 #endif //CIRCLERIGIDBODY_HPP

@@ -7,21 +7,32 @@
 
 #include <functional>
 #include <components/Component.hpp>
+#include <components/physics/PhysicsBody.hpp>
 
 class CollisionHandler : public Component {
 public:
-	CollisionHandler(GameObject* gameObject, const char* tag,
-	                 std::function<void(GameObject*, GameObject*)> customCollisionHandler);
-	~CollisionHandler() override = default;
+    CollisionHandler(GameObject *gameObject, const char *tag, const PhysicsBody& body,
+                     std::function<void(GameObject &)> onEntryCallback,
+                     std::function<void(GameObject &)> onExitCallback);
 
-	virtual void HandleCollision(GameObject* obj1, GameObject* obj2);
+    ~CollisionHandler() override = default;
 
-	void Start() override {};
-	void Update(float delta) override {};
-	void End() override {};
+    void Start() override;
+
+    void Update(float delta) override {
+    };
+
+    void End() override;
 
 private:
-	std::function<void(GameObject*, GameObject*)> _customCollisionHandler;
+    std::function<void(GameObject &)> _onEntryHandler;
+    std::function<void(GameObject &)> _onExitHandler;
+
+    PhysicsBody _body;
+
+    Component *_clone(const GameObject &parent) override;
+
+    friend class MyContactListener;
 };
 
 #endif //COLLISIONHANDLER_HPP

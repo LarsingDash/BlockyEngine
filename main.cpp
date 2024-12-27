@@ -1,19 +1,24 @@
 #include <SDL_main.h>
 
 #include <memory>
-#include <components/audio/Audio.hpp>
+#include <components/physics/collider/BoxCollider.hpp>
+#include <components/physics/collision/CollisionHandler.hpp>
 #include <components/physics/rigidBody/BoxRigidBody.hpp>
+
+#include <components/example/MoveWithPhysics.hpp>
+#include <components/physics/collider/CircleCollider.hpp>
+#include <logging/BLogger.hpp>
 
 #include "BlockyEngine.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/TextRenderable.hpp"
 #include "components/example/SpawnerComp.hpp"
 #include "components/example/RotationComp.hpp"
-#include "components/example/MouseReparenting.hpp"
-#include "components/example/MouseInputComponent.hpp"
-#include "components/example/KeyboardInputComponent.hpp"
+#include "components/example/inputScripts/MouseReparenting.hpp"
+#include "components/example/inputScripts/MouseInputComponent.hpp"
+#include "components/example/inputScripts/KeyboardInputComponent.hpp"
+#include "components/example/inputScripts/MouseCameraController.hpp"
 #include "components/example/SceneSwitchComp.hpp"
-#include "components/example/MouseCameraController.hpp"
 
 void buildPrefabScene(SceneManager& scenes) {
 	auto root = std::make_unique<GameObject>("Prefabs");
@@ -38,7 +43,7 @@ void buildPrefabScene(SceneManager& scenes) {
 	barrel.transform->SetPosition(0.5f, 0);
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "InputReparenting");
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "CollisionScene");
 
 	scenes.AddScene(std::move(root));
 }
@@ -61,7 +66,6 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	parentA.transform->SetRotation(20);
 	TypeProperties physicsProperties(RIGIDBODY, true, {0, 0}, 0, 0, 0, false);
 	parentA.AddComponent<BoxRigidBody>("ParentARB", physicsProperties);
-	parentA.AddComponent<Audio>("clowns-jingle", "../assets/audioFiles/clowns-jingle.mp3", 55, true).Play();
 
 	//ParentB
 	auto& parentB = root->AddChild("ParentB");
@@ -75,7 +79,7 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	animatedObject.AddComponent<AnimationRenderable>(
 		"animTag", "../assets/character_spritesheet.png",
-		"spriteTag", 32, 32
+		"spriteTag", 32, 32, 0, SpriteFlip::FlipHorizontal
 	);
 
 	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
@@ -111,9 +115,9 @@ void buildCameraScene(SceneManager& scenes) {
 
 	glm::vec2 screenSize = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
 	box.transform->SetScale(screenSize.x / 4.f,
-							screenSize.y / 4.f);
+	                        screenSize.y / 4.f);
 	box.transform->SetPosition(screenSize.x / 2.f,
-							   screenSize.y / 2.f);
+	                           screenSize.y / 2.f);
 
 	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
 	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);
@@ -125,12 +129,101 @@ void buildCameraScene(SceneManager& scenes) {
 	scenes.AddScene(std::move(root));
 }
 
+void buildCollisionEnv(SceneManager& manager) {
+	auto root = std::make_unique<GameObject>("CollisionScene");
+	root->SetActive(false);
+
+	auto& sceneBase = root->AddChild("BaseOfScene");
+	sceneBase.transform->SetPosition(500, 500);
+	sceneBase.transform->SetScale(200, 200);
+
+	// baseRectangle.AddComponent<RectangleRenderable>("RectangleBase", glm::vec4{93, 93, 93, 255}, 0, true);
+	sceneBase.AddComponent<EllipseRenderable>("EllipseBase", glm::vec4{93, 93, 93, 255}, 0, true);
+
+	// auto& collider = baseRectangle.AddComponent<BoxCollider>("SceneRectangle");
+	auto& collider = sceneBase.AddComponent<CircleCollider>("SceneEllipse");
+	// collider.componentTransform->SetScale(2,2);
+	sceneBase.AddComponent<CollisionHandler>("Trigger handler", collider,
+	                                         [](GameObject& other) {
+		                                         BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);
+	                                         },
+	                                         [](GameObject& other) {
+		                                         BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
+	                                         });
+
+	TypeProperties properties(
+		RIGIDBODY,
+		false,
+		glm::vec2{0, 0},
+		0,
+		0,
+		0,
+		false
+	);
+
+	auto& rigidBox = root->AddChild("rigidBox");
+	glm::vec2 pos = sceneBase.transform->GetLocalPosition();
+	rigidBox.transform->SetPosition(pos.x - 200, pos.y);
+	rigidBox.transform->SetScale(50, 50);
+	rigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, true);
+	auto& boxRigidBody = rigidBox.AddComponent<BoxRigidBody>("BoxColl", properties);
+	rigidBox.AddComponent<MoveWithPhysics>("TestMover", boxRigidBody);
+
+	properties.isStatic = true;
+
+	auto& staticRigidBox = root->AddChild("rigidBox");
+	staticRigidBox.transform->SetPosition(pos.x - 300, pos.y);
+	staticRigidBox.transform->SetScale(50, 50);
+	staticRigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, false);
+	staticRigidBox.AddComponent<MoveWithPhysics>("TestMover",
+	                                             staticRigidBox.AddComponent<BoxRigidBody>("BoxColl", properties));
+
+	properties = TypeProperties(
+		RIGIDBODY,
+		false,
+		glm::vec2{0, 0},
+		0,
+		0,
+		0,
+		true
+	);
+
+	auto& sceneBase2 = root->AddChild("BaseOfScene");
+	sceneBase2.transform->SetPosition(pos.x - 210, pos.y - 400);
+	sceneBase2.transform->SetScale(10, 10);
+	sceneBase2.AddComponent<RectangleRenderable>("RectangleRenderable", glm::vec4{0, 0, 255, 255}, 0, true);
+	sceneBase2.AddComponent<BoxRigidBody>("BoxRigidBody", properties);
+
+	for (int i = 0; i < 20; ++i) {
+		auto& obj = root->AddChild("ParentA");
+		obj.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{255, 0, 0, 255}, -1, true);
+		obj.transform->SetPosition(800, 250);
+		obj.transform->SetScale(100, 100);
+		obj.AddComponent<BoxRigidBody>("ParentARB", TypeProperties(RIGIDBODY, false, {0, 0}, 0, 0, 0, true));
+	}
+	for (int i = 0; i < 20; ++i) {
+		auto& obj = root->AddChild("ParentA");
+		obj.AddComponent<RectangleRenderable>("ParentAR", glm::vec4{0, 255, 0, 255}, -1, true);
+		obj.transform->SetPosition(400, 250);
+		obj.transform->SetScale(100, 100);
+		obj.AddComponent<BoxRigidBody>("ParentARB", TypeProperties(RIGIDBODY, false, {0, 0}, 0, 0, 0, false));
+	}
+
+	//Basic mouse input
+	auto& mouseInputComponent = root->AddChild("MouseInput");
+	mouseInputComponent.AddComponent<MouseInputComponent>("MouseInputComponent");
+
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "InputReparenting");
+	manager.AddScene(std::move(root));
+}
+
 int main(int argc, char* argv[]) {
 	BlockyEngine::BlockyConfigs configs{
-			800,
-			600,
-			SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
-			"../assets/fonts/defaultFont.ttf"
+		800,
+		600,
+		SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
+		"../assets/fonts/defaultFont.ttf"
 	};
 
 	BlockyEngine blockyEngine{configs};
@@ -139,10 +232,12 @@ int main(int argc, char* argv[]) {
 	buildPrefabScene(sceneManager);
 	buildInputReparentingScene(sceneManager);
 	buildCameraScene(sceneManager);
+	buildCollisionEnv(sceneManager);
 
-	//	sceneManager.SwitchScene("Prefabs");
+	// sceneManager.SwitchScene("Prefabs");
 	sceneManager.SwitchScene("InputReparenting");
-	//	sceneManager.SwitchScene("Camera");
+	// sceneManager.SwitchScene("Camera");
+	// sceneManager.SwitchScene("CollisionScene");
 
 	blockyEngine.Run();
 

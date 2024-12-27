@@ -8,15 +8,14 @@
 #include "moduleManager/modules/audio/AudioModule.hpp"
 
 Audio::Audio(GameObject* gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping) :
-		Component(gameObject, tag), _path(std::move(path)), _volume(volume), _isLooping(isLooping) {}
+	Component(gameObject, tag), _path(std::move(path)), _volume(volume), _isLooping(isLooping) {}
 
 void Audio::Play(int loops) const {
 	ModuleManager::GetInstance().GetModule<AudioModule>().PlayAudio(tag, loops);
 }
 
-// will only stop last instance with this (unique)tag.
-// when stop is called when not playing the sound, a random channel is stopped,
-//	only audio that is started after this one has finished may stop playing.
+// Only audio fragment with isLooping = true can be stopped.
+// Will only stop last started PlayAudio instance with this (unique)tag, (FILO 1 instance per time).
 void Audio::Stop() const {
 	ModuleManager::GetInstance().GetModule<AudioModule>().StopAudio(tag);
 }

@@ -9,25 +9,28 @@
 #include <sstream>
 #include <glm/vec2.hpp>
 
-// if logging is lagging the game don't set LOG_TO_CONSOLE 0, because it gives the biggest performers hit
-#define LOG_TO_CONSOLE 1
-#define LOG_TO_FILE 1
+// if logging is lagging the game don't set LOG_TO_CONSOLE true because it gives the biggest performers hit
+constexpr bool LOG_TO_CONSOLE = false;
+constexpr bool LOG_TO_FILE = true;
 
 // length for function/class name that is reserved
 // if length function/class name is > value, alignment
 // of msg is offset by length function/class - value.
 constexpr int MAX_FUNCTION_NAME_LENGTH = 15;
 constexpr bool REMOVE_ARGS = true;
-constexpr bool REMOVE_FUNCTION_NAME_FROM_CLASSES = true;
+constexpr bool REMOVE_FUNCTION_NAME_FROM_CLASSES = false;
 constexpr bool REMOVE_RETURN_TYPE = true;
 
 // for function name only: __func__
-#define BLOCKY_ENGINE_INFO(msg) bLogger.Log(LogLevel::INFO, __PRETTY_FUNCTION__, msg);
-#define BLOCKY_ENGINE_DEBUG(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, msg);
-#define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, msg);
-#define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, msg);
+#define BLOCKY_ENGINE_INFO(msg) bLogger.Log(LogLevel::INFO, __PRETTY_FUNCTION__, msg)
+#define BLOCKY_ENGINE_DEBUG(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, msg)
+#define BLOCKY_ENGINE_WARNING(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, msg)
+#define BLOCKY_ENGINE_ERROR(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, msg)
 
-#define BLOCKY_ENGINE_DEBUG_STREAM(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, (std::stringstream() << msg).str());
+#define BLOCKY_ENGINE_INFO_STREAM(msg) bLogger.Log(LogLevel::INFO, __PRETTY_FUNCTION__, (std::stringstream() << msg).str())
+#define BLOCKY_ENGINE_DEBUG_STREAM(msg) bLogger.Log(LogLevel::DEBUG, __PRETTY_FUNCTION__, (std::stringstream() << msg).str())
+#define BLOCKY_ENGINE_WARNING_STREAM(msg) bLogger.Log(LogLevel::WARN, __PRETTY_FUNCTION__, (std::stringstream() << msg).str())
+#define BLOCKY_ENGINE_ERROR_STREAM(msg) bLogger.Log(LogLevel::ERROR, __PRETTY_FUNCTION__, (std::stringstream() << msg).str())
 
 enum LogLevel {
 	INFO,

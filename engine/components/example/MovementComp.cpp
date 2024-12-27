@@ -8,7 +8,7 @@
 #include "glm/trigonometric.hpp"
 
 MovementComp::MovementComp(GameObject* gameObject, const char* tag) :
-		Component(gameObject, tag), _direction(1, 0), _speed(15.f) {}
+	Component(gameObject, tag), _direction(1, 0), _speed(20.f) {}
 
 MovementComp::~MovementComp() = default;
 
@@ -21,10 +21,6 @@ void MovementComp::Start() {}
 
 void MovementComp::Update(float delta) {
 	gameObject->transform->Translate(_direction.x * delta * _speed, _direction.y * delta * _speed);
-
-	if (glm::length(gameObject->transform->GetLocalPosition()) > 7.f) {
-		gameObject->Destroy();
-	}
 }
 
 void MovementComp::End() {}

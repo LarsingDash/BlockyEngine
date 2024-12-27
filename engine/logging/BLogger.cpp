@@ -15,7 +15,7 @@ BLogger::BLogger(const std::string& filename) {
 		std::cerr << "Error opening log file." << std::endl;
 	}
 	else {
-		BLOCKY_ENGINE_INFO("Logging started.")
+		BLOCKY_ENGINE_INFO("Logging started.");
 	}
 }
 
@@ -148,7 +148,7 @@ void BLogger::_writeLog(const std::stringstream& logMessage) {
 	if constexpr (LOG_TO_FILE) {
 		// Output to log file
 		if (_logFile.is_open()) {
-			_logFile << logMessage.str();
+			_logFile << logMessage.str() << '\n';
 			_logFile.flush(); // Ensure immediate write to file
 		}
 	}

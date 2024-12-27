@@ -62,7 +62,7 @@ bool AnimationController::PlayAnimation(const std::string& animationName) {
 	if (it == _animations.end()) {
 		std::string err ("Animation not found: ");
 		err += animationName;
-		BLOCKY_ENGINE_ERROR(err)
+		BLOCKY_ENGINE_ERROR(err);
 		return false;
 	}
 

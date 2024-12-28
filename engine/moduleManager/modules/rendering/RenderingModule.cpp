@@ -383,11 +383,11 @@ void RenderingModule::RemoveDebugRectangle(const std::string& tag) {
 void RenderingModule::_renderDebugRectangles() {
 	for (const auto& [tag, func] : _debugRectangles) {
 		glm::vec2 position, size;
-		glm::ivec3 color{200, 200, 200};
+		glm::ivec4 color{200, 200, 200, 255};
 
 		func(position, size, color);
 
-		SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, 255);
+		SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
 
 		const SDL_FRect rect{
 				position.x - (size.x / 2.f),

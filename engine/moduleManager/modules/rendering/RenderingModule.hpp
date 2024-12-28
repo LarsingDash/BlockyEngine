@@ -30,7 +30,7 @@ class RenderingModule {
 		void AddRenderable(Renderable& renderable);
 		void RemoveRenderable(Renderable& renderable);
 
-		using DebugRectangleFunc = std::function<void(glm::vec2& position, glm::vec2& size, glm::ivec3& color)>;
+		using DebugRectangleFunc = std::function<void(glm::vec2& position, glm::vec2& size, glm::ivec4& color)>;
 		void AddDebugRectangle(const std::string& tag, DebugRectangleFunc&& function);
 		void RemoveDebugRectangle(const std::string& tag);
 

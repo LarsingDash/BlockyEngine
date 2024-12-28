@@ -5,4 +5,4 @@
 #include "GridNode.hpp"
 
 GridNode::GridNode(int weight, glm::ivec2 gridPos) :
-		_weight(weight), _gridPos(gridPos) {}
+		_isWalkable(true), _weight(weight), _gridPos(gridPos) {}

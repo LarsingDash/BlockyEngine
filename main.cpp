@@ -5,7 +5,6 @@
 #include <logging/BLogger.hpp>
 
 #include "BlockyEngine.hpp"
-#include "moduleManager/modules/pathfinding/PathfindingModule.hpp"
 
 #include "components/example/SceneSwitchComp.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
@@ -24,6 +23,8 @@
 #include <components/physics/rigidBody/BoxRigidBody.hpp>
 #include <components/physics/collider/CircleCollider.hpp>
 #include <components/example/MoveWithPhysics.hpp>
+
+#include "components/pathfinding/PathfindingGrid.hpp"
 
 void buildPrefabScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Prefab");
@@ -83,8 +84,8 @@ void buildInputReparentingScene(SceneManager& scenes, const char* next) {
 	//Animated Object
 	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	animatedObject.AddComponent<AnimationRenderable>(
-		"animTag", "../assets/character_spritesheet.png",
-		"spriteTag", 32, 32, 0, SpriteFlip::FlipHorizontal
+			"animTag", "../assets/character_spritesheet.png",
+			"spriteTag", 32, 32, 0, SpriteFlip::FlipHorizontal
 	);
 
 	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
@@ -120,9 +121,9 @@ void buildCameraScene(SceneManager& scenes, const char* next) {
 
 	glm::vec2 screenSize = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
 	box.transform->SetScale(screenSize.x / 4.f,
-	                        screenSize.y / 4.f);
+							screenSize.y / 4.f);
 	box.transform->SetPosition(screenSize.x / 2.f,
-	                           screenSize.y / 2.f);
+							   screenSize.y / 2.f);
 
 	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
 	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);
@@ -149,21 +150,21 @@ void buildCollisionScene(SceneManager& scenes, const char* next) {
 	auto& collider = sceneBase.AddComponent<CircleCollider>("SceneEllipse");
 	// collider.componentTransform->SetScale(2,2);
 	sceneBase.AddComponent<CollisionHandler>("Trigger handler", collider,
-	                                         [](GameObject& other) {
-		                                         BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);
-	                                         },
-	                                         [](GameObject& other) {
-		                                         BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
-	                                         });
+											 [](GameObject& other) {
+												 BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);
+											 },
+											 [](GameObject& other) {
+												 BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
+											 });
 
 	TypeProperties properties(
-		RIGIDBODY,
-		false,
-		glm::vec2{0, 0},
-		0,
-		0,
-		0,
-		false
+			RIGIDBODY,
+			false,
+			glm::vec2{0, 0},
+			0,
+			0,
+			0,
+			false
 	);
 
 	auto& rigidBox = root->AddChild("rigidBox");
@@ -181,16 +182,16 @@ void buildCollisionScene(SceneManager& scenes, const char* next) {
 	staticRigidBox.transform->SetScale(50, 50);
 	staticRigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, false);
 	staticRigidBox.AddComponent<MoveWithPhysics>("TestMover",
-	                                             staticRigidBox.AddComponent<BoxRigidBody>("BoxColl", properties));
+												 staticRigidBox.AddComponent<BoxRigidBody>("BoxColl", properties));
 
 	properties = TypeProperties(
-		RIGIDBODY,
-		false,
-		glm::vec2{0, 0},
-		0,
-		0,
-		0,
-		true
+			RIGIDBODY,
+			false,
+			glm::vec2{0, 0},
+			0,
+			0,
+			0,
+			true
 	);
 
 	auto& sceneBase2 = root->AddChild("BaseOfScene");
@@ -227,13 +228,30 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Pathfinding");
 	root->SetActive(false);
 
-	auto& pathfinding = ModuleManager::GetInstance().GetModule<PathfindingModule>();
-	
-	auto& grid = pathfinding.SetGrid("Grid", 1, glm::ivec2{5, 5});
-	pathfinding.SetShouldVisualize(true);
-	
-	grid(2, 3).SetWeight(3);
-	
+	//GridObject
+	auto& gridObject = root->AddChild("Grid");
+	auto screen = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
+	gridObject.transform->SetPosition(screen.x / 2.f, screen.y / 2.f);
+	gridObject.transform->SetScale(screen.x, screen.y);
+
+	//Background
+	gridObject.AddComponent<RectangleRenderable>(
+			"Background",
+			glm::ivec4{20, 20, 20, 255},
+			-10, true
+	);
+
+	//Grid
+	auto& grid = gridObject.AddComponent<PathfindingGrid>(
+			"Grid",
+			1,
+			glm::ivec2{5, 5},
+			true
+	);
+	grid.SetVisualizationOpacity(0);
+
+	grid(2, 3).SetWalkable(false);
+
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
 
@@ -242,10 +260,10 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 
 int main(int argc, char* argv[]) {
 	BlockyEngine::BlockyConfigs configs{
-		800,
-		600,
-		SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
-		"../assets/fonts/defaultFont.ttf"
+			800,
+			600,
+			SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
+			"../assets/fonts/defaultFont.ttf"
 	};
 
 	BlockyEngine blockyEngine{configs};
@@ -261,7 +279,7 @@ int main(int argc, char* argv[]) {
 	// sceneManager.SwitchScene("InputReparenting");
 	// sceneManager.SwitchScene("Camera");
 	// sceneManager.SwitchScene("CollisionScene");
-	 sceneManager.SwitchScene("Pathfinding");
+	sceneManager.SwitchScene("Pathfinding");
 
 	blockyEngine.Run();
 

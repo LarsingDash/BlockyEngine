@@ -51,6 +51,7 @@ void PathfindingGrid::Visualize(bool show) {
 							size.x = size.y = 50.f;
 
 							if (!node._isWalkable) color = {200, 0, 0, opacity};
+							else color.a = opacity;
 						});
 			else _renderingModule.RemoveDebugRectangle(name);
 		}

@@ -381,6 +381,8 @@ void RenderingModule::RemoveDebugRectangle(const std::string& tag) {
 }
 
 void RenderingModule::_renderDebugRectangles() {
+	SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND);
+	
 	for (const auto& [tag, func] : _debugRectangles) {
 		glm::vec2 position, size;
 		glm::ivec4 color{200, 200, 200, 255};
@@ -398,4 +400,6 @@ void RenderingModule::_renderDebugRectangles() {
 
 		SDL_RenderFillRectF(_renderer, &rect);
 	}
+
+	SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_NONE);
 }

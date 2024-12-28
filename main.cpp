@@ -248,7 +248,7 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 			glm::ivec2{5, 5},
 			true
 	);
-	grid.SetVisualizationOpacity(0);
+	grid.SetVisualizationOpacity(150);
 
 	grid(2, 3).SetWalkable(false);
 

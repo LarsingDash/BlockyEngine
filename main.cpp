@@ -228,8 +228,11 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	root->SetActive(false);
 
 	auto& pathfinding = ModuleManager::GetInstance().GetModule<PathfindingModule>();
-	auto& graph = pathfinding.SetGrid(1, glm::ivec2{5, 5});
-	graph(2, 3).SetWeight(3);
+	
+	auto& grid = pathfinding.SetGrid("Grid", 1, glm::ivec2{5, 5});
+	pathfinding.SetShouldVisualize(true);
+	
+	grid(2, 3).SetWeight(3);
 	
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);

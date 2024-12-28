@@ -16,6 +16,7 @@ class GridNode {
 		inline void SetWeight(int weight) { _weight = weight; }
 
 	private:
+		friend class PathfindingGrid;
 		int _weight;
 		glm::ivec2 _gridPos;
 };

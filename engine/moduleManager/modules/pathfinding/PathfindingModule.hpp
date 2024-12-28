@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "moduleManager/ModuleWrapper.hpp"
-#include "moduleManager/modules/pathfinding/GridGraph.hpp"
+#include "moduleManager/modules/pathfinding/PathfindingGrid.hpp"
 
 class PathfindingModule : public ModuleWrapper {
 	public:
@@ -17,14 +17,16 @@ class PathfindingModule : public ModuleWrapper {
 
 		void Update(float delta) override;
 
+		inline void SetShouldVisualize(bool should) { _grid->Visualize(should); }
+
 		template<typename ... Args>
-		[[nodiscard]] GridGraph& SetGrid(Args&& ...args) {
-			_graph = std::make_unique<GridGraph>(std::forward<Args>(args)...);
-			return *_graph;
+		[[nodiscard]] PathfindingGrid& SetGrid(Args&& ...args) {
+			_grid = std::make_unique<PathfindingGrid>(std::forward<Args>(args)...);
+			return *_grid;
 		}
 
 	private:
-		std::unique_ptr<GridGraph> _graph;
+		std::unique_ptr<PathfindingGrid> _grid;
 };
 
 #endif //BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_PATHFINDING_PATHFINDINGMODULE_HPP_

@@ -4,6 +4,6 @@
 
 #include "PathfindingModule.hpp"
 
-PathfindingModule::PathfindingModule() : _graph(nullptr) {}
+PathfindingModule::PathfindingModule() : _grid(nullptr) {}
 
 void PathfindingModule::Update(float delta) {}

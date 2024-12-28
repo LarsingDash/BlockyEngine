@@ -1,5 +1,5 @@
 ﻿target_sources(${ENGINE_TARGET} PRIVATE
-        GridGraph.cpp
+        PathfindingGrid.cpp
         GridNode.cpp
         PathfindingModule.cpp
 )

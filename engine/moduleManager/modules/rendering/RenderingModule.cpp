@@ -56,6 +56,8 @@ void RenderingModule::Render() {
 		}
 	}
 
+	_renderDebugRectangles();
+
 	if (TimeUtil::GetInstance().IsFpsCounterEnabled()) {
 		_renderGameInfo();
 	}
@@ -367,5 +369,33 @@ void RenderingModule::RemoveRenderable(Renderable& renderable) {
 		err += std::to_string(renderable.GetLayer());
 		err += ", but that layer was not found.";
 		BLOCKY_ENGINE_ERROR(err);
+	}
+}
+
+void RenderingModule::AddDebugRectangle(const std::string& tag, DebugRectangleFunc&& function) {
+	_debugRectangles[tag] = std::move(function);
+}
+
+void RenderingModule::RemoveDebugRectangle(const std::string& tag) {
+	_debugRectangles.erase(tag);
+}
+
+void RenderingModule::_renderDebugRectangles() {
+	for (const auto& [tag, func] : _debugRectangles) {
+		glm::vec2 position, size;
+		glm::ivec3 color{200, 200, 200};
+
+		func(position, size, color);
+
+		SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, 255);
+
+		const SDL_FRect rect{
+				position.x - (size.x / 2.f),
+				position.y - (size.y / 2.f),
+				size.x,
+				size.y
+		};
+
+		SDL_RenderFillRectF(_renderer, &rect);
 	}
 }

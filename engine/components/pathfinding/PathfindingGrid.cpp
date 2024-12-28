@@ -9,48 +9,73 @@
 
 PathfindingGrid::PathfindingGrid(
 		GameObject* gameObject, const char* tag,
-		int defaultWeight, glm::ivec2 dimensions,
-		bool shouldVisualize) :
-		Component(gameObject, tag),
+		int defaultWeight, glm::ivec2 dimensions) :
+		Component(gameObject, tag, true),
 		_renderingModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetRenderingModule()),
-		_shouldVisualize(shouldVisualize), _dimensions(dimensions), _grid() {
-	_grid = std::vector<std::vector<GridNode>>(dimensions.y);
+		_dimensions(dimensions), _grid() {
+	_grid = std::vector<std::vector<Node>>(dimensions.y);
 
 	for (int y = 0; y < dimensions.y; ++y) {
-		auto& row = _grid[y] = std::vector<GridNode>(dimensions.x);
+		auto& row = _grid[y] = std::vector<Node>(dimensions.x);
 
 		for (int x = 0; x < row.size(); ++x) {
-			row[x] = GridNode(defaultWeight, {x, y});
+			row[x] = Node{
+					.IsWalkable = true,
+					.Weight = defaultWeight,
+					.GridPos = {x, y}
+			};
 		}
 	}
 }
 
 void PathfindingGrid::Start() {
-	Visualize(_shouldVisualize);
+	RefreshGridPositions();
+
+	_visualize(_shouldVisualize);
 }
 
 void PathfindingGrid::Update(float delta) {}
 
 void PathfindingGrid::End() {
-	Visualize(false);
+	_visualize(false);
 }
 
-void PathfindingGrid::Visualize(bool show) {
+void PathfindingGrid::RefreshGridPositions() {
+	auto& pos = componentTransform->GetWorldPosition();
+	auto& scale = componentTransform->GetWorldScale();
+	auto halfScale = scale / 2.f;
+
+	float yStep = scale.y / static_cast<float>(_grid.size() - 1);
+
+	for (int y = 0; y < _grid.size(); ++y) {
+		auto& row = _grid[y];
+		float xStep = scale.x / static_cast<float>(row.size() - 1);
+
+		for (int x = 0; x < row.size(); ++x) {
+			row[x].WorldPos = {
+				xStep * static_cast<float>(x) - halfScale.x + pos.x,
+				yStep * static_cast<float>(y) - halfScale.y + pos.y
+			};
+		}
+	}
+}
+
+void PathfindingGrid::_visualize(bool show) {
 	for (const auto& row : _grid) {
 		for (const auto& node : row) {
-			std::string name{tag + std::to_string(node._gridPos.x) + ',' + std::to_string(node._gridPos.y)};
+			std::string name{tag + std::to_string(node.GridPos.x) + ',' + std::to_string(node.GridPos.y)};
 
 			if (show)
 				_renderingModule.AddDebugRectangle(
 						name,
-						[&node, &opacity = _opacity]
+						[&node, &opacity = _opacity, &nodeSize = _nodeSize]
 								(glm::vec2& position,
 								 glm::vec2& size,
 								 glm::ivec4& color) {
-							position = node._gridPos * 75;
-							size.x = size.y = 50.f;
+							position = node.WorldPos;
+							size.x = size.y = nodeSize;
 
-							if (!node._isWalkable) color = {200, 0, 0, opacity};
+							if (!node.IsWalkable) color = {200, 0, 0, opacity};
 							else color.a = opacity;
 						});
 			else _renderingModule.RemoveDebugRectangle(name);

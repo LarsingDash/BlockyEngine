@@ -245,12 +245,14 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	auto& grid = gridObject.AddComponent<PathfindingGrid>(
 			"Grid",
 			1,
-			glm::ivec2{5, 5},
-			true
+			glm::ivec2{20, 11}
 	);
+	
+	grid.SetVisualization(true);
 	grid.SetVisualizationOpacity(150);
+//	grid.SetNodeSize(25.f);
 
-	grid(2, 3).SetWalkable(false);
+	grid(2, 3).IsWalkable = false;
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
@@ -258,7 +260,7 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	scenes.AddScene(std::move(root));
 }
 
-int main(int argc, char* argv[]) {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	BlockyEngine::BlockyConfigs configs{
 			800,
 			600,

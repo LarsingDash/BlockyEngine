@@ -25,6 +25,7 @@
 #include <components/example/MoveWithPhysics.hpp>
 
 #include "components/pathfinding/PathfindingGrid.hpp"
+#include "components/pathfinding/GridNavigator.hpp"
 
 void buildPrefabScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Prefab");
@@ -291,12 +292,16 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 1111111111111111112444111111111111111111
 1111111111111111111111111111111111111111
 )");
-	
+
 	//Manually tweak by adding some lines
 	for (int i = 0; i < 10; ++i) {
 		grid(4, i + 3).Weight = 8;
 		grid(30, i + 6).IsWalkable = false;
 	}
+
+	//Grid Navigator
+	auto& navigatorObject = root->AddChild("GridNavigatorObject");
+	auto& navigator = navigatorObject.AddComponent<GridNavigator>("GridNavigator", "Grid");
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);

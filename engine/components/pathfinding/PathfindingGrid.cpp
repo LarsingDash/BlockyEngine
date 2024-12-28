@@ -7,20 +7,22 @@
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
 
+std::unordered_map<std::string, PathfindingGrid*> PathfindingGrid::_grids{};
+
 PathfindingGrid::PathfindingGrid(
 		GameObject* gameObject, const char* tag,
 		int defaultWeight, glm::ivec2 dimensions) :
 		Component(gameObject, tag, true),
 		_renderingModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetRenderingModule()),
-		_dimensions(dimensions), _grid() {
+		_dimensions(dimensions), _nodes() {
 	//Colors
 	_colors[0] = {200, 0, 0};
 	_colors[defaultWeight] = {200, 200, 200};
 
 	//Grid initialization
-	_grid = std::vector<std::vector<Node>>(dimensions.y);
+	_nodes = std::vector<std::vector<Node>>(dimensions.y);
 	for (int y = 0; y < dimensions.y; ++y) {
-		auto& row = _grid[y] = std::vector<Node>(dimensions.x);
+		auto& row = _nodes[y] = std::vector<Node>(dimensions.x);
 		for (int x = 0; x < row.size(); ++x) {
 			row[x] = Node{
 					.IsWalkable = true,
@@ -29,6 +31,12 @@ PathfindingGrid::PathfindingGrid(
 			};
 		}
 	}
+
+	_grids[tag] = this;
+}
+
+PathfindingGrid::~PathfindingGrid() {
+	_grids.erase(tag);
 }
 
 void PathfindingGrid::Start() {
@@ -51,7 +59,7 @@ void PathfindingGrid::RefreshGridPositions() {
 	float xStep = scale.x / static_cast<float>(_dimensions.x - 1);
 	float yStep = scale.y / static_cast<float>(_dimensions.y - 1);
 
-	for (auto& row : _grid) {
+	for (auto& row : _nodes) {
 		for (auto& node : row) {
 			node.WorldPos = {
 					xStep * static_cast<float>(node.GridPos.x) - halfScale.x + pos.x,
@@ -75,8 +83,8 @@ void PathfindingGrid::SetWeightsFromText(const std::string& text) {
 		} else temp += c;
 	}
 
-	for (int y = 0; y < std::min(lines.size(), _grid.size()); ++y) {
-		auto& row = _grid[y];
+	for (int y = 0; y < std::min(lines.size(), _nodes.size()); ++y) {
+		auto& row = _nodes[y];
 		auto& line = lines[y];
 
 		for (int x = 0; x < std::min(line.length(), row.size()); ++x) {
@@ -87,8 +95,13 @@ void PathfindingGrid::SetWeightsFromText(const std::string& text) {
 	}
 }
 
+PathfindingGrid* PathfindingGrid::GetGridByTag(const std::string& tag) {
+	auto it = _grids.find(tag);
+	return (it != _grids.end()) ? _grids.at(tag) : nullptr;
+}
+
 void PathfindingGrid::_visualize(bool show) {
-	for (const auto& row : _grid) {
+	for (const auto& row : _nodes) {
 		for (const auto& node : row) {
 			std::string name{tag + std::to_string(node.GridPos.x) + ',' + std::to_string(node.GridPos.y)};
 

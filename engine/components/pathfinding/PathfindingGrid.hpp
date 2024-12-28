@@ -24,7 +24,7 @@ class PathfindingGrid : public Component {
 		};
 
 		PathfindingGrid(GameObject* gameObject, const char* tag, int defaultWeight, glm::ivec2 dimensions);
-		~PathfindingGrid() override = default;
+		~PathfindingGrid() override;
 
 		void Start() override;
 		void Update(float delta) override;
@@ -42,7 +42,9 @@ class PathfindingGrid : public Component {
 
 		inline const glm::ivec2& GetDimensions() const { return _dimensions; } 
 
-		inline Node& operator()(int x, int y) { return _grid[y][x]; }
+		inline Node& operator()(int x, int y) { return _nodes[y][x]; }
+
+		static PathfindingGrid* GetGridByTag(const std::string& tag);
 
 	private:
 		void _visualize(bool show);
@@ -55,7 +57,9 @@ class PathfindingGrid : public Component {
 
 		glm::ivec2 _dimensions;
 		std::unordered_map<int, glm::ivec3> _colors;
-		std::vector<std::vector<Node>> _grid;
+		std::vector<std::vector<Node>> _nodes;
+
+		static std::unordered_map<std::string, PathfindingGrid*> _grids;
 
 		Component* _clone(const GameObject& parent) override;
 };

@@ -48,22 +48,19 @@ void PathfindingGrid::RefreshGridPositions() {
 	auto& scale = componentTransform->GetWorldScale();
 	auto halfScale = scale / 2.f;
 
-	float yStep = scale.y / static_cast<float>(_grid.size() - 1);
+	float xStep = scale.x / static_cast<float>(_dimensions.x - 1);
+	float yStep = scale.y / static_cast<float>(_dimensions.y - 1);
 
-	for (int y = 0; y < _grid.size(); ++y) {
-		auto& row = _grid[y];
-		float xStep = scale.x / static_cast<float>(row.size() - 1);
-
-		for (int x = 0; x < row.size(); ++x) {
-			row[x].WorldPos = {
-					xStep * static_cast<float>(x) - halfScale.x + pos.x,
-					yStep * static_cast<float>(y) - halfScale.y + pos.y
+	for (auto& row : _grid) {
+		for (auto& node : row) {
+			node.WorldPos = {
+					xStep * static_cast<float>(node.GridPos.x) - halfScale.x + pos.x,
+					yStep * static_cast<float>(node.GridPos.y) - halfScale.y + pos.y
 			};
 		}
 	}
 }
 
-#include <iostream>
 void PathfindingGrid::SetWeightsFromText(const std::string& text) {
 	std::vector<std::string> lines;
 

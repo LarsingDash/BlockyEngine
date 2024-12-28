@@ -40,6 +40,8 @@ class PathfindingGrid : public Component {
 		inline void SetNonWalkableColor(const glm::ivec3& color) { _colors[0] = color; }
 		inline void SetWeightColor(int weight, const glm::ivec3& color) { _colors[weight] = color; }
 
+		inline const glm::ivec2& GetDimensions() const { return _dimensions; } 
+
 		inline Node& operator()(int x, int y) { return _grid[y][x]; }
 
 	private:

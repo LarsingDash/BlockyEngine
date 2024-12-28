@@ -391,9 +391,10 @@ void RenderingModule::_renderDebugRectangles() {
 
 		SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a);
 
+		auto& cam = _camera->GetPosition();
 		const SDL_FRect rect{
-				position.x - (size.x / 2.f),
-				position.y - (size.y / 2.f),
+				position.x - (size.x / 2.f) - cam.x,
+				position.y - (size.y / 2.f) - cam.y,
 				size.x,
 				size.y
 		};

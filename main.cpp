@@ -228,6 +228,8 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Pathfinding");
 	root->SetActive(false);
 
+	root->AddComponent<MouseCameraController>("CameraController");
+
 	//GridObject
 	auto& gridObject = root->AddChild("Grid");
 	auto screen = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
@@ -250,10 +252,13 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 			1,
 			glm::ivec2{width, height}
 	);
+	auto& worldScale = grid.componentTransform->GetWorldScale();
+	float gridFactor = 0.75f;
+	grid.componentTransform->SetScale(worldScale.x * gridFactor, worldScale.y * gridFactor);
 
 	//Grid settings
 	grid.SetVisualization(true);
-//	grid.SetVisualizationOpacity(150);
+	grid.SetVisualizationOpacity(150);
 	grid.SetNodeSize(25.f);
 
 	//Weight settings

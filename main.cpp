@@ -237,22 +237,40 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	//Background
 	gridObject.AddComponent<RectangleRenderable>(
 			"Background",
-			glm::ivec4{20, 20, 20, 255},
+			glm::ivec4{25, 15, 15, 255},
 			-10, true
 	);
 
 	//Grid
+	const int width = 40;
+	const int height = 22;
+
 	auto& grid = gridObject.AddComponent<PathfindingGrid>(
 			"Grid",
 			1,
-			glm::ivec2{20, 11}
+			glm::ivec2{width, height}
 	);
-	
-	grid.SetVisualization(true);
-	grid.SetVisualizationOpacity(150);
-//	grid.SetNodeSize(25.f);
 
-	grid(2, 3).IsWalkable = false;
+	grid.SetVisualization(true);
+//	grid.SetVisualizationOpacity(150);
+	grid.SetNodeSize(25.f);
+	
+	grid.SetNonWalkableColor({0, 0, 200});
+	grid.SetWeightColor(2, glm::ivec3{100});
+	grid.SetWeightColor(4, glm::ivec3{50});
+	grid.SetWeightColor(8, glm::ivec3{25});
+
+	grid(10, 10).IsWalkable = false;
+	grid(11, 10).Weight = 123;
+	grid(12, 10).Weight = 2;
+	grid(13, 10).Weight = 4;
+	grid(14, 10).Weight = 8;
+	
+	for (int x = 0; x < width; ++x) {
+		for (int y = 0; y < height; ++y) {
+//			grid(x, y).IsWalkable = false;
+		}
+	}
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);

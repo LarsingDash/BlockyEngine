@@ -13,11 +13,14 @@ PathfindingGrid::PathfindingGrid(
 		Component(gameObject, tag, true),
 		_renderingModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetRenderingModule()),
 		_dimensions(dimensions), _grid() {
-	_grid = std::vector<std::vector<Node>>(dimensions.y);
+	//Colors
+	_colors[-1] = {200, 0, 0};
+	_colors[defaultWeight] = {200, 200, 200};
 
+	//Grid initialization
+	_grid = std::vector<std::vector<Node>>(dimensions.y);
 	for (int y = 0; y < dimensions.y; ++y) {
 		auto& row = _grid[y] = std::vector<Node>(dimensions.x);
-
 		for (int x = 0; x < row.size(); ++x) {
 			row[x] = Node{
 					.IsWalkable = true,
@@ -68,15 +71,15 @@ void PathfindingGrid::_visualize(bool show) {
 			if (show)
 				_renderingModule.AddDebugRectangle(
 						name,
-						[&node, &opacity = _opacity, &nodeSize = _nodeSize]
+						[&node, &colors = _colors, &opacity = _opacity, &nodeSize = _nodeSize]
 								(glm::vec2& position,
 								 glm::vec2& size,
 								 glm::ivec4& color) {
 							position = node.WorldPos;
 							size.x = size.y = nodeSize;
 
-							if (!node.IsWalkable) color = {200, 0, 0, opacity};
-							else color.a = opacity;
+							if (!node.IsWalkable) color = {colors[-1], opacity};
+							else color = {colors[node.Weight], opacity};
 						});
 			else _renderingModule.RemoveDebugRectangle(name);
 		}

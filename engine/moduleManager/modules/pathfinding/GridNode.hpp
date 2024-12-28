@@ -13,6 +13,8 @@ class GridNode {
 		GridNode(int weight, glm::ivec2 gridPos);
 		~GridNode() = default;
 
+		inline void SetWeight(int weight) { _weight = weight; }
+
 	private:
 		int _weight;
 		glm::ivec2 _gridPos;

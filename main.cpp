@@ -227,9 +227,9 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Pathfinding");
 	root->SetActive(false);
 
-	auto graph = std::make_unique<GridGraph>(1, glm::ivec2{5, 5});
-
-	ModuleManager::GetInstance().GetModule<PathfindingModule>().SetGrid(std::move(*graph.release()));
+	auto& pathfinding = ModuleManager::GetInstance().GetModule<PathfindingModule>();
+	auto& graph = pathfinding.SetGrid(1, glm::ivec2{5, 5});
+	graph(2, 3).SetWeight(3);
 	
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);

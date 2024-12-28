@@ -16,6 +16,8 @@ class GridGraph {
 		GridGraph(int defaultWeight, glm::ivec2 dimensions);
 		~GridGraph() = default;
 
+		inline GridNode& operator()(int x, int y) { return _grid[y][x]; }
+
 	private:
 		glm::ivec2 _dimensions;
 		std::vector<std::vector<GridNode>> _grid;

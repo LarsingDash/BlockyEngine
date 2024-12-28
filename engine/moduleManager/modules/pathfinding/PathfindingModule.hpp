@@ -17,7 +17,11 @@ class PathfindingModule : public ModuleWrapper {
 
 		void Update(float delta) override;
 
-		void SetGrid(GridGraph&& graph);
+		template<typename ... Args>
+		[[nodiscard]] GridGraph& SetGrid(Args&& ...args) {
+			_graph = std::make_unique<GridGraph>(std::forward<Args>(args)...);
+			return *_graph;
+		}
 
 	private:
 		std::unique_ptr<GridGraph> _graph;

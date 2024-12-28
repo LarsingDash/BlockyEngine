@@ -31,12 +31,13 @@ class PathfindingGrid : public Component {
 		void End() override;
 
 		void RefreshGridPositions();
+		void SetWeightsFromText(const std::string& text);
 
 		inline void SetVisualization(bool visualize) { _shouldVisualize = visualize; }
 		inline void SetVisualizationOpacity(int opacity) { _opacity = opacity; }
 		inline void SetNodeSize(float size) { _nodeSize = size; }
 
-		inline void SetNonWalkableColor(const glm::ivec3& color) { _colors[-1] = color; }
+		inline void SetNonWalkableColor(const glm::ivec3& color) { _colors[0] = color; }
 		inline void SetWeightColor(int weight, const glm::ivec3& color) { _colors[weight] = color; }
 
 		inline Node& operator()(int x, int y) { return _grid[y][x]; }

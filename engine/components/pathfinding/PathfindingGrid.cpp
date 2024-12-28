@@ -14,7 +14,7 @@ PathfindingGrid::PathfindingGrid(
 		_renderingModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetRenderingModule()),
 		_dimensions(dimensions), _grid() {
 	//Colors
-	_colors[-1] = {200, 0, 0};
+	_colors[0] = {200, 0, 0};
 	_colors[defaultWeight] = {200, 200, 200};
 
 	//Grid initialization
@@ -56,9 +56,36 @@ void PathfindingGrid::RefreshGridPositions() {
 
 		for (int x = 0; x < row.size(); ++x) {
 			row[x].WorldPos = {
-				xStep * static_cast<float>(x) - halfScale.x + pos.x,
-				yStep * static_cast<float>(y) - halfScale.y + pos.y
+					xStep * static_cast<float>(x) - halfScale.x + pos.x,
+					yStep * static_cast<float>(y) - halfScale.y + pos.y
 			};
+		}
+	}
+}
+
+#include <iostream>
+void PathfindingGrid::SetWeightsFromText(const std::string& text) {
+	std::vector<std::string> lines;
+
+	int counter{0};
+	std::string temp;
+
+	for (char c : text) {
+		if (c == '\n') {
+			++counter;
+			lines.emplace_back(temp.c_str());
+			temp.clear();
+		} else temp += c;
+	}
+
+	for (int y = 0; y < std::min(lines.size(), _grid.size()); ++y) {
+		auto& row = _grid[y];
+		auto& line = lines[y];
+
+		for (int x = 0; x < std::min(line.length(), row.size()); ++x) {
+			char weight = line[x];
+			if (weight == 'N') row[x].IsWalkable = false;
+			else row[x].Weight = weight - '0';
 		}
 	}
 }
@@ -78,7 +105,7 @@ void PathfindingGrid::_visualize(bool show) {
 							position = node.WorldPos;
 							size.x = size.y = nodeSize;
 
-							if (!node.IsWalkable) color = {colors[-1], opacity};
+							if (!node.IsWalkable) color = {colors[0], opacity};
 							else color = {colors[node.Weight], opacity};
 						});
 			else _renderingModule.RemoveDebugRectangle(name);

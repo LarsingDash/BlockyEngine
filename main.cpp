@@ -1,27 +1,35 @@
 #include <SDL_main.h>
 
 #include <memory>
-#include <components/physics/collider/BoxCollider.hpp>
-#include <components/physics/collision/CollisionHandler.hpp>
-#include <components/physics/rigidBody/BoxRigidBody.hpp>
 
-#include <components/example/MoveWithPhysics.hpp>
-#include <components/physics/collider/CircleCollider.hpp>
 #include <logging/BLogger.hpp>
 
 #include "BlockyEngine.hpp"
+
+#include "components/example/SceneSwitchComp.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
 #include "components/renderables/TextRenderable.hpp"
+
 #include "components/example/SpawnerComp.hpp"
 #include "components/example/RotationComp.hpp"
+
 #include "components/example/inputScripts/MouseReparenting.hpp"
 #include "components/example/inputScripts/MouseInputComponent.hpp"
 #include "components/example/inputScripts/KeyboardInputComponent.hpp"
 #include "components/example/inputScripts/MouseCameraController.hpp"
-#include "components/example/SceneSwitchComp.hpp"
 
-void buildPrefabScene(SceneManager& scenes) {
-	auto root = std::make_unique<GameObject>("Prefabs");
+#include <components/physics/collider/BoxCollider.hpp>
+#include <components/physics/collision/CollisionHandler.hpp>
+#include <components/physics/rigidBody/BoxRigidBody.hpp>
+#include <components/physics/collider/CircleCollider.hpp>
+#include <components/example/MoveWithPhysics.hpp>
+
+#include "components/pathfinding/PathfindingGrid.hpp"
+#include "components/pathfinding/MouseTargetedNavigation.hpp"
+#include "components/pathfinding/GridNavigator.hpp"
+
+void buildPrefabScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("Prefab");
 	root->SetActive(false);
 
 	root->AddComponent<MouseCameraController>("CameraController");
@@ -43,12 +51,12 @@ void buildPrefabScene(SceneManager& scenes) {
 	barrel.transform->SetPosition(0.5f, 0);
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "CollisionScene");
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
 
 	scenes.AddScene(std::move(root));
 }
 
-void buildInputReparentingScene(SceneManager& scenes) {
+void buildInputReparentingScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("InputReparenting");
 	root->SetActive(false);
 
@@ -78,8 +86,8 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	//Animated Object
 	auto& animatedObject = parentA.AddChild("AnimatedObject");
 	animatedObject.AddComponent<AnimationRenderable>(
-		"animTag", "../assets/character_spritesheet.png",
-		"spriteTag", 32, 32, 0, SpriteFlip::FlipHorizontal
+			"animTag", "../assets/character_spritesheet.png",
+			"spriteTag", 32, 32, 0, SpriteFlip::FlipHorizontal
 	);
 
 	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
@@ -100,12 +108,12 @@ void buildInputReparentingScene(SceneManager& scenes) {
 	root->AddComponent<MouseReparenting>("Reparenting", "AnimatedObject", "ParentA", "ParentB");
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "Camera");
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
 
 	scenes.AddScene(std::move(root));
 }
 
-void buildCameraScene(SceneManager& scenes) {
+void buildCameraScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Camera");
 	root->SetActive(false);
 
@@ -115,22 +123,22 @@ void buildCameraScene(SceneManager& scenes) {
 
 	glm::vec2 screenSize = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
 	box.transform->SetScale(screenSize.x / 4.f,
-	                        screenSize.y / 4.f);
+							screenSize.y / 4.f);
 	box.transform->SetPosition(screenSize.x / 2.f,
-	                           screenSize.y / 2.f);
+							   screenSize.y / 2.f);
 
 	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
 	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);
 	box.AddComponent<SpriteRenderable>("animTag", "../assets/character_spritesheet.png", "spriteTag");
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "Prefabs");
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
 
 	scenes.AddScene(std::move(root));
 }
 
-void buildCollisionEnv(SceneManager& manager) {
-	auto root = std::make_unique<GameObject>("CollisionScene");
+void buildCollisionScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("Collision");
 	root->SetActive(false);
 
 	auto& sceneBase = root->AddChild("BaseOfScene");
@@ -144,21 +152,21 @@ void buildCollisionEnv(SceneManager& manager) {
 	auto& collider = sceneBase.AddComponent<CircleCollider>("SceneEllipse");
 	// collider.componentTransform->SetScale(2,2);
 	sceneBase.AddComponent<CollisionHandler>("Trigger handler", collider,
-	                                         [](GameObject& other) {
-		                                         BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);
-	                                         },
-	                                         [](GameObject& other) {
-		                                         BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
-	                                         });
+											 [](GameObject& other) {
+												 BLOCKY_ENGINE_DEBUG_STREAM("ENTERING: " << other.tag);
+											 },
+											 [](GameObject& other) {
+												 BLOCKY_ENGINE_DEBUG_STREAM("EXITING: " << other.tag);
+											 });
 
 	TypeProperties properties(
-		RIGIDBODY,
-		false,
-		glm::vec2{0, 0},
-		0,
-		0,
-		0,
-		false
+			RIGIDBODY,
+			false,
+			glm::vec2{0, 0},
+			0,
+			0,
+			0,
+			false
 	);
 
 	auto& rigidBox = root->AddChild("rigidBox");
@@ -176,16 +184,16 @@ void buildCollisionEnv(SceneManager& manager) {
 	staticRigidBox.transform->SetScale(50, 50);
 	staticRigidBox.AddComponent<RectangleRenderable>("PhysicsObjMesh", glm::vec4{255, 255, 0, 255}, 1, false);
 	staticRigidBox.AddComponent<MoveWithPhysics>("TestMover",
-	                                             staticRigidBox.AddComponent<BoxRigidBody>("BoxColl", properties));
+												 staticRigidBox.AddComponent<BoxRigidBody>("BoxColl", properties));
 
 	properties = TypeProperties(
-		RIGIDBODY,
-		false,
-		glm::vec2{0, 0},
-		0,
-		0,
-		0,
-		true
+			RIGIDBODY,
+			false,
+			glm::vec2{0, 0},
+			0,
+			0,
+			0,
+			true
 	);
 
 	auto& sceneBase2 = root->AddChild("BaseOfScene");
@@ -214,30 +222,129 @@ void buildCollisionEnv(SceneManager& manager) {
 	mouseInputComponent.AddComponent<MouseInputComponent>("MouseInputComponent");
 
 	//Scene switching
-	root->AddComponent<SceneSwitchComp>("SceneSwitcher", "InputReparenting");
-	manager.AddScene(std::move(root));
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
+	scenes.AddScene(std::move(root));
 }
 
-int main(int argc, char* argv[]) {
+void buildPathfindingScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("Pathfinding");
+	root->SetActive(false);
+
+	root->AddComponent<MouseCameraController>("CameraController");
+
+	//GridObject
+	auto& gridObject = root->AddChild("Grid");
+	auto screen = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
+	gridObject.transform->SetPosition(screen.x / 2.f, screen.y / 2.f);
+	gridObject.transform->SetScale(screen.x, screen.y);
+
+	//Background
+	gridObject.AddComponent<RectangleRenderable>(
+			"Background",
+			glm::ivec4{25, 15, 15, 255},
+			-10, true
+	);
+
+	//Grid
+	const int width = 40;
+	const int height = 22;
+
+	auto& grid = gridObject.AddComponent<PathfindingGrid>(
+			"Grid",
+			1,
+			glm::ivec2{width, height}
+	);
+	auto& worldScale = grid.componentTransform->GetWorldScale();
+	float gridFactor = 0.75f;
+	grid.componentTransform->SetScale(worldScale.x * gridFactor, worldScale.y * gridFactor);
+
+	//Grid settings
+	grid.SetVisualization(true);
+	grid.SetVisualizationOpacity(150);
+	grid.SetNodeSize(25.f);
+
+	//Weight settings
+	grid.SetNonWalkableColor({0, 0, 200});
+	grid.SetWeightColor(2, glm::ivec3{100});
+	grid.SetWeightColor(4, glm::ivec3{50});
+	grid.SetWeightColor(8, glm::ivec3{25});
+
+	//Assign weights
+	grid.SetWeightsFromText(R"(1111111111111111111111111111111111111111
+111111111111111111NNNN111111111111111111
+1111111111111111122222111111111111111111
+1111111111111111224422111111111111111111
+1111111111111111122222111111111111111111
+111111111111111111NNNN111111111111111111
+1111111111111144444111111111111111111111
+1111111111111448884411111111111111111111
+1111111111111144444111111111111111111111
+1111111111111111111111111111111111111111
+1111111111111111111111111111111111111111
+1111111111111111112221111111111111111111
+1111111111111111128422111111111111111111
+1111111111111111248822111111111111111111
+1111111111111111128422111111111111111111
+1111111111111111112221111111111111111111
+111111NNNN111111111111111111111111111111
+111111NNNN111111111111111111111111111111
+1111111111111111111111111111111111111111
+1111111111111111111111111111111111111111
+1111111111111111112444111111111111111111
+1111111111111111111111111111111111111111
+)");
+
+	//Manually tweak by adding some lines
+	for (int i = 0; i < 10; ++i) {
+		grid.GetNode(4, i + 3).Weight = 8;
+		grid.GetNode(30, i + 6).IsWalkable = false;
+	}
+
+	//Grid Navigator
+	auto& navigatorObject = root->AddChild("GridNavigatorObject");
+	navigatorObject.transform->SetScale(50, 50);
+
+	navigatorObject.AddComponent<SpriteRenderable>(
+			"NavigatorSprite",
+			"../assets/kaboom.png",
+			"NavSprite"
+	);
+	navigatorObject.AddComponent<GridNavigator>(
+			"GridNavigator",
+			"Grid",
+			glm::ivec2{20, 10},
+			2.f
+	);
+	navigatorObject.AddComponent<MouseTargetedNavigation>("MouseTargetedNavigation");
+
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
+
+	scenes.AddScene(std::move(root));
+}
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	BlockyEngine::BlockyConfigs configs{
-		800,
-		600,
-		SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
-		"../assets/fonts/defaultFont.ttf"
+			800,
+			600,
+			SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP,
+			"../assets/fonts/defaultFont.ttf"
 	};
 
 	BlockyEngine blockyEngine{configs};
 	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 
-	buildPrefabScene(sceneManager);
-	buildInputReparentingScene(sceneManager);
-	buildCameraScene(sceneManager);
-	buildCollisionEnv(sceneManager);
+	buildPrefabScene(sceneManager, "InputReparenting");
+	buildInputReparentingScene(sceneManager, "Camera");
+	buildCameraScene(sceneManager, "Collision");
+	buildCollisionScene(sceneManager, "Pathfinding");
+	buildPathfindingScene(sceneManager, "Prefab");
 
 	// sceneManager.SwitchScene("Prefabs");
-	sceneManager.SwitchScene("InputReparenting");
+	// sceneManager.SwitchScene("InputReparenting");
 	// sceneManager.SwitchScene("Camera");
 	// sceneManager.SwitchScene("CollisionScene");
+	sceneManager.SwitchScene("Pathfinding");
 
 	blockyEngine.Run();
 

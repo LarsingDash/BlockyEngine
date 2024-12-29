@@ -16,7 +16,9 @@ PathfindingGrid::PathfindingGrid(
 		_renderingModule(ModuleManager::GetInstance().GetModule<WindowModule>().GetRenderingModule()),
 		_dimensions(dimensions), _nodes() {
 	//Colors
-	_colors[0] = {200, 0, 0};
+	_colors[NonWalkableIndex] = {200, 0, 0};
+	_colors[VisitedIndex] = {0, 100, 0};
+	_colors[PathIndex] = {0, 250, 0};
 	_colors[defaultWeight] = {200, 200, 200};
 
 	//Grid initialization
@@ -26,8 +28,10 @@ PathfindingGrid::PathfindingGrid(
 		for (int x = 0; x < row.size(); ++x) {
 			row[x] = Node{
 					.IsWalkable = true,
+					.status = NodeStatus::Normal,
 					.Weight = defaultWeight,
-					.GridPos = {x, y}
+					.GridPos = {x, y},
+					.WorldPos = {},
 			};
 		}
 	}
@@ -103,11 +107,44 @@ PathfindingGrid::Node& PathfindingGrid::GetClosestNodeTo(const glm::vec2& worldP
 	//Scale to grid dimensions. IndexRaw now goes from {0.f, 0.f} to {_dimensions.x, _dimensions.y}
 	indexRaw.x *= static_cast<float>(_dimensions.x - 1);
 	indexRaw.y *= static_cast<float>(_dimensions.y - 1);
-	
+
 	//Return the node, cast from the indices, clamped between the bounds of the grid
 	return _nodes
 	[std::max(0, std::min(static_cast<int>(std::round(indexRaw.y)), _dimensions.y - 1))]
 	[std::max(0, std::min(static_cast<int>(std::round(indexRaw.x)), _dimensions.x - 1))];
+}
+
+void PathfindingGrid::SetNodeStatus(PathfindingGrid::Node& node, PathfindingGrid::NodeStatus status) {
+	if (node.status == status) return;
+	node.status = status;
+
+	std::string name{tag + std::to_string(node.GridPos.x) + ',' + std::to_string(node.GridPos.y) + "Status"};
+	if (status == NodeStatus::Normal)
+		_renderingModule.RemoveDebugRectangle(name);
+	else
+		_renderingModule.AddDebugRectangle(
+				name,
+				[&node, &colors = _colors, &opacity = _opacity, &nodeSize = _nodeSize]
+						(glm::vec2& position, glm::vec2& size, glm::ivec4& color) {
+					position = node.WorldPos;
+					size.x = size.y = nodeSize / 2.f;
+
+					switch (node.status) {
+						default:
+							break;
+						case Visited:
+							color = {colors[VisitedIndex], opacity};
+							break;
+						case Path:
+							color = {colors[PathIndex], opacity};
+							break;
+					}
+				}, 1);
+}
+
+std::vector<PathfindingGrid::Node*> PathfindingGrid::AStarPathfinding(PathfindingGrid::Node& start,
+																	  PathfindingGrid::Node& target) {
+	return {};
 }
 
 PathfindingGrid* PathfindingGrid::GetGridByTag(const std::string& tag) {
@@ -116,8 +153,8 @@ PathfindingGrid* PathfindingGrid::GetGridByTag(const std::string& tag) {
 }
 
 void PathfindingGrid::_visualize(bool show) {
-	for (const auto& row : _nodes) {
-		for (const auto& node : row) {
+	for (auto& row : _nodes) {
+		for (auto& node : row) {
 			std::string name{tag + std::to_string(node.GridPos.x) + ',' + std::to_string(node.GridPos.y)};
 
 			if (show)
@@ -133,7 +170,10 @@ void PathfindingGrid::_visualize(bool show) {
 							if (!node.IsWalkable) color = {colors[0], opacity};
 							else color = {colors[node.Weight], opacity};
 						});
-			else _renderingModule.RemoveDebugRectangle(name);
+			else {
+				_renderingModule.RemoveDebugRectangle(name);
+				SetNodeStatus(node, NodeStatus::Normal);
+			}
 		}
 	}
 }

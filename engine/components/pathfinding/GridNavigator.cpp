@@ -19,7 +19,8 @@ void GridNavigator::Update(float delta) {}
 void GridNavigator::End() {}
 
 void GridNavigator::SetTarget(const glm::vec2& worldPos) {
-	_grid->GetClosestNodeTo(worldPos).IsWalkable = false;
+	auto& target = _grid->GetClosestNodeTo(worldPos);
+	_grid->SetNodeStatus(target, static_cast<PathfindingGrid::NodeStatus>((target.status + 1) % 3));
 }
 
 Component* GridNavigator::_clone(const GameObject& parent) {

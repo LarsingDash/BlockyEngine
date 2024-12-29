@@ -14,10 +14,20 @@
 
 class RenderingModule;
 
+constexpr int NonWalkableIndex = 0;
+constexpr int VisitedIndex = -1;
+constexpr int PathIndex = -2;
+
 class PathfindingGrid : public Component {
 	public:
+		enum NodeStatus {
+			Normal,
+			Visited,
+			Path
+		};
 		struct Node {
 			bool IsWalkable;
+			NodeStatus status;
 			int Weight;
 			glm::ivec2 GridPos;
 			glm::vec2 WorldPos;
@@ -34,15 +44,24 @@ class PathfindingGrid : public Component {
 		void SetWeightsFromText(const std::string& text);
 
 		Node& GetClosestNodeTo(const glm::vec2& worldPos);
+		void SetNodeStatus(Node& node, NodeStatus status);
+		std::vector<Node*> AStarPathfinding(Node& start, Node& target);
 
 		inline void SetVisualization(bool visualize) { _shouldVisualize = visualize; }
 		inline void SetVisualizationOpacity(int opacity) { _opacity = opacity; }
 		inline void SetNodeSize(float size) { _nodeSize = size; }
 
-		inline void SetNonWalkableColor(const glm::ivec3& color) { _colors[0] = color; }
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "ArrayIndexOutOfBounds"
+//The special colors can be in the negatives since 0 or negative weights don't work for pathfinding anyway...
+//However, Clang is seeing this as an issue since negative indices in [...] are normally problematic
+		inline void SetNonWalkableColor(const glm::ivec3& color) { _colors[NonWalkableIndex] = color; }
+		inline void SetVisitedColor(const glm::ivec3& color) { _colors[VisitedIndex] = color; }
+		inline void SetPathColor(const glm::ivec3& color) { _colors[PathIndex] = color; }
+#pragma clang diagnostic pop
 		inline void SetWeightColor(int weight, const glm::ivec3& color) { _colors[weight] = color; }
 
-		inline const glm::ivec2& GetDimensions() const { return _dimensions; } 
+		inline const glm::ivec2& GetDimensions() const { return _dimensions; }
 
 		inline Node& operator()(int x, int y) { return _nodes[y][x]; }
 

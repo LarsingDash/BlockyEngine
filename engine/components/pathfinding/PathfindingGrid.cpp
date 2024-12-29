@@ -75,13 +75,10 @@ void PathfindingGrid::RefreshGridPositions() {
 
 void PathfindingGrid::SetWeightsFromText(const std::string& text) {
 	std::vector<std::string> lines;
-
-	int counter{0};
 	std::string temp;
 
 	for (char c : text) {
 		if (c == '\n') {
-			++counter;
 			lines.emplace_back(temp.c_str());
 			temp.clear();
 		} else temp += c;

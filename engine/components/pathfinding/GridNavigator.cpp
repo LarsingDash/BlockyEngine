@@ -20,7 +20,9 @@ void GridNavigator::End() {}
 
 void GridNavigator::SetTarget(const glm::vec2& worldPos) {
 	auto& target = _grid->GetClosestNodeTo(worldPos);
-	_grid->SetNodeStatus(target, static_cast<PathfindingGrid::NodeStatus>((target.status + 1) % 3));
+	auto path = _grid->AStarPathfinding((*_grid)(0,0), target);
+//	std::cout << "---------------" << std::endl;
+//	for (const auto& node : path) std::cout << node->GridPos.x << ' ' << node->GridPos.y << std::endl;
 }
 
 Component* GridNavigator::_clone(const GameObject& parent) {

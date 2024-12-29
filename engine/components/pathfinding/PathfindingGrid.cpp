@@ -4,6 +4,8 @@
 
 #include "PathfindingGrid.hpp"
 
+#include <queue>
+
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/WindowModule.hpp"
 
@@ -142,9 +144,92 @@ void PathfindingGrid::SetNodeStatus(PathfindingGrid::Node& node, PathfindingGrid
 				}, 1);
 }
 
-std::vector<PathfindingGrid::Node*> PathfindingGrid::AStarPathfinding(PathfindingGrid::Node& start,
-																	  PathfindingGrid::Node& target) {
-	return {};
+std::vector<PathfindingGrid::Node*> PathfindingGrid::AStarPathfinding(
+		PathfindingGrid::Node& start,
+		PathfindingGrid::Node& target) {
+	//Reset status of all nodes
+	for (auto& row : _nodes) {
+		for (auto& node : row) SetNodeStatus(node, NodeStatus::Normal);
+	}
+
+	//Distance from source lookup table
+	std::unordered_map<const Node*, int> distances;
+	//Temporary path lookup table
+	std::unordered_map<Node*, Node*> predecessors;
+
+	//Priority queue
+	using nodePair = std::pair<float, Node*>;
+	std::priority_queue<
+			nodePair,
+			std::vector<nodePair>,
+			std::greater<>> queue;
+
+	//Prepare Lambda's
+	auto heuristic = [&target](const Node* node) {
+		//Calculate x and y differences
+		auto dx = static_cast<float>(node->GridPos.x - target.GridPos.x);
+		auto dy = static_cast<float>(node->GridPos.y - target.GridPos.y);
+
+		//Normalize Euclidean distance by tile size
+		return static_cast<float>(std::sqrt(dx * dx + dy * dy));
+	};
+
+	auto neighborAction =
+			[this, &distances, &predecessors, &queue, &heuristic]
+					(Node* curNode, Node* neighbor) {
+				if (!neighbor->IsWalkable) return;
+				
+				//Get distance and neighbor
+				int edgeDistance = distances[curNode] + neighbor->Weight;
+
+				//If the path to this node is closer than current distance, override in lookups and add to queue 
+				if (edgeDistance < distances[neighbor]) {
+					SetNodeStatus(*neighbor, NodeStatus::Visited);
+					distances[neighbor] = edgeDistance;
+					predecessors[neighbor] = curNode;
+					queue.emplace(static_cast<float>(edgeDistance) + heuristic(neighbor), neighbor);
+				}
+			};
+
+	//Prepare lookup tables
+	for (auto& row : _nodes) {
+		for (auto& node : row) {
+			//Everything unvisited has max cost
+			distances[&node] = std::numeric_limits<int>::max();
+			//No connections
+			predecessors[&node] = nullptr;
+		}
+	}
+
+	//Insert start in distance as lowest, and in the queue as first to process 
+	distances[&start] = 0;
+	queue.emplace(heuristic(&start), &start);
+
+	//Go through all nodes, till all have been processed
+	while (!queue.empty()) {
+		//Get next nodePair to evaluate
+		auto [_, curNode] = queue.top();
+		queue.pop();
+
+		//Stop if the target has been found
+		auto& curPos = curNode->GridPos;
+		if (curPos == target.GridPos) break;
+
+		//Add all neighbors of current node to the lookups and queue
+		if (curPos.x > 0) neighborAction(curNode, &_nodes[curPos.y][curPos.x - 1]);
+		if (curPos.x < _dimensions.x - 1) neighborAction(curNode, &_nodes[curPos.y][curPos.x + 1]);
+		if (curPos.y > 0) neighborAction(curNode, &_nodes[curPos.y - 1][curPos.x]);
+		if (curPos.y < _dimensions.y - 1) neighborAction(curNode, &_nodes[curPos.y + 1][curPos.x]);
+	}
+
+	//Reconstruct path if target was found
+	std::vector<Node*> path;
+	for (Node* node = &target; node != nullptr; node = predecessors[node]) {
+		path.push_back(node);
+		SetNodeStatus(*node, NodeStatus::Path);
+	}
+
+	return path;
 }
 
 PathfindingGrid* PathfindingGrid::GetGridByTag(const std::string& tag) {

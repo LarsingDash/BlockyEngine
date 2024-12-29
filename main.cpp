@@ -25,6 +25,7 @@
 #include <components/example/MoveWithPhysics.hpp>
 
 #include "components/pathfinding/PathfindingGrid.hpp"
+#include "components/pathfinding/MouseTargetedNavigation.hpp"
 #include "components/pathfinding/GridNavigator.hpp"
 
 void buildPrefabScene(SceneManager& scenes, const char* next) {
@@ -301,7 +302,8 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 
 	//Grid Navigator
 	auto& navigatorObject = root->AddChild("GridNavigatorObject");
-	auto& navigator = navigatorObject.AddComponent<GridNavigator>("GridNavigator", "Grid");
+	navigatorObject.AddComponent<GridNavigator>("GridNavigator", "Grid");
+	navigatorObject.AddComponent<MouseTargetedNavigation>("MouseTargetedNavigation");
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);

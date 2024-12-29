@@ -31,24 +31,22 @@ PathfindingGrid::PathfindingGrid(
 			};
 		}
 	}
-
-	_grids[tag] = this;
 }
 
-PathfindingGrid::~PathfindingGrid() {
-	_grids.erase(tag);
-}
+PathfindingGrid::~PathfindingGrid() = default;
 
 void PathfindingGrid::Start() {
 	RefreshGridPositions();
 
 	_visualize(_shouldVisualize);
+	_grids[tag] = this;
 }
 
 void PathfindingGrid::Update(float delta) {}
 
 void PathfindingGrid::End() {
 	_visualize(false);
+	_grids.erase(tag);
 }
 
 void PathfindingGrid::RefreshGridPositions() {
@@ -93,6 +91,23 @@ void PathfindingGrid::SetWeightsFromText(const std::string& text) {
 			else row[x].Weight = weight - '0';
 		}
 	}
+}
+
+PathfindingGrid::Node& PathfindingGrid::GetClosestNodeTo(const glm::vec2& worldPos) {
+	//Transform world coords to float values where the top-left node is {0.f, 0.f} and bottom-right is {1.f, 1.f}
+	auto indexRaw =
+			(worldPos - componentTransform->GetWorldPosition()) //Position to the grid
+					/ componentTransform->GetWorldScale() //Scale to the grid size
+					+ glm::vec2{0.5f}; //Offset to get 0 to 1
+
+	//Scale to grid dimensions. IndexRaw now goes from {0.f, 0.f} to {_dimensions.x, _dimensions.y}
+	indexRaw.x *= static_cast<float>(_dimensions.x - 1);
+	indexRaw.y *= static_cast<float>(_dimensions.y - 1);
+	
+	//Return the node, cast from the indices, clamped between the bounds of the grid
+	return _nodes
+	[std::max(0, std::min(static_cast<int>(std::round(indexRaw.y)), _dimensions.y - 1))]
+	[std::max(0, std::min(static_cast<int>(std::round(indexRaw.x)), _dimensions.x - 1))];
 }
 
 PathfindingGrid* PathfindingGrid::GetGridByTag(const std::string& tag) {

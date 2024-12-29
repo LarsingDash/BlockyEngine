@@ -12,12 +12,15 @@ GridNavigator::GridNavigator(GameObject* gameObject, const char* tag, const char
 #include <iostream>
 void GridNavigator::Start() {
 	_grid = PathfindingGrid::GetGridByTag(_gridTag);
-	std::cout << (*_grid)(4, 8).Weight << std::endl;
 }
 
 void GridNavigator::Update(float delta) {}
 
 void GridNavigator::End() {}
+
+void GridNavigator::SetTarget(const glm::vec2& worldPos) {
+	_grid->GetClosestNodeTo(worldPos).IsWalkable = false;
+}
 
 Component* GridNavigator::_clone(const GameObject& parent) {
 	auto clone = new GridNavigator(*this);

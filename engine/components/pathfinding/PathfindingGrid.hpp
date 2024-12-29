@@ -33,6 +33,8 @@ class PathfindingGrid : public Component {
 		void RefreshGridPositions();
 		void SetWeightsFromText(const std::string& text);
 
+		Node& GetClosestNodeTo(const glm::vec2& worldPos);
+
 		inline void SetVisualization(bool visualize) { _shouldVisualize = visualize; }
 		inline void SetVisualizationOpacity(int opacity) { _opacity = opacity; }
 		inline void SetNodeSize(float size) { _nodeSize = size; }

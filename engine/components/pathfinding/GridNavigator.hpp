@@ -18,6 +18,8 @@ class GridNavigator : public Component {
 		void Update(float delta) override;
 		void End() override;
 
+		void SetTarget(const glm::vec2& worldPos);
+
 	private:
 		std::string _gridTag;
 

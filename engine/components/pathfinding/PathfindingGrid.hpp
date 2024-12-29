@@ -65,7 +65,7 @@ class PathfindingGrid : public Component {
 
 		inline const glm::ivec2& GetDimensions() const { return _dimensions; }
 
-		inline Node& operator()(int x, int y) { return _nodes[y][x]; }
+		inline Node& GetNode(int x, int y) { return _nodes[y][x]; }
 
 		static PathfindingGrid* GetGridByTag(const std::string& tag);
 

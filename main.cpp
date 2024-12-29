@@ -296,8 +296,8 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 
 	//Manually tweak by adding some lines
 	for (int i = 0; i < 10; ++i) {
-		grid(4, i + 3).Weight = 8;
-		grid(30, i + 6).IsWalkable = false;
+		grid.GetNode(4, i + 3).Weight = 8;
+		grid.GetNode(30, i + 6).IsWalkable = false;
 	}
 
 	//Grid Navigator

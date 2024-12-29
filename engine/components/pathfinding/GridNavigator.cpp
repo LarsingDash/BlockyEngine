@@ -14,7 +14,7 @@ GridNavigator::GridNavigator(GameObject* gameObject, const char* tag, const char
 void GridNavigator::Start() {
 	_grid = PathfindingGrid::GetGridByTag(_gridTag);
 
-	auto& startingNode = (*_grid)(_startingGridPos.x, _startingGridPos.y);
+	auto& startingNode = _grid->GetNode(_startingGridPos.x, _startingGridPos.y);
 	gameObject->transform->SetPosition(startingNode.WorldPos.x, startingNode.WorldPos.y);
 	_currentNode = &startingNode;
 }

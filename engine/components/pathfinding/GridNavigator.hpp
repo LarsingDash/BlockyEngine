@@ -11,7 +11,8 @@
 
 class GridNavigator : public Component {
 	public:
-		GridNavigator(GameObject* gameObject, const char* tag, const char* gridTag);
+		GridNavigator(GameObject* gameObject, const char* tag, const char* gridTag,
+					  glm::ivec2 startingGridPos, float movementSpeed = 1.f);
 		~GridNavigator() override = default; //Optional
 
 		void Start() override;
@@ -22,6 +23,13 @@ class GridNavigator : public Component {
 
 	private:
 		std::string _gridTag;
+		glm::ivec2 _startingGridPos;
+
+		float _movementSpeed;
+		float _elapsedTime{0.f};
+		PathfindingGrid::Node* _currentNode{nullptr};
+		int _pathIndex{1};
+		std::vector<PathfindingGrid::Node*> _path{};
 
 		PathfindingGrid* _grid{nullptr};
 

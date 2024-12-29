@@ -43,8 +43,10 @@ class PathfindingGrid : public Component {
 		void RefreshGridPositions();
 		void SetWeightsFromText(const std::string& text);
 
-		Node& GetClosestNodeTo(const glm::vec2& worldPos);
 		void SetNodeStatus(Node& node, NodeStatus status);
+		void ClearGridStatus();
+
+		Node& GetClosestNodeTo(const glm::vec2& worldPos);
 		std::vector<Node*> AStarPathfinding(Node& start, Node& target);
 
 		inline void SetVisualization(bool visualize) { _shouldVisualize = visualize; }

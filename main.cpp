@@ -302,7 +302,19 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 
 	//Grid Navigator
 	auto& navigatorObject = root->AddChild("GridNavigatorObject");
-	navigatorObject.AddComponent<GridNavigator>("GridNavigator", "Grid");
+	navigatorObject.transform->SetScale(50, 50);
+
+	navigatorObject.AddComponent<SpriteRenderable>(
+			"NavigatorSprite",
+			"../assets/kaboom.png",
+			"NavSprite"
+	);
+	navigatorObject.AddComponent<GridNavigator>(
+			"GridNavigator",
+			"Grid",
+			glm::ivec2{20, 10},
+			2.f
+	);
 	navigatorObject.AddComponent<MouseTargetedNavigation>("MouseTargetedNavigation");
 
 	//Scene switching

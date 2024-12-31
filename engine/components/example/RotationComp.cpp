@@ -20,10 +20,12 @@ void RotationComp::Start() {}
 
 void RotationComp::Update(float delta) {
 	gameObject->transform->Rotate(delta * 75.f);
-	
+
 	float cur = gameObject->transform->GetLocalRotation();
 	if (cur > 360.f) gameObject->transform->SetRotation(cur - 360.f);
 	if (cur < -360.f) gameObject->transform->SetRotation(cur + 360.f);
 }
 
 void RotationComp::End() {}
+
+JSON_REGISTER_SOURCE_DEFAULTS(RotationComp);

@@ -28,6 +28,7 @@
 #include "components/pathfinding/MouseTargetedNavigation.hpp"
 #include "components/pathfinding/GridNavigator.hpp"
 
+#include <iostream>
 void buildPrefabScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Prefab");
 	root->SetActive(false);
@@ -44,7 +45,7 @@ void buildPrefabScene(SceneManager& scenes, const char* next) {
 	cannon.transform->SetScale(50, 50);
 	cannon.AddComponent<RectangleRenderable>("CannonR", glm::vec4(150, 75, 15, 155), 0, true);
 	cannon.AddComponent<SpawnerComp>("Spawner");
-	cannon.AddComponent<RotationComp>("Spawner");
+	cannon.AddComponent<RotationComp>("Rotation");
 
 	auto& barrel = cannon.AddChild("Barrel");
 	barrel.AddComponent<RectangleRenderable>("BarrelR", glm::vec4(125, 125, 250, 255), 3, true);

@@ -10,6 +10,8 @@
 #include "logging/BLogger.hpp"
 #include "gameObject/GameObject.hpp"
 
+std::unordered_map<std::string, JsonUtil::jsonConfig> JsonUtil::_componentRegistrations{};
+
 void JsonUtil::LoadFromFile(GameObject& recipient, const std::string& filePath) {
 	std::ifstream file{filePath};
 	std::stringstream text;
@@ -54,6 +56,19 @@ void JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& 
 		BLOCKY_ENGINE_ERROR("Encountered an error with stof while parsing transform data");
 	}
 
+	//Components
+	for (const auto& [componentName, componentJson] : jsonObject.at("components").items()) {
+		auto registration = _componentRegistrations.find(componentName);
+		if (registration != _componentRegistrations.end())
+			registration->second.FromJson(child, componentJson);
+		else
+			BLOCKY_ENGINE_WARNING_STREAM(
+					"No JSON registration was found during FromJson for: "
+							<< componentName
+							<< ". View Blocky Engine's Readme for instructions on serializing components"
+			);
+	}
+
 	//Children
 	for (const auto& childJson : jsonObject.at("children")) {
 		_gameObjectFromJson(child, childJson);
@@ -77,6 +92,20 @@ nlohmann::json JsonUtil::_gameObjectToJson(const GameObject& gameObject) { // NO
 	auto rotation = transform.GetLocalRotation();
 	auto& scale = transform.GetLocalScale();
 
+	//Prepare components
+	auto componentList = nlohmann::json::object();
+	for (const auto& [type, component] : gameObject.GetComponents()) {
+		auto registration = _componentRegistrations.find(type.name());
+		if (registration != _componentRegistrations.end())
+			componentList[type.name()] = registration->second.ToJson();
+		else
+			BLOCKY_ENGINE_WARNING_STREAM(
+					"No JSON registration was found during ToJson for: "
+							<< type.name()
+							<< ". View Blocky Engine's Readme for instructions on serializing components"
+			);
+	}
+
 	//Prepare children
 	auto childList = nlohmann::json::array();
 	for (const auto& child : gameObject.GetChildren()) {
@@ -91,6 +120,7 @@ nlohmann::json JsonUtil::_gameObjectToJson(const GameObject& gameObject) { // NO
 					{"rotation", std::to_string(rotation)},
 					{"scale", {{"x", std::to_string(scale.x)}, {"y", std::to_string(scale.y)}}}
 			}},
+			{"components", componentList},
 			{"children", childList}
 	};
 

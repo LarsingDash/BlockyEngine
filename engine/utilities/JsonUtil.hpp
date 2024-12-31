@@ -7,12 +7,17 @@
 
 #include <string>
 
+#include <json/json.hpp>
+
 class GameObject;
 
 namespace JsonUtil {
-	void LoadFromString(GameObject& recipient, const std::string& text);
 	void LoadFromFile(GameObject& recipient, const std::string& filePath);
-	void SaveToFile(GameObject& gameObject, const std::string& filePath);
+	void LoadFromString(GameObject& recipient, const std::string& text);
+	void _gameObjectFromJson(GameObject& recipient, const nlohmann::json& jsonObject);
+
+	void SaveToFile(const GameObject& gameObject, const std::string& filePath);
+	nlohmann::json _gameObjectToJson(const GameObject& gameObject);
 }
 
 #endif //BLOCKYENGINE_ENGINE_UTILITIES_JSONUTIL_HPP_

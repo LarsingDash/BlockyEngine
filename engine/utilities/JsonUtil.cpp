@@ -17,15 +17,21 @@ void JsonUtil::LoadFromString(GameObject& recipient, const std::string& text) {
 
 	auto& child = recipient.AddChild(jsonObject.at("tag").get<std::string>());
 
-	child.transform->SetPosition(
-			jsonObject.at("transform").at("position").at("x").get<float>(),
-			jsonObject.at("transform").at("position").at("y").get<float>()
-	);
-	child.transform->SetRotation(jsonObject.at("transform").at("rotation").get<float>());
-	child.transform->SetScale(
-			jsonObject.at("transform").at("scale").at("x").get<float>(),
-			jsonObject.at("transform").at("scale").at("y").get<float>()
-	);
+	try {
+		child.transform->SetPosition(
+				std::stof(jsonObject.at("transform").at("position").at("x").get<std::string>()),
+				std::stof(jsonObject.at("transform").at("position").at("y").get<std::string>())
+		);
+		child.transform->SetRotation(
+				std::stof(jsonObject.at("transform").at("rotation").get<std::string>())
+		);
+		child.transform->SetScale(
+				std::stof(jsonObject.at("transform").at("scale").at("x").get<std::string>()),
+				std::stof(jsonObject.at("transform").at("scale").at("y").get<std::string>())
+		);
+	} catch (const std::exception& e) {
+		BLOCKY_ENGINE_ERROR("Encountered an error with stof while parsing transform data");
+	}
 }
 
 void JsonUtil::LoadFromFile(GameObject& recipient, const std::string& filePath) {
@@ -51,15 +57,15 @@ void JsonUtil::SaveToFile(GameObject& gameObject, const std::string& filePath) {
 
 	auto& transform = *gameObject.transform;
 	auto& position = transform.GetLocalPosition();
-	auto& scale = transform.GetLocalScale();
 	auto rotation = transform.GetLocalRotation();
+	auto& scale = transform.GetLocalScale();
 
 	auto text = nlohmann::json{
 			{"tag", gameObject.tag},
 			{"transform", {
-					{"position", {{"x", position.x}, {"y", position.y}}},
-					{"rotation", rotation},
-					{"scale", {{"x", scale.x}, {"y", scale.y}}}
+					{"position", {{"x", std::to_string(position.x)}, {"y", std::to_string(position.y)}}},
+					{"rotation", std::to_string(rotation)},
+					{"scale", {{"x", std::to_string(scale.x)}, {"y", std::to_string(scale.y)}}}
 			}}
 	};
 	file << text.dump(2);

@@ -31,8 +31,13 @@
 void buildPrefabScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("Prefab");
 	root->SetActive(false);
-	
-	JsonUtil::SaveToFile(*root, "PrefabScene.txt");
+
+	auto prefabScene = std::make_unique<GameObject>("PrefabScene");
+	prefabScene->transform->SetPosition(7.4f, 8.6f);
+	prefabScene->transform->SetRotation(37.5f);
+	prefabScene->transform->SetScale(15.7, 2.3);
+
+	JsonUtil::SaveToFile(*prefabScene, "PrefabScene.txt");
 	JsonUtil::LoadFromFile(*root, "PrefabScene.txt");
 
 //	root->AddComponent<MouseCameraController>("CameraController");
@@ -343,7 +348,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	buildCollisionScene(sceneManager, "Pathfinding");
 	buildPathfindingScene(sceneManager, "Prefab");
 
-	 sceneManager.SwitchScene("Prefabs");
+	sceneManager.SwitchScene("Prefabs");
 	// sceneManager.SwitchScene("InputReparenting");
 	// sceneManager.SwitchScene("Camera");
 	// sceneManager.SwitchScene("CollisionScene");

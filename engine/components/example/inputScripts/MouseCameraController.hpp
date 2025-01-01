@@ -19,7 +19,7 @@ class MouseCameraController : public Component {
 		void Update(float delta) override;
 		void End() override;
 
-		JSON_REGISTER_HEADER_DEFAULTS(MouseCameraController);
+		JSON_REGISTER_HEADER(MouseCameraController);
 
 	private:
 		Component* _clone(const GameObject& parent) override;

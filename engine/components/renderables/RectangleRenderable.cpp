@@ -26,28 +26,26 @@ void RectangleRenderable::SetColor(const glm::vec4& color) {
 	this->_color = color;
 }
 
-void RectangleRenderable::FromJson(GameObject& recipient, const nlohmann::json& jsonObject) {
-	recipient.AddComponent<RectangleRenderable>(
-			jsonObject.at("tag").get<std::string>().c_str(),
-			glm::vec4{
-					jsonObject.at("r").get<float>(),
-					jsonObject.at("g").get<float>(),
-					jsonObject.at("b").get<float>(),
-					jsonObject.at("a").get<float>()
-			},
-			jsonObject.at("layer").get<int>(),
-			jsonObject.at("filled").get<bool>()
-	);
-}
+JSON_REGISTER_FROM_CUSTOM_CONSTRUCTOR(
+		RectangleRenderable,
+		glm::vec4{
+				json.at("r").get<float>(),
+				json.at("g").get<float>(),
+				json.at("b").get<float>(),
+				json.at("a").get<float>()
+		},
+		json.at("layer").get<int>(),
+		json.at("filled").get<bool>()
+)
 
-nlohmann::json RectangleRenderable::ToJson(const RectangleRenderable& other) {
-	return nlohmann::json{
-			{"tag", other.tag},
-			{"r", other._color.r},
-			{"g", other._color.g},
-			{"b", other._color.b},
-			{"a", other._color.a},
-			{"layer", other.GetLayer()},
-			{"filled", other._isFilled},
-	};
-}
+JSON_REGISTER_TO(
+		RectangleRenderable,
+		[](nlohmann::json& json, const RectangleRenderable& other) {
+			json["r"] = other._color.r;
+			json["g"] = other._color.g;
+			json["b"] = other._color.b;
+			json["a"] = other._color.a;
+			json["layer"] = other.GetLayer();
+			json["filled"] = other._isFilled;
+		}
+)

@@ -19,7 +19,7 @@ class RectangleRenderable : public Renderable {
 		[[nodiscard]] bool IsFilled() const;
 		void SetColor(const glm::vec4& color);
 
-		JSON_REGISTER_HEADER_DEFAULTS(RectangleRenderable);
+		JSON_REGISTER_HEADER(RectangleRenderable);
 
 	private:
 		Component* _clone(const GameObject& parent) override;

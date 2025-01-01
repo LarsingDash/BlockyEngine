@@ -17,7 +17,7 @@ class RotationComp : public Component {
 		void Update(float delta) override;
 		void End() override;
 
-		JSON_REGISTER_HEADER_DEFAULTS(RotationComp);
+		JSON_REGISTER_HEADER(RotationComp);
 
 	private:
 		Component* _clone(const GameObject& parent) override;

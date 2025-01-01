@@ -53,16 +53,16 @@ void SpawnerComp::Update(float delta) {
 
 void SpawnerComp::End() {}
 
-void SpawnerComp::FromJson(GameObject& recipient, const nlohmann::json& jsonObject) {
-	auto& spawner = recipient.AddComponent<SpawnerComp>(
-			jsonObject.at("tag").get<std::string>().c_str()
-	);
-	spawner.counter = jsonObject.at("counter").get<float>();
-}
+JSON_REGISTER_FROM(
+		SpawnerComp,
+		[](const nlohmann::json& json, SpawnerComp& other) {
+			other.counter = json.at("counter").get<float>();
+		}
+)
 
-nlohmann::json SpawnerComp::ToJson(const SpawnerComp& other) {
-	return nlohmann::json{
-			{"tag", other.tag},
-			{"counter", other.counter}
-	};
-}
+JSON_REGISTER_TO(
+		SpawnerComp,
+		[](nlohmann::json& json, const SpawnerComp& other) {
+			json["counter"] = other.counter;
+		}
+)

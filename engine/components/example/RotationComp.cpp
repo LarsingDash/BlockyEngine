@@ -28,4 +28,5 @@ void RotationComp::Update(float delta) {
 
 void RotationComp::End() {}
 
-JSON_REGISTER_SOURCE_DEFAULTS(RotationComp);
+JSON_REGISTER_FROM_DEFAULT(RotationComp)
+JSON_REGISTER_TO_DEFAULT(RotationComp)

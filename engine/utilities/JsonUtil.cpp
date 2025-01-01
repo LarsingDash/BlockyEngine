@@ -38,29 +38,29 @@ void JsonUtil::LoadFromString(GameObject& recipient, const std::string& text) {
 	_gameObjectFromJson(recipient, jsonObject);
 }
 
-void JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& jsonObject) { // NOLINT(*-no-recursion)
+void JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& json) { // NOLINT(*-no-recursion)
 	//GameObject
-	auto& child = recipient.AddChild(jsonObject.at("tag").get<std::string>());
+	auto& child = recipient.AddChild(json.at("tag").get<std::string>());
 
 	//Transform
 	try {
 		child.transform->SetPosition(
-				std::stof(jsonObject.at("transform").at("position").at("x").get<std::string>()),
-				std::stof(jsonObject.at("transform").at("position").at("y").get<std::string>())
+				std::stof(json.at("transform").at("position").at("x").get<std::string>()),
+				std::stof(json.at("transform").at("position").at("y").get<std::string>())
 		);
 		child.transform->SetRotation(
-				std::stof(jsonObject.at("transform").at("rotation").get<std::string>())
+				std::stof(json.at("transform").at("rotation").get<std::string>())
 		);
 		child.transform->SetScale(
-				std::stof(jsonObject.at("transform").at("scale").at("x").get<std::string>()),
-				std::stof(jsonObject.at("transform").at("scale").at("y").get<std::string>())
+				std::stof(json.at("transform").at("scale").at("x").get<std::string>()),
+				std::stof(json.at("transform").at("scale").at("y").get<std::string>())
 		);
 	} catch (const std::exception& e) {
 		BLOCKY_ENGINE_ERROR("Encountered an error with stof while parsing transform data");
 	}
 
 	//Components
-	for (const auto& [componentName, componentJson] : jsonObject.at("components").items()) {
+	for (const auto& [componentName, componentJson] : json.at("components").items()) {
 		auto registration = GetComponentRegistrations().find(componentName);
 		if (registration != GetComponentRegistrations().end())
 			registration->second.FromJson(child, componentJson);
@@ -73,7 +73,7 @@ void JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& 
 	}
 
 	//Children
-	for (const auto& childJson : jsonObject.at("children")) {
+	for (const auto& childJson : json.at("children")) {
 		_gameObjectFromJson(child, childJson);
 	}
 }

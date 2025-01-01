@@ -14,9 +14,9 @@ class Component;
 
 namespace JsonUtil {
 	//FromJson
-	void LoadFromFile(GameObject& recipient, const std::string& filePath);
-	void LoadFromString(GameObject& recipient, const std::string& text);
-	void _gameObjectFromJson(GameObject& recipient, const nlohmann::json& json);
+	GameObject* LoadFromFile(GameObject& recipient, const std::string& filePath);
+	GameObject* LoadFromString(GameObject& recipient, const std::string& text);
+	GameObject* _gameObjectFromJson(GameObject& recipient, const nlohmann::json& json);
 
 	//ToJson
 	void SaveToFile(const GameObject& gameObject, const std::string& filePath);
@@ -32,34 +32,34 @@ namespace JsonUtil {
 //Registration Macros
 //CUSTOM SOURCE
 #define JSON_REGISTER_FROM(componentClass, customFromJson) \
-	void componentClass::FromJson(GameObject& recipient, const nlohmann::json& json) { \
-		auto& comp = recipient.AddComponent<componentClass>(json.at("tag").get<std::string>().c_str()); \
-		customFromJson(json, comp); \
-	}
+    void componentClass::FromJson(GameObject& recipient, const nlohmann::json& json) { \
+        auto& comp = recipient.AddComponent<componentClass>(json.at("tag").get<std::string>().c_str()); \
+        customFromJson(json, comp); \
+    }
 #define JSON_REGISTER_FROM_CUSTOM_CONSTRUCTOR(componentClass, ...) \
-	void componentClass::FromJson(GameObject& recipient, const nlohmann::json& json) { \
-		recipient.AddComponent<componentClass>(json.at("tag").get<std::string>().c_str(), __VA_ARGS__); \
-	}
+    void componentClass::FromJson(GameObject& recipient, const nlohmann::json& json) { \
+        recipient.AddComponent<componentClass>(json.at("tag").get<std::string>().c_str(), __VA_ARGS__); \
+    }
 #define JSON_REGISTER_TO(componentClass, customToJson) \
-	nlohmann::json componentClass::ToJson(const componentClass& other) { \
-		nlohmann::json json = { \
-			{"tag", other.tag}, \
-		}; \
-		customToJson(json, other); \
-		return json; \
-	}
+    nlohmann::json componentClass::ToJson(const componentClass& other) { \
+        nlohmann::json json = { \
+            {"tag", other.tag}, \
+        }; \
+        customToJson(json, other); \
+        return json; \
+    }
 
 //DEFAULT SOURCE, REDIRECTING TO CUSTOM
 #define JSON_REGISTER_FROM_DEFAULT(componentClass) \
-	JSON_REGISTER_FROM( \
-		componentClass, \
-		[](const nlohmann::json& json, componentClass& other){} \
-	)
+    JSON_REGISTER_FROM( \
+        componentClass, \
+        [](const nlohmann::json& json, componentClass& other){} \
+    )
 #define JSON_REGISTER_TO_DEFAULT(componentClass) \
-	JSON_REGISTER_TO( \
-		componentClass, \
-		[](nlohmann::json& json, const componentClass& other){} \
-	)
+    JSON_REGISTER_TO( \
+        componentClass, \
+        [](nlohmann::json& json, const componentClass& other){} \
+    )
 
 //HEADER
 #define JSON_REGISTER_HEADER(componentClass) \

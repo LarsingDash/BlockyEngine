@@ -7,6 +7,8 @@
 
 #include <components/Component.hpp>
 
+#include "utilities/JsonUtil.hpp"
+
 class JsonLoader : public Component {
 	public:
 		JsonLoader(GameObject* gameObject, const char* tag, const char* jsonPath);
@@ -15,11 +17,15 @@ class JsonLoader : public Component {
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-		
+
+		JSON_REGISTER_HEADER(JsonLoader)
+
 	private:
 		std::string _jsonPath;
 
 		Component* _clone(const GameObject& parent) override;
 };
+
+JSON_REGISTER_COMPONENT(JsonLoader)
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_JSON_JSONLOADER_HPP_

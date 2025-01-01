@@ -15,13 +15,13 @@ extern std::unordered_map<std::string, JsonUtil::jsonConfig>& JsonUtil::GetCompo
 	return componentRegistrations;
 }
 
-void JsonUtil::LoadFromFile(GameObject& recipient, const std::string& filePath) {
+GameObject* JsonUtil::LoadFromFile(GameObject& recipient, const std::string& filePath) {
 	std::ifstream file{filePath};
 	std::stringstream text;
 
 	if (!file.is_open() || !file.good()) {
 		BLOCKY_ENGINE_ERROR_STREAM("Encountered an error while opening the file in LoadFromFile() at:\n" << filePath);
-		return;
+		return nullptr;
 	}
 
 	while (!file.eof()) {
@@ -30,15 +30,15 @@ void JsonUtil::LoadFromFile(GameObject& recipient, const std::string& filePath) 
 		text << line;
 	}
 
-	LoadFromString(recipient, text.str());
+	return LoadFromString(recipient, text.str());
 }
 
-void JsonUtil::LoadFromString(GameObject& recipient, const std::string& text) {
+GameObject* JsonUtil::LoadFromString(GameObject& recipient, const std::string& text) {
 	nlohmann::json jsonObject = nlohmann::json::parse(text);
-	_gameObjectFromJson(recipient, jsonObject);
+	return _gameObjectFromJson(recipient, jsonObject);
 }
 
-void JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& json) { // NOLINT(*-no-recursion)
+GameObject* JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& json) { // NOLINT(*-no-recursion)
 	//GameObject
 	auto& child = recipient.AddChild(json.at("tag").get<std::string>());
 
@@ -57,6 +57,7 @@ void JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& 
 		);
 	} catch (const std::exception& e) {
 		BLOCKY_ENGINE_ERROR("Encountered an error with stof while parsing transform data");
+		return nullptr;
 	}
 
 	//Components
@@ -76,6 +77,8 @@ void JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& 
 	for (const auto& childJson : json.at("children")) {
 		_gameObjectFromJson(child, childJson);
 	}
+
+	return &child;
 }
 
 void JsonUtil::SaveToFile(const GameObject& gameObject, const std::string& filePath) {

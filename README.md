@@ -183,6 +183,8 @@ JSON_REGISTER_FROM_CUSTOM_CONSTRUCTOR(
 )
 ```
 
+Blocky Engine provides two components for loading prefabs from json. Both will add the gameObjects that are generated from the json as a child to the gameObject this component belongs to. `components/json/JsonLoader` will instantiate the json at the given filePath once on Start(). `components/json/JsonSaveAndLoader` will first take the json in the given filePath as it's initial state. If it doesn't exist already, this json will be cloned to an identical file in the given instancePath. This version will be used to save and load this instance's data on Start() and End().
+
 ## Custom Modules
 
 Currently, Blocky Engine only contains the Window Module (internally containing the Rendering Module) with a tight

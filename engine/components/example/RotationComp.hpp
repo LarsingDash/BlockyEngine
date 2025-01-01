@@ -8,8 +8,6 @@
 #include "components/Component.hpp"
 #include "utilities/JsonUtil.hpp"
 
-//JSON_UTIL_REGISTER_COMPONENT_DEFAULT(RotationComp);
-
 class RotationComp : public Component {
 	public:
 		RotationComp(GameObject* gameObject, const char* tag);
@@ -19,11 +17,12 @@ class RotationComp : public Component {
 		void Update(float delta) override;
 		void End() override;
 
-	private:
-		JSON_REGISTER_HEADER_DEFAULTS();
-		JSON_REGISTER_COMPONENT(RotationComp);
+		JSON_REGISTER_HEADER_DEFAULTS(RotationComp);
 
+	private:
 		Component* _clone(const GameObject& parent) override;
 };
+
+JSON_REGISTER_COMPONENT(RotationComp);
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_EXAMPLE_ROTATIONCOMP_HPP_

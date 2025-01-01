@@ -10,7 +10,10 @@
 #include "logging/BLogger.hpp"
 #include "gameObject/GameObject.hpp"
 
-std::unordered_map<std::string, JsonUtil::jsonConfig> JsonUtil::_componentRegistrations{};
+extern std::unordered_map<std::string, JsonUtil::jsonConfig>& JsonUtil::GetComponentRegistrations() {
+	static std::unordered_map<std::string, JsonUtil::jsonConfig> componentRegistrations{};
+	return componentRegistrations;
+}
 
 void JsonUtil::LoadFromFile(GameObject& recipient, const std::string& filePath) {
 	std::ifstream file{filePath};
@@ -58,8 +61,8 @@ void JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& 
 
 	//Components
 	for (const auto& [componentName, componentJson] : jsonObject.at("components").items()) {
-		auto registration = _componentRegistrations.find(componentName);
-		if (registration != _componentRegistrations.end())
+		auto registration = GetComponentRegistrations().find(componentName);
+		if (registration != GetComponentRegistrations().end())
 			registration->second.FromJson(child, componentJson);
 		else
 			BLOCKY_ENGINE_WARNING_STREAM(
@@ -94,10 +97,12 @@ nlohmann::json JsonUtil::_gameObjectToJson(const GameObject& gameObject) { // NO
 
 	//Prepare components
 	auto componentList = nlohmann::json::object();
-	for (const auto& [type, component] : gameObject.GetComponents()) {
-		auto registration = _componentRegistrations.find(type.name());
-		if (registration != _componentRegistrations.end())
-			componentList[type.name()] = registration->second.ToJson();
+	for (const auto& [type, components] : gameObject.GetComponents()) {
+		auto registration = GetComponentRegistrations().find(type.name());
+		if (registration != GetComponentRegistrations().end())
+			for (const auto& component : components) {
+				componentList[type.name()] = registration->second.ToJson(*component);
+			}
 		else
 			BLOCKY_ENGINE_WARNING_STREAM(
 					"No JSON registration was found during ToJson for: "

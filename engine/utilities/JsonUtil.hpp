@@ -10,6 +10,7 @@
 #include <json/json.hpp>
 
 class GameObject;
+class Component;
 
 namespace JsonUtil {
 	//FromJson
@@ -24,35 +25,35 @@ namespace JsonUtil {
 	//Component Registrations
 	struct jsonConfig {
 		std::function<void(GameObject& recipient, const nlohmann::json& jsonObject)> FromJson;
-		std::function<nlohmann::json()> ToJson;
+		std::function<nlohmann::json(const Component& other)> ToJson;
 	};
-	extern std::unordered_map<std::string, jsonConfig> _componentRegistrations;
+	extern std::unordered_map<std::string, jsonConfig>& GetComponentRegistrations();
 
 //Registration Macros
 #define JSON_REGISTER_SOURCE_DEFAULTS(componentClass) \
 void componentClass::FromJson(GameObject& recipient, const nlohmann::json& jsonObject) { \
-	recipient.AddComponent<componentClass>(jsonObject.at("tag").get<std::string>().c_str()); \
+    recipient.AddComponent<componentClass>(jsonObject.at("tag").get<std::string>().c_str()); \
 } \
-nlohmann::json componentClass::ToJson() { \
-	return nlohmann::json{{"tag", tag}}; \
+nlohmann::json componentClass::ToJson(const componentClass& other) { \
+    return nlohmann::json{{"tag", other.tag}}; \
 }
 
-#define JSON_REGISTER_HEADER_DEFAULTS() \
-	static void FromJson(GameObject& recipient, const nlohmann::json& jsonObject); \
-	nlohmann::json ToJson();
+#define JSON_REGISTER_HEADER_DEFAULTS(componentClass) \
+    static void FromJson(GameObject& recipient, const nlohmann::json& jsonObject); \
+    static nlohmann::json ToJson(const componentClass& other);
 
 #define JSON_REGISTER_COMPONENT(componentClass) \
-	bool Register##componentClass = [this]() { \
-    	JsonUtil::_componentRegistrations[typeid(componentClass).name()] = JsonUtil::jsonConfig{ \
-			[](GameObject& recipient, const nlohmann::json& jsonObject) { \
-				FromJson(recipient, jsonObject); \
-			}, \
-			[this]() { \
-				return ToJson(); \
-			} \
-		}; \
-		return true; \
-	}();
+    static bool Register##componentClass = []() { \
+        JsonUtil::GetComponentRegistrations()[typeid(componentClass).name()] = JsonUtil::jsonConfig{ \
+            [](GameObject& recipient, const nlohmann::json& jsonObject) { \
+                componentClass::FromJson(recipient, jsonObject); \
+            }, \
+            [](const Component& other) { \
+                return componentClass::ToJson(reinterpret_cast<const componentClass&>(other)); \
+            } \
+        }; \
+        return true; \
+    }();
 }
 
 #endif //BLOCKYENGINE_ENGINE_UTILITIES_JSONUTIL_HPP_

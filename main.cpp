@@ -53,7 +53,7 @@ void buildPrefabScene(SceneManager& scenes, const char* next) {
 //	barrel.transform->SetPosition(0.5f, 0);
 //
 //	JsonUtil::SaveToFile(*prefabScene, "PrefabScene.txt");
-	JsonUtil::LoadFromFile(*root, "PrefabScene.txt");
+	JsonUtil::LoadFromFile(*root, "../assets/PrefabScene.txt");
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);

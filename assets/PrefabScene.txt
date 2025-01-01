@@ -1,0 +1,99 @@
+{
+    "children": [
+        {
+            "children": [],
+            "components": {},
+            "tag": "ProjectileContainer",
+            "transform": {
+                "position": {
+                    "x": "400.000000",
+                    "y": "300.000000"
+                },
+                "rotation": "0.000000",
+                "scale": {
+                    "x": "35.000000",
+                    "y": "35.000000"
+                }
+            }
+        },
+        {
+            "children": [
+                {
+                    "children": [],
+                    "components": {
+                        "19RectangleRenderable": {
+                            "a": 255,
+                            "b": 250,
+                            "filled": true,
+                            "g": 125,
+                            "layer": 3,
+                            "r": 125,
+                            "tag": "BarrelR"
+                        }
+                    },
+                    "tag": "Barrel",
+                    "transform": {
+                        "position": {
+                            "x": "0.500000",
+                            "y": "0.000000"
+                        },
+                        "rotation": "0.000000",
+                        "scale": {
+                            "x": "2.000000",
+                            "y": "0.500000"
+                        }
+                    }
+                }
+            ],
+            "components": {
+                "11SpawnerComp": {
+                    "counter": 0.0,
+                    "tag": "Spawner"
+                },
+                "12RotationComp": {
+                    "tag": "Rotation"
+                },
+                "19RectangleRenderable": {
+                    "a": 155,
+                    "b": 15,
+                    "filled": true,
+                    "g": 75,
+                    "layer": 0,
+                    "r": 150,
+                    "tag": "CannonR"
+                }
+            },
+            "tag": "Cannon",
+            "transform": {
+                "position": {
+                    "x": "400.000000",
+                    "y": "300.000000"
+                },
+                "rotation": "0.000000",
+                "scale": {
+                    "x": "50.000000",
+                    "y": "50.000000"
+                }
+            }
+        }
+    ],
+    "components": {
+        "21MouseCameraController": {
+            "tag": "CameraController",
+            "x": 0.0,
+            "y": 0.0
+        }
+    },
+    "tag": "PrefabScene",
+    "transform": {
+        "position": {
+            "x": "0.000000",
+            "y": "0.000000"
+        },
+        "rotation": "0.000000",
+        "scale": {
+            "x": "1.000000",
+            "y": "1.000000"
+        }
+    }
+}

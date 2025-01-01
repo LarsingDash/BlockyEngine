@@ -13,6 +13,7 @@
 #include "components/example/SpawnerComp.hpp"
 #include "components/example/RotationComp.hpp"
 #include "components/json/JsonLoader.hpp"
+#include "components/json/JsonSaveAndLoader.hpp"
 
 #include "components/example/inputScripts/MouseReparenting.hpp"
 #include "components/example/inputScripts/MouseInputComponent.hpp"
@@ -33,8 +34,8 @@ void buildJsonPrefabScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("JsonPrefab");
 	root->SetActive(false);
 
-	//JsonLoader
-	root->AddComponent<JsonLoader>("JsonLoader", "../assets/PrefabScene.txt");
+	//JsonLoader	
+	root->AddComponent<JsonSaveAndLoader>("JsonLoader", "../assets/PrefabScene.txt", "Instances");
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
@@ -324,7 +325,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	buildInputReparentingScene(sceneManager, "Camera");
 	buildCameraScene(sceneManager, "Collision");
 	buildCollisionScene(sceneManager, "Pathfinding");
-	buildPathfindingScene(sceneManager, "Prefab");
+	buildPathfindingScene(sceneManager, "JsonPrefab");
 
 	sceneManager.SwitchScene("JsonPrefab");
 	// sceneManager.SwitchScene("InputReparenting");

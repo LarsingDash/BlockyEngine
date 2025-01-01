@@ -145,7 +145,7 @@ Notes:
 
 ## JSON Loading and Saving
 
-Scenes or smaller prefabs can be saved to, and loaded from, json files. The JsonUtil will help in doing so. GameObjects and their hierarchies can be saved to a file using `SaveToFile()` in `utilities/JsonUtil.hpp`. With this method, the given fameObject will be saved to the given filepath (relative to the executing directory). `LoadFromFile` (or String) can be used to generate a hierarchy as specified in the given json. The gameObject (and all children) that are specified in this json will be added as a child of the given recipient.
+Scenes or smaller prefabs can be saved to, and loaded from, json files. The JsonUtil will help in doing so. GameObjects and their hierarchies can be saved to a file using `SaveToFile()` in `utilities/JsonUtil.hpp`. With this method, the given gameObject will be saved to the given filepath (relative to the executing directory). `LoadFromFile` (or String) can be used to generate a hierarchy as specified in the given json. The gameObject (and all children) that are specified in this json will be added as a child of the given recipient.
 
 Though gameObjects, transforms and their hierarchical structures are easily saved and loaded, components require a little more setup. This has already been done for all (major) components given with Blocky Engine. For custom components however, this must be set up manually if this component needs to be loaded through json.
 
@@ -183,7 +183,7 @@ JSON_REGISTER_FROM_CUSTOM_CONSTRUCTOR(
 )
 ```
 
-Blocky Engine provides two components for loading prefabs from json. Both will add the gameObjects that are generated from the json as a child to the gameObject this component belongs to. `components/json/JsonLoader` will instantiate the json at the given filePath once on Start(). `components/json/JsonSaveAndLoader` will first take the json in the given filePath as it's initial state. If it doesn't exist already, this json will be cloned to an identical file in the given instancePath. This version will be used to save and load this instance's data on Start() and End().
+Blocky Engine provides two components for loading prefabs from json. Both will add the gameObjects that are generated from the json as a child to the gameObject this component belongs to. `components/json/JsonLoader` will instantiate the json at the given filePath once on Start(). `components/json/JsonSaveAndLoader` will first take the json in the given filePath as it's initial state. If it doesn't exist already, this json will be cloned to an identical file (named according to the component's tag) in the given instanceDir. This version will be used to save and load this instance's data on Start() and End().
 
 ## Custom Modules
 

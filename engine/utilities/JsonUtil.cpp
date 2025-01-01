@@ -82,7 +82,7 @@ GameObject* JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann:
 }
 
 void JsonUtil::SaveToFile(const GameObject& gameObject, const std::string& filePath) {
-	std::ofstream file{filePath};
+	std::ofstream file{filePath, std::ios::trunc};
 
 	//ToJson
 	auto text = _gameObjectToJson(gameObject);
@@ -91,7 +91,7 @@ void JsonUtil::SaveToFile(const GameObject& gameObject, const std::string& fileP
 	file.close();
 }
 
-nlohmann::json JsonUtil::_gameObjectToJson(const GameObject& gameObject) { // NOLINT(*-no-recursion)
+nlohmann::ordered_json JsonUtil::_gameObjectToJson(const GameObject& gameObject) { // NOLINT(*-no-recursion)
 	//Prepare transform
 	auto& transform = *gameObject.transform;
 	auto& position = transform.GetLocalPosition();
@@ -99,7 +99,7 @@ nlohmann::json JsonUtil::_gameObjectToJson(const GameObject& gameObject) { // NO
 	auto& scale = transform.GetLocalScale();
 
 	//Prepare components
-	auto componentList = nlohmann::json::object();
+	auto componentList = nlohmann::ordered_json::object();
 	for (const auto& [type, components] : gameObject.GetComponents()) {
 		auto registration = GetComponentRegistrations().find(type.name());
 		if (registration != GetComponentRegistrations().end())
@@ -115,17 +115,17 @@ nlohmann::json JsonUtil::_gameObjectToJson(const GameObject& gameObject) { // NO
 	}
 
 	//Prepare children
-	auto childList = nlohmann::json::array();
+	auto childList = nlohmann::ordered_json::array();
 	for (const auto& child : gameObject.GetChildren()) {
 		childList.push_back(_gameObjectToJson(*child));
 	}
 
 	//ToJson
-	auto result = nlohmann::json{
+	auto result = nlohmann::ordered_json{
 			{"tag", gameObject.tag},
 			{"transform", {
 					{"position", {{"x", std::to_string(position.x)}, {"y", std::to_string(position.y)}}},
-					{"rotation", std::to_string(rotation)},
+					{"rotation", std::to_string(-rotation)},
 					{"scale", {{"x", std::to_string(scale.x)}, {"y", std::to_string(scale.y)}}}
 			}},
 			{"components", componentList},

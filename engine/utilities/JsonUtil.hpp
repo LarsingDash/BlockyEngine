@@ -20,7 +20,7 @@ namespace JsonUtil {
 
 	//ToJson
 	void SaveToFile(const GameObject& gameObject, const std::string& filePath);
-	nlohmann::json _gameObjectToJson(const GameObject& gameObject);
+	nlohmann::ordered_json _gameObjectToJson(const GameObject& gameObject);
 
 	//Component Registrations
 	struct jsonConfig {

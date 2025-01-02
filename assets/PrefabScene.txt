@@ -59,6 +59,17 @@
                 "19RectangleRenderable": {
                     "a": 155,
                     "b": 15,
+                    "compTransform": {
+                        "position": {
+                            "x": "0.000000",
+                            "y": "0.000000"
+                        },
+                        "rotation": "-0.000000",
+                        "scale": {
+                            "x": "1.000000",
+                            "y": "1.000000"
+                        }
+                    },
                     "filled": true,
                     "g": 75,
                     "layer": 0,
@@ -84,6 +95,17 @@
                         "19RectangleRenderable": {
                             "a": 255,
                             "b": 250,
+                            "compTransform": {
+                                "position": {
+                                    "x": "0.000000",
+                                    "y": "0.000000"
+                                },
+                                "rotation": "-0.000000",
+                                "scale": {
+                                    "x": "1.000000",
+                                    "y": "1.000000"
+                                }
+                            },
                             "filled": true,
                             "g": 125,
                             "layer": 3,

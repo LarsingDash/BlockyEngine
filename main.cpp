@@ -34,6 +34,27 @@ void buildJsonPrefabScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("JsonPrefab");
 	root->SetActive(false);
 
+//	auto prefabScene = std::make_unique<GameObject>("PrefabScene");
+//	prefabScene->AddComponent<MouseCameraController>("CameraController");
+//
+//	auto& container = prefabScene->AddChild("ProjectileContainer");
+//	container.transform->SetPosition(400, 300);
+//	container.transform->SetScale(35, 35);
+//
+//	auto& cannon = prefabScene->AddChild("Cannon");
+//	cannon.transform->SetPosition(400, 300);
+//	cannon.transform->SetScale(50, 50);
+//	cannon.AddComponent<RectangleRenderable>("CannonR", glm::vec4(150, 75, 15, 155), 0, true);
+//	cannon.AddComponent<SpawnerComp>("Spawner");
+//	cannon.AddComponent<RotationComp>("Rotation");
+//
+//	auto& barrel = cannon.AddChild("Barrel");
+//	barrel.AddComponent<RectangleRenderable>("BarrelR", glm::vec4(125, 125, 250, 255), 3, true);
+//	barrel.transform->SetScale(2, 0.5f);
+//	barrel.transform->SetPosition(0.5f, 0);
+//
+//	JsonUtil::SaveToFile(*prefabScene, "../assets/PrefabScene.txt");
+
 	//JsonLoader	
 	root->AddComponent<JsonSaveAndLoader>("JsonLoader", "../assets/PrefabScene.txt", "Instances");
 
@@ -310,6 +331,40 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	scenes.AddScene(std::move(root));
 }
 
+void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("JsonSandbox");
+	root->SetActive(false);
+
+	//Camera
+	root->AddComponent<MouseCameraController>("MouseCameraController");
+
+	//Sandbox
+	std::string fileDir = "Instances";
+	std::string filePath = fileDir + "/Sandbox.txt";
+	if (!std::filesystem::exists(fileDir)) {
+		std::filesystem::create_directories(fileDir);
+	}
+
+	auto sandbox = std::make_unique<GameObject>("Sandbox");
+	auto screen = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
+	sandbox->transform->SetPosition(screen.x / 2.f, screen.y / 2.f);
+
+	//Renderables
+	auto& renderables = sandbox->AddChild("Renderables");
+	renderables.transform->SetScale(100, 100);
+	renderables.AddComponent<RectangleRenderable>(
+			"RectRender", glm::vec4{225, 0, 0, 255}, 0, true
+	).componentTransform->SetPosition(-0.5f, -0.5f);
+
+	JsonUtil::SaveToFile(*sandbox, filePath);
+	JsonUtil::LoadFromFile(*root, filePath);
+
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
+
+	scenes.AddScene(std::move(root));
+}
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	BlockyEngine::BlockyConfigs configs{
 			800,
@@ -325,13 +380,15 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	buildInputReparentingScene(sceneManager, "Camera");
 	buildCameraScene(sceneManager, "Collision");
 	buildCollisionScene(sceneManager, "Pathfinding");
-	buildPathfindingScene(sceneManager, "JsonPrefab");
+	buildPathfindingScene(sceneManager, "JsonSandbox");
+	buildJsonSandboxScene(sceneManager, "JsonPrefab");
 
-	sceneManager.SwitchScene("JsonPrefab");
-	// sceneManager.SwitchScene("InputReparenting");
-	// sceneManager.SwitchScene("Camera");
-	// sceneManager.SwitchScene("CollisionScene");
-	//	sceneManager.SwitchScene("Pathfinding");
+//	sceneManager.SwitchScene("JsonPrefab");
+//	sceneManager.SwitchScene("InputReparenting");
+//	sceneManager.SwitchScene("Camera");
+//	sceneManager.SwitchScene("CollisionScene");
+//	sceneManager.SwitchScene("Pathfinding");
+	sceneManager.SwitchScene("JsonSandbox");
 
 	blockyEngine.Run();
 

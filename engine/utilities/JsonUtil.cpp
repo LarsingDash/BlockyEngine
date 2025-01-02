@@ -24,9 +24,8 @@ GameObject* JsonUtil::LoadFromFile(GameObject& recipient, const std::string& fil
 		return nullptr;
 	}
 
-	while (!file.eof()) {
-		std::string line;
-		file >> line;
+	std::string line;
+	while (std::getline(file, line)) {
 		text << line;
 	}
 
@@ -44,16 +43,18 @@ GameObject* JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann:
 
 	//Transform
 	try {
+		auto& transJson = json.at("transform");
+		
 		child.transform->SetPosition(
-				std::stof(json.at("transform").at("position").at("x").get<std::string>()),
-				std::stof(json.at("transform").at("position").at("y").get<std::string>())
+				std::stof(transJson.at("position").at("x").get<std::string>()),
+				std::stof(transJson.at("position").at("y").get<std::string>())
 		);
 		child.transform->SetRotation(
-				std::stof(json.at("transform").at("rotation").get<std::string>())
+				std::stof(transJson.at("rotation").get<std::string>())
 		);
 		child.transform->SetScale(
-				std::stof(json.at("transform").at("scale").at("x").get<std::string>()),
-				std::stof(json.at("transform").at("scale").at("y").get<std::string>())
+				std::stof(transJson.at("scale").at("x").get<std::string>()),
+				std::stof(transJson.at("scale").at("y").get<std::string>())
 		);
 	} catch (const std::exception& e) {
 		BLOCKY_ENGINE_ERROR("Encountered an error with stof while parsing transform data");

@@ -98,8 +98,10 @@ void buildInputReparentingScene(SceneManager& scenes, const char* next) {
 			"spriteTag", 32, 32, 0, SpriteFlip::FlipHorizontal
 	);
 
-	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
-	auto& text = animatedObject.AddComponent<TextRenderable>("PlayerText", "Player", glm::vec4{255}, font, 1);
+	auto& text = animatedObject.AddComponent<TextRenderable>(
+			"PlayerText", "Player",
+			glm::vec4{255},
+			"../assets/fonts/font1.ttf", 24, 1);
 	text.componentTransform->SetPosition(0.f, -0.5f);
 
 	//Animator
@@ -376,6 +378,14 @@ void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
 	auto& animationController = renderables.AddComponent<AnimationController>("animControllerTag");
 	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
 	animationController.PlayAnimation("idle");
+
+	auto& text = sandbox->AddComponent<TextRenderable>(
+			"RenderablesText", "Renderables",
+			glm::ivec4{0, 225, 0, 255},
+			"../assets/fonts/font1.ttf", 24
+	);
+	text.componentTransform->SetPosition(-50, -100);
+	text.componentTransform->SetScale(100, 24);
 
 	//Save and Load
 	JsonUtil::SaveToFile(*sandbox, filePath);

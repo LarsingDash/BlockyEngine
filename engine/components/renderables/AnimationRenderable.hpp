@@ -10,6 +10,8 @@
 #include <glm/vec4.hpp>
 #include "SpriteRenderable.hpp"
 
+#include "utilities/JsonUtil.hpp"
+
 class AnimationRenderable : public SpriteRenderable {
 	public:
 		AnimationRenderable(GameObject* gameObject, const char* tag,
@@ -21,6 +23,8 @@ class AnimationRenderable : public SpriteRenderable {
 		[[nodiscard]] const glm::ivec4& GetFrame(int index) const;
 		void SetCurrentFrame(int frameIndex);
 
+		JSON_REGISTER_HEADER(AnimationRenderable)
+
 	private:
 		Component* _clone(const GameObject& parent) override;
 
@@ -31,5 +35,7 @@ class AnimationRenderable : public SpriteRenderable {
 		glm::ivec4 _sourceRect{};
 
 };
+
+JSON_REGISTER_COMPONENT(AnimationRenderable)
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_RENDERABLES_ANIMATIONRENDERABLE_HPP_

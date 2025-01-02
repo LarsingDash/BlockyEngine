@@ -352,10 +352,32 @@ void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
 	//Renderables
 	auto& renderables = sandbox->AddChild("Renderables");
 	renderables.transform->SetScale(100, 100);
+
 	renderables.AddComponent<RectangleRenderable>(
 			"RectRender", glm::vec4{225, 0, 0, 255}, 0, true
-	).componentTransform->SetPosition(-0.5f, -0.5f);
+	).componentTransform->SetPosition(-0.5f, 0.f);
+	renderables.AddComponent<EllipseRenderable>(
+			"EllipseRender", glm::vec4{0, 0, 225, 255}, 0, true
+	).componentTransform->SetPosition(0.5f, 0.f);
+	renderables.AddComponent<SpriteRenderable>(
+			"SpriteRender",
+			"../assets/kaboom.png",
+			"SpriteRender",
+			RenderableType::SPRITE,
+			1, SpriteFlip::FlipVertical
+	).componentTransform->SetPosition(-0.5f, 0.f);
+	renderables.AddComponent<AnimationRenderable>(
+			"animTag",
+			"../assets/character_spritesheet.png",
+			"spriteTag",
+			32, 32,
+			1, SpriteFlip::FlipHorizontal
+	).componentTransform->SetPosition(0.5f, 0.f);
+	auto& animationController = renderables.AddComponent<AnimationController>("animControllerTag");
+	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
+	animationController.PlayAnimation("idle");
 
+	//Save and Load
 	JsonUtil::SaveToFile(*sandbox, filePath);
 	JsonUtil::LoadFromFile(*root, filePath);
 

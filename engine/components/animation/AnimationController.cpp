@@ -52,7 +52,11 @@ void AnimationController::Update(float delta) {
 
 void AnimationController::End() {}
 
-void AnimationController::AddAnimation(const std::string& animationName, int startFrame, int endFrame, float frameDuration, bool looping) {
+void AnimationController::AddAnimation(const std::string& animationName,
+									   int startFrame,
+									   int endFrame,
+									   float frameDuration,
+									   bool looping) {
 	_animations[animationName] = {startFrame, endFrame, looping, frameDuration};
 }
 
@@ -60,7 +64,7 @@ bool AnimationController::PlayAnimation(const std::string& animationName) {
 	//Check if the animation exists in the map
 	auto it = _animations.find(animationName);
 	if (it == _animations.end()) {
-		std::string err ("Animation not found: ");
+		std::string err("Animation not found: ");
 		err += animationName;
 		BLOCKY_ENGINE_ERROR(err);
 		return false;
@@ -84,3 +88,35 @@ void AnimationController::StopAnimation() {
 void AnimationController::_updateSourceRect() {
 	if (_renderable) _renderable->SetCurrentFrame(_currentFrame);
 }
+
+JSON_REGISTER_FROM(
+		AnimationController,
+		[](const nlohmann::json& json, AnimationController& other) {
+			other._frameTimer = json.at("frameTimer").get<float>();
+			other._currentFrame = json.at("currentFrame").get<int>();
+			other._isAnimating = json.at("isAnimating").get<bool>();
+
+			other._currentAnimationName = json.at("currentAnimationName").get<std::string>();
+
+		}
+)
+
+JSON_REGISTER_TO(
+		AnimationController,
+		[](nlohmann::json& json, const AnimationController& other) {
+			json["frameTimer"] = other._frameTimer;
+			json["currentFrame"] = other._currentFrame;
+			json["isAnimating"] = other._isAnimating;
+
+			json["currentAnimationName"] = other._currentAnimationName;
+			for (const auto& [tag, animation] : other._animations) {
+				auto animJson = (nlohmann::ordered_json{
+						{"startFrame", animation.startFrame},
+						{"endFrame", animation.endFrame},
+						{"looping", animation.looping},
+						{"frameDuration", animation.frameDuration}
+				});
+				json[tag] = animJson;
+			}
+		}
+)

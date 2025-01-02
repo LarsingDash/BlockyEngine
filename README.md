@@ -182,6 +182,16 @@ JSON_REGISTER_FROM_CUSTOM_CONSTRUCTOR(
     json.at("secondValue").get<std::string>()
 )
 ```
+Lastly, if both _constructor arguments_ and _post initialization_ need to be used. A completely custom json registration can be made using the following structure: (firstValue is done after initialization, secondValue is passed to the constructor)
+```c++
+JSON_REGISTER_FROM_CUSTOM(
+    ExampleComponent,
+    [](const nlohmann::json& json, ExampleComponent& other) {
+        other._firstValue = json.at("firstValue").get<float>();
+    },
+    json.at("secondValue").get<std::string>()
+)
+```
 
 Blocky Engine provides two components for loading prefabs from json. Both will add the gameObjects that are generated from the json as a child to the gameObject this component belongs to. `components/json/JsonLoader` will instantiate the json at the given filePath once on Start(). `components/json/JsonSaveAndLoader` will first take the json in the given filePath as it's initial state. If it doesn't exist already, this json will be cloned to an identical file (named according to the component's tag) in the given instanceDir. This version will be used to save and load this instance's data on Start() and End().
 

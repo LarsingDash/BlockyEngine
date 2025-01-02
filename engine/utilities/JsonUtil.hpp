@@ -10,6 +10,7 @@
 #include <json/json.hpp>
 
 class GameObject;
+
 class Component;
 
 namespace JsonUtil {
@@ -30,72 +31,34 @@ namespace JsonUtil {
 	extern std::unordered_map<std::string, jsonConfig>& GetComponentRegistrations();
 
 //Registration Macros
+//Helper
+	void ComponentTransformFromJson(const nlohmann::json& json, Component& component);
+	void ComponentTransformToJson(nlohmann::json& json, const Component& component);
+
 //CUSTOM SOURCE
 #define JSON_REGISTER_FROM(componentClass, customFromJson) \
     void componentClass::FromJson(GameObject& recipient, const nlohmann::json& json) { \
         auto& comp = recipient.AddComponent<componentClass>(json.at("tag").get<std::string>().c_str()); \
-        \
-        if (comp.componentTransform) { \
-			auto& trans = *comp.componentTransform; \
-			auto& transJson = json.at("compTransform"); \
-	 		\
-			trans.SetPosition( \
-				std::stof(transJson.at("position").at("x").get<std::string>()), \
-				std::stof(transJson.at("position").at("y").get<std::string>()) \
-			); \
-			trans.SetRotation( \
-				std::stof(transJson.at("rotation").get<std::string>()) \
-			); \
-			trans.SetScale( \
-				std::stof(transJson.at("scale").at("x").get<std::string>()), \
-				std::stof(transJson.at("scale").at("y").get<std::string>()) \
-			); \
-		} \
-        \
+        JsonUtil::ComponentTransformFromJson(json, comp); \
         customFromJson(json, comp); \
     }
 #define JSON_REGISTER_FROM_CUSTOM_CONSTRUCTOR(componentClass, ...) \
     void componentClass::FromJson(GameObject& recipient, const nlohmann::json& json) { \
         auto& comp = recipient.AddComponent<componentClass>(json.at("tag").get<std::string>().c_str(), __VA_ARGS__); \
-        \
-       	if (comp.componentTransform) { \
-			auto& trans = *comp.componentTransform; \
-			auto& transJson = json.at("compTransform"); \
-	 		\
-			trans.SetPosition( \
-				std::stof(transJson.at("position").at("x").get<std::string>()), \
-				std::stof(transJson.at("position").at("y").get<std::string>()) \
-			); \
-			trans.SetRotation( \
-				std::stof(transJson.at("rotation").get<std::string>()) \
-			); \
-			trans.SetScale( \
-				std::stof(transJson.at("scale").at("x").get<std::string>()), \
-				std::stof(transJson.at("scale").at("y").get<std::string>()) \
-			); \
-		} \
+        JsonUtil::ComponentTransformFromJson(json, comp); \
+    }
+#define JSON_REGISTER_FROM_CUSTOM(componentClass, customFromJson, ...) \
+    void componentClass::FromJson(GameObject& recipient, const nlohmann::json& json) { \
+        auto& comp = recipient.AddComponent<componentClass>(json.at("tag").get<std::string>().c_str(), __VA_ARGS__); \
+        JsonUtil::ComponentTransformFromJson(json, comp); \
+        customFromJson(json, comp); \
     }
 #define JSON_REGISTER_TO(componentClass, customToJson) \
     nlohmann::json componentClass::ToJson(const componentClass& other) { \
         nlohmann::json json = { \
             {"tag", other.tag}, \
-        };                                             \
-		\
-        if (other.componentTransform) { \
-			auto& transform = *other.componentTransform; \
-			auto& position = transform.GetLocalPosition(); \
-			auto rotation = transform.GetLocalRotation(); \
-			auto& scale = transform.GetLocalScale(); \
-     		\
-			nlohmann::json trans = { \
-				{"position", {{"x", std::to_string(position.x)}, {"y", std::to_string(position.y)}}}, \
-				{"rotation", std::to_string(-rotation)}, \
-				{"scale", {{"x", std::to_string(scale.x)}, {"y", std::to_string(scale.y)}}} \
-		}; \
-		\
-    	json["compTransform"] = trans; \
-}                                               \
-                                                       \
+        }; \
+        JsonUtil::ComponentTransformToJson(json, other); \
         customToJson(json, other); \
         return json; \
     }

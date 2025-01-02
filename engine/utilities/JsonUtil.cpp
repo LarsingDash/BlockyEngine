@@ -40,6 +40,7 @@ GameObject* JsonUtil::LoadFromString(GameObject& recipient, const std::string& t
 GameObject* JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann::json& json) { // NOLINT(*-no-recursion)
 	//GameObject
 	auto& child = recipient.AddChild(json.at("tag").get<std::string>());
+	child.SetActive(false);
 
 	//Transform
 	try {
@@ -62,7 +63,7 @@ GameObject* JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann:
 	}
 
 	//Components
-	for (const auto& [componentName, componentJson] : json.at("components").items()) {
+	for (const auto& [componentName, componentJson]: json.at("components").items()) {
 		auto registration = GetComponentRegistrations().find(
 				componentName.substr(0, componentName.find_first_of('$'))
 		);
@@ -78,7 +79,7 @@ GameObject* JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann:
 	}
 
 	//Children
-	for (const auto& childJson : json.at("children")) {
+	for (const auto& childJson: json.at("children")) {
 		_gameObjectFromJson(child, childJson);
 	}
 
@@ -104,10 +105,10 @@ nlohmann::ordered_json JsonUtil::_gameObjectToJson(const GameObject& gameObject)
 
 	//Prepare components
 	auto componentList = nlohmann::ordered_json::object();
-	for (const auto& [type, components] : gameObject.GetComponents()) {
+	for (const auto& [type, components]: gameObject.GetComponents()) {
 		auto registration = GetComponentRegistrations().find(type.name());
 		if (registration != GetComponentRegistrations().end())
-			for (const auto& component : components) {
+			for (const auto& component: components) {
 				std::stringstream name{};
 				name << type.name();
 				name << '$';
@@ -124,21 +125,57 @@ nlohmann::ordered_json JsonUtil::_gameObjectToJson(const GameObject& gameObject)
 
 	//Prepare children
 	auto childList = nlohmann::ordered_json::array();
-	for (const auto& child : gameObject.GetChildren()) {
+	for (const auto& child: gameObject.GetChildren()) {
 		childList.push_back(_gameObjectToJson(*child));
 	}
 
 	//ToJson
 	auto result = nlohmann::ordered_json{
-			{"tag", gameObject.tag},
-			{"transform", {
-					{"position", {{"x", std::to_string(position.x)}, {"y", std::to_string(position.y)}}},
-					{"rotation", std::to_string(-rotation)},
-					{"scale", {{"x", std::to_string(scale.x)}, {"y", std::to_string(scale.y)}}}
-			}},
+			{"tag",        gameObject.tag},
+			{"transform",  {
+								   {"position", {{"x", std::to_string(position.x)}, {"y", std::to_string(position.y)}}},
+								   {"rotation", std::to_string(-rotation)},
+								   {"scale", {{"x", std::to_string(scale.x)}, {"y", std::to_string(scale.y)}}}
+						   }},
 			{"components", componentList},
-			{"children", childList}
+			{"children",   childList}
 	};
 
 	return result;
+}
+
+void JsonUtil::ComponentTransformFromJson(const nlohmann::json& json, Component& component) {
+	if (component.componentTransform) {
+		auto& trans = *component.componentTransform;
+		auto& transJson = json.at("compTransform");
+
+		trans.SetPosition(
+				std::stof(transJson.at("position").at("x").get<std::string>()),
+				std::stof(transJson.at("position").at("y").get<std::string>())
+		);
+		trans.SetRotation(
+				std::stof(transJson.at("rotation").get<std::string>())
+		);
+		trans.SetScale(
+				std::stof(transJson.at("scale").at("x").get<std::string>()),
+				std::stof(transJson.at("scale").at("y").get<std::string>())
+		);
+	}
+}
+
+void JsonUtil::ComponentTransformToJson(nlohmann::json& json, const Component& component) {
+	if (component.componentTransform) {
+		auto& transform = *component.componentTransform;
+		auto& position = transform.GetLocalPosition();
+		auto rotation = transform.GetLocalRotation();
+		auto& scale = transform.GetLocalScale();
+
+		nlohmann::json trans = {
+				{"position", {{"x", std::to_string(position.x)}, {"y", std::to_string(position.y)}}},
+				{"rotation", std::to_string(-rotation)},
+				{"scale",    {{"x", std::to_string(scale.x)},    {"y", std::to_string(scale.y)}}}
+		};
+
+		json["compTransform"] = trans;
+	}
 }

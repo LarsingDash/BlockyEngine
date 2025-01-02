@@ -86,8 +86,26 @@ void AnimationRenderable::SetCurrentFrame(int frameIndex) {
 	_sourceRect = GetFrame(frameIndex);
 }
 
-JSON_REGISTER_FROM_CUSTOM_CONSTRUCTOR(
+JSON_REGISTER_FROM_CUSTOM(
 		AnimationRenderable,
+		[](const nlohmann::json& json, AnimationRenderable& other) {
+			other._sheetWidth = json.at("frameWidth").get<int>();
+			other._sheetHeight = json.at("frameHeight").get<int>();
+
+			auto jsonVec4 = ([](const nlohmann::json& json) {
+				return glm::ivec4{
+						json.at("x").get<int>(),
+						json.at("y").get<int>(),
+						json.at("z").get<int>(),
+						json.at("w").get<int>()
+				};
+			});
+			
+			other._sourceRect = jsonVec4(json.at("sourceRect"));
+			for (const auto& frame : json.at("frames")) {
+				other._frames.push_back(jsonVec4(frame));
+			}
+		},
 		json.at("spritePath").get<std::string>(),
 		json.at("spriteTag").get<std::string>(),
 		json.at("frameWidth").get<int>(),
@@ -117,10 +135,10 @@ JSON_REGISTER_TO(
 						{"w", rect.w}
 				});
 			};
-			json["_sourceRect"] = jsonVec4(other._sourceRect);
-			
+			json["sourceRect"] = jsonVec4(other._sourceRect);
+
 			auto frameList = nlohmann::ordered_json::array();
-			for (const auto& frame : other._frames) {
+			for (const auto& frame: other._frames) {
 				frameList.emplace_back(jsonVec4(frame));
 			}
 			json["frames"] = frameList;

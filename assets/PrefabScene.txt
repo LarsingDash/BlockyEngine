@@ -12,7 +12,7 @@
         }
     },
     "components": {
-        "21MouseCameraController": {
+        "21MouseCameraController$CameraController": {
             "tag": "CameraController",
             "x": 0.0,
             "y": 0.0
@@ -49,14 +49,14 @@
                 }
             },
             "components": {
-                "12RotationComp": {
+                "12RotationComp$Rotation": {
                     "tag": "Rotation"
                 },
-                "11SpawnerComp": {
+                "11SpawnerComp$Spawner": {
                     "counter": 0.0,
                     "tag": "Spawner"
                 },
-                "19RectangleRenderable": {
+                "19RectangleRenderable$CannonR": {
                     "a": 155,
                     "b": 15,
                     "compTransform": {
@@ -92,7 +92,7 @@
                         }
                     },
                     "components": {
-                        "19RectangleRenderable": {
+                        "19RectangleRenderable$BarrelR": {
                             "a": 255,
                             "b": 250,
                             "compTransform": {

@@ -44,7 +44,7 @@ GameObject* JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann:
 	//Transform
 	try {
 		auto& transJson = json.at("transform");
-		
+
 		child.transform->SetPosition(
 				std::stof(transJson.at("position").at("x").get<std::string>()),
 				std::stof(transJson.at("position").at("y").get<std::string>())
@@ -63,7 +63,10 @@ GameObject* JsonUtil::_gameObjectFromJson(GameObject& recipient, const nlohmann:
 
 	//Components
 	for (const auto& [componentName, componentJson] : json.at("components").items()) {
-		auto registration = GetComponentRegistrations().find(componentName);
+		auto registration = GetComponentRegistrations().find(
+				componentName.substr(0, componentName.find_first_of('$'))
+		);
+
 		if (registration != GetComponentRegistrations().end())
 			registration->second.FromJson(child, componentJson);
 		else
@@ -105,7 +108,11 @@ nlohmann::ordered_json JsonUtil::_gameObjectToJson(const GameObject& gameObject)
 		auto registration = GetComponentRegistrations().find(type.name());
 		if (registration != GetComponentRegistrations().end())
 			for (const auto& component : components) {
-				componentList[type.name()] = registration->second.ToJson(*component);
+				std::stringstream name{};
+				name << type.name();
+				name << '$';
+				name << component->tag;
+				componentList[name.str()] = registration->second.ToJson(*component);
 			}
 		else
 			BLOCKY_ENGINE_WARNING_STREAM(

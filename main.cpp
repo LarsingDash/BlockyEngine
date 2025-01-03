@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <logging/BLogger.hpp>
-
 #include "BlockyEngine.hpp"
+#include "utilities/JsonUtil.hpp"
+#include "logging/BLogger.hpp"
 
 #include "components/example/SceneSwitchComp.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
@@ -12,6 +12,8 @@
 
 #include "components/example/SpawnerComp.hpp"
 #include "components/example/RotationComp.hpp"
+#include "components/json/JsonLoader.hpp"
+#include "components/json/JsonSaveAndLoader.hpp"
 
 #include "components/example/inputScripts/MouseReparenting.hpp"
 #include "components/example/inputScripts/MouseInputComponent.hpp"
@@ -28,27 +30,33 @@
 #include "components/pathfinding/MouseTargetedNavigation.hpp"
 #include "components/pathfinding/GridNavigator.hpp"
 
-void buildPrefabScene(SceneManager& scenes, const char* next) {
-	auto root = std::make_unique<GameObject>("Prefab");
+void buildJsonPrefabScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("JsonPrefab");
 	root->SetActive(false);
 
-	root->AddComponent<MouseCameraController>("CameraController");
+//	auto prefabScene = std::make_unique<GameObject>("PrefabScene");
+//	prefabScene->AddComponent<MouseCameraController>("CameraController");
+//
+//	auto& container = prefabScene->AddChild("ProjectileContainer");
+//	container.transform->SetPosition(400, 300);
+//	container.transform->SetScale(35, 35);
+//
+//	auto& cannon = prefabScene->AddChild("Cannon");
+//	cannon.transform->SetPosition(400, 300);
+//	cannon.transform->SetScale(50, 50);
+//	cannon.AddComponent<RectangleRenderable>("CannonR", glm::vec4(150, 75, 15, 155), 0, true);
+//	cannon.AddComponent<SpawnerComp>("Spawner");
+//	cannon.AddComponent<RotationComp>("Rotation");
+//
+//	auto& barrel = cannon.AddChild("Barrel");
+//	barrel.AddComponent<RectangleRenderable>("BarrelR", glm::vec4(125, 125, 250, 255), 3, true);
+//	barrel.transform->SetScale(2, 0.5f);
+//	barrel.transform->SetPosition(0.5f, 0);
+//
+//	JsonUtil::SaveToFile(*prefabScene, "../assets/PrefabScene.txt");
 
-	auto& container = root->AddChild("ProjectileContainer");
-	container.transform->SetPosition(400, 300);
-	container.transform->SetScale(35, 35);
-
-	auto& cannon = root->AddChild("Cannon");
-	cannon.transform->SetPosition(400, 300);
-	cannon.transform->SetScale(50, 50);
-	cannon.AddComponent<RectangleRenderable>("CannonR", glm::vec4(150, 75, 15, 155), 0, true);
-	cannon.AddComponent<SpawnerComp>("Spawner");
-	cannon.AddComponent<RotationComp>("Spawner");
-
-	auto& barrel = cannon.AddChild("Barrel");
-	barrel.AddComponent<RectangleRenderable>("BarrelR", glm::vec4(125, 125, 250, 255), 3, true);
-	barrel.transform->SetScale(2, 0.5f);
-	barrel.transform->SetPosition(0.5f, 0);
+	//JsonLoader	
+	root->AddComponent<JsonSaveAndLoader>("JsonLoader", "../assets/PrefabScene.txt", "Instances");
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
@@ -90,8 +98,10 @@ void buildInputReparentingScene(SceneManager& scenes, const char* next) {
 			"spriteTag", 32, 32, 0, SpriteFlip::FlipHorizontal
 	);
 
-	TTF_Font* font = TTF_OpenFont("../assets/fonts/font1.ttf", 24);
-	auto& text = animatedObject.AddComponent<TextRenderable>("PlayerText", "Player", glm::vec4{255}, font, 1);
+	auto& text = animatedObject.AddComponent<TextRenderable>(
+			"PlayerText", "Player",
+			glm::vec4{255},
+			"../assets/fonts/font1.ttf", 24, 1);
 	text.componentTransform->SetPosition(0.f, -0.5f);
 
 	//Animator
@@ -323,6 +333,70 @@ void buildPathfindingScene(SceneManager& scenes, const char* next) {
 	scenes.AddScene(std::move(root));
 }
 
+void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("JsonSandbox");
+	root->SetActive(false);
+
+	//Camera
+	root->AddComponent<MouseCameraController>("MouseCameraController");
+
+	//Sandbox
+	std::string fileDir = "Instances";
+	std::string filePath = fileDir + "/Sandbox.txt";
+	if (!std::filesystem::exists(fileDir)) {
+		std::filesystem::create_directories(fileDir);
+	}
+
+	auto sandbox = std::make_unique<GameObject>("Sandbox");
+	auto screen = ModuleManager::GetInstance().GetModule<WindowModule>().GetScreenSizeF();
+	sandbox->transform->SetPosition(screen.x / 2.f, screen.y / 2.f);
+
+	//Renderables
+	auto& renderables = sandbox->AddChild("Renderables");
+	renderables.transform->SetScale(100, 100);
+
+	renderables.AddComponent<RectangleRenderable>(
+			"RectRender", glm::vec4{225, 0, 0, 255}, 0, true
+	).componentTransform->SetPosition(-0.5f, 0.f);
+	renderables.AddComponent<EllipseRenderable>(
+			"EllipseRender", glm::vec4{0, 0, 225, 255}, 0, true
+	).componentTransform->SetPosition(0.5f, 0.f);
+	renderables.AddComponent<SpriteRenderable>(
+			"SpriteRender",
+			"../assets/kaboom.png",
+			"SpriteRender",
+			RenderableType::SPRITE,
+			1, SpriteFlip::FlipVertical
+	).componentTransform->SetPosition(-0.5f, 0.f);
+	renderables.AddComponent<AnimationRenderable>(
+			"animTag",
+			"../assets/character_spritesheet.png",
+			"spriteTag",
+			32, 32,
+			1, SpriteFlip::FlipHorizontal
+	).componentTransform->SetPosition(0.5f, 0.f);
+	auto& animationController = renderables.AddComponent<AnimationController>("animControllerTag");
+	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
+	animationController.PlayAnimation("idle");
+
+	auto& text = sandbox->AddComponent<TextRenderable>(
+			"RenderablesText", "Renderables",
+			glm::ivec4{0, 225, 0, 255},
+			"../assets/fonts/font1.ttf", 24
+	);
+	text.componentTransform->SetPosition(-50, -100);
+	text.componentTransform->SetScale(100, 24);
+
+	//Save and Load
+	JsonUtil::SaveToFile(*sandbox, filePath);
+	JsonUtil::LoadFromFile(*root, filePath);
+
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
+
+	scenes.AddScene(std::move(root));
+}
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	BlockyEngine::BlockyConfigs configs{
 			800,
@@ -334,17 +408,19 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	BlockyEngine blockyEngine{configs};
 	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 
-	buildPrefabScene(sceneManager, "InputReparenting");
+	buildJsonPrefabScene(sceneManager, "InputReparenting");
 	buildInputReparentingScene(sceneManager, "Camera");
 	buildCameraScene(sceneManager, "Collision");
 	buildCollisionScene(sceneManager, "Pathfinding");
-	buildPathfindingScene(sceneManager, "Prefab");
+	buildPathfindingScene(sceneManager, "JsonSandbox");
+	buildJsonSandboxScene(sceneManager, "JsonPrefab");
 
-	// sceneManager.SwitchScene("Prefabs");
-	// sceneManager.SwitchScene("InputReparenting");
-	// sceneManager.SwitchScene("Camera");
-	// sceneManager.SwitchScene("CollisionScene");
-	sceneManager.SwitchScene("Pathfinding");
+//	sceneManager.SwitchScene("JsonPrefab");
+//	sceneManager.SwitchScene("InputReparenting");
+//	sceneManager.SwitchScene("Camera");
+//	sceneManager.SwitchScene("CollisionScene");
+//	sceneManager.SwitchScene("Pathfinding");
+	sceneManager.SwitchScene("JsonSandbox");
 
 	blockyEngine.Run();
 

@@ -52,3 +52,17 @@ void SpawnerComp::Update(float delta) {
 }
 
 void SpawnerComp::End() {}
+
+JSON_REGISTER_FROM(
+		SpawnerComp,
+		[](const nlohmann::json& json, SpawnerComp& other) {
+			other.counter = json.at("counter").get<float>();
+		}
+)
+
+JSON_REGISTER_TO(
+		SpawnerComp,
+		[](nlohmann::json& json, const SpawnerComp& other) {
+			json["counter"] = other.counter;
+		}
+)

@@ -9,9 +9,14 @@
 #include "SDL_ttf.h"
 #include <utility>
 
+#include "utilities/JsonUtil.hpp"
+
 class TextRenderable : public Renderable {
 	public:
-		TextRenderable(GameObject* gameObject, const char* tag, std::string  text, const glm::ivec4& color, TTF_Font* font, int layer = 0);
+		TextRenderable(GameObject* gameObject, const char* tag,
+					   std::string text, const glm::ivec4& color,
+					   std::string fontPath, int fontSize, int layer = 0
+		);
 		~TextRenderable() override;
 
 		void SetText(const std::string& newText);
@@ -19,12 +24,19 @@ class TextRenderable : public Renderable {
 		[[nodiscard]] const glm::ivec4& GetColor() const;
 		[[nodiscard]] TTF_Font* GetFont() const;
 
-		Component* _clone(const GameObject& parent) override;
+		JSON_REGISTER_HEADER(TextRenderable)
 
 	private:
 		std::string _text;
 		glm::ivec4 _color;
-		TTF_Font* _font;
+
+		std::string _fontPath;
+		int _fontSize;
+		TTF_Font* _font{nullptr};
+		
+		Component* _clone(const GameObject& parent) override;
 };
+
+JSON_REGISTER_COMPONENT(TextRenderable)
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_RENDERABLES_TEXTRENDERABLE_HPP_

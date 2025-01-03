@@ -143,6 +143,58 @@ Notes:
 - `_clone()` will be the same for almost all components, however it is simply required for prefabs to work. Since scenes can also be considered to be big prefabs, this method is required for every component. It is called from the parenting GameObject of the prefab when it's cloning itself and all of its components. The point is to simply create an identical copy to give to the newly created instance of the prefab.
 - The #include for `GameObject` at the top of this source file is optional if a component doesn't interact with any GameObject logic (which is rare, hence why it's included in this template). Since `Component` only forward-declares GameObject, this include is required for any further use. **_Never_** include `GameObject` (or anything that includes it) in a component's header, as that will cause a circular include chain, only in the source file.
 
+## JSON Loading and Saving
+
+Scenes or smaller prefabs can be saved to, and loaded from, json files. The JsonUtil will help in doing so. GameObjects and their hierarchies can be saved to a file using `SaveToFile()` in `utilities/JsonUtil.hpp`. With this method, the given gameObject will be saved to the given filepath (relative to the executing directory). `LoadFromFile` (or String) can be used to generate a hierarchy as specified in the given json. The gameObject (and all children) that are specified in this json will be added as a child of the given recipient.
+
+Though gameObjects, transforms and their hierarchical structures are easily saved and loaded, components require a little more setup. This has already been done for all (major) components given with Blocky Engine. For custom components however, this must be set up manually if this component needs to be loaded through json.
+
+To aid in this, `JsonUtil.hpp` defines a couple of macros for registering components to the JsonUtil. First, add `JSON_REGISTER_HEADER(ExampleComponent);` in the public section of the custom component, here named "ExampleComponent". Adding `JSON_REGISTER_COMPONENT(ExampleComponent);` to the global / static part below the definition of ExampleComponent will automatically register this component to the JsonUtil. 
+
+Note that for this reason, ExampleComponent MUST be included before using the JsonUtil where this component is needed.
+
+The definitions of ExampleComponent's FromJson() and ToJson() must also be added to the source. If the custom component does not require any special setup, `JSON_REGISTER_FROM_DEFAULT(ExampleComponent)` and `JSON_REGISTER_TO_DEFAULT(ExampleComponent)` can simply be added anywhere in ExampleComponent's source. If this hasn't been done already, `gameObject/GameObject.hpp` must be included in this source. For this reason, defining the FromJson() and ToJson() cannot be done in the header.
+
+If the custom component requires more specific setup, `JSON_REGISTER_TO(...)` can be used as follows to save more specific data regarding this component to the json:
+```c++
+JSON_REGISTER_TO(
+    ExampleComponent,
+    [](nlohmann::json& json, const ExampleComponent& other) {
+        json["firstValue"] = other._firstValue;
+        json["secondValue"] = other._secondValue;
+    }
+)
+```
+To load this data during the FromJson(), the following can be used to modify the component after initialization:
+```c++
+JSON_REGISTER_FROM(
+    ExampleComponent,
+    [](const nlohmann::json& json, ExampleComponent& other) {
+        other._firstValue = json.at("firstValue").get<float>();
+        other._secondValue = json.at("secondValue").get<std::string>();
+    }
+)
+```
+If these modifications cannot be done after initialization, and instead need to be done during the constructor, the following can be used (these are added after the tag in the constructor as variadic arguments):
+```c++
+JSON_REGISTER_FROM_CUSTOM_CONSTRUCTOR(
+    json.at("firstValue").get<float>(),
+    json.at("secondValue").get<std::string>()
+)
+```
+Lastly, if both _constructor arguments_ and _post initialization_ need to be used. A completely custom json registration can be made using the following structure: (firstValue is done after initialization, secondValue is passed to the constructor)
+```c++
+JSON_REGISTER_FROM_CUSTOM(
+    ExampleComponent,
+    [](const nlohmann::json& json, ExampleComponent& other) {
+        other._firstValue = json.at("firstValue").get<float>();
+    },
+    json.at("secondValue").get<std::string>()
+)
+```
+
+Blocky Engine provides two components for loading prefabs from json. Both will add the gameObjects that are generated from the json as a child to the gameObject this component belongs to. `components/json/JsonLoader` will instantiate the json at the given filePath once on Start(). `components/json/JsonSaveAndLoader` will first take the json in the given filePath as it's initial state. If it doesn't exist already, this json will be cloned to an identical file (named according to the component's tag) in the given instanceDir. This version will be used to save and load this instance's data on Start() and End().
+
 ## Custom Modules
 
 Currently, Blocky Engine only contains the Window Module (internally containing the Rendering Module) with a tight

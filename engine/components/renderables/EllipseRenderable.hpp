@@ -8,6 +8,8 @@
 #include <glm/vec4.hpp>
 #include "Renderable.hpp"
 
+#include "utilities/JsonUtil.hpp"
+
 class EllipseRenderable : public Renderable {
 	public:
 		EllipseRenderable(GameObject* gameObject, const char* tag,
@@ -17,11 +19,15 @@ class EllipseRenderable : public Renderable {
 		[[nodiscard]] glm::ivec4 GetColor() const;
 		[[nodiscard]] bool IsFilled() const;
 
+		JSON_REGISTER_HEADER(EllipseRenderable)
+
 	private:
 		Component* _clone(const GameObject& parent) override;
 
 		glm::ivec4 _color;
 		bool _isFilled;
 };
+
+JSON_REGISTER_COMPONENT(EllipseRenderable)
 
 #endif //BLOCKYENGINE_ELLIPSERENDERABLE_HPP

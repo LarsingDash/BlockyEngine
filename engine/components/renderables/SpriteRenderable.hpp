@@ -7,6 +7,8 @@
 
 #include "Renderable.hpp"
 
+#include "utilities/JsonUtil.hpp"
+
 enum SpriteFlip {
 	FlipNone,
 	FlipHorizontal,
@@ -25,12 +27,17 @@ class SpriteRenderable : public Renderable {
 		[[nodiscard]] std::string GetFilePath() const;
 		[[nodiscard]] std::string GetSpriteTag() const;
 
-	private:
-		Component* _clone(const GameObject& parent) override;
+		JSON_REGISTER_HEADER(SpriteRenderable)
 
+	protected:
 		SpriteFlip _spriteFlip;
 		std::string _spriteTag;
 		std::string _filePath;
+
+	private:
+		Component* _clone(const GameObject& parent) override;
 };
+
+JSON_REGISTER_COMPONENT(SpriteRenderable)
 
 #endif //BLOCKYENGINE_SPRITERENDERABLE_HPP

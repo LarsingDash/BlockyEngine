@@ -54,6 +54,24 @@ void MouseCameraController::Update(float delta) {
 
 void MouseCameraController::End() {}
 
+JSON_REGISTER_FROM(
+		MouseCameraController,
+		[](const nlohmann::json& json, MouseCameraController& other) {
+			other._camera.SetPosition(
+					json.at("x").get<float>(),
+					json.at("y").get<float>()
+			);
+		}
+)
+
+JSON_REGISTER_TO(
+		MouseCameraController,
+		[](nlohmann::json& json, const MouseCameraController& other) {
+			json["x"] = other._camera.GetPosition().x;
+			json["y"] = other._camera.GetPosition().y;
+		}
+)
+
 Component* MouseCameraController::_clone(const GameObject& parent) {
 	auto clone = new MouseCameraController(*this);
 	return clone;

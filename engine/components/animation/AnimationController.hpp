@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <stdexcept>
 #include "components/renderables/AnimationRenderable.hpp"
+#include "utilities/JsonUtil.hpp"
 
 class AnimationController : public Component {
 	public:
@@ -29,6 +30,8 @@ class AnimationController : public Component {
 		bool PlayAnimation(const std::string& animationName);
 		void StopAnimation();
 
+		JSON_REGISTER_HEADER(AnimationController)
+
 	private:
 		Component* _clone(const GameObject& parent) override;
 		
@@ -43,5 +46,7 @@ class AnimationController : public Component {
 
 		void _updateSourceRect();
 };
+
+JSON_REGISTER_COMPONENT(AnimationController)
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_ANIMATION_ANIMATIONCONTROLLER_HPP_

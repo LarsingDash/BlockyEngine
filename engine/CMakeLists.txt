@@ -72,8 +72,6 @@ add_subdirectory(gameObject)
 add_subdirectory(logging)
 add_subdirectory(utilities)
 
-set(SDL_TTF_INCLUDE_DIR "${DEPS_DIR}/SDL2_ttf/x86_64-w64-mingw32/include/SDL2")
-set(SDL2_mixer_INCLUDE_DIR "${DEPS_DIR}/SDL2_mixer/x86_64-w64-mingw32/include/SDL2")
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         mingw32
         glm
@@ -102,6 +100,10 @@ set(IMGUI_SOURCES
         ${IMGUI_PATH}/backends/imgui_impl_sdlrenderer2.cpp
 )
 
+set(SDL_TTF_INCLUDE_DIR "${DEPS_DIR}/SDL2_ttf/x86_64-w64-mingw32/include/SDL2")
+set(SDL2_mixer_INCLUDE_DIR "${DEPS_DIR}/SDL2_mixer/x86_64-w64-mingw32/include/SDL2")
+set(JSON_INCLUDE_DIR "${DEPS_DIR}/json/single_include/nlohmann")
+
 target_sources(${ENGINE_TARGET} PRIVATE ${IMGUI_SOURCES})
 target_include_directories(${ENGINE_TARGET} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -112,6 +114,7 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
         ${IMGUI_PATH}/backends
         ${SDL_TTF_INCLUDE_DIR}
         ${SDL2_mixer_INCLUDE_DIR}
+        ${JSON_INCLUDE_DIR}
 )
 
 # Copies dll to build directory

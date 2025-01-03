@@ -11,6 +11,7 @@ set(GLM_VERSION "1.0.1")
 set(BOX2D_VERSION "2.4.1")
 set(IMGUI_VERSION "1.91.5")
 set(SDL_MIXER_VERSION "2.8.0")
+set(JSON_VERSION "3.11.3")
 
 set(BLOCKY_DEPS
         googletest https://github.com/google/googletest/releases/download/v${GTEST_VERSION}/googletest-${GTEST_VERSION}.tar.gz
@@ -19,6 +20,7 @@ set(BLOCKY_DEPS
         box2d https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz
         stb_image https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
         imgui https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz
+        json https://github.com/nlohmann/json/releases/download/v${JSON_VERSION}/json.hpp
 )
 
 function(setup_platform_specifics)
@@ -68,6 +70,12 @@ function(setup_dependencies)
                 build_lib_from_file("${DEPS_DIR}/${LIB_NAME}"
                         "stb_image"
                         "h"
+                        ${LIB_URL}
+                )
+            elseif (${LIB_NAME} STREQUAL "json")
+                build_lib_from_file("${DEPS_DIR}/${LIB_NAME}"
+                        "json"
+                        "hpp"
                         ${LIB_URL}
                 )
             else ()

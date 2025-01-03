@@ -8,6 +8,7 @@
 #include "components/Component.hpp"
 #include "moduleManager/modules/input/InputModule.hpp"
 #include "moduleManager/modules/rendering/Camera.hpp"
+#include "utilities/JsonUtil.hpp"
 
 class MouseCameraController : public Component {
 	public:
@@ -17,15 +18,19 @@ class MouseCameraController : public Component {
 		void Start() override;
 		void Update(float delta) override;
 		void End() override;
-		
+
+		JSON_REGISTER_HEADER(MouseCameraController);
+
 	private:
 		Component* _clone(const GameObject& parent) override;
 
 		glm::vec2 _threshold;
 		glm::vec2 _middle;
-		
+
 		Camera& _camera;
 		InputModule& _inputModule;
 };
+
+JSON_REGISTER_COMPONENT(MouseCameraController);
 
 #endif //BLOCKYENGINE_ENGINE_COMPONENTS_EXAMPLE_MOUSECAMERACONTROLLER_HPP_

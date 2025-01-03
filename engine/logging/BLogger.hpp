@@ -10,7 +10,7 @@
 #include <glm/vec2.hpp>
 
 // if logging is lagging the game don't set LOG_TO_CONSOLE true because it gives the biggest performers hit
-constexpr bool LOG_TO_CONSOLE = false;
+constexpr bool LOG_TO_CONSOLE = true;
 constexpr bool LOG_TO_FILE = true;
 
 // length for function/class name that is reserved

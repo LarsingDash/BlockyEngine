@@ -7,6 +7,7 @@
 
 #include <map>
 #include <unordered_map>
+#include <functional>
 
 #include "components/renderables/Renderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
@@ -29,11 +30,16 @@ class RenderingModule {
 		void AddRenderable(Renderable& renderable);
 		void RemoveRenderable(Renderable& renderable);
 
+		using DebugRectangleFunc = std::function<void(glm::vec2& position, glm::vec2& size, glm::ivec4& color)>;
+		void AddDebugRectangle(const std::string& tag, DebugRectangleFunc&& function, int layer = 0);
+		void RemoveDebugRectangle(const std::string& tag);
+
 		inline Camera& GetCamera() const { return *_camera; }
 
 	private:
 		SDL_Renderer* _renderer;
 		std::unique_ptr<Camera> _camera;
+		std::map<int, std::unordered_map<std::string, DebugRectangleFunc>> _debugRectangles;
 		std::map<int, std::vector<std::reference_wrapper<Renderable>>> _renderables;
 		std::unordered_map<std::string, std::unique_ptr<SDL_Texture, void (*)(SDL_Texture*)>> _textureCache;
 		TTF_Font* _font;
@@ -54,6 +60,8 @@ class RenderingModule {
 							   bool moveWithCamera = true);
 		void _renderGameInfo();
 		SDL_Texture* _loadTexture(const SpriteRenderable& sprite, int& width, int& height);
+
+		void _renderDebugRectangles();
 };
 
 #endif //BLOCKYENGINE_RENDERINGMODULE_HPP

@@ -368,16 +368,20 @@ void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
 			RenderableType::SPRITE,
 			1, SpriteFlip::FlipVertical
 	).componentTransform->SetPosition(-0.5f, 0.f);
-	renderables.AddComponent<AnimationRenderable>(
+	auto& animated = renderables.AddComponent<AnimationRenderable>(
 			"animTag",
 			"../assets/character_spritesheet.png",
 			"spriteTag",
 			32, 32,
 			1, SpriteFlip::FlipHorizontal
-	).componentTransform->SetPosition(0.5f, 0.f);
+	);
+	animated.componentTransform->SetPosition(0.5f, 0.f);
+	
 	auto& animationController = renderables.AddComponent<AnimationController>("animControllerTag");
 	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
 	animationController.PlayAnimation("idle");
+	
+	animated.SetCurrentFrame(5);
 
 	auto& text = sandbox->AddComponent<TextRenderable>(
 			"RenderablesText", "Renderables",

@@ -53,10 +53,10 @@ void buildJsonPrefabScene(SceneManager& scenes, const char* next) {
 //	barrel.transform->SetScale(2, 0.5f);
 //	barrel.transform->SetPosition(0.5f, 0);
 //
-//	JsonUtil::SaveToFile(*prefabScene, "../assets/PrefabScene.txt");
+//	JsonUtil::SaveToFile(*prefabScene, "../assets/PrefabScene.json");
 
 	//JsonLoader	
-	root->AddComponent<JsonSaveAndLoader>("JsonLoader", "../assets/PrefabScene.txt", "Instances");
+	root->AddComponent<JsonSaveAndLoader>("JsonLoader", "../assets/PrefabScene.json", "Instances");
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
@@ -342,7 +342,7 @@ void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
 
 	//Sandbox
 	std::string fileDir = "Instances";
-	std::string filePath = fileDir + "/Sandbox.txt";
+	std::string filePath = fileDir + "/Sandbox.json";
 	if (!std::filesystem::exists(fileDir)) {
 		std::filesystem::create_directories(fileDir);
 	}
@@ -415,12 +415,12 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	buildPathfindingScene(sceneManager, "JsonSandbox");
 	buildJsonSandboxScene(sceneManager, "JsonPrefab");
 
-//	sceneManager.SwitchScene("JsonPrefab");
+	sceneManager.SwitchScene("JsonPrefab");
 //	sceneManager.SwitchScene("InputReparenting");
 //	sceneManager.SwitchScene("Camera");
 //	sceneManager.SwitchScene("CollisionScene");
 //	sceneManager.SwitchScene("Pathfinding");
-	sceneManager.SwitchScene("JsonSandbox");
+//	sceneManager.SwitchScene("JsonSandbox");
 
 	blockyEngine.Run();
 

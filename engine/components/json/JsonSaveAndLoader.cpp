@@ -13,7 +13,7 @@ JsonSaveAndLoader::JsonSaveAndLoader(
 		_jsonPath(jsonPath), _instanceDir(instanceDir) {}
 
 void JsonSaveAndLoader::Start() {
-	_instancePath = (std::filesystem::current_path() / _instanceDir / tag).string() + ".txt";
+	_instancePath = (std::filesystem::current_path() / _instanceDir / tag).string() + ".json";
 	
 	if (!std::filesystem::exists(_instancePath)) {
 		std::filesystem::create_directories(std::filesystem::current_path() / _instanceDir);

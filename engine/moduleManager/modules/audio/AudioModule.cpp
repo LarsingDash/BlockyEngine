@@ -28,6 +28,10 @@ AudioModule::AudioModule() {
 		BLOCKY_ENGINE_ERROR("Could not Mix_OpenAudio: " + error);
 		return;
 	}
+
+	constexpr int MAX_VOLUME = 255;
+	_audioVolume[MUSIC] = MAX_VOLUME;
+	_audioVolume[SOUND_EFFECT] = MAX_VOLUME;
 }
 
 void AudioModule::AddAudio(const Audio& audio) {
@@ -35,8 +39,8 @@ void AudioModule::AddAudio(const Audio& audio) {
 	if (it == _audioPaths.end()) {
 		auto fragment = AudioFragment(
 			audio.GetPath(),
-			audio.GetVolume(),
-			audio.GetIsLooping()
+			audio.GetIsLooping(),
+			audio.GetType()
 		);
 
 		fragment.audioChunk = Mix_LoadWAV(fragment.path.c_str());
@@ -47,9 +51,10 @@ void AudioModule::AddAudio(const Audio& audio) {
 			return;
 		}
 
-		Mix_VolumeChunk(fragment.audioChunk, audio.GetVolume() / 2);
-		fragment.numberOfInstances = 1;
+		const int volume = _audioVolume[audio.GetType()];
+		_setVolume(fragment.audioChunk, volume);
 
+		fragment.numberOfInstances = 1;
 		_audioPaths.emplace(std::pair(audio.tag, fragment));
 	}
 	else {
@@ -73,6 +78,17 @@ void AudioModule::RemoveAudio(const Audio& audio) {
 
 		_audioPaths.erase(it);
 	}
+}
+
+void AudioModule::SetVolume(audio_type type, int volume) {
+	for (auto& [_tag, fragment] : _audioPaths) {
+		if (fragment.audioChunk == nullptr) { continue; }
+		if (fragment.type != type) { continue; }
+
+		_setVolume(fragment.audioChunk, volume);
+	}
+
+	_audioVolume[type] = volume;
 }
 
 void AudioModule::PlayAudio(const std::string& tag, int loops) {
@@ -103,4 +119,8 @@ void AudioModule::StopAudio(const std::string& tag) {
 		fragment.playingChannel.pop_back();
 		return;
 	}
+}
+
+void AudioModule::_setVolume(Mix_Chunk* audioChunk, const int volume) {
+	Mix_VolumeChunk(audioChunk, volume / 2);
 }

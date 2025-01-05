@@ -23,6 +23,7 @@ if (${MINGW})
     set(SDL2_DIR "${DEPS_DIR}/SDL2/cmake")
     set(SDL2_mixer_DIR "${DEPS_DIR}/SDL2_mixer/cmake")
     set(SDL2_ttf_DIR "${DEPS_DIR}/SDL2_ttf/cmake")
+    set(SDL_NET_DIR "${DEPS_DIR}/SDL_net/x86_64-w64-mingw32")
     find_package(SDL2 CONFIG REQUIRED)
     find_package(SDL2_mixer CONFIG REQUIRED)
     find_package(SDL2_ttf CONFIG REQUIRED)
@@ -72,6 +73,8 @@ add_subdirectory(gameObject)
 add_subdirectory(logging)
 add_subdirectory(utilities)
 
+set(SDL_TTF_INCLUDE_DIR "${DEPS_DIR}/SDL2_ttf/x86_64-w64-mingw32/include/SDL2")
+set(SDL2_mixer_INCLUDE_DIR "${DEPS_DIR}/SDL2_mixer/x86_64-w64-mingw32/include/SDL2")
 target_link_libraries(${ENGINE_TARGET} PRIVATE
         mingw32
         glm
@@ -79,6 +82,7 @@ target_link_libraries(${ENGINE_TARGET} PRIVATE
         SDL2_mixer::SDL2_mixer
         SDL2::SDL2main
         sdl_gfx
+        ${SDL_NET_DIR}/lib/libSDL2_net.dll.a
         SDL2_ttf::SDL2_ttf
         box2d
 )
@@ -113,6 +117,7 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
         ${IMGUI_PATH}
         ${IMGUI_PATH}/backends
         ${SDL_TTF_INCLUDE_DIR}
+        ${SDL_NET_DIR}/include/SDL2
         ${SDL2_mixer_INCLUDE_DIR}
         ${JSON_INCLUDE_DIR}
 )
@@ -123,8 +128,10 @@ if (MINGW)
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../x86_64-w64-mingw32/bin/SDL2.dll")
         copy_dll_to_build(SDL2_mixer_DLL "${SDL2_mixer_DIR}/../x86_64-w64-mingw32/bin/SDL2_mixer.dll")
         copy_dll_to_build(SDL2_TTF_DLL "${SDL2_ttf_DIR}/../x86_64-w64-mingw32/bin/SDL2_ttf.dll")
+        copy_dll_to_build(SDL2_NET_DLL "${SDL_NET_DIR}/../x86_64-w64-mingw32/bin/SDL2_net.dll")
     else ()
         copy_dll_to_build(SDL2_DLL "${SDL2_DIR}/../i686-w64-mingw32/bin/SDL2.dll")
+        copy_dll_to_build(SDL2_NET_DLL "${SDL_NET_DIR}/../i686-w64-mingw32/bin/SDL2_net.dll")
         copy_dll_to_build(SDL2_mixer_DLL "${SDL2_mixer_DIR}/../i686-w64-mingw32/bin/SDL2_mixer.dll")
         copy_dll_to_build(SDL2_TTF_DLL "${SDL2_ttf_DIR}/../i686-w64-mingw32/bin/SDL2_ttf.dll")
     endif ()

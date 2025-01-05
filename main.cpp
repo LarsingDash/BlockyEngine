@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <logging/BLogger.hpp>
+
 #include "BlockyEngine.hpp"
 #include "utilities/JsonUtil.hpp"
 #include "logging/BLogger.hpp"
@@ -19,6 +21,7 @@
 #include "components/example/inputScripts/MouseInputComponent.hpp"
 #include "components/example/inputScripts/KeyboardInputComponent.hpp"
 #include "components/example/inputScripts/MouseCameraController.hpp"
+#include "components/example/NetworkingComponent.hpp"
 
 #include <components/physics/collider/BoxCollider.hpp>
 #include <components/physics/collision/CollisionHandler.hpp>
@@ -53,10 +56,10 @@ void buildJsonPrefabScene(SceneManager& scenes, const char* next) {
 //	barrel.transform->SetScale(2, 0.5f);
 //	barrel.transform->SetPosition(0.5f, 0);
 //
-//	JsonUtil::SaveToFile(*prefabScene, "../assets/PrefabScene.txt");
+//	JsonUtil::SaveToFile(*prefabScene, "../assets/PrefabScene.json");
 
-	//JsonLoader	
-	root->AddComponent<JsonSaveAndLoader>("JsonLoader", "../assets/PrefabScene.txt", "Instances");
+	//JsonLoader
+	root->AddComponent<JsonSaveAndLoader>("JsonLoader", "../assets/PrefabScene.json", "Instances");
 
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
@@ -141,6 +144,24 @@ void buildCameraScene(SceneManager& scenes, const char* next) {
 	box.AddComponent<EllipseRenderable>("BoxEl", glm::vec4{255, 0, 0, 255}, 0, true);
 	box.AddComponent<SpriteRenderable>("animTag", "../assets/character_spritesheet.png", "spriteTag");
 
+	//Scene switching
+	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
+
+	scenes.AddScene(std::move(root));
+}
+
+void buildNetworkingScene(SceneManager& scenes, const char* next) {
+	auto root = std::make_unique<GameObject>("Networking");
+	root->SetActive(false);
+
+	root->AddComponent<MouseCameraController>("CameraController");
+
+	auto& box = root->AddChild("Box");
+	box.transform->SetScale(200, 150);
+	box.transform->SetPosition(400, 300);
+	box.AddComponent<RectangleRenderable>("BoxR", glm::vec4{175, 0, 0, 255}, 0, true);
+
+	root->AddComponent<NetworkingComponent>("NetworkingComponent");
 	//Scene switching
 	root->AddComponent<SceneSwitchComp>("SceneSwitcher", next);
 
@@ -342,7 +363,7 @@ void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
 
 	//Sandbox
 	std::string fileDir = "Instances";
-	std::string filePath = fileDir + "/Sandbox.txt";
+	std::string filePath = fileDir + "/Sandbox.json";
 	if (!std::filesystem::exists(fileDir)) {
 		std::filesystem::create_directories(fileDir);
 	}
@@ -368,16 +389,20 @@ void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
 			RenderableType::SPRITE,
 			1, SpriteFlip::FlipVertical
 	).componentTransform->SetPosition(-0.5f, 0.f);
-	renderables.AddComponent<AnimationRenderable>(
+	auto& animated = renderables.AddComponent<AnimationRenderable>(
 			"animTag",
 			"../assets/character_spritesheet.png",
 			"spriteTag",
 			32, 32,
 			1, SpriteFlip::FlipHorizontal
-	).componentTransform->SetPosition(0.5f, 0.f);
+	);
+	animated.componentTransform->SetPosition(0.5f, 0.f);
+
 	auto& animationController = renderables.AddComponent<AnimationController>("animControllerTag");
 	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
 	animationController.PlayAnimation("idle");
+
+	animated.SetCurrentFrame(5);
 
 	auto& text = sandbox->AddComponent<TextRenderable>(
 			"RenderablesText", "Renderables",
@@ -413,14 +438,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	buildCameraScene(sceneManager, "Collision");
 	buildCollisionScene(sceneManager, "Pathfinding");
 	buildPathfindingScene(sceneManager, "JsonSandbox");
-	buildJsonSandboxScene(sceneManager, "JsonPrefab");
+	buildJsonSandboxScene(sceneManager, "Networking");
+	buildNetworkingScene(sceneManager, "JsonPrefab");
 
 //	sceneManager.SwitchScene("JsonPrefab");
-//	sceneManager.SwitchScene("InputReparenting");
+	sceneManager.SwitchScene("InputReparenting");
 //	sceneManager.SwitchScene("Camera");
 //	sceneManager.SwitchScene("CollisionScene");
 //	sceneManager.SwitchScene("Pathfinding");
-	sceneManager.SwitchScene("JsonSandbox");
+//	sceneManager.SwitchScene("JsonSandbox");
+//	sceneManager.SwitchScene("Networking");
 
 	blockyEngine.Run();
 

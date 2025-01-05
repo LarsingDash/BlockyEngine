@@ -7,9 +7,15 @@
 
 #include <components/Component.hpp>
 
+enum audio_type {
+	MUSIC,
+	SOUND_EFFECT
+};
+
 class Audio : public Component {
 	public:
-		Audio(GameObject* gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping);
+		Audio(GameObject* gameObject, const char* tag, std::string path, bool isLooping = false,
+		      audio_type type = SOUND_EFFECT);
 		~Audio() override = default;
 
 		void Start() override;
@@ -18,17 +24,17 @@ class Audio : public Component {
 
 		void Play(int loops = 0) const;
 		void Stop() const;
-		
+
 		[[nodiscard]] inline const std::string& GetPath() const { return _path; }
-		[[nodiscard]] inline uint8_t GetVolume() const { return _volume; }
 		[[nodiscard]] inline bool GetIsLooping() const { return _isLooping; }
+		[[nodiscard]] inline audio_type GetType() const { return _type; }
 
 	private:
 		Component* _clone(const GameObject& parent) override;
 
 		std::string _path;
-		uint8_t _volume;
 		bool _isLooping;
+		audio_type _type;
 };
 
 #endif //AUDIO_HPP

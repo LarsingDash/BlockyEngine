@@ -75,24 +75,17 @@ void PhysicsModule::_updateBox2DIfChanges(const PhysicsBody* const physicsBody, 
 		body->b2body->SetTransform(_position(physicsBody), _rotation(physicsBody));
 	}
 
-	if (_linearVelocity(physicsBody) != body->PhysicsBodyLastLinearVelocity()) {
-		body->b2body->SetLinearVelocity(body->PhysicsBodyLastLinearVelocity());
-		body->PhysicsBodyLastLinearVelocity(_linearVelocity(physicsBody));
-	}
+	body->b2body->SetLinearVelocity(body->PhysicsBodyLastLinearVelocity());
+	body->PhysicsBodyLastLinearVelocity(_linearVelocity(physicsBody));
 
-	if (_rotationVelocity(physicsBody) != body->PhysicsBodyLastRotationVelocity()) {
-		body->b2body->SetAngularVelocity(_rotationVelocity(physicsBody));
-		body->PhysicsBodyLastRotationVelocity(_rotationVelocity(physicsBody));
-	}
+	body->b2body->SetAngularVelocity(_rotationVelocity(physicsBody));
+	body->PhysicsBodyLastRotationVelocity(_rotationVelocity(physicsBody));
 
-	if (_linearResistance(physicsBody) != body->PhysicsBodyLastLinearResistance()) {
-		body->b2body->SetLinearDamping(_linearResistance(physicsBody));
-		body->PhysicsBodyLastLinearResistance(_linearResistance(physicsBody));
-	}
-	if (_rotationResistance(physicsBody) != body->PhysicsBodyLastRotationResistance()) {
-		body->b2body->SetAngularDamping(_rotationResistance(physicsBody));
-		body->PhysicsBodyLastRotationResistance(_rotationResistance(physicsBody));
-	}
+	body->b2body->SetLinearDamping(_linearResistance(physicsBody));
+	body->PhysicsBodyLastLinearResistance(_linearResistance(physicsBody));
+	
+	body->b2body->SetAngularDamping(_rotationResistance(physicsBody));
+	body->PhysicsBodyLastRotationResistance(_rotationResistance(physicsBody));
 }
 
 void PhysicsModule::_writingExternalInputToBox2DWorld() {

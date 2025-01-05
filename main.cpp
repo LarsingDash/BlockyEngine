@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <logging/BLogger.hpp>
+
 #include "BlockyEngine.hpp"
 #include "utilities/JsonUtil.hpp"
 #include "logging/BLogger.hpp"
@@ -55,7 +57,7 @@ void buildJsonPrefabScene(SceneManager& scenes, const char* next) {
 //
 //	JsonUtil::SaveToFile(*prefabScene, "../assets/PrefabScene.json");
 
-	//JsonLoader	
+	//JsonLoader
 	root->AddComponent<JsonSaveAndLoader>("JsonLoader", "../assets/PrefabScene.json", "Instances");
 
 	//Scene switching
@@ -376,11 +378,11 @@ void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
 			1, SpriteFlip::FlipHorizontal
 	);
 	animated.componentTransform->SetPosition(0.5f, 0.f);
-	
+
 	auto& animationController = renderables.AddComponent<AnimationController>("animControllerTag");
 	animationController.AddAnimation("idle", 0, 11, 0.15f, true);
 	animationController.PlayAnimation("idle");
-	
+
 	animated.SetCurrentFrame(5);
 
 	auto& text = sandbox->AddComponent<TextRenderable>(
@@ -419,8 +421,8 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	buildPathfindingScene(sceneManager, "JsonSandbox");
 	buildJsonSandboxScene(sceneManager, "JsonPrefab");
 
-	sceneManager.SwitchScene("JsonPrefab");
-//	sceneManager.SwitchScene("InputReparenting");
+//	sceneManager.SwitchScene("JsonPrefab");
+	sceneManager.SwitchScene("InputReparenting");
 //	sceneManager.SwitchScene("Camera");
 //	sceneManager.SwitchScene("CollisionScene");
 //	sceneManager.SwitchScene("Pathfinding");

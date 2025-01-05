@@ -4,6 +4,7 @@
 
 #include "PathfindingGrid.hpp"
 
+#include <algorithm>
 #include <queue>
 
 #include "moduleManager/ModuleManager.hpp"

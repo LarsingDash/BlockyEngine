@@ -14,32 +14,36 @@
 constexpr int NO_CHANNEL_SPECIFIED = -1;
 
 struct AudioFragment {
-	AudioFragment(std::string path, uint8_t volume, bool isLooping) : path(std::move(path)), volume(volume),
-	                                                                  isLooping(isLooping) {}
+	AudioFragment(std::string path, bool isLooping, audio_type type) : path(std::move(path)),
+	                                                                   isLooping(isLooping), type(type) {}
 
 	std::string path;
-	uint8_t volume;
 	bool isLooping;
+	audio_type type;
 	Mix_Chunk* audioChunk{};
 	std::vector<int> playingChannel{};
 	uint8_t numberOfInstances{};
 };
 
 class AudioModule : public ModuleWrapper {
-public:
-	AudioModule();
-	~AudioModule() override = default;
+	public:
+		AudioModule();
+		~AudioModule() override = default;
 
-	void Update(float delta) override {};
+		void Update(float delta) override {};
 
-	void AddAudio(const Audio& audio);
-	void RemoveAudio(const Audio& audio);
+		void AddAudio(const Audio& audio);
+		void RemoveAudio(const Audio& audio);
+		void SetVolume(audio_type type, int volume);
 
-	void PlayAudio(const std::string& tag, int loops);
-	void StopAudio(const std::string& tag);
+		void PlayAudio(const std::string& tag, int loops);
+		void StopAudio(const std::string& tag);
 
-private:
-	std::map<std::string, AudioFragment> _audioPaths{};
+	private:
+		std::map<std::string, AudioFragment> _audioPaths{};
+		std::map<audio_type, uint8_t> _audioVolume;
+
+		static void _setVolume(Mix_Chunk* audioChunk, int volume);
 };
 
 #endif //AUDIOMODULE_HPP

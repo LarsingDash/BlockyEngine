@@ -3,8 +3,10 @@
         ComponentTransform.cpp
 )
 
-add_subdirectory(audio)
-add_subdirectory(physics)
 add_subdirectory(animation)
+add_subdirectory(audio)
 add_subdirectory(example)
+add_subdirectory(json)
+add_subdirectory(pathfinding)
+add_subdirectory(physics)
 add_subdirectory(renderables)

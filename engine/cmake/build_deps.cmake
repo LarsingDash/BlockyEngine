@@ -23,7 +23,7 @@ set(BLOCKY_DEPS
         box2d https://github.com/erincatto/box2d/archive/refs/tags/v${BOX2D_VERSION}.tar.gz
         stb_image https://raw.githubusercontent.com/nothings/stb/refs/heads/master/stb_image.h
         imgui https://github.com/ocornut/imgui/archive/refs/tags/v${IMGUI_VERSION}.tar.gz
-        json https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+        json https://github.com/nlohmann/json/releases/download/v${JSON_VERSION}/json.hpp
 )
 
 function(setup_platform_specifics)
@@ -73,6 +73,12 @@ function(setup_dependencies)
                 build_lib_from_file("${DEPS_DIR}/${LIB_NAME}"
                         "stb_image"
                         "h"
+                        ${LIB_URL}
+                )
+            elseif (${LIB_NAME} STREQUAL "json")
+                build_lib_from_file("${DEPS_DIR}/${LIB_NAME}"
+                        "json"
+                        "hpp"
                         ${LIB_URL}
                 )
             else ()

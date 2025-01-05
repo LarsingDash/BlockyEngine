@@ -4,6 +4,8 @@
 
 #include "SpriteRenderable.hpp"
 
+#include "gameObject/GameObject.hpp"
+
 #include <utility>
 
 SpriteRenderable::SpriteRenderable(GameObject* gameObject, const char* tag,
@@ -29,3 +31,21 @@ std::string SpriteRenderable::GetSpriteTag() const {
 	return _spriteTag;
 }
 
+JSON_REGISTER_FROM_CUSTOM_CONSTRUCTOR(
+		SpriteRenderable,
+		json.at("spritePath").get<std::string>(),
+		json.at("spriteTag").get<std::string>(),
+		RenderableType::SPRITE,
+		json.at("layer").get<int>(),
+		json.at("spriteFlip").get<SpriteFlip>()
+)
+
+JSON_REGISTER_TO(
+		SpriteRenderable,
+		[](nlohmann::json& json, const SpriteRenderable& other) {
+			json["layer"] = other.GetLayer();
+			json["spritePath"] = other._filePath;
+			json["spriteTag"] = other._spriteTag;
+			json["spriteFlip"] = other._spriteFlip;
+		}
+)

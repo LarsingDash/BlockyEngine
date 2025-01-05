@@ -10,51 +10,64 @@
 #include "PhysicsModule.hpp"
 #include "components/physics/collision/CollisionHandler.hpp"
 
-MyContactListener::MyContactListener(std::unordered_map<GameObject*, Body*>* gameObjectToBodyMap) {
-    _gameObjectToBodyMap = gameObjectToBodyMap;
+MyContactListener::MyContactListener(std::unordered_map<PhysicsBody*, Body*>* gameObjectToBodyMap) {
+    _physicsBodyToBodyMap = gameObjectToBodyMap;
 }
 
-/// This is called after a contact is updated. This allows you to inspect a
-/// contact before it goes to the solver. If you are careful, you can modify the
-/// contact manifold (e.g. disable contact).
-/// A copy of the old manifold is provided so that you can detect changes.
-/// Note: this is called only for awake bodies.
-/// Note: this is called even when the number of contact points is zero.
-/// Note: this is not called for sensors.
-/// Note: if you set the number of contact points to zero, you will not
-/// get an EndContact callback. However, you may get a BeginContact callback
-/// the next step.
-void MyContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold) {
-    auto body1 = contact->GetFixtureA()->GetBody();
-    auto body2 = contact->GetFixtureB()->GetBody();
+void MyContactListener::BeginContact(b2Contact* contact) {
+    auto [gameObject1, gameObject2] = _gameObjects(contact);
 
-    GameObject* gameObject1 = nullptr;
-    GameObject* gameObject2 = nullptr;
-    Body* _body1 = nullptr;
-    Body* _body2 = nullptr;
-
-    for (auto [gameObject, body] : *_gameObjectToBodyMap) {
-        if (body1 == body->b2body) {
-            gameObject1 = gameObject;
-            _body1 = body;
-        }
-        if (body2 == body->b2body) {
-            gameObject2 = gameObject;
-            _body2 = body;
-        }
-    }
-
-    if (gameObject1 == nullptr || gameObject2 == nullptr || _body1 == nullptr || _body2 == nullptr) {
-        BLOCKY_ENGINE_ERROR("gameObject does not exist, PreSolve");
+    if (gameObject1 == nullptr || gameObject2 == nullptr) {
+        BLOCKY_ENGINE_ERROR_STREAM("gameObject does not exist, BeginContact: " << gameObject1 << ", " << gameObject2);
         return;
     }
 
     const auto handler1 = gameObject1->GetComponent<CollisionHandler>();
     if (handler1 != nullptr) {
-        handler1->HandleCollision(gameObject1, gameObject2);
+        handler1->_onEntryHandler(*gameObject2);
     }
     const auto handler2 = gameObject2->GetComponent<CollisionHandler>();
     if (handler2 != nullptr) {
-        handler2->HandleCollision(gameObject1, gameObject2);
+        handler2->_onEntryHandler(*gameObject1);
     }
+}
+
+void MyContactListener::EndContact(b2Contact* contact) {
+    auto [gameObject1, gameObject2] = _gameObjects(contact);
+
+    if (gameObject1 == nullptr || gameObject2 == nullptr) {
+        // when removing gameObject1 from PhysicsModule when in contact with other gameObject1 EndContact will be triggered
+        //  after remove EndContact gets called and gameObject can't be found.
+        // BLOCKY_ENGINE_ERROR("gameObject does not exist, EndContact");
+        return;
+    }
+
+    const auto handler1 = gameObject1->GetComponent<CollisionHandler>();
+    if (handler1 != nullptr) {
+        handler1->_onExitHandler(*gameObject2);
+    }
+    const auto handler2 = gameObject2->GetComponent<CollisionHandler>();
+    if (handler2 != nullptr) {
+        handler2->_onExitHandler(*gameObject1);
+    }
+}
+
+std::pair<GameObject*, GameObject*> MyContactListener::_gameObjects(b2Contact* contact) const {
+    const auto body1 = contact->GetFixtureA()->GetBody();
+    const auto body2 = contact->GetFixtureB()->GetBody();
+
+    std::pair<GameObject*, GameObject*> gameObjects = std::make_pair(nullptr, nullptr);
+
+    for (auto [physicsBody, body] : *_physicsBodyToBodyMap) {
+        if (body == nullptr || physicsBody == nullptr) { continue; }
+
+        if (body1 == body->b2body) {
+            gameObjects.first = physicsBody->gameObject;
+        }
+        if (body2 == body->b2body) {
+            gameObjects.second = physicsBody->gameObject;
+        }
+    }
+
+    return gameObjects;
 }

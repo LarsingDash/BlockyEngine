@@ -32,9 +32,9 @@ class NetworkMessage {
 		std::string _payload;
 };
 
+//Helper create message funcs
 NetworkMessage createConnectMessage(const std::string& clientInfo = "");
 NetworkMessage createDisconnectMessage(const std::string& reason = "");
-NetworkMessage createConnectionLostMessage(const std::string& details = "");
 NetworkMessage createConnectionConfirmedMessage(const std::string& details = "");
 NetworkMessage createDataMessage(const std::string& data);
 NetworkMessage createHostPingMessage();

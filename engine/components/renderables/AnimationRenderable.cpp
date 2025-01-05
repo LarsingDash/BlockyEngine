@@ -4,6 +4,7 @@
 
 #include <stb_image/stb_image.h>
 
+#include "gameObject/GameObject.hpp"
 #include "logging/BLogger.hpp"
 
 AnimationRenderable::AnimationRenderable(GameObject* gameObject, const char* tag,
@@ -84,3 +85,47 @@ const glm::ivec4& AnimationRenderable::GetFrame(int index) const {
 void AnimationRenderable::SetCurrentFrame(int frameIndex) {
 	_sourceRect = GetFrame(frameIndex);
 }
+
+JSON_REGISTER_FROM_CUSTOM(
+		AnimationRenderable,
+		[](const nlohmann::json& json, AnimationRenderable& other) {
+			auto jsonVec4 = ([](const nlohmann::json& json) {
+				return glm::ivec4{
+						json.at("x").get<int>(),
+						json.at("y").get<int>(),
+						json.at("z").get<int>(),
+						json.at("w").get<int>()
+				};
+			});
+
+			other._sourceRect = jsonVec4(json.at("sourceRect"));
+		},
+		json.at("spritePath").get<std::string>(),
+		json.at("spriteTag").get<std::string>(),
+		json.at("frameWidth").get<int>(),
+		json.at("frameHeight").get<int>(),
+		json.at("layer").get<int>(),
+		json.at("spriteFlip").get<SpriteFlip>()
+)
+
+JSON_REGISTER_TO(
+		AnimationRenderable,
+		[](nlohmann::json& json, const AnimationRenderable& other) {
+			json["layer"] = other.GetLayer();
+			json["frameWidth"] = other._frameWidth;
+			json["frameHeight"] = other._frameHeight;
+			json["spritePath"] = other._filePath;
+			json["spriteTag"] = other._spriteTag;
+			json["spriteFlip"] = other._spriteFlip;
+
+			auto jsonVec4 = [](const glm::ivec4& rect) {
+				return (nlohmann::json{
+						{"x", rect.x},
+						{"y", rect.y},
+						{"z", rect.z},
+						{"w", rect.w}
+				});
+			};
+			json["sourceRect"] = jsonVec4(other._sourceRect);
+		}
+)

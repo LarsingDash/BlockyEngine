@@ -7,6 +7,7 @@
 
 #include <glm/vec4.hpp>
 #include "Renderable.hpp"
+#include "utilities/JsonUtil.hpp"
 
 class RectangleRenderable : public Renderable {
 	public:
@@ -18,11 +19,15 @@ class RectangleRenderable : public Renderable {
 		[[nodiscard]] bool IsFilled() const;
 		void SetColor(const glm::vec4& color);
 
+		JSON_REGISTER_HEADER(RectangleRenderable);
+
 	private:
 		Component* _clone(const GameObject& parent) override;
 
 		glm::ivec4 _color;
 		bool _isFilled;
 };
+
+JSON_REGISTER_COMPONENT(RectangleRenderable);
 
 #endif //BLOCKYENGINE_RECTANGLERENDERABLE_HPP

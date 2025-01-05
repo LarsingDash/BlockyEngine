@@ -1,17 +1,17 @@
 #include "NetworkMessage.hpp"
 #include <stdexcept>
 #include <utility>
-#include <nlohmann/json.hpp>
+#include <json/json.hpp>
 
 NetworkMessage::NetworkMessage(MessageType type, std::string payload)
 		: _type(type), _payload(std::move(payload)) {}
 
 NetworkMessage NetworkMessage::FromJson(const std::string& jsonStr) {
 	try {
-		nlohmann::json j = nlohmann::json::parse(jsonStr);
+		nlohmann::json json = nlohmann::json::parse(jsonStr);
 		return NetworkMessage(
-				static_cast<MessageType>(j["type"].get<int>()),
-				j["payload"].get<std::string>()
+				static_cast<MessageType>(json["type"].get<int>()),
+				json["payload"].get<std::string>()
 		);
 	} catch (const std::exception& e) {
 		throw std::runtime_error("Failed to parse NetworkMessage: " + std::string(e.what()));
@@ -19,10 +19,10 @@ NetworkMessage NetworkMessage::FromJson(const std::string& jsonStr) {
 }
 
 std::string NetworkMessage::ToJson() const {
-	nlohmann::json j;
-	j["type"] = static_cast<int>(_type);
-	j["payload"] = _payload;
-	return j.dump();
+	nlohmann::json json;
+	json["type"] = static_cast<int>(_type);
+	json["payload"] = _payload;
+	return json.dump();
 }
 
 MessageType NetworkMessage::GetType() const {

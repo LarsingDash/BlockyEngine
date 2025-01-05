@@ -23,6 +23,7 @@ if (${MINGW})
     set(SDL2_DIR "${DEPS_DIR}/SDL2/cmake")
     set(SDL2_mixer_DIR "${DEPS_DIR}/SDL2_mixer/cmake")
     set(SDL2_ttf_DIR "${DEPS_DIR}/SDL2_ttf/cmake")
+    set(SDL_NET_DIR "${DEPS_DIR}/SDL_net/x86_64-w64-mingw32")
     find_package(SDL2 CONFIG REQUIRED)
     find_package(SDL2_mixer CONFIG REQUIRED)
     find_package(SDL2_ttf CONFIG REQUIRED)
@@ -105,7 +106,6 @@ set(IMGUI_SOURCES
 
 set(SDL_TTF_INCLUDE_DIR "${DEPS_DIR}/SDL2_ttf/x86_64-w64-mingw32/include/SDL2")
 set(SDL2_mixer_INCLUDE_DIR "${DEPS_DIR}/SDL2_mixer/x86_64-w64-mingw32/include/SDL2")
-set(SDL_NET_DIR "${DEPS_DIR}/SDL_net/x86_64-w64-mingw32")
 set(JSON_INCLUDE_DIR "${DEPS_DIR}/json/single_include/nlohmann")
 
 target_sources(${ENGINE_TARGET} PRIVATE ${IMGUI_SOURCES})

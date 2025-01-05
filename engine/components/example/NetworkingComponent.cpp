@@ -2,7 +2,6 @@
 // Created by 11896 on 11/12/2024.
 //
 
-#include <iostream>
 #include "NetworkingComponent.hpp"
 #include "moduleManager/ModuleManager.hpp"
 
@@ -18,11 +17,11 @@ Component* NetworkingComponent::_clone(const GameObject& parent) {
 }
 
 void NetworkingComponent::Start() {
-	_imguiModule.AddComponent("Networking", [this]() {
+	_imguiModule.AddComponent(tag, [this]() {
 		_renderNetworkingGUI();
 	});
 
-	_networkingModule.AddMessageListener("Networking Listener", [this](const NetworkMessage& message) {
+	_networkingModule.AddMessageListener(tag, [this](const NetworkMessage& message) {
 		switch (message.GetType()) {
 			case MessageType::CONNECT:
 				_logBuffer.appendf("[%s] Connected: %s\n",
@@ -54,7 +53,8 @@ void NetworkingComponent::Update(float delta) {
 }
 
 void NetworkingComponent::End() {
-	_networkingModule.RemoveMessageListener("NetListener1");
+	_networkingModule.RemoveMessageListener(tag);
+	_imguiModule.RemoveComponent(tag);
 
 }
 

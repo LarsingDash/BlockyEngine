@@ -7,8 +7,14 @@
 #include <moduleManager/ModuleManager.hpp>
 #include "moduleManager/modules/audio/AudioModule.hpp"
 
-Audio::Audio(GameObject* gameObject, const char* tag, std::string path, uint8_t volume, bool isLooping) :
-	Component(gameObject, tag), _path(std::move(path)), _volume(volume), _isLooping(isLooping) {}
+Audio::Audio(GameObject* gameObject,
+             const char* tag,
+             std::string path,
+             bool isLooping,
+             audio_type type) : Component(gameObject, tag),
+                                _path(std::move(path)),
+                                _isLooping(isLooping),
+                                _type(type) {}
 
 void Audio::Play(int loops) const {
 	ModuleManager::GetInstance().GetModule<AudioModule>().PlayAudio(tag, loops);

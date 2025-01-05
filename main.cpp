@@ -341,10 +341,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	buildPathfindingScene(sceneManager, "Prefab");
 
 	// sceneManager.SwitchScene("Prefabs");
-	// sceneManager.SwitchScene("InputReparenting");
+	sceneManager.SwitchScene("InputReparenting");
 	// sceneManager.SwitchScene("Camera");
 	// sceneManager.SwitchScene("CollisionScene");
-	sceneManager.SwitchScene("Pathfinding");
+	// sceneManager.SwitchScene("Pathfinding");
 
 	blockyEngine.Run();
 

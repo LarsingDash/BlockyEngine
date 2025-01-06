@@ -91,6 +91,10 @@ void AudioModule::SetVolume(audio_type type, int volume) {
 	_audioVolume[type] = volume;
 }
 
+int AudioModule::GetVolume(audio_type type) {
+	return _audioVolume[type];
+}
+
 void AudioModule::PlayAudio(const std::string& tag, int loops) {
 	for (auto& [_tag, fragment] : _audioPaths) {
 		if (tag != _tag) { continue; }

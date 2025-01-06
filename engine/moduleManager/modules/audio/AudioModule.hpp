@@ -34,7 +34,9 @@ class AudioModule : public ModuleWrapper {
 
 		void AddAudio(const Audio& audio);
 		void RemoveAudio(const Audio& audio);
+
 		void SetVolume(audio_type type, int volume);
+		int GetVolume(audio_type type);
 
 		void PlayAudio(const std::string& tag, int loops);
 		void StopAudio(const std::string& tag);

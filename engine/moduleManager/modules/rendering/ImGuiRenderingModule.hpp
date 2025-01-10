@@ -5,12 +5,13 @@
 #ifndef BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_RENDERING_IMGUIRENDERINGMODULE_HPP_
 #define BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_RENDERING_IMGUIRENDERINGMODULE_HPP_
 
-#include "moduleManager/ModuleWrapper.hpp"
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <functional>
 #include <string>
 #include <SDL_video.h>
+
+#include "moduleManager/ModuleWrapper.hpp"
 
 class ImGuiRenderingModule : public ModuleWrapper {
 	public:

@@ -3,9 +3,11 @@
 //
 
 #include "ImGuiRenderingModule.hpp"
-#include "imgui_impl_sdlrenderer2.h"
+
 #include <iostream>
 #include <utility>
+
+#include "imgui_impl_sdlrenderer2.h"
 
 ImGuiRenderingModule::ImGuiRenderingModule(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext context)
 		: _window(window), _renderer(renderer), _context(context) {

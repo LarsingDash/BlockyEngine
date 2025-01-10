@@ -4,6 +4,7 @@
 
 #ifndef TESTLOGGER_HPP
 #define TESTLOGGER_HPP
+
 #include <iostream>
 #include <fstream>
 #include <gtest/gtest.h>

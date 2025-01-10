@@ -2,17 +2,17 @@
 // Created by 11896 on 15/11/2024.
 //
 
+#include "RenderingModule.hpp"
+
 #include <iomanip>
 #include <sstream>
-#include "RenderingModule.hpp"
-#include "SDL_render.h"
-#include "SDL2_gfx/SDL2_gfxPrimitives.h"
-#include "SDL_ttf.h"
-
 #include <algorithm>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image/stb_image.h>
+#include <SDL_render.h>
+#include <SDL2_gfx/SDL2_gfxPrimitives.h>
+#include <SDL_ttf.h>
 
 #include "BlockyEngine.hpp"
 #include "components/renderables/AnimationRenderable.hpp"

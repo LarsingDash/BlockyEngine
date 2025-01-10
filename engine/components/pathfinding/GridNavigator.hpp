@@ -5,8 +5,7 @@
 #ifndef BLOCKYENGINE_ENGINE_COMPONENTS_PATHFINDING_GRIDNAVIGATOR_HPP_
 #define BLOCKYENGINE_ENGINE_COMPONENTS_PATHFINDING_GRIDNAVIGATOR_HPP_
 
-#include <components/Component.hpp>
-
+#include "components/Component.hpp"
 #include "components/pathfinding/PathfindingGrid.hpp"
 
 class GridNavigator : public Component {

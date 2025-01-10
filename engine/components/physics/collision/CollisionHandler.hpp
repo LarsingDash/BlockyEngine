@@ -6,8 +6,9 @@
 #define COLLISIONHANDLER_HPP
 
 #include <functional>
-#include <components/Component.hpp>
-#include <components/physics/PhysicsBody.hpp>
+
+#include "components/Component.hpp"
+#include "components/physics/PhysicsBody.hpp"
 
 class CollisionHandler : public Component {
 public:

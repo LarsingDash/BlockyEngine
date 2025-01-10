@@ -1,7 +1,9 @@
 //
 // Created by 11896 on 26/11/2024.
 //
+
 #include "KeyInput.hpp"
+
 KeyInput SDLKeyToCustomKey(SDL_Keycode sdlKey) {
 	switch (sdlKey) {
 		case SDLK_a: return KeyInput::KEY_A;

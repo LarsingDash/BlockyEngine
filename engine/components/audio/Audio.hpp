@@ -5,7 +5,7 @@
 #ifndef AUDIO_HPP
 #define AUDIO_HPP
 
-#include <components/Component.hpp>
+#include "components/Component.hpp"
 
 enum audio_type {
 	MUSIC,

@@ -5,8 +5,7 @@
 #ifndef BLOCKYENGINE_ENGINE_COMPONENTS_JSON_JSONLOADER_HPP_
 #define BLOCKYENGINE_ENGINE_COMPONENTS_JSON_JSONLOADER_HPP_
 
-#include <components/Component.hpp>
-
+#include "components/Component.hpp"
 #include "utilities/JsonUtil.hpp"
 
 class JsonLoader : public Component {

@@ -6,8 +6,8 @@
 #define BLOCKYENGINE_ELLIPSERENDERABLE_HPP
 
 #include <glm/vec4.hpp>
-#include "Renderable.hpp"
 
+#include "Renderable.hpp"
 #include "utilities/JsonUtil.hpp"
 
 class EllipseRenderable : public Renderable {

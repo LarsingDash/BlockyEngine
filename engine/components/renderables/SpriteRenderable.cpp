@@ -4,9 +4,10 @@
 
 #include "SpriteRenderable.hpp"
 
+#include <utility>
+
 #include "gameObject/GameObject.hpp"
 
-#include <utility>
 
 SpriteRenderable::SpriteRenderable(GameObject* gameObject, const char* tag,
 								   std::string filePath, std::string spriteTag,

@@ -5,7 +5,7 @@
 #ifndef BOXRIGIDBODY_HPP
 #define BOXRIGIDBODY_HPP
 
-#include <components/physics/PhysicsBody.hpp>
+#include "components/physics/PhysicsBody.hpp"
 
 class BoxRigidBody : public PhysicsBody {
 public:

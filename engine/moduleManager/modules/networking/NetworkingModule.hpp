@@ -11,6 +11,7 @@
 #include <mutex>
 #include <queue>
 #include <functional>
+
 #include "SDL_net.h"
 #include "moduleManager/ModuleWrapper.hpp"
 #include "NetworkMessage.hpp"

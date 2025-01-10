@@ -3,9 +3,11 @@
 //
 #ifndef MYCONTACTLISTENER_HPP
 #define MYCONTACTLISTENER_HPP
+
 #include <unordered_map>
 #include <box2d/b2_contact.h>
 #include <box2d/b2_world_callbacks.h>
+
 #include "components/physics/PhysicsBody.hpp"
 
 struct Body;

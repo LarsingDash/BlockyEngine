@@ -9,6 +9,8 @@
 #include <unordered_map>
 #include <functional>
 
+#include <SDL_render.h>
+
 #include "components/renderables/Renderable.hpp"
 #include "components/renderables/SpriteRenderable.hpp"
 #include "components/renderables/RectangleRenderable.hpp"
@@ -19,7 +21,6 @@
 #include "moduleManager/modules/rendering/Camera.hpp"
 #include "utilities/TimeUtil.hpp"
 
-#include <SDL_render.h>
 
 class RenderingModule {
 	public:

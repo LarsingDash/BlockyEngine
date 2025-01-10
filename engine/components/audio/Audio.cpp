@@ -4,7 +4,7 @@
 
 #include "Audio.hpp"
 
-#include <moduleManager/ModuleManager.hpp>
+#include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/audio/AudioModule.hpp"
 
 Audio::Audio(GameObject* gameObject,

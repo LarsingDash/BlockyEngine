@@ -5,7 +5,7 @@
 #include "CircleRigidBody.hpp"
 
 #include "components/physics/shape/Shape.hpp"
-#include <gameObject/GameObject.hpp>
+#include "gameObject/GameObject.hpp"
 
 CircleRigidBody::CircleRigidBody(GameObject* gameObject, const char* tag, bool isStatic,
                                  glm::vec2 velocity,

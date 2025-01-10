@@ -1,20 +1,20 @@
-# The engine name
+# Engine name
 set(ENGINE_TARGET "BlockyEngineInternal")
 
-include(cmake/fetch_lib.cmake) #The cmake module used for fetching libraries from the internet
+include(cmake/fetch_lib.cmake) # The cmake module used for fetching libraries from the internet
 include(cmake/build_deps.cmake)
 
 # Options that have to be set by the user, using our engine
 option(blocky_build_as_shared "Builds the engine as a shared library" OFF)
 option(blocky_build_tests "Builds the testing folder along with the library" OFF)
 
-#This just looks cool...
 mark_as_advanced(
         blocky_build_as_shared
         blocky_build_tests
 )
 
 ########################################################################################################################
+
 setup_platform_specifics()
 setup_dependencies()
 

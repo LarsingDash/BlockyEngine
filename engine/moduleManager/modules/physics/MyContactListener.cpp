@@ -4,11 +4,10 @@
 
 #include "MyContactListener.hpp"
 
-#include <gameObject/GameObject.hpp>
-#include <logging/BLogger.hpp>
-
+#include "gameObject/GameObject.hpp"
 #include "PhysicsModule.hpp"
 #include "components/physics/collision/CollisionHandler.hpp"
+#include "logging/BLogger.hpp"
 
 MyContactListener::MyContactListener(std::unordered_map<PhysicsBody*, Body*>* gameObjectToBodyMap) {
     _physicsBodyToBodyMap = gameObjectToBodyMap;
@@ -38,7 +37,6 @@ void MyContactListener::EndContact(b2Contact* contact) {
     if (gameObject1 == nullptr || gameObject2 == nullptr) {
         // when removing gameObject1 from PhysicsModule when in contact with other gameObject1 EndContact will be triggered
         //  after remove EndContact gets called and gameObject can't be found.
-        // BLOCKY_ENGINE_ERROR("gameObject does not exist, EndContact");
         return;
     }
 

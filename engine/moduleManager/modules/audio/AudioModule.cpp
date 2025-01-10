@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <SDL.h>
+
 #include "logging/BLogger.hpp"
 #include "components/audio/Audio.hpp"
 

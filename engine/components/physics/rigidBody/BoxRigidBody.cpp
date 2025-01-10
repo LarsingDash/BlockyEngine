@@ -5,7 +5,7 @@
 #include "BoxRigidBody.hpp"
 
 #include "components/physics/shape/Shape.hpp"
-#include <gameObject/GameObject.hpp>
+#include "gameObject/GameObject.hpp"
 
 BoxRigidBody::BoxRigidBody(GameObject* gameObject, const char* tag, bool isStatic, glm::vec2 velocity,
                            float rotationVelocity, float angularResistance, float linearResistance, bool gravityEnabled)

@@ -4,12 +4,14 @@
 
 #ifndef AUDIOMODULE_HPP
 #define AUDIOMODULE_HPP
+
 #include <map>
 #include <SDL_mixer.h>
 #include <string>
 #include <vector>
-#include <components/audio/Audio.hpp>
-#include <moduleManager/ModuleWrapper.hpp>
+
+#include "components/audio/Audio.hpp"
+#include "moduleManager/ModuleWrapper.hpp"
 
 constexpr int NO_CHANNEL_SPECIFIED = -1;
 

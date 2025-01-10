@@ -4,14 +4,16 @@
 
 #ifndef PHYSICSMODULE_HPP
 #define PHYSICSMODULE_HPP
+
 #include <memory>
 #include <unordered_map>
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_math.h>
 #include <Box2D/b2_world.h>
-#include <gameObject/GameObject.hpp>
-#include <logging/BLogger.hpp>
-#include <moduleManager/ModuleWrapper.hpp>
+
+#include "gameObject/GameObject.hpp"
+#include "logging/BLogger.hpp"
+#include "moduleManager/ModuleWrapper.hpp"
 #include "components/physics/PhysicsBody.hpp"
 #include "MyContactListener.hpp"
 

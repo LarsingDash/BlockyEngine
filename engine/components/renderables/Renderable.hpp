@@ -6,6 +6,7 @@
 #define BLOCKYENGINE_RENDERABLE_HPP
 
 #include "components/Component.hpp"
+
 #include "glm/vec4.hpp"
 
 enum RenderableType {

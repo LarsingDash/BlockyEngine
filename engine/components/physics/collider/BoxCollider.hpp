@@ -4,7 +4,8 @@
 
 #ifndef BOXCOLLIDER_HPP
 #define BOXCOLLIDER_HPP
-#include <components/physics/PhysicsBody.hpp>
+
+#include "components/physics/PhysicsBody.hpp"
 
 class BoxCollider : public PhysicsBody {
 public:

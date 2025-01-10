@@ -3,6 +3,7 @@
 //
 
 #include "RectangleRenderable.hpp"
+
 #include "gameObject/GameObject.hpp"
 
 RectangleRenderable::RectangleRenderable(GameObject* gameObject, const char* tag,

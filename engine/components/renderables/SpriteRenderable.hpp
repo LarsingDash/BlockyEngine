@@ -6,7 +6,6 @@
 #define BLOCKYENGINE_SPRITERENDERABLE_HPP
 
 #include "Renderable.hpp"
-
 #include "utilities/JsonUtil.hpp"
 
 enum SpriteFlip {

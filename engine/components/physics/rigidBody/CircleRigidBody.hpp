@@ -5,7 +5,7 @@
 #ifndef CIRCLERIGIDBODY_HPP
 #define CIRCLERIGIDBODY_HPP
 
-#include <components/physics/PhysicsBody.hpp>
+#include "components/physics/PhysicsBody.hpp"
 
 class CircleRigidBody : public PhysicsBody {
 public:

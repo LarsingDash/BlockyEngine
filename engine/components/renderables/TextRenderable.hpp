@@ -5,10 +5,10 @@
 #ifndef BLOCKYENGINE_ENGINE_COMPONENTS_RENDERABLES_TEXTRENDERABLE_HPP_
 #define BLOCKYENGINE_ENGINE_COMPONENTS_RENDERABLES_TEXTRENDERABLE_HPP_
 
-#include "Renderable.hpp"
-#include "SDL_ttf.h"
 #include <utility>
 
+#include "Renderable.hpp"
+#include "SDL_ttf.h"
 #include "utilities/JsonUtil.hpp"
 
 class TextRenderable : public Renderable {

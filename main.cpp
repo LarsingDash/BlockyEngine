@@ -37,27 +37,6 @@ void buildJsonPrefabScene(SceneManager& scenes, const char* next) {
 	auto root = std::make_unique<GameObject>("JsonPrefab");
 	root->SetActive(false);
 
-//	auto prefabScene = std::make_unique<GameObject>("PrefabScene");
-//	prefabScene->AddComponent<MouseCameraController>("CameraController");
-//
-//	auto& container = prefabScene->AddChild("ProjectileContainer");
-//	container.transform->SetPosition(400, 300);
-//	container.transform->SetScale(35, 35);
-//
-//	auto& cannon = prefabScene->AddChild("Cannon");
-//	cannon.transform->SetPosition(400, 300);
-//	cannon.transform->SetScale(50, 50);
-//	cannon.AddComponent<RectangleRenderable>("CannonR", glm::vec4(150, 75, 15, 155), 0, true);
-//	cannon.AddComponent<SpawnerComp>("Spawner");
-//	cannon.AddComponent<RotationComp>("Rotation");
-//
-//	auto& barrel = cannon.AddChild("Barrel");
-//	barrel.AddComponent<RectangleRenderable>("BarrelR", glm::vec4(125, 125, 250, 255), 3, true);
-//	barrel.transform->SetScale(2, 0.5f);
-//	barrel.transform->SetPosition(0.5f, 0);
-//
-//	JsonUtil::SaveToFile(*prefabScene, "../assets/PrefabScene.json");
-
 	//JsonLoader
 	root->AddComponent<JsonSaveAndLoader>("JsonLoader", "../assets/PrefabScene.json", "Instances");
 
@@ -441,13 +420,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	buildJsonSandboxScene(sceneManager, "Networking");
 	buildNetworkingScene(sceneManager, "JsonPrefab");
 
-//	sceneManager.SwitchScene("JsonPrefab");
 	sceneManager.SwitchScene("InputReparenting");
-//	sceneManager.SwitchScene("Camera");
-//	sceneManager.SwitchScene("CollisionScene");
-//	sceneManager.SwitchScene("Pathfinding");
-//	sceneManager.SwitchScene("JsonSandbox");
-//	sceneManager.SwitchScene("Networking");
 
 	blockyEngine.Run();
 

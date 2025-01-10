@@ -6,11 +6,13 @@
 #define BLOCKYENGINE_ENGINE_MODULEMANAGER_MODULES_INPUT_INPUTMODULE_HPP_
 
 #include <functional>
+
 #include "KeyEvent.hpp"
 #include "MouseEvent.hpp"
 #include "MouseInput.hpp"
 #include "components/Component.hpp"
-#include "glm/vec2.hpp"
+
+#include <glm/vec2.hpp>
 
 class InputModule {
 	public:

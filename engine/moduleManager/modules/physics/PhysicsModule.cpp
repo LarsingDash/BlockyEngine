@@ -2,12 +2,11 @@
 
 #include <iostream>
 #include <Box2D/Box2D.h>
+
+#include "gameObject/GameObject.hpp"
+#include "moduleManager/ModuleManager.hpp"
 #include "components/physics/shape/Shape.hpp"
-#include <components/renderables/EllipseRenderable.hpp>
-#include <gameObject/GameObject.hpp>
-#include <logging/BLogger.hpp>
-#include <moduleManager/ModuleManager.hpp>
-#include <moduleManager/modules/WindowModule.hpp>
+#include "logging/BLogger.hpp"
 
 // objects scaled, based on GAME_SPEED so that it looks like the speed is incrementing,
 //	since everything is GAME_SPEED closer to another and takes GAME_SPEED less time to move to same position.
@@ -75,24 +74,17 @@ void PhysicsModule::_updateBox2DIfChanges(const PhysicsBody* const physicsBody, 
 		body->b2body->SetTransform(_position(physicsBody), _rotation(physicsBody));
 	}
 
-	if (_linearVelocity(physicsBody) != body->PhysicsBodyLastLinearVelocity()) {
-		body->b2body->SetLinearVelocity(body->PhysicsBodyLastLinearVelocity());
-		body->PhysicsBodyLastLinearVelocity(_linearVelocity(physicsBody));
-	}
+	body->b2body->SetLinearVelocity(body->PhysicsBodyLastLinearVelocity());
+	body->PhysicsBodyLastLinearVelocity(_linearVelocity(physicsBody));
 
-	if (_rotationVelocity(physicsBody) != body->PhysicsBodyLastRotationVelocity()) {
-		body->b2body->SetAngularVelocity(_rotationVelocity(physicsBody));
-		body->PhysicsBodyLastRotationVelocity(_rotationVelocity(physicsBody));
-	}
+	body->b2body->SetAngularVelocity(_rotationVelocity(physicsBody));
+	body->PhysicsBodyLastRotationVelocity(_rotationVelocity(physicsBody));
 
-	if (_linearResistance(physicsBody) != body->PhysicsBodyLastLinearResistance()) {
-		body->b2body->SetLinearDamping(_linearResistance(physicsBody));
-		body->PhysicsBodyLastLinearResistance(_linearResistance(physicsBody));
-	}
-	if (_rotationResistance(physicsBody) != body->PhysicsBodyLastRotationResistance()) {
-		body->b2body->SetAngularDamping(_rotationResistance(physicsBody));
-		body->PhysicsBodyLastRotationResistance(_rotationResistance(physicsBody));
-	}
+	body->b2body->SetLinearDamping(_linearResistance(physicsBody));
+	body->PhysicsBodyLastLinearResistance(_linearResistance(physicsBody));
+	
+	body->b2body->SetAngularDamping(_rotationResistance(physicsBody));
+	body->PhysicsBodyLastRotationResistance(_rotationResistance(physicsBody));
 }
 
 void PhysicsModule::_writingExternalInputToBox2DWorld() {
@@ -278,7 +270,7 @@ void PhysicsModule::_addFixture(PhysicsBody& physicsBody, b2Body* body) {
 }
 
 b2Body* PhysicsModule::_createBody(b2World& world, PhysicsBody& physicsBody) {
-	// position and angel is not set when creating body, because physicsBody.gameObject position & angle is still default at this moment
+	// position and angle is not set when creating body, because physicsBody.gameObject position & angle is still default at this moment
 	b2Body* body;
 
 	auto pair = _physicsBodyToBodyMap.find(&physicsBody);
@@ -337,7 +329,7 @@ float PhysicsModule::_rotation(const PhysicsBody* physicsBody) {
 	return _toRadian(physicsBody->componentTransform->GetWorldRotation());
 }
 
-// return Angel in degree
+// return Angle in degree
 float PhysicsModule::_toDegree(float radian) {
 	return (radian * (180.0f / static_cast<float>(M_PI)));
 }

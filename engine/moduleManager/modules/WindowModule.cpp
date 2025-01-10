@@ -8,7 +8,6 @@
 
 #include "logging/BLogger.hpp"
 #include "BlockyEngine.hpp"
-#include "components/renderables/SpriteRenderable.hpp"
 
 WindowModule::WindowModule() : _renderingModule(nullptr), _inputModule(nullptr), _context() {
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {

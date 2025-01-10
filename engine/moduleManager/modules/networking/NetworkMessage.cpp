@@ -1,4 +1,5 @@
 #include "NetworkMessage.hpp"
+
 #include <stdexcept>
 #include <utility>
 #include <json/json.hpp>

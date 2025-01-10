@@ -4,12 +4,14 @@
 
 #ifndef AUDIOMODULE_HPP
 #define AUDIOMODULE_HPP
+
 #include <map>
 #include <SDL_mixer.h>
 #include <string>
 #include <vector>
-#include <components/audio/Audio.hpp>
-#include <moduleManager/ModuleWrapper.hpp>
+
+#include "components/audio/Audio.hpp"
+#include "moduleManager/ModuleWrapper.hpp"
 
 constexpr int NO_CHANNEL_SPECIFIED = -1;
 
@@ -34,7 +36,9 @@ class AudioModule : public ModuleWrapper {
 
 		void AddAudio(const Audio& audio);
 		void RemoveAudio(const Audio& audio);
+
 		void SetVolume(audio_type type, int volume);
+		int GetVolume(audio_type type);
 
 		void PlayAudio(const std::string& tag, int loops);
 		void StopAudio(const std::string& tag);

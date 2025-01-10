@@ -5,8 +5,9 @@
 #include "CollisionHandler.hpp"
 
 #include <utility>
-#include <components/physics/PhysicsBody.hpp>
-#include <gameObject/GameObject.hpp>
+
+#include "components/physics/PhysicsBody.hpp"
+#include "gameObject/GameObject.hpp"
 
 CollisionHandler::CollisionHandler(GameObject* gameObject, const char* tag, const PhysicsBody& body,
                                    std::function<void(GameObject&)> onEntryCallback,std::function<void(GameObject&)> onExitCallback) :

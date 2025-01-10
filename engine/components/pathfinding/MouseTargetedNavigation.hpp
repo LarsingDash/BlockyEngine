@@ -6,7 +6,6 @@
 #define BLOCKYENGINE_ENGINE_COMPONENTS_EXAMPLE_PATHFINDING_MOUSETARGETING_HPP_
 
 #include "components/Component.hpp"
-
 #include "GridNavigator.hpp"
 
 class MouseTargetedNavigation : public Component {

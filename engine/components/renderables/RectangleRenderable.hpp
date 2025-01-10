@@ -6,6 +6,7 @@
 #define BLOCKYENGINE_RECTANGLERENDERABLE_HPP
 
 #include <glm/vec4.hpp>
+
 #include "Renderable.hpp"
 #include "utilities/JsonUtil.hpp"
 

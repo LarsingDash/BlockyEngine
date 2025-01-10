@@ -5,7 +5,6 @@
 #include "PhysicsBody.hpp"
 
 #include "gameObject/GameObject.hpp"
-#include "logging/BLogger.hpp"
 #include "moduleManager/ModuleManager.hpp"
 #include "moduleManager/modules/physics/PhysicsModule.hpp"
 #include "shape/Shape.hpp"

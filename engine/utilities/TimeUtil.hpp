@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <vector>
+
 class TimeUtil {
 	public:
 		static TimeUtil* CreateInstance();

@@ -4,7 +4,7 @@
 
 #include "GridNavigator.hpp"
 
-#include <gameObject/GameObject.hpp>
+#include "gameObject/GameObject.hpp"
 
 GridNavigator::GridNavigator(GameObject* gameObject, const char* tag, const char* gridTag,
 							 glm::ivec2 startingGridPos, float movementSpeed) :

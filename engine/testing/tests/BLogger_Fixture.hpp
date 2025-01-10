@@ -6,9 +6,8 @@
 #define BLOCKYENGINE_ENGINE_TESTING_BLOGGER_FIXTURE_HPP_
 
 #include <gtest/gtest.h>
-//TODO This has to be fixed as well,
-// because the target include dir does not work...
-#include "../logging/BLogger.hpp"
+
+#include "logging/BLogger.hpp"
 
 class BLogger_Fixture : public ::testing::Test {
 	protected:

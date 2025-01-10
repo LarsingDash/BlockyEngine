@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 #include <glm/vec4.hpp>
-#include "SpriteRenderable.hpp"
 
+#include "SpriteRenderable.hpp"
 #include "utilities/JsonUtil.hpp"
 
 class AnimationRenderable : public SpriteRenderable {

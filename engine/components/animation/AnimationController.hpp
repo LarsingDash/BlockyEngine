@@ -5,10 +5,11 @@
 #ifndef BLOCKYENGINE_ENGINE_COMPONENTS_ANIMATION_ANIMATIONCONTROLLER_HPP_
 #define BLOCKYENGINE_ENGINE_COMPONENTS_ANIMATION_ANIMATIONCONTROLLER_HPP_
 
-#include <unordered_map>
-#include <stdexcept>
 #include "components/renderables/AnimationRenderable.hpp"
 #include "utilities/JsonUtil.hpp"
+
+#include <unordered_map>
+#include <stdexcept>
 
 class AnimationController : public Component {
 	public:
@@ -20,7 +21,7 @@ class AnimationController : public Component {
 		};
 
 		AnimationController(GameObject* gameObject, const char* tag);
-		~AnimationController();
+		~AnimationController() override;
 		
 		void Start() override;
 		void Update(float delta) override;

@@ -6,6 +6,7 @@
 #define BLOCKYENGINE_BLOCKYENGINE_HPP
 
 #include <memory>
+
 #include "moduleManager/ModuleManager.hpp"
 #include "sceneManager/SceneManager.hpp"
 #include "utilities/TimeUtil.hpp"

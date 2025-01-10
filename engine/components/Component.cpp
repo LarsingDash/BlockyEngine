@@ -4,7 +4,7 @@
 
 #include "Component.hpp"
 
-#include <gameObject/GameObject.hpp>
+#include "gameObject/GameObject.hpp"
 
 Component::Component(GameObject* gameObject, const char* tag, bool hasTransform) :
 	gameObject{gameObject}, tag{tag}, _hasTransform(hasTransform),

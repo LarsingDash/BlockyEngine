@@ -5,10 +5,10 @@
 #include "BLoggerTest.hpp"
 
 #include <chrono>
-
-#include "logging/BLogger.hpp"
 #include <string>
 #include <thread>
+
+#include "logging/BLogger.hpp"
 
 void TestBLoggerFunc(const std::string& testStr = "") {
 	BLOCKY_ENGINE_DEBUG("Debugging information, in TestBLoggerFunc(const std::string& testStr = "")" + testStr)

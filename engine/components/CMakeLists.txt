@@ -1,6 +1,7 @@
 ﻿target_sources(${ENGINE_TARGET} PRIVATE
         Component.cpp
         ComponentTransform.cpp
+        Move.cpp
 )
 
 add_subdirectory(animation)

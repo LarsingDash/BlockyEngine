@@ -13,6 +13,7 @@
 #include "components/renderables/TextRenderable.hpp"
 
 #include "components/example/SpawnerComp.hpp"
+#include "components/Move.hpp"
 #include "components/example/RotationComp.hpp"
 #include "components/json/JsonLoader.hpp"
 #include "components/json/JsonSaveAndLoader.hpp"
@@ -401,6 +402,27 @@ void buildJsonSandboxScene(SceneManager& scenes, const char* next) {
 	scenes.AddScene(std::move(root));
 }
 
+void buildPongScene(SceneManager& scenes) {
+	auto root = std::make_unique<GameObject>("Pong");
+	root->SetActive(false);
+	
+	//Left
+	auto& left = root->AddChild("Left");
+	left.AddComponent<RectangleRenderable>("LeftR", glm::vec4{255, 255, 255, 255}, 0, true);
+	left.AddComponent<Move>("L", KeyInput::KEY_W, KeyInput::KEY_S);
+	left.transform->SetPosition(50, 540);
+	left.transform->SetScale(50, 300);
+
+	//Right
+	auto& right = root->AddChild("Right");
+	right.AddComponent<RectangleRenderable>("RightR", glm::vec4{255, 255, 255, 255}, 0, true);
+	right.AddComponent<Move>("L", KeyInput::KEY_UP, KeyInput::KEY_DOWN);
+	right.transform->SetPosition(1870, 540);
+	right.transform->SetScale(50, 300);
+
+	scenes.AddScene(std::move(root));
+}
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	BlockyEngine::BlockyConfigs configs{
 			800,
@@ -412,15 +434,16 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
 	BlockyEngine blockyEngine{configs};
 	SceneManager& sceneManager = blockyEngine.GetSceneManager();
 
-	buildJsonPrefabScene(sceneManager, "InputReparenting");
-	buildInputReparentingScene(sceneManager, "Camera");
-	buildCameraScene(sceneManager, "Collision");
-	buildCollisionScene(sceneManager, "Pathfinding");
-	buildPathfindingScene(sceneManager, "JsonSandbox");
-	buildJsonSandboxScene(sceneManager, "Networking");
-	buildNetworkingScene(sceneManager, "JsonPrefab");
+//	buildJsonPrefabScene(sceneManager, "InputReparenting");
+//	buildInputReparentingScene(sceneManager, "Camera");
+//	buildCameraScene(sceneManager, "Collision");
+//	buildCollisionScene(sceneManager, "Pathfinding");
+//	buildPathfindingScene(sceneManager, "JsonSandbox");
+//	buildJsonSandboxScene(sceneManager, "Networking");
+//	buildNetworkingScene(sceneManager, "JsonPrefab");
+	buildPongScene(sceneManager);
 
-	sceneManager.SwitchScene("InputReparenting");
+	sceneManager.SwitchScene("Pong");
 
 	blockyEngine.Run();
 
